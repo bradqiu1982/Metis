@@ -1,0 +1,11 @@
+﻿##COMMENTKEY:::COMMENTVALUE
+
+SHAREFOLDERUSER:::brad.qiu
+SHAREFOLDERDOMIN:::china
+SHAREFOLDERPWD:::wangle@345678
+
+APPEMAILADRESS:::WXNPI.Trace@finisar.com
+APPEMAILPWD:::abc@12345
+EMAILSERVER:::wmail.finisar.com
+
+WUXIOTSFILE:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - OTS for WUXI.csv

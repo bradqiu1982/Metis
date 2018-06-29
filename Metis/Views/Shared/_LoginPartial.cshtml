@@ -1,0 +1,24 @@
+﻿@using Metis.Models;
+
+<ul class="nav navbar-nav div-nav-right">
+    @{
+        var ckdict = CookieUtility.UnpackCookie(Request);
+        if (ckdict.ContainsKey("logonuser") && !string.IsNullOrEmpty(ckdict["logonuser"]))
+        {
+            <li>
+                <a href="/Main/Index">
+                    <span class="glyphicon glyphicon-log-out" title="Log Out" data-toggle="tooltip"></span>
+                </a>
+            </li>
+        }
+        else
+        {
+            <li>
+                <a href="/Main/Index">
+                    <span class="glyphicon glyphicon-log-in" title="Log In" data-toggle="tooltip"></span>
+                </a>
+            </li>
+        }
+    }
+
+</ul>

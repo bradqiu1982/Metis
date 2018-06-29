@@ -1,0 +1,10 @@
+﻿
+CREATE TABLE [dbo].[TableSample] (
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[Appv_1]   FLOAT DEFAULT (-99999.0) NOT NULL,
+	[Appv_2]   FLOAT DEFAULT (-99999.0) NOT NULL,
+	[Appv_3]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_4]   NVARCHAR (MAX) DEFAULT ('') NOT NULL,
+	[Appv_5]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL,
+	[Appv_6] [INT] DEFAULT (1) NOT NULL,
+);
