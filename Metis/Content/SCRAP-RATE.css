@@ -1,0 +1,96 @@
+html,body{
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    width: 100%;
+}
+.body-content {
+    margin-top:1%!important;
+}
+.container{
+    margin: auto 2% auto 5%;
+    padding: 2px;
+    width: 93%;
+}
+
+.nav-sidebar {
+    display: inline-block;
+    height: 100%;
+    padding: 8px 0;
+    border-right: 1px solid #ddd;
+}
+
+.nav-sidebar-narrow {
+    width: 3%;
+}
+
+.nav-sidebar a {
+    color: #333;
+    -webkit-transition: all 0.08s linear;
+    -moz-transition: all 0.08s linear;
+    -o-transition: all 0.08s linear;
+    transition: all 0.08s linear;
+}
+
+.nav-sidebar .active a {
+    background-color: #428bca;
+    color: #fff;
+    text-shadow: 1px 1px 1px #666;
+}
+
+.nav-sidebar .active a:hover {
+    background-color: #428bca;
+}
+
+.nav-sidebar-icon {
+    text-align: center;
+    background-color: #aaa;
+    padding: 10px 15px;
+}
+.v-container{
+
+}
+
+.v-filter, .w-filter{
+    padding-bottom: 5px;
+    border-bottom: 1px solid #aaa;
+    padding-left: 8%;
+}
+
+.box-search{
+    text-align: right;
+}
+
+.v-content{
+}
+
+.v-box{
+    height: 400px;
+    /*border: 1px solid #888;*/
+}
+
+.v-lengend{
+    padding-left: 5%;
+}
+
+.span-fm{
+    padding: 3px;
+    margin-right: 5px;
+}
+
+.row-margin{
+    margin-bottom: 5px;
+}
+
+.bootstrap-tagsinput{
+    width: 100%;
+}
+
+.glyphicon {
+    font-size: inherit;
+    width: auto;
+}

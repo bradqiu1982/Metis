@@ -9,3 +9,6 @@ APPEMAILPWD:::abc@12345
 EMAILSERVER:::wmail.finisar.com
 
 WUXIOTSFILE:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - OTS for WUXI.csv
+SCRAPDATAFILE:::\\wux-fs\PUBLIC\ERP_Report\WXI\BITestingData\Production Scrap_Output_Master_Data_AutoRefreshed.xlsx
+
+SCRAPFOCUSPJ:::SH63;SH55

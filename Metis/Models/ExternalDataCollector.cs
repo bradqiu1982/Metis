@@ -13,6 +13,90 @@ namespace Metis.Models
 {
     public class ExternalDataCollector
     {
+
+
+        public static void LoadScrapData(Controller ctrl)
+        {
+            var syscfg = CfgUtility.GetSysConfig(ctrl);
+            var srcfile = syscfg["SCRAPDATAFILE"];
+            var desfile = DownloadShareFile(srcfile, ctrl);
+            if (!string.IsNullOrEmpty(desfile) && File.Exists(desfile))
+            {
+                var rawdata = RetrieveDataFromExcelWithAuth(ctrl, desfile);
+                if (rawdata != null && rawdata.Count > 0)
+                {
+                    var newdata = new List<ScrapData_Base>();
+
+                    var keydict = ScrapData_Base.GetKeyDict();
+                    var idx = 0;
+                    foreach (var line in rawdata)
+                    {
+                        if (idx == 0)
+                        {
+                            idx = idx + 1;
+                            continue;
+                        }
+
+                        if (!string.IsNullOrEmpty(line[5])
+                            && !string.IsNullOrEmpty(line[9])
+                            && !string.IsNullOrEmpty(line[16])
+                            && !string.IsNullOrEmpty(line[27])
+                            && !string.IsNullOrEmpty(line[29]))
+                        {
+                            //pn,transid,qty,assembly,wk
+                            var tempkey = line[4] + "_" + line[5] + "_" + line[9] + "_" + line[11] + "_" + line[12] + "_" + line[29];
+                            if (!keydict.ContainsKey(tempkey))
+                            {
+                                var tempvm = new ScrapData_Base();
+                                tempvm.DataKey = tempkey;
+                                tempvm.ORGANIZATION_ID = line[0];
+                                tempvm.PERIOD_NAME = line[1];
+                                tempvm.TRANSACTION_DATE = DateTime.Parse(ConvertToDateStr(line[2]));
+                                tempvm.ACCOUNT_COMBINATION = line[3];
+                                tempvm.ACCOUNT = line[4];
+                                tempvm.ITEM = line[5];
+                                tempvm.ITEM_DESCRIPTION = line[6];
+                                tempvm.TRANSACTION_TYPE = line[7];
+                                tempvm.SUBINVENTORY_CODE = line[8];
+                                tempvm.TRANSACTION_ID = line[9];
+                                tempvm.JOB = line[10];
+                                tempvm.PRIMARY_QUANTITY_1 = line[11];
+                                tempvm.ASSEMBLY = line[12];
+                                tempvm.REASON_NAME = line[13];
+                                tempvm.REFERENCE = line[14];
+                                tempvm.JOB_PREFIX = line[15];
+                                tempvm.ORIGINAL_PROJECT_CODE = line[16];
+                                tempvm.PRODUCT_GROUP = line[17];
+                                tempvm.PRODUCT = line[18];
+                                tempvm.JOB_POSTFIX = line[19];
+                                tempvm.PLM = line[20];
+                                tempvm.Scrap_Or_Output = line[21];
+                                tempvm.Current_Total_Cost_USD = line[22];
+                                tempvm.Actual_Q1Output = line[23];
+                                tempvm.Actual_Q1Scrap = line[24];
+                                tempvm.Transaction_Value = line[25];
+                                tempvm.Transaction_Value_Usd = line[26];
+                                tempvm.Transaction_Value_Usd_1 = line[27];
+                                tempvm.value = line[28];
+                                tempvm.Week = line[29].Replace("+","").Trim();
+                                tempvm.CrtYear = GetFYearByTime(tempvm.TRANSACTION_DATE);
+                                tempvm.CrtQuarter = FQuarterByWK(tempvm.Week);
+                                if (string.IsNullOrEmpty(tempvm.CrtYear) || string.IsNullOrEmpty(tempvm.CrtQuarter)) { continue; }
+
+                                newdata.Add(tempvm);
+                            }//check dup
+                        }//check empty row
+                    }//end foreach
+
+                    foreach (var item in newdata)
+                    {
+                        item.StoreData();
+                    }
+                }//end if
+            }//end if
+        }
+
+
         public static void LoadDataSample(Controller ctrl)
         {
             var syscfg = CfgUtility.GetSysConfig(ctrl);
@@ -32,13 +116,117 @@ namespace Metis.Models
                 colname.Add("Item".ToUpper());
                 colname.Add("Shipped Qty".ToUpper());
 
-                var rawdata = RetrieveDataFromExcelWithAuthByColmnName(ctrl, srcfile,colname);
+                var rawdata = RetrieveDataFromExcelWithAuthByColmnName(ctrl, desfile, colname);
                 if (rawdata != null && rawdata.Count > 0)
                 {
                     //solve raw data
                 }
             }
         }
+
+        #region FINANCE DATE
+
+        public static string FQuarterByWK(string wk)
+        {
+            try
+            {
+                var wkint =Convert.ToInt32(wk.Substring(wk.Length - 2, 2));
+                if (wkint >= 1 && wkint <= 13)
+                {
+                    return FinanceQuarter.Q1;
+                }
+                else if (wkint >= 14 && wkint <= 26)
+                {
+                    return FinanceQuarter.Q2;
+                }
+                else if (wkint >= 27 && wkint <= 39)
+                {
+                    return FinanceQuarter.Q3;
+                }
+                else if (wkint >= 40 && wkint <= 52)
+                {
+                    return FinanceQuarter.Q4;
+                }
+                else
+                { return string.Empty; }
+
+            }
+            catch (Exception ex) { return string.Empty; }
+        }
+
+        public static string GetFQuarterByTime(DateTime sdate)
+        {
+            try
+            {
+                var sval = Convert.ToDouble(sdate.ToString("MM") + "." + sdate.ToString("dd"));
+                if (sval >= 5.01 && sval <= 7.3)
+                {
+                    return FinanceQuarter.Q1;
+                }
+                else if (sval >= 7.31 && sval <= 10.29)
+                {
+                    return FinanceQuarter.Q2;
+                }
+                else if (sval >= 10.3 && sval <= 12.31)
+                {
+                    return FinanceQuarter.Q3;
+                }
+                else if (sval >= 1.01 && sval <= 1.28)
+                {
+                    return FinanceQuarter.Q3;
+                }
+                else if (sval >= 1.29 && sval <= 4.29)
+                {
+                    return FinanceQuarter.Q4;
+                }
+                else if (sval == 4.3)
+                {
+                    return FinanceQuarter.Q1;
+                }
+                else
+                { return string.Empty; }
+
+            }
+            catch (Exception ex) { return string.Empty; }
+        }
+
+        public static string GetFYearByTime(DateTime sdate)
+        {
+            try
+            {
+                var sval = Convert.ToDouble(sdate.ToString("MM") + "." + sdate.ToString("dd"));
+                if (sval >= 5.01 && sval <= 7.3)
+                {
+                    return sdate.ToString("yyyy");
+                }
+                else if (sval >= 7.31 && sval <= 10.29)
+                {
+                    return sdate.ToString("yyyy");
+                }
+                else if (sval >= 10.3 && sval <= 12.31)
+                {
+                    return sdate.ToString("yyyy");
+                }
+                else if (sval >= 1.01 && sval <= 1.28)
+                {
+                    return sdate.AddYears(-1).ToString("yyyy");
+                }
+                else if (sval >= 1.29 && sval <= 4.29)
+                {
+                    return sdate.AddYears(-1).ToString("yyyy");
+                }
+                else if (sval == 4.3)
+                {
+                    return sdate.ToString("yyyy");
+                }
+                else
+                { return string.Empty; }
+
+            }
+            catch (Exception ex) { return string.Empty; }
+        }
+
+        #endregion
 
         #region FILEOPERATE
         public static string DownloadShareFile(string srcfile, Controller ctrl)
@@ -391,4 +579,14 @@ namespace Metis.Models
             Dispose(true);
         }
     }
+
+    public class FinanceQuarter
+    {
+        public static string CURRENTQx = "Current Quarter";
+        public static string Q1 = "Q1";
+        public static string Q2 = "Q2";
+        public static string Q3 = "Q3";
+        public static string Q4 = "Q4";
+    }
+
 }

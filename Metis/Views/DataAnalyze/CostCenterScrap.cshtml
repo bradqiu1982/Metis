@@ -1,0 +1,93 @@
+﻿
+@{
+    ViewBag.Title = "Cost Center Scrap";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link type="text/css" rel="stylesheet" href="~/Scripts/jquery-autocomplete/jquery.auto-complete.css" />
+<link type="text/css" rel="stylesheet" href="~/Content/SCRAP-RATE.css" />
+<link type="text/css" rel="stylesheet" href="~/Scripts/bootstrap-tagsinput/bootstrap-tagsinput.css" />
+
+
+<script type="text/javascript" src="~/Scripts/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap-tagsinput/bootstrap3-typeahead.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery-autocomplete/jquery.auto-complete.min.js"></script>
+<script type="text/javascript" src="~/Scripts/Scrap-Rate.js"></script>
+<script type="text/javascript">
+        $(function(){
+            SCRAPRATE.init();
+        })
+</script>
+
+<div class="row">
+    <div class="nav navbar-nav navbar-left">
+        <img src="~/Content/images/Yield.png" style="height:40px; width:40px">
+    </div>
+    <div class="nav navbar-nav navbar-left">
+        <ol class="breadcrumb" style="width:600px">
+            <li><a data-toggle="tooltip" title="Goto Main Page" href="/Main/Index">Main</a></li>
+            <li class="active">Cost Center Scrap</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <nav class="col-xs-2 nav-sidebar">
+        <ul class="nav">
+            <li>
+                <a href="/DataAnalyze/DepartmentScrap">
+                    <span class="item-show">Department Scrap</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="/DataAnalyze/CostCenterScrap">
+                    <span class="item-show">Cost Center Scrap</span>
+                </a>
+            </li>
+            <li>
+                <a href="/DataAnalyze/ProductScrap">
+                    <span class="item-show">HTOL Yield</span>
+                </a>
+            </li>
+            <li>
+                <a href="/DataAnalyze/BRJOScrap">
+                    <span class="item-show">BR/JO Scrap</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="col-xs-10">
+        <div class="v-container">
+            <div class="v-filter">
+                <div class="row row-margin">
+                    <label class="col-xs-2">Finance Year</label>
+                    <div class="col-xs-3">
+                        @Html.DropDownList("fyearlist", null, new { @id = "fyearlist", @class = "form-control" })
+                    </div>
+                    <div class="col-xs-1 text-center"></div>
+                    <label class="col-xs-2">Finance Quarter</label>
+                    <div class="col-xs-3">
+                        @Html.DropDownList("fquarterlist", null, new { @id = "fquarterlist", @class = "form-control" })
+                    </div>
+                </div>
+                <div class="row row-margin">
+                    <label class="col-xs-2">Project Code</label>
+                    <div class="col-xs-8">
+                        <input type="text" class="project-no" data-provide="typeahead"
+                               id="pj-no" name="pj-no" autocomplete="off" placeholder="Project Code" value="@ViewBag.carepjlist">
+                    </div>
+                    <div class="col-xs-1 box-search" style="padding-left:0">
+                        <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
+                    </div>
+                </div>
+            </div>
+            <div class="v-content">
+            </div>
+            <span id="loadcomplete" name="loadcomplete" class="hide">FALSE</span>
+        </div>
+    </div>
+    <div class="hidden">
+        <a id="exportLink"></a>
+    </div>
+</div>

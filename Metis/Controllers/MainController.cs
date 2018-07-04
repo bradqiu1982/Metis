@@ -19,7 +19,7 @@ namespace Metis.Controllers
         {
             try
             {
-                ExternalDataCollector.LoadDataSample(this);
+                ExternalDataCollector.LoadScrapData(this);
             }
             catch (Exception ex) { }
 

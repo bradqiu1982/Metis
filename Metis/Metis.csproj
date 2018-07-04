@@ -189,6 +189,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Controllers\DataAnalyzeController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -199,6 +200,7 @@
     <Compile Include="Models\EmailUtility.cs" />
     <Compile Include="Models\ExcelReader.cs" />
     <Compile Include="Models\ExternalDataCollector.cs" />
+    <Compile Include="Models\ScrapData_Base.cs" />
     <Compile Include="Models\WebsiteToImage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -611,11 +613,21 @@
     <Content Include="ckeditor\skins\moono-lisa\images\refresh.png" />
     <Content Include="ckeditor\skins\moono-lisa\images\spinner.gif" />
     <Content Include="ckeditor\styles.js" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker.css" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker.min.css" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker.standalone.css" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker.standalone.min.css" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.css" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.min.css" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.standalone.css" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.standalone.min.css" />
     <Content Include="Content\bootstrapfileinput.css" />
     <Content Include="Content\bootstrap\bootstrap-theme.css" />
     <Content Include="Content\bootstrap\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap\bootstrap.css" />
     <Content Include="Content\bootstrap\bootstrap.min.css" />
+    <Content Include="Content\images\Yield.png" />
+    <Content Include="Content\SCRAP-RATE.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Finisar.PNG" />
     <Content Include="Content\images\dataloading.gif" />
@@ -660,7 +672,21 @@
     <Content Include="Content\fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.woff2" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker.css.map" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker.min.css.map" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker.standalone.css.map" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker.standalone.min.css.map" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.css.map" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.min.css.map" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.standalone.css.map" />
+    <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.standalone.min.css.map" />
+    <Content Include="Scripts\bootstrap-tagsinput\bootstrap-tagsinput.min.js.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\bootstrap-tagsinput\bootstrap-tagsinput.css" />
+    <Content Include="Scripts\bootstrap-tagsinput\bootstrap-tagsinput.js" />
+    <Content Include="Scripts\bootstrap-tagsinput\bootstrap-tagsinput.min.js" />
+    <Content Include="Scripts\bootstrap-tagsinput\bootstrap3-typeahead.js" />
+    <Content Include="Scripts\bootstrap-tagsinput\bootstrap3-typeahead.min.js" />
     <Content Include="Scripts\bootstrap\bootstrap.js" />
     <Content Include="Scripts\bootstrap\bootstrap.min.js" />
     <Content Include="Scripts\bootstrap\npm.js" />
@@ -693,6 +719,7 @@
     <Content Include="Scripts\oldie.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\Scrap-Rate.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -711,6 +738,7 @@
     <Content Include="userfiles\Upload.ashx" />
     <Content Include="Views\Main\HeartBeat.cshtml" />
     <Content Include="Views\Main\Index.cshtml" />
+    <Content Include="Views\DataAnalyze\CostCenterScrap.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
