@@ -739,6 +739,8 @@
     <Content Include="Views\Main\HeartBeat.cshtml" />
     <Content Include="Views\Main\Index.cshtml" />
     <Content Include="Views\DataAnalyze\CostCenterScrap.cshtml" />
+    <Content Include="Views\DataAnalyze\DepartmentScrap.cshtml" />
+    <Content Include="Views\DataAnalyze\ProductScrap.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

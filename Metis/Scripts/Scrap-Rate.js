@@ -1,5 +1,5 @@
 ﻿var SCRAPRATE = function () {
-    var show = function () {
+    var costcentscrap = function () {
         //$('.date').datepicker({ autoclose: true, viewMode: "years", minViewMode: "years" });
 
         $.post('/DataAnalyze/ProjectNumAutoCompelete', {}, function (output) {
@@ -40,7 +40,7 @@
                 fquarter: fquarter,
                 pj_no: pj_no
             }, function (output) {
-                if (output.success) {
+                 if (output.success) {
                     $('.v-content').empty();
                     var appendstr = "";
 
@@ -79,14 +79,47 @@
         //    $('#boxplot-alert').modal('hide');
         //    window.open("/DataAnalyze/DownLoadWaferByMonth?" + "month=" + wafer_no + "&vtype=" + vcseltype);
         //})
-
-        //$('body').on('click', '#btn-mt-yield', function () {
-        //    var wafer_no = $.trim($('#m-wf-no').val());
-        //    var wf_type = $.trim($('#vcseltypeselectlist').val());
-        //    $('#boxplot-alert').modal('hide');
-        //    window.open("/DataAnalyze/WaferDistribution?" + "defaultdate=" + wafer_no + "&defaulttype=" + wf_type);
-        //})
     }
+
+    var departmentscrap = function () {
+        function searchdata() {
+            var fyear = $.trim($('#fyearlist').val());
+            var fquarter = $.trim($('#fquarterlist').val());
+            var department = $.trim($('#department').val());
+
+            $.post('/DataAnalyze/DepartmentScrapRateData', {
+                fyear: fyear,
+                fquarter: fquarter,
+                department: department
+            }, function (output) {
+                if (output.success) {
+                    $('.v-content').empty();
+                    var appendstr = "";
+
+                    $.each(output.scrapratearray, function (i, val) {
+                        appendstr = '<div class="col-xs-12">' +
+                               '<div class="v-box" id="' + val.id + '"></div>' +
+                               '</div>';
+                        $('.v-content').append(appendstr);
+                        drawline(val, false);
+                    })
+
+                    setTimeout(function () {
+                        $('#loadcomplete').html('TRUE');
+                    }, 10000);
+                }
+            })
+        }
+
+        $('body').on('click', '#btn-search', function () {
+            searchdata();
+        })
+
+        $(function () {
+            searchdata();
+        });
+    }
+    
 
     var drawline = function (line_data, forwafer) {
         var options = {
@@ -121,6 +154,12 @@
                     cursor: 'pointer',
                     events: {
                         click: function (event) {
+                            if (line_data.url != '')
+                            {
+                                var fyear = $.trim($('#fyearlist').val());
+                                var fquarter = $.trim($('#fquarterlist').val());
+                                window.open(line_data.url + event.point.category + '&defyear=' + fyear + '&defqrt=' + fquarter);
+                            }
                          }
                     }
                 }
@@ -175,31 +214,31 @@
                             });
                             outputCSV += "\r\n";
 
-                            outputCSV += generalscraprate.name + ',';
+                            outputCSV += line_data.generalscraprate.name + ',';
                             $(line_data.generalscraprate.data).each(function (i, val) {
                                 outputCSV += val + ",";
                             });
                             outputCSV += "\r\n";
 
-                            outputCSV += nonchinascraprate.name + ',';
+                            outputCSV += line_data.nonchinascraprate.name + ',';
                             $(line_data.nonchinascraprate.data).each(function (i, val) {
                                 outputCSV += val + ",";
                             });
                             outputCSV += "\r\n";
 
-                            outputCSV += nonchinascrap.name+',';
+                            outputCSV += line_data.nonchinascrap.name + ',';
                             $(line_data.nonchinascrap.data).each(function (i, val) {
                                 outputCSV += val + ",";
                             });
                             outputCSV += "\r\n";
 
-                            outputCSV += generalscrap.name+',';
+                            outputCSV += line_data.generalscrap.name + ',';
                             $(line_data.generalscrap.data).each(function (i, val) {
                                 outputCSV += val + ",";
                             });
                             outputCSV += "\r\n";
 
-                            outputCSV += output.name+',';
+                            outputCSV += line_data.output.name + ',';
                             $(line_data.output.data).each(function (i, val) {
                                 outputCSV += val + ",";
                             });
@@ -532,11 +571,11 @@
         Highcharts.chart(dbboxplot_data.id, options);
     }
     return {
-        init: function () {
-            show();
+        COSTCENTINIT: function () {
+            costcentscrap();
         },
-        //distribution: function () {
-        //    distribution();
-        //}
+        DEPARTMENTINIT: function () {
+            departmentscrap();
+        }
     }
 }();

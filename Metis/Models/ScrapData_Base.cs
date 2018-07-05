@@ -86,11 +86,11 @@ namespace Metis.Models
             DBUtility.ExeLocalSqlNoRes(sql, param);
         }
 
-        public static List<ScrapData_Base> RetrievePJQuarterData(string pjcode, string fyear, string fquarter)
+        public static List<ScrapData_Base> RetrievePJCodeQuarterData(string pjcode, string fyear, string fquarter)
         {
             var ret = new List<ScrapData_Base>();
 
-            var sql = @"select Scrap_Or_Output,REASON_NAME,Transaction_Value_Usd_1,Week from ScrapData_Base 
+            var sql = @"select Scrap_Or_Output,REASON_NAME,Transaction_Value_Usd_1,Week,ITEM_DESCRIPTION,ASSEMBLY from ScrapData_Base 
                          where ORIGINAL_PROJECT_CODE=@ORIGINAL_PROJECT_CODE and CrtYear=@CrtYear and CrtQuarter=@CrtQuarter and Week <> ''";
             var param = new Dictionary<string, string>();
             param.Add("@ORIGINAL_PROJECT_CODE",pjcode);
@@ -105,12 +105,58 @@ namespace Metis.Models
                 tempvm.REASON_NAME = Convert.ToString(line[1]);
                 tempvm.Transaction_Value_Usd_1 = Convert.ToString(line[2]);
                 tempvm.Week = Convert.ToString(line[3]);
+
+                tempvm.ITEM_DESCRIPTION = Convert.ToString(line[4]);
+                tempvm.ASSEMBLY = Convert.ToString(line[5]);
+
                 ret.Add(tempvm);
             }
             return ret;
         }
 
-        public static List<string> RetrieveWeekList(string pjcode, string fyear, string fquarter)
+        public static List<string> RetrievePJCodeByDepartment(string dp,string fyear, string fquarter)
+        {
+            var ret = new List<string>();
+            var sql = @"select distinct ORIGINAL_PROJECT_CODE  from ScrapData_Base 
+                         where PRODUCT_GROUP=@PRODUCT_GROUP and CrtYear=@CrtYear and CrtQuarter=@CrtQuarter and ORIGINAL_PROJECT_CODE <> '' order by ORIGINAL_PROJECT_CODE asc";
+            var param = new Dictionary<string, string>();
+            param.Add("@PRODUCT_GROUP", dp);
+            param.Add("@CrtYear", fyear);
+            param.Add("@CrtQuarter", fquarter);
+
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, param);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
+            return ret;
+        }
+
+        public static List<ScrapData_Base> RetrieveDPQuarterData(string department, string fyear, string fquarter)
+        {
+            var ret = new List<ScrapData_Base>();
+
+            var sql = @"select Scrap_Or_Output,REASON_NAME,Transaction_Value_Usd_1,PRODUCT_GROUP from ScrapData_Base 
+                         where PRODUCT_GROUP=@PRODUCT_GROUP and CrtYear=@CrtYear and CrtQuarter=@CrtQuarter and Week <> ''";
+            var param = new Dictionary<string, string>();
+            param.Add("@PRODUCT_GROUP", department);
+            param.Add("@CrtYear", fyear);
+            param.Add("@CrtQuarter", fquarter);
+
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, param);
+            foreach (var line in dbret)
+            {
+                var tempvm = new ScrapData_Base();
+                tempvm.Scrap_Or_Output = Convert.ToString(line[0]);
+                tempvm.REASON_NAME = Convert.ToString(line[1]);
+                tempvm.Transaction_Value_Usd_1 = Convert.ToString(line[2]);
+                tempvm.PRODUCT_GROUP = Convert.ToString(line[3]);
+                ret.Add(tempvm);
+            }
+            return ret;
+        }
+
+        public static List<string> RetrieveWeekListByPJ(string pjcode, string fyear, string fquarter)
         {
             var ret = new List<string>();
 
@@ -133,6 +179,26 @@ namespace Metis.Models
                 var i2 = Convert.ToInt32(obj2.Substring(obj2.Length - 2));
                 return i1.CompareTo(i2);
             });
+
+            return ret;
+        }
+
+        public static List<string> RetrieveDPByTime(string fyear, string fquarter)
+        {
+            var ret = new List<string>();
+
+            var sql = @"select distinct PRODUCT_GROUP from ScrapData_Base 
+                         where CrtYear=@CrtYear and CrtQuarter=@CrtQuarter and PRODUCT_GROUP <> '' order by PRODUCT_GROUP asc";
+            var param = new Dictionary<string, string>();
+
+            param.Add("@CrtYear", fyear);
+            param.Add("@CrtQuarter", fquarter);
+
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, param);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
 
             return ret;
         }
@@ -225,7 +291,7 @@ namespace Metis.Models
     {
         public SCRAPSUMData()
         {
-            wkkey = "";
+            key = "";
             output = 0.0;
             generalscrap = 0.0;
             nonchinascrap = 0.0;
@@ -241,7 +307,7 @@ namespace Metis.Models
             catch (Exception ex) { return 0.0; }
         }
 
-        public static Dictionary<string, SCRAPSUMData> GetSumDataFromRawData(List<ScrapData_Base> onepjdata)
+        public static Dictionary<string, SCRAPSUMData> GetSumDataFromRawDataByWeek(List<ScrapData_Base> onepjdata)
         {
             var sumdata = new Dictionary<string, SCRAPSUMData>();
 
@@ -271,7 +337,7 @@ namespace Metis.Models
                     else
                     {
                         var tempvm = new SCRAPSUMData();
-                        tempvm.wkkey = item.Week;
+                        tempvm.key = item.Week;
                         if (string.Compare(item.Scrap_Or_Output, SCRAPOUTPUTSCRAP.OUTPUT, true) == 0)
                         {
                             tempvm.output = ConvertToDouble(item.Transaction_Value_Usd_1);
@@ -293,7 +359,37 @@ namespace Metis.Models
             return sumdata;
         }
 
-        public string wkkey { set; get; }
+        public static SCRAPSUMData GetSumDataFromRawDataByDP(List<ScrapData_Base> onepjdata)
+        {
+            var tempvm = new SCRAPSUMData();
+            tempvm.key = onepjdata[0].PRODUCT_GROUP;
+
+            foreach (var item in onepjdata)
+            {
+                if (string.Compare(item.Scrap_Or_Output, SCRAPOUTPUTSCRAP.OUTPUT, true) == 0
+                    || string.Compare(item.Scrap_Or_Output, SCRAPOUTPUTSCRAP.SCRAP, true) == 0)
+                {
+                    if (string.Compare(item.Scrap_Or_Output, SCRAPOUTPUTSCRAP.OUTPUT, true) == 0)
+                    {
+                        tempvm.output += ConvertToDouble(item.Transaction_Value_Usd_1);
+                    }
+                    else if (string.Compare(item.Scrap_Or_Output, SCRAPOUTPUTSCRAP.SCRAP, true) == 0)
+                    {
+                        if (string.Compare(item.REASON_NAME, SCRAPTYPE.GENERALSCRAP, true) == 0)
+                        { tempvm.generalscrap += ConvertToDouble(item.Transaction_Value_Usd_1); }
+                        if (string.Compare(item.REASON_NAME, SCRAPTYPE.NONCHINASCRAP, true) == 0)
+                        { tempvm.nonchinascrap += ConvertToDouble(item.Transaction_Value_Usd_1); }
+                        if (string.Compare(item.REASON_NAME, SCRAPTYPE.SPCORTSCRAP, true) == 0)
+                        { tempvm.spcortscrap += ConvertToDouble(item.Transaction_Value_Usd_1); }
+                    }
+                }//end if
+            }//end foreach
+
+            return tempvm;
+        }
+        
+
+        public string key { set; get; }
         public double output { set; get; }
         public double generalscrap { set; get; }
         public double nonchinascrap { set; get; }

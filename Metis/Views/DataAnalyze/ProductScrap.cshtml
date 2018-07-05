@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "Cost Center Scrap";
+    ViewBag.Title = "Product Scrap";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -16,7 +16,7 @@
 <script type="text/javascript" src="~/Scripts/Scrap-Rate.js"></script>
 <script type="text/javascript">
         $(function(){
-            SCRAPRATE.COSTCENTINIT();
+            SCRAPRATE.PRODUCTINIT();
         })
 </script>
 
@@ -27,7 +27,7 @@
     <div class="nav navbar-nav navbar-left">
         <ol class="breadcrumb" style="width:600px">
             <li><a data-toggle="tooltip" title="Goto Main Page" href="/Main/Index">Main</a></li>
-            <li class="active">Cost Center Scrap</li>
+            <li class="active">Product Scrap</li>
         </ol>
     </div>
 </div>
@@ -40,12 +40,12 @@
                     <span class="item-show">Department Scrap</span>
                 </a>
             </li>
-            <li class="active">
+            <li>
                 <a href="/DataAnalyze/CostCenterScrap">
                     <span class="item-show">Cost Center Scrap</span>
                 </a>
             </li>
-            <li>
+            <li class="active">
                 <a href="/DataAnalyze/ProductScrap">
                     <span class="item-show">Product Scrap</span>
                 </a>
