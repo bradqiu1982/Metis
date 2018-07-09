@@ -15,36 +15,59 @@ namespace Metis.Controllers
             return View();
         }
 
+        private void heartbeatlog(string msg,string filename)
+        {
+            try
+            {
+                var wholefilename = Server.MapPath("~/userfiles") + "\\" + filename;
+
+                var content = "";
+                if (System.IO.File.Exists(wholefilename))
+                {
+                    content = System.IO.File.ReadAllText(wholefilename);
+                }
+                content = content + msg + " @ " + DateTime.Now.ToString() + "\r\n";
+                System.IO.File.WriteAllText(wholefilename, content);
+            }
+            catch (Exception ex)
+            { }
+        }
+
         public ActionResult HeartBeat()
         {
-
-            try
+            var filename = "log" + DateTime.Now.ToString("yyyy-MM-dd");
+            if (!System.IO.File.Exists(filename))
             {
-                ExternalDataCollector.LoadPNPlannerData(this);
-            }
-            catch (Exception ex) { }
-
-            try
-            {
-                ExternalDataCollector.LoadScrapData(this);
-            }
-            catch (Exception ex) { }
-
-            try
-            {
-                ExternalDataCollector.LoadIEScrapBuget(this);
-            }
-            catch (Exception ex) { }
-
-            try
-            {
-                if (DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+                try
                 {
-                    CostCentScrapWarning.Waring(this);
+                    ExternalDataCollector.LoadPNPlannerData(this);
                 }
-            }
-            catch (Exception ex) { }
-            
+                catch (Exception ex) { }
+
+                try
+                {
+                    ExternalDataCollector.LoadScrapData(this);
+                }
+                catch (Exception ex) { }
+
+                try
+                {
+                    ExternalDataCollector.LoadIEScrapBuget(this);
+                }
+                catch (Exception ex) { }
+
+                try
+                {
+                    if (DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+                    {
+                        CostCentScrapWarning.Waring(this);
+                    }
+                }
+                catch (Exception ex) { }
+            }//end only run once
+
+            heartbeatlog("Heart Beat Start", filename);
+
             return View();
         }
     }
