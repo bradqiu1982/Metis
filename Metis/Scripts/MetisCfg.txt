@@ -8,7 +8,12 @@ APPEMAILADRESS:::WXNPI.Trace@finisar.com
 APPEMAILPWD:::abc@12345
 EMAILSERVER:::wmail.finisar.com
 
-WUXIOTSFILE:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - OTS for WUXI.csv
 SCRAPDATAFILE:::\\wux-fs\PUBLIC\ERP_Report\WXI\BITestingData\Production Scrap_Output_Master_Data_AutoRefreshed.xlsx
+PNPLANNERCODEMAP:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - Item Attributes Listing Report for WXI.csv
+IESCRAPBUGETPATH:::\\wux-fs\Public\WUXI IE\Scrap\Share_Data\Scrap_budget_
 
+COSTCENTERSCRAPWARNING:::Parallel
+COSTCENTERWARNINGLIST:::brad.qiu@finisar.com
+
+WUXIOTSFILE:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - OTS for WUXI.csv
 SCRAPFOCUSPJ:::

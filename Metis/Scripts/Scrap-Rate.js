@@ -1,8 +1,49 @@
 ﻿var SCRAPRATE = function () {
+
+    
+    var departmentscrap = function () {
+        function searchdata() {
+            var fyear = $.trim($('#fyearlist').val());
+            var fquarter = $.trim($('#fquarterlist').val());
+            var department = $.trim($('#department').val());
+
+            $.post('/DataAnalyze/DepartmentScrapRateData', {
+                fyear: fyear,
+                fquarter: fquarter,
+                department: department
+            }, function (output) {
+                if (output.success) {
+                    $('.v-content').empty();
+                    var appendstr = "";
+
+                    $.each(output.scrapratearray, function (i, val) {
+                        appendstr = '<div class="col-xs-12">' +
+                               '<div class="v-box" id="' + val.id + '"></div>' +
+                               '</div>';
+                        $('.v-content').append(appendstr);
+                        drawline(val);
+                    })
+
+                    setTimeout(function () {
+                        $('#loadcomplete').html('TRUE');
+                    }, 10000);
+                }
+            })
+        }
+
+        $('body').on('click', '#btn-search', function () {
+            searchdata();
+        })
+
+        $(function () {
+            searchdata();
+        });
+    }
+
     var costcentscrap = function () {
         //$('.date').datepicker({ autoclose: true, viewMode: "years", minViewMode: "years" });
 
-        $.post('/DataAnalyze/ProjectNumAutoCompelete', {}, function (output) {
+        $.post('/DataAnalyze/CostCenterAutoCompelete', {}, function (output) {
             $('.project-no').tagsinput({
                 freeInput: false,
                 typeahead: {
@@ -38,7 +79,7 @@
             $.post('/DataAnalyze/CostCenterScrapRateData', {
                 fyear: fyear,
                 fquarter: fquarter,
-                pj_no: pj_no
+                costcenter: pj_no
             }, function (output) {
                  if (output.success) {
                     $('.v-content').empty();
@@ -49,7 +90,7 @@
                                '<div class="v-box" id="' + val.id + '"></div>' +
                                '</div>';
                         $('.v-content').append(appendstr);
-                        drawline(val, false);
+                        drawline(val);
                     })
 
                     setTimeout(function () {
@@ -81,16 +122,45 @@
         //})
     }
 
-    var departmentscrap = function () {
+    var productscrap = function () {
+
+        $.post('/DataAnalyze/CostCenterAutoCompelete', {}, function (output) {
+            $('.project-no').tagsinput({
+                freeInput: false,
+                typeahead: {
+                    source: output.data,
+                    minLength: 0,
+                    showHintOnFocus: true,
+                    autoSelect: false,
+                    selectOnBlur: false,
+                    changeInputOnSelect: false,
+                    changeInputOnMove: false,
+                    afterSelect: function (val) {
+                        this.$element.val("");
+                    }
+                }
+            });
+            defaultsearch();
+        });
+
         function searchdata() {
             var fyear = $.trim($('#fyearlist').val());
             var fquarter = $.trim($('#fquarterlist').val());
-            var department = $.trim($('#department').val());
 
-            $.post('/DataAnalyze/DepartmentScrapRateData', {
+            var pj_no = $.trim($('#pj-no').tagsinput('items'));
+            if (pj_no == '') {
+                pj_no = $.trim($('#pj-no').parent().find('input').eq(0).val());
+            }
+
+            if (pj_no == '') {
+                alert("Please input project code query condition.");
+                return false;
+            }
+
+            $.post('/DataAnalyze/ProductScrapRateData', {
                 fyear: fyear,
                 fquarter: fquarter,
-                department: department
+                costcenter: pj_no
             }, function (output) {
                 if (output.success) {
                     $('.v-content').empty();
@@ -101,7 +171,7 @@
                                '<div class="v-box" id="' + val.id + '"></div>' +
                                '</div>';
                         $('.v-content').append(appendstr);
-                        drawline(val, false);
+                        drawline(val);
                     })
 
                     setTimeout(function () {
@@ -115,13 +185,19 @@
             searchdata();
         })
 
-        $(function () {
-            searchdata();
-        });
-    }
-    
+        function defaultsearch() {
+            var pj_no = $.trim($('#pj-no').tagsinput('items'));
+            if (pj_no == '') {
+                pj_no = $.trim($('#pj-no').parent().find('input').eq(0).val());
+            }
+            if (pj_no != '') {
+                searchdata();
+            }
+        }
 
-    var drawline = function (line_data, forwafer) {
+    }
+
+    var drawline = function (line_data) {
         var options = {
             chart: {
                 zoomType: 'xy',
@@ -134,6 +210,8 @@
                 categories: line_data.xAxis.data
             },
             yAxis: [{
+                min: 0,
+                max: line_data.maxYrate,
                 title: {
                     text: 'Scrap Rate (%)'
                 },
@@ -141,7 +219,11 @@
                     value: line_data.maxdata.data,
                     color: line_data.maxdata.color,
                     dashStyle: line_data.maxdata.style,
-                    width: 1
+                    width: 1,
+                    label: {
+                        text: 'Buget Rate:' + line_data.maxdata.data,
+                        align: 'left'
+                    }
                 }]
             }, {
                 opposite: true,
@@ -576,6 +658,9 @@
         },
         DEPARTMENTINIT: function () {
             departmentscrap();
-        }
+        },
+        PRODUCTINIT: function () {
+            productscrap();
+        },
     }
 }();

@@ -46,3 +46,19 @@ CREATE TABLE [dbo].[ScrapData_Base]
 	[CrtQuarter]    NVARCHAR (200)   DEFAULT ('') NOT NULL
 );
 
+CREATE TABLE [dbo].[PNPlannerCodeMap]
+(
+	[PN]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[PlannerCode]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[PJName]    NVARCHAR (200)   DEFAULT ('') NOT NULL
+);
+
+CREATE TABLE [dbo].[IEScrapBuget]
+(
+	[DataKey]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[PN]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[CostCenter]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[OutPut]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[Scrap]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[Destination]    NVARCHAR (200)   DEFAULT ('') NOT NULL
+);

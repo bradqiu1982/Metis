@@ -196,10 +196,13 @@
     </Compile>
     <Compile Include="Models\CfgUtility.cs" />
     <Compile Include="Models\CookieUtility.cs" />
+    <Compile Include="Models\CostCentScrapWarning.cs" />
     <Compile Include="Models\DBUtility.cs" />
     <Compile Include="Models\EmailUtility.cs" />
     <Compile Include="Models\ExcelReader.cs" />
     <Compile Include="Models\ExternalDataCollector.cs" />
+    <Compile Include="Models\IEScrapBuget.cs" />
+    <Compile Include="Models\PNPlannerCodeMap.cs" />
     <Compile Include="Models\ScrapData_Base.cs" />
     <Compile Include="Models\WebsiteToImage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

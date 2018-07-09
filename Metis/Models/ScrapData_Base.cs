@@ -86,14 +86,14 @@ namespace Metis.Models
             DBUtility.ExeLocalSqlNoRes(sql, param);
         }
 
-        public static List<ScrapData_Base> RetrievePJCodeQuarterData(string pjcode, string fyear, string fquarter)
+        public static List<ScrapData_Base> RetrieveCostCenterQuarterData(string co, string fyear, string fquarter)
         {
             var ret = new List<ScrapData_Base>();
 
-            var sql = @"select Scrap_Or_Output,REASON_NAME,Transaction_Value_Usd_1,Week,ITEM_DESCRIPTION,ASSEMBLY from ScrapData_Base 
+            var sql = @"select Scrap_Or_Output,REASON_NAME,Transaction_Value_Usd_1,Week,ASSEMBLY from ScrapData_Base 
                          where ORIGINAL_PROJECT_CODE=@ORIGINAL_PROJECT_CODE and CrtYear=@CrtYear and CrtQuarter=@CrtQuarter and Week <> ''";
             var param = new Dictionary<string, string>();
-            param.Add("@ORIGINAL_PROJECT_CODE",pjcode);
+            param.Add("@ORIGINAL_PROJECT_CODE",co);
             param.Add("@CrtYear",fyear);
             param.Add("@CrtQuarter", fquarter);
 
@@ -105,12 +105,41 @@ namespace Metis.Models
                 tempvm.REASON_NAME = Convert.ToString(line[1]);
                 tempvm.Transaction_Value_Usd_1 = Convert.ToString(line[2]);
                 tempvm.Week = Convert.ToString(line[3]);
-
-                tempvm.ITEM_DESCRIPTION = Convert.ToString(line[4]);
-                tempvm.ASSEMBLY = Convert.ToString(line[5]);
+                tempvm.ASSEMBLY = Convert.ToString(line[4]);
 
                 ret.Add(tempvm);
             }
+            return ret;
+        }
+
+        public static Dictionary<string,List<ScrapData_Base>> RetrieveProductQuarterDataFromCoByPNMAP(string co, string fyear, string fquarter, Dictionary<string,PNPlannerCodeMap> pnmap)
+        {
+            var alldata = RetrieveCostCenterQuarterData(co, fyear, fquarter);
+            var ret = new Dictionary<string, List<ScrapData_Base>>();
+            foreach (var onedata in alldata)
+            {
+                var product = onedata.ASSEMBLY;
+                if (pnmap.ContainsKey(product))
+                {
+                    var pnitem = pnmap[product];
+                    if (!string.IsNullOrEmpty(pnitem.PJName))
+                    { product = pnitem.PJName; }
+                    else
+                    { product = pnitem.PlannerCode; }
+                }
+
+                if (ret.ContainsKey(product))
+                {
+                    ret[product].Add(onedata);
+                }
+                else
+                {
+                    var templist = new List<ScrapData_Base>();
+                    templist.Add(onedata);
+                    ret.Add(product, templist);
+                }
+            }//end foreach
+
             return ret;
         }
 

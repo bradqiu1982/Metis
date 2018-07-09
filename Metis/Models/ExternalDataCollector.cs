@@ -13,8 +13,6 @@ namespace Metis.Models
 {
     public class ExternalDataCollector
     {
-
-
         public static void LoadScrapData(Controller ctrl)
         {
             var syscfg = CfgUtility.GetSysConfig(ctrl);
@@ -80,7 +78,7 @@ namespace Metis.Models
                                 tempvm.value = line[28];
                                 tempvm.Week = line[29].Replace("+","").Trim();
                                 tempvm.CrtYear = GetFYearByTime(tempvm.TRANSACTION_DATE);
-                                tempvm.CrtQuarter = FQuarterByWK(tempvm.Week);
+                                tempvm.CrtQuarter = GetFQuarterByTime(tempvm.TRANSACTION_DATE);
                                 if (string.IsNullOrEmpty(tempvm.CrtYear) || string.IsNullOrEmpty(tempvm.CrtQuarter)) { continue; }
 
                                 newdata.Add(tempvm);
@@ -93,9 +91,155 @@ namespace Metis.Models
                         item.StoreData();
                     }
                 }//end if
+
+                try { File.Delete(desfile); } catch (Exception ex) { }
             }//end if
         }
 
+        private static Dictionary<string, string> GetPlannerCodePJMap()
+        {
+            var ret = new Dictionary<string, string>();
+            var sql = "select [ProjectName],[ColumnValue] from [NebulaTrace].[dbo].[ProjectVM] where [ColumnName] = 'Planner Code'";
+            var dbret = DBUtility.ExeNebulaSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                try
+                {
+                    var pjname = Convert.ToString(line[0]);
+                    if (pjname.Contains("/"))
+                    {
+                        var idx = pjname.IndexOf("/") + 1;
+                        pjname = pjname.Substring(idx);
+                    }
+                    var plannercodes = Convert.ToString(line[1]).Trim().ToUpper();
+                    var plannercodelist = plannercodes.Split(new string[] { "/", " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    foreach (var pl in plannercodelist)
+                    {
+                        if (!ret.ContainsKey(pl))
+                        {
+                            ret.Add(pl, pjname);
+                        }
+                    }
+                }
+                catch (Exception ex) { }
+            }
+
+            return ret;
+        }
+
+        public static void LoadPNPlannerData(Controller ctrl)
+        {
+            var syscfg = CfgUtility.GetSysConfig(ctrl);
+            var srcfile = syscfg["PNPLANNERCODEMAP"];
+            var desfile = DownloadShareFile(srcfile, ctrl);
+            if (!string.IsNullOrEmpty(desfile) && File.Exists(desfile))
+            {
+                var rawdata = RetrieveDataFromExcelWithAuth(ctrl, desfile);
+                if (rawdata != null && rawdata.Count > 0)
+                {
+                    var plannerpjmap = GetPlannerCodePJMap();
+                    var allmap = PNPlannerCodeMap.RetrieveAllMaps();
+                    var maplist = new List<PNPlannerCodeMap>();
+                    foreach (var line in rawdata)
+                    {
+                        if (!string.IsNullOrEmpty(line[2])
+                            && !string.IsNullOrEmpty(line[5]))
+                        {
+                            var pn = line[2];
+                            if (!allmap.ContainsKey(pn))
+                            {
+                                var plcode = line[5].ToUpper();
+                                if (plcode.Length > 7)
+                                { plcode = plcode.Substring(0, 7); }
+
+                                var tempvm = new PNPlannerCodeMap();
+                                tempvm.PN = pn;
+                                tempvm.PlannerCode = plcode;
+
+                                if (plannerpjmap.ContainsKey(plcode))
+                                {
+                                    tempvm.PJName = plannerpjmap[plcode];
+                                }
+                                allmap.Add(pn, tempvm);
+                                maplist.Add(tempvm);
+                            }//end if
+                        }//end if
+                    }//end foreach
+
+                    foreach (var item in maplist)
+                    {
+                        item.StoreData();
+                    }
+                }//end if
+
+                try { File.Delete(desfile); } catch (Exception ex) { }
+            }//end if
+                    
+        }
+
+        private static double ConvertToDouble(string val)
+        {
+            try
+            {
+                return Math.Round(Convert.ToDouble(val), 2);
+            }
+            catch (Exception ex) { return 0.0; }
+        }
+
+        public static void LoadIEScrapBuget(Controller ctrl)
+        {
+            var syscfg = CfgUtility.GetSysConfig(ctrl);
+            var now = DateTime.Now;
+            var fyear = GetFYearByTime(now);
+            var fquarter = GetFQuarterByTime(now);
+            var srcfile = syscfg["IESCRAPBUGETPATH"] + fyear + "_" + fquarter + ".xlsx";
+            var desfile = DownloadShareFile(srcfile, ctrl);
+            if (!string.IsNullOrEmpty(desfile) && File.Exists(desfile))
+            {
+                var rawdata = RetrieveDataFromExcelWithAuth(ctrl, desfile, "Scrap WUXI");
+                if (rawdata != null && rawdata.Count > 0)
+                {
+                    var allkeydict = IEScrapBuget.RetrieveAllKey();
+                    var alldata = new List<IEScrapBuget>();
+
+                    var idx = 0;
+                    foreach (var line in rawdata)
+                    {
+                        if (idx == 0)
+                        { idx = idx + 1; continue; }
+
+                        var PN = line[0];
+                        var CostCenter = line[2];
+                        var OutPut = line[37].Replace("$", "").Replace("-", "").Trim();
+                        var Scrap = line[46].Replace("$", "").Replace("-", "").Trim();
+                        var dest = line[8];
+                        var doutput = ConvertToDouble(OutPut);
+
+                        if (!string.IsNullOrEmpty(PN)
+                            && !string.IsNullOrEmpty(CostCenter)
+                            && !string.IsNullOrEmpty(OutPut)
+                            && doutput != 0.0)
+                        {
+                            if (string.IsNullOrEmpty(Scrap))
+                            { Scrap = "0.0"; }
+                            var key = PN + "_" +fyear+ "_" +fquarter;
+                            var tempvm = new IEScrapBuget();
+                            tempvm.DataKey = key;
+                            tempvm.PN = PN;
+                            tempvm.CostCenter = CostCenter;
+                            tempvm.OutPut = OutPut;
+                            tempvm.Scrap = Scrap;
+                            tempvm.Destination = dest;
+                            alldata.Add(tempvm);
+                        }
+                    }//end foreach
+
+                    IEScrapBuget.UpdateData(alldata, allkeydict);
+
+                }//end if
+                try { File.Delete(desfile); } catch (Exception ex) { }
+            }//end if
+        }
 
         public static void LoadDataSample(Controller ctrl)
         {
@@ -197,27 +341,27 @@ namespace Metis.Models
                 var sval = Convert.ToDouble(sdate.ToString("MM") + "." + sdate.ToString("dd"));
                 if (sval >= 5.01 && sval <= 7.3)
                 {
-                    return sdate.ToString("yyyy");
+                    return sdate.AddYears(1).ToString("yyyy");
                 }
                 else if (sval >= 7.31 && sval <= 10.29)
                 {
-                    return sdate.ToString("yyyy");
+                    return sdate.AddYears(1).ToString("yyyy");
                 }
                 else if (sval >= 10.3 && sval <= 12.31)
                 {
-                    return sdate.ToString("yyyy");
+                    return sdate.AddYears(1).ToString("yyyy");
                 }
                 else if (sval >= 1.01 && sval <= 1.28)
                 {
-                    return sdate.AddYears(-1).ToString("yyyy");
+                    return sdate.ToString("yyyy");
                 }
                 else if (sval >= 1.29 && sval <= 4.29)
                 {
-                    return sdate.AddYears(-1).ToString("yyyy");
+                    return sdate.ToString("yyyy");
                 }
                 else if (sval == 4.3)
                 {
-                    return sdate.ToString("yyyy");
+                    return sdate.AddYears(1).ToString("yyyy");
                 }
                 else
                 { return string.Empty; }

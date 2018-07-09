@@ -79,6 +79,7 @@ namespace Metis.Controllers
 
             if (sumscraplist.Count > 0)
             {
+                var maxYrate = 0.0;
                 var xlist = new List<string>();
                 var generalscrap = new List<double>();
                 var nonchinascrap = new List<double>();
@@ -92,7 +93,10 @@ namespace Metis.Controllers
                     generalscrap.Add(Math.Round(item.generalscrap, 2));
                     nonchinascrap.Add(Math.Round(item.nonchinascrap, 2));
                     output.Add(Math.Round(item.output, 2));
-                    generalscraprate.Add(Math.Round(item.generalscrap / item.output * 100.0, 2));
+                    var grate = Math.Round(item.generalscrap / item.output * 100.0, 2);
+                    if (grate > maxYrate)
+                    { maxYrate = grate + 1.0; }
+                    generalscraprate.Add(grate);
                     nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
                 }
 
@@ -101,6 +105,7 @@ namespace Metis.Controllers
                     id = "department_line",
                     title = "Department " + fyear + " " + fquarter + " SCRAP",
                     xAxis = new { data = xlist },
+                    maxYrate = maxYrate,
                     maxdata = new { name = "Max", color = "#C9302C", data = 100, style = "solid" },
                     generalscraprate = new { name = "General Scrap Rate", data = generalscraprate },
                     nonchinascraprate = new { name = "Non-China Scrap Rate", data = nonchinascraprate },
@@ -132,11 +137,14 @@ namespace Metis.Controllers
             }
 
             var pjcodes = "";
-            var pjcodelist = ScrapData_Base.RetrievePJCodeByDepartment(x, defyear, defqrt);
-            
-            if (pjcodelist.Count > 0)
+            var xlist = x.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            foreach (var ix in xlist)
             {
-                pjcodes = String.Join(";", pjcodelist);
+                var pjcodelist = ScrapData_Base.RetrievePJCodeByDepartment(ix, defyear, defqrt);
+                if (pjcodelist.Count > 0)
+                {
+                    pjcodes += String.Join(";", pjcodelist)+";";
+                }
             }
 
             var dict = new RouteValueDictionary();
@@ -182,12 +190,20 @@ namespace Metis.Controllers
         }
 
 
+        private static double ConvertToDouble(string val)
+        {
+            try
+            {
+                return Math.Round(Convert.ToDouble(val), 2);
+            }
+            catch (Exception ex) { return 0.0; }
+        }
 
         public JsonResult CostCenterScrapRateData()
         {
             var fyear = Request.Form["fyear"];
             var fquarter = Request.Form["fquarter"];
-            var pj_no = Request.Form["pj_no"];
+            var costcenters = Request.Form["costcenter"];
             var scrapratearray = new List<object>();
 
             if (string.Compare(fquarter, FinanceQuarter.CURRENTQx) == 0)
@@ -197,17 +213,19 @@ namespace Metis.Controllers
                 fquarter = ExternalDataCollector.GetFQuarterByTime(now);
             }
 
-            var pjnolist = pj_no.Split(new string[] { ",", ";", " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            foreach (var pj in pjnolist)
+            var iebugetdict = IEScrapBuget.RetrieveDataCentDict(fyear, fquarter);
+
+            var costcenterlist = costcenters.Split(new string[] { ",", ";", " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            foreach (var co in costcenterlist)
             {
-                var wklist = ScrapData_Base.RetrieveWeekListByPJ(pj, fyear, fquarter);
+                var wklist = ScrapData_Base.RetrieveWeekListByPJ(co, fyear, fquarter);
                 if(wklist.Count == 0)
                 { continue; }
                 
-                var onepjdata = ScrapData_Base.RetrievePJCodeQuarterData(pj, fyear, fquarter);
+                var onepjdata = ScrapData_Base.RetrieveCostCenterQuarterData(co, fyear, fquarter);
                 var sumdata = SCRAPSUMData.GetSumDataFromRawDataByWeek(onepjdata);
 
-                var outputiszero = false;
+                //var outputiszero = false;
                 var sumscraplist = new List<SCRAPSUMData>();
                 for (var idx = 0; idx < wklist.Count; idx++)
                 {
@@ -227,47 +245,76 @@ namespace Metis.Controllers
                     }//end for
                     if (tempvm.output == 0.0)
                     {
-                        outputiszero = true;
-                        break;
+                        //outputiszero = true;
+                        continue;
                     }
                     sumscraplist.Add(tempvm);
                 }//end for
 
-                if (outputiszero)
-                { continue; }
+                //if (outputiszero)
+                //{ continue; }
 
-                var xlist = new List<string>();
-                var generalscrap = new List<double>();
-                var nonchinascrap = new List<double>();
-                var output = new List<double>();
-                var generalscraprate = new List<double>();
-                var nonchinascraprate = new List<double>();
-
-                foreach (var item in sumscraplist)
+                if (sumscraplist.Count > 0)
                 {
-                    xlist.Add(item.key);
-                    generalscrap.Add(Math.Round(item.generalscrap,2));
-                    nonchinascrap.Add(Math.Round(item.nonchinascrap,2));
-                    output.Add(Math.Round(item.output,2));
-                    generalscraprate.Add(Math.Round(item.generalscrap / item.output * 100.0, 2));
-                    nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
-                }
+                    var maxYrate = 0.0;
 
-                var onepjobj = new
-                {
-                    id = pj.Replace(" ", "_") + "_line",
-                    title = pj +" "+fyear+" "+fquarter+" SCRAP",
-                    xAxis = new { data = xlist },
-                    maxdata = new { name = "Max", color = "#C9302C", data = 40, style = "solid" },
-                    generalscraprate = new { name = "General Scrap Rate", data = generalscraprate },
-                    nonchinascraprate = new { name = "Non-China Scrap Rate", data = nonchinascraprate },
-                    generalscrap = new { name="General Scrap",data = generalscrap },
-                    nonchinascrap = new { name = "Non-China Scrap", data = nonchinascrap },
-                    output = new { name = "Output", data = output },
-                    url=""
-                };
+                    var bugetrate = 0.0;
+                    if (iebugetdict.ContainsKey(co))
+                    {
+                        var boutput = 0.0;
+                        var bscrap = 0.0;
+                        foreach (var item in iebugetdict[co])
+                        {
+                            boutput += ConvertToDouble(item.OutPut);
+                            bscrap += ConvertToDouble(item.Scrap);
+                        }
+                        bugetrate = Math.Round(bscrap / boutput * 100.0, 2);
+                        if (bugetrate > maxYrate)
+                        { maxYrate = bugetrate+1.0; }
+                    }
 
-                scrapratearray.Add(onepjobj);
+                    
+                    var xlist = new List<string>();
+                    var generalscrap = new List<double>();
+                    var nonchinascrap = new List<double>();
+                    var output = new List<double>();
+                    var generalscraprate = new List<double>();
+                    var nonchinascraprate = new List<double>();
+                    var maxdata = new { name = "Max", color = "#C9302C", data = 0.0, style = "solid" };
+                    if (bugetrate != 0.0)
+                    { maxdata = new { name = "Max", color = "#C9302C", data = bugetrate, style = "solid" }; }
+
+                    foreach (var item in sumscraplist)
+                    {
+                        xlist.Add(item.key);
+                        generalscrap.Add(Math.Round(item.generalscrap,2));
+                        nonchinascrap.Add(Math.Round(item.nonchinascrap,2));
+                        output.Add(Math.Round(item.output,2));
+                        var grate = Math.Round(item.generalscrap / item.output * 100.0, 2);
+                        if (grate > maxYrate)
+                        { maxYrate = grate + 1.0; }
+                        generalscraprate.Add(grate);
+                        nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
+                    }
+
+                    var onepjobj = new
+                    {
+                        id = co.Replace(" ", "_") + "_line",
+                        title = co +" "+fyear+" "+fquarter+" SCRAP",
+                        xAxis = new { data = xlist },
+                        maxYrate = maxYrate,
+                        maxdata = maxdata,
+                        generalscraprate = new { name = "General Scrap Rate", data = generalscraprate },
+                        nonchinascraprate = new { name = "Non-China Scrap Rate", data = nonchinascraprate },
+                        generalscrap = new { name="General Scrap",data = generalscrap },
+                        nonchinascrap = new { name = "Non-China Scrap", data = nonchinascrap },
+                        output = new { name = "Output", data = output },
+                        url= "/DataAnalyze/ProductScrap?defco="+co+"&x="
+                    };
+
+                    scrapratearray.Add(onepjobj);
+
+                }//end if
             }//end foreach
 
             var ret = new JsonResult();
@@ -278,7 +325,7 @@ namespace Metis.Controllers
             return ret;
         }
 
-        public ActionResult ProductScrapScrap(string defyear, string defqrt, string defpj)
+        public ActionResult ProductScrap(string defyear, string defqrt, string defco)
         {
             var year = "";
             if (!string.IsNullOrEmpty(defyear))
@@ -298,15 +345,184 @@ namespace Metis.Controllers
             var years = ScrapData_Base.GetYearList();
             ViewBag.fyearlist = CreateSelectList(years, year);
 
-            var syscfg = CfgUtility.GetSysConfig(this);
             ViewBag.carepjlist = "";
-            if (!string.IsNullOrEmpty(defpj))
-            { ViewBag.carepjlist = defpj; }
+            if (!string.IsNullOrEmpty(defco))
+            { ViewBag.carepjlist = defco; }
 
             return View();
         }
 
-        public JsonResult ProjectNumAutoCompelete()
+        private void ProductBugetRate(string co, Dictionary<string, PNPlannerCodeMap> pnplannermap
+            , Dictionary<string, List<IEScrapBuget>> iebugetdict, Dictionary<string, SCRAPSUMData> productbuget)
+        {
+                if (iebugetdict.ContainsKey(co))
+                {
+                    foreach (var item in iebugetdict[co])
+                    {
+                        var product = item.PN;
+                        if (pnplannermap.ContainsKey(product))
+                        {
+                            var pnitem = pnplannermap[product];
+                            if (!string.IsNullOrEmpty(pnitem.PJName))
+                            { product = pnitem.PJName; }
+                            else
+                            { product = pnitem.PlannerCode; }
+                        }
+
+                        if (productbuget.ContainsKey(product))
+                        {
+                            var tempvm = productbuget[product];
+                            tempvm.output += ConvertToDouble(item.OutPut);
+                            tempvm.generalscrap += ConvertToDouble(item.Scrap);
+                        }
+                        else
+                        {
+                            var tempvm = new SCRAPSUMData();
+                            tempvm.output = ConvertToDouble(item.OutPut);
+                            tempvm.generalscrap = ConvertToDouble(item.Scrap);
+                            productbuget.Add(product, tempvm);
+                        }
+                    }//end foreach
+                }//end if
+        }
+
+        public JsonResult ProductScrapRateData()
+        {
+            var fyear = Request.Form["fyear"];
+            var fquarter = Request.Form["fquarter"];
+            var costcenters = Request.Form["costcenter"];
+            var scrapratearray = new List<object>();
+
+            if (string.Compare(fquarter, FinanceQuarter.CURRENTQx) == 0)
+            {
+                var now = DateTime.Now;
+                fyear = ExternalDataCollector.GetFYearByTime(now);
+                fquarter = ExternalDataCollector.GetFQuarterByTime(now);
+            }
+
+            var iebugetdict = IEScrapBuget.RetrieveDataCentDict(fyear, fquarter);
+
+            var costcentlist = costcenters.Split(new string[] { ",", ";", " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            foreach (var co in costcentlist)
+            {
+                var pnplannermap = PNPlannerCodeMap.RetrieveAllMaps();
+                var productbuget = new Dictionary<string, SCRAPSUMData>();
+                ProductBugetRate(co, pnplannermap, iebugetdict, productbuget);
+
+                var productdatadict = ScrapData_Base.RetrieveProductQuarterDataFromCoByPNMAP(co, fyear, fquarter, pnplannermap);
+                foreach (var kv in productdatadict)
+                {
+                    var pd = kv.Key;
+                    var onepddata = kv.Value;
+                    var sumdata = SCRAPSUMData.GetSumDataFromRawDataByWeek(onepddata);
+
+                    var wklist = sumdata.Keys.ToList();
+                    if (wklist.Count == 0)
+                    { continue; }
+                    wklist.Sort(delegate (string obj1, string obj2)
+                    {
+                        var i1 = Convert.ToInt32(obj1.Substring(obj1.Length - 2));
+                        var i2 = Convert.ToInt32(obj2.Substring(obj2.Length - 2));
+                        return i1.CompareTo(i2);
+                    });
+
+                    //var outputiszero = false;
+                    var sumscraplist = new List<SCRAPSUMData>();
+                    for (var idx = 0; idx < wklist.Count; idx++)
+                    {
+                        var tempvm = new SCRAPSUMData();
+                        tempvm.key = wklist[0] + "~" + wklist[idx];
+
+                        for (var jdx = 0; jdx <= idx; jdx++)
+                        {
+                            var wk = wklist[jdx];
+                            if (sumdata.ContainsKey(wk))
+                            {
+                                tempvm.output += sumdata[wk].output;
+                                tempvm.generalscrap += sumdata[wk].generalscrap;
+                                tempvm.nonchinascrap += sumdata[wk].nonchinascrap;
+                                tempvm.spcortscrap += sumdata[wk].spcortscrap;
+                            }
+                        }//end for
+                        if (tempvm.output == 0.0)
+                        {
+                            //outputiszero = true;
+                            continue;
+                        }
+                        sumscraplist.Add(tempvm);
+                    }//end for
+
+                    //if (outputiszero)
+                    //{ continue; }
+
+                    if (sumscraplist.Count > 0)
+                    {
+                        var maxYrate = 0.0;
+                        var xlist = new List<string>();
+                        var generalscrap = new List<double>();
+                        var nonchinascrap = new List<double>();
+                        var output = new List<double>();
+                        var generalscraprate = new List<double>();
+                        var nonchinascraprate = new List<double>();
+
+                        var bugetrate = 0.0;
+                        if (productbuget.ContainsKey(pd))
+                        {
+                            var boutput = productbuget[pd].output;
+                            var bscrap = productbuget[pd].generalscrap;
+
+                            bugetrate = Math.Round(bscrap / boutput * 100.0, 2);
+                            if (bugetrate > maxYrate)
+                            { maxYrate = bugetrate + 1.0; }
+                        }
+
+                        var maxdata = new { name = "Max", color = "#C9302C", data = 0.0, style = "solid" };
+                        if (bugetrate != 0.0)
+                        { maxdata = new { name = "Max", color = "#C9302C", data = bugetrate, style = "solid" }; }
+
+                        foreach (var item in sumscraplist)
+                        {
+                            xlist.Add(item.key);
+                            generalscrap.Add(Math.Round(item.generalscrap, 2));
+                            nonchinascrap.Add(Math.Round(item.nonchinascrap, 2));
+                            output.Add(Math.Round(item.output, 2));
+                            var grate = Math.Round(item.generalscrap / item.output * 100.0, 2);
+                            if (grate > maxYrate)
+                            { maxYrate = grate + 1.0; }
+                            generalscraprate.Add(grate);
+                            nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
+                        }
+
+                        var onepjobj = new
+                        {
+                            id = pd.Replace(" ", "_") + "_line",
+                            title = pd + " " + fyear + " " + fquarter + " SCRAP",
+                            xAxis = new { data = xlist },
+                            maxYrate = maxYrate,
+                            maxdata = maxdata,
+                            generalscraprate = new { name = "General Scrap Rate", data = generalscraprate },
+                            nonchinascraprate = new { name = "Non-China Scrap Rate", data = nonchinascraprate },
+                            generalscrap = new { name = "General Scrap", data = generalscrap },
+                            nonchinascrap = new { name = "Non-China Scrap", data = nonchinascrap },
+                            output = new { name = "Output", data = output },
+                            url = ""
+                        };
+
+                        scrapratearray.Add(onepjobj);
+                    }//end if
+                }//end foreach
+            }//end foreach
+
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                success = true,
+                scrapratearray = scrapratearray
+            };
+            return ret;
+        }
+
+        public JsonResult CostCenterAutoCompelete()
         {
             var vlist = ScrapData_Base.GetProjectCodeList();
             var ret = new JsonResult();

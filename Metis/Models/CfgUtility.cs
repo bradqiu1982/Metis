@@ -35,7 +35,7 @@ namespace Metis.Models
         {
             var ret = new Dictionary<string, string>();
             var sql = "select distinct ProjectName from [NebulaTrace].[dbo].[ProjectVM]";
-            var dbret = DBUtility.ExeNPITraceSqlWithRes(sql, null);
+            var dbret = DBUtility.ExeNebulaSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
                 try
