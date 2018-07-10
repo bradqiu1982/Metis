@@ -96,7 +96,7 @@ namespace Metis.Models
             }//end if
         }
 
-        private static Dictionary<string, string> GetPlannerCodePJMap()
+        public static Dictionary<string, string> GetPlannerCodePJMap()
         {
             var ret = new Dictionary<string, string>();
             var sql = "select [ProjectName],[ColumnValue] from [NebulaTrace].[dbo].[ProjectVM] where [ColumnName] = 'Planner Code'";
@@ -123,6 +123,54 @@ namespace Metis.Models
                 }
                 catch (Exception ex) { }
             }
+
+            return ret;
+        }
+
+        public static Dictionary<string, string> GetCostCenterPMMap()
+        {
+            var ret = new Dictionary<string, string>();
+            var sql = @"SELECT [ProjectName] ,[ColumnName] ,[ColumnValue]
+                         FROM [NebulaTrace].[dbo].[ProjectVM] where ColumnName in ('COST CENTER','PM') order by ProjectName";
+
+            var tempdict = new Dictionary<string, KeyValueCLA>();
+
+            var dbret = DBUtility.ExeNebulaSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                try
+                {
+                    var pjname = Convert.ToString(line[0]);
+                    var colname = Convert.ToString(line[1]);
+                    var colval = Convert.ToString(line[2]);
+
+                    if (tempdict.ContainsKey(pjname))
+                    {
+                        if (string.Compare(colname, "COST CENTER") == 0)
+                        { tempdict[pjname].Key = colval; }
+                        else
+                        { tempdict[pjname].Value = colval; }
+                    }
+                    else
+                    {
+                        var tempval = new KeyValueCLA();
+                        tempdict.Add(pjname, tempval);
+                        if (string.Compare(colname, "COST CENTER") == 0)
+                        { tempdict[pjname].Key = colval; }
+                        else
+                        { tempdict[pjname].Value = colval; }
+                    }
+                }
+                catch (Exception ex) { }
+            }
+
+            foreach (var kv in tempdict)
+            {
+                if (!ret.ContainsKey(kv.Value.Key))
+                {
+                    ret.Add(kv.Value.Key, kv.Value.Value);
+                }
+            }//end foreach
 
             return ret;
         }
@@ -733,4 +781,14 @@ namespace Metis.Models
         public static string Q4 = "Q4";
     }
 
+    public class KeyValueCLA {
+        public KeyValueCLA()
+        {
+            Key = "";
+            Value = "";
+        }
+
+        public string Key { set; get; }
+        public string Value { set; get; }
+    }
 }

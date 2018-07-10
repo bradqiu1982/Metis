@@ -525,29 +525,6 @@ namespace Metis.Models
             }
         }
 
-        private static SqlConnection GetNPITraceConnector()
-        {
-            var conn = new SqlConnection();
-            try
-            {
-                conn.ConnectionString = @"Server=wuxinpi;User ID=NebulaNPI;Password=abc@123;Database=NebulaTrace;Connection Timeout=120;";
-                conn.Open();
-                return conn;
-            }
-            catch (SqlException ex)
-            {
-                logthdinfo("fail to connect to the mes report pdms database:" + ex.Message);
-                //System.Windows.MessageBox.Show(ex.ToString());
-                return null;
-            }
-            catch (Exception ex)
-            {
-                logthdinfo("fail to connect to the mes report pdms database" + ex.Message);
-                //System.Windows.MessageBox.Show(ex.ToString());
-                return null;
-            }
-        }
-
         private static SqlConnection GetNebulaConnector()
         {
             var conn = new SqlConnection();

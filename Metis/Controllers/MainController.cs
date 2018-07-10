@@ -70,5 +70,17 @@ namespace Metis.Controllers
 
             return View();
         }
+
+        public ActionResult SendScrapReport()
+        {
+            try
+            {
+               CostCentScrapWarning.Waring(this);
+            }
+            catch (Exception ex) { }
+            return View("HeartBeat");
+        }
+
+
     }
 }
