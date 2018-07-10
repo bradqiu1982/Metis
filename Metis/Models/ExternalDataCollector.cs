@@ -127,7 +127,7 @@ namespace Metis.Models
             return ret;
         }
 
-        public static Dictionary<string, string> GetCostCenterPMMap()
+        public static Dictionary<string, string> GetCostCenterPMMap(Dictionary<string,string> costcenterpjdict = null)
         {
             var ret = new Dictionary<string, string>();
             var sql = @"SELECT [ProjectName] ,[ColumnName] ,[ColumnValue]
@@ -147,7 +147,20 @@ namespace Metis.Models
                     if (tempdict.ContainsKey(pjname))
                     {
                         if (string.Compare(colname, "COST CENTER") == 0)
-                        { tempdict[pjname].Key = colval; }
+                        {
+                            tempdict[pjname].Key = colval;
+                            if (costcenterpjdict != null)
+                            {
+                                var temppjname = pjname;
+                                if (temppjname.Contains("/"))
+                                {
+                                    var idx = temppjname.IndexOf("/") + 1;
+                                    temppjname = temppjname.Substring(idx);
+                                }
+                                if (!costcenterpjdict.ContainsKey(colval))
+                                { costcenterpjdict.Add(colval, temppjname); }
+                            }
+                        }
                         else
                         { tempdict[pjname].Value = colval; }
                     }
@@ -156,7 +169,20 @@ namespace Metis.Models
                         var tempval = new KeyValueCLA();
                         tempdict.Add(pjname, tempval);
                         if (string.Compare(colname, "COST CENTER") == 0)
-                        { tempdict[pjname].Key = colval; }
+                        {
+                            tempdict[pjname].Key = colval;
+                            if (costcenterpjdict != null)
+                            {
+                                var temppjname = pjname;
+                                if (temppjname.Contains("/"))
+                                {
+                                    var idx = temppjname.IndexOf("/") + 1;
+                                    temppjname = temppjname.Substring(idx);
+                                }
+                                if (!costcenterpjdict.ContainsKey(colval))
+                                { costcenterpjdict.Add(colval, temppjname); }
+                            }
+                        }
                         else
                         { tempdict[pjname].Value = colval; }
                     }

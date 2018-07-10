@@ -29,7 +29,8 @@ namespace Metis.Models
             var warningtable = new List<List<string>>();
 
             var iebugetdict = IEScrapBuget.RetrieveDataCentDict(fyear, fquarter);
-            var copmmap = ExternalDataCollector.GetCostCenterPMMap();
+            var costcenterpjdict = new Dictionary<string, string>();
+            var copmmap = ExternalDataCollector.GetCostCenterPMMap(costcenterpjdict);
 
             foreach (var dp in departmentlist)
             {
@@ -80,11 +81,20 @@ namespace Metis.Models
                         templist.Add(co);
                         templist.Add(bugetrate.ToString());
                         templist.Add(grate.ToString());
+
+                        if (costcenterpjdict.ContainsKey(co))
+                        { templist.Add(costcenterpjdict[co]); }
+                        else
+                        { templist.Add(""); }
+
                         if (copmmap.ContainsKey(co))
                         { templist.Add(copmmap[co]); }
                         else
                         { templist.Add(""); }
+
+
                         warningtable.Add(templist);
+
                     }
                 }//end foreach
             }//end foreach
@@ -94,6 +104,7 @@ namespace Metis.Models
             title.Add("Cost Center");
             title.Add("Buget Scrap Rate");
             title.Add("Actual Scrap Rate");
+            title.Add("PJ Name");
             title.Add("PM");
             if (warningtable.Count > 0)
             { warningtable.Insert(0, title); }

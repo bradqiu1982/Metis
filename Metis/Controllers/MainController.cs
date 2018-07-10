@@ -58,7 +58,7 @@ namespace Metis.Controllers
 
                 try
                 {
-                    if (DateTime.Now.DayOfWeek == DayOfWeek.Friday)
+                    if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday)
                     {
                         CostCentScrapWarning.Waring(this);
                     }

@@ -684,6 +684,7 @@
     <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.standalone.css.map" />
     <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.standalone.min.css.map" />
     <Content Include="Scripts\bootstrap-tagsinput\bootstrap-tagsinput.min.js.map" />
+    <None Include="Properties\PublishProfiles\metispublish.pubxml" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\bootstrap-tagsinput\bootstrap-tagsinput.css" />
     <Content Include="Scripts\bootstrap-tagsinput\bootstrap-tagsinput.js" />

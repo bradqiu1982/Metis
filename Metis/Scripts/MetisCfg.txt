@@ -12,8 +12,8 @@ SCRAPDATAFILE:::\\wux-fs\PUBLIC\ERP_Report\WXI\BITestingData\Production Scrap_Ou
 PNPLANNERCODEMAP:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - Item Attributes Listing Report for WXI.csv
 IESCRAPBUGETPATH:::\\wux-fs\Public\WUXI IE\Scrap\Share_Data\Scrap_budget_
 
-COSTCENTERSCRAPWARNING:::Parallel
-COSTCENTERWARNINGLIST:::brad.qiu@finisar.com
+COSTCENTERSCRAPWARNING:::Parallel;Telecom TRX;
+COSTCENTERWARNINGLIST:::shawn.zhang@finisar.com;windy.ju@finisar.com;brad.qiu@finisar.com;chris.bao@finisar.com;
 
 WUXIOTSFILE:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - OTS for WUXI.csv
 SCRAPFOCUSPJ:::
