@@ -216,12 +216,12 @@
                     text: 'Scrap Rate (%)'
                 },
                 plotLines: [{
-                    value: line_data.maxdata.data,
-                    color: line_data.maxdata.color,
-                    dashStyle: line_data.maxdata.style,
+                    value: line_data.bugetscraprate.data,
+                    color: line_data.bugetscraprate.color,
+                    dashStyle: line_data.bugetscraprate.style,
                     width: 1,
                     label: {
-                        text: 'Buget Rate:' + line_data.maxdata.data,
+                        text: 'Buget Scrap Rate:' + line_data.bugetscraprate.data,
                         align: 'left'
                     }
                 }]
@@ -229,7 +229,17 @@
                 opposite: true,
                 title: {
                     text: 'Amount'
-                }
+                },
+                plotLines: [{
+                    value: line_data.bugetscrapval.data,
+                    color: line_data.bugetscrapval.color,
+                    dashStyle: line_data.bugetscrapval.style,
+                    width: 1,
+                    label: {
+                        text: 'Buget Scrap:' + line_data.bugetscrapval.data,
+                        align: 'left'
+                    }
+                }]
             }],
             plotOptions: {
                 series: {

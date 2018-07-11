@@ -80,6 +80,8 @@ namespace Prism.Controllers
             if (sumscraplist.Count > 0)
             {
                 var maxYrate = 0.0;
+                var maxYoutput = 0.0;
+
                 var xlist = new List<string>();
                 var generalscrap = new List<double>();
                 var nonchinascrap = new List<double>();
@@ -96,6 +98,9 @@ namespace Prism.Controllers
                     var grate = Math.Round(item.generalscrap / item.output * 100.0, 2);
                     if (grate > maxYrate)
                     { maxYrate = grate + 1.0; }
+                    if (item.output > maxYoutput)
+                    { maxYoutput = item.output; }
+
                     generalscraprate.Add(grate);
                     nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
                 }
@@ -106,7 +111,8 @@ namespace Prism.Controllers
                     title = "Department " + fyear + " " + fquarter + " SCRAP",
                     xAxis = new { data = xlist },
                     maxYrate = maxYrate,
-                    maxdata = new { name = "Max", color = "#C9302C", data = 100, style = "solid" },
+                    bugetscraprate = new { name = "Max", color = "#C9302C", data = maxYrate*2, style = "solid" },
+                    bugetscrapval = new { name = "Max", color = "#C9302C", data = maxYoutput*2, style = "dash" },
                     generalscraprate = new { name = "General Scrap Rate", data = generalscraprate },
                     nonchinascraprate = new { name = "Non-China Scrap Rate", data = nonchinascraprate },
                     generalscrap = new { name = "General Scrap", data = generalscrap },
@@ -257,20 +263,27 @@ namespace Prism.Controllers
                 if (sumscraplist.Count > 0)
                 {
                     var maxYrate = 0.0;
+                    var maxYoutput = 0.0;
 
                     var bugetrate = 0.0;
+                    var boutput = 0.0;
+                    var bscrap = 0.0;
+
                     if (iebugetdict.ContainsKey(co))
                     {
-                        var boutput = 0.0;
-                        var bscrap = 0.0;
+                        
                         foreach (var item in iebugetdict[co])
                         {
                             boutput += ConvertToDouble(item.OutPut);
                             bscrap += ConvertToDouble(item.Scrap);
                         }
                         bugetrate = Math.Round(bscrap / boutput * 100.0, 2);
+
                         if (bugetrate > maxYrate)
                         { maxYrate = bugetrate+1.0; }
+
+                        if (boutput > maxYoutput)
+                        { maxYoutput = boutput; }
                     }
 
                     
@@ -280,9 +293,9 @@ namespace Prism.Controllers
                     var output = new List<double>();
                     var generalscraprate = new List<double>();
                     var nonchinascraprate = new List<double>();
-                    var maxdata = new { name = "Max", color = "#C9302C", data = 0.0, style = "solid" };
+                    var bugetscraprate = new { name = "Max", color = "#C9302C", data = 0.0, style = "solid" };
                     if (bugetrate != 0.0)
-                    { maxdata = new { name = "Max", color = "#C9302C", data = bugetrate, style = "solid" }; }
+                    { bugetscraprate = new { name = "Max", color = "#C9302C", data = bugetrate, style = "solid" }; }
 
                     foreach (var item in sumscraplist)
                     {
@@ -293,9 +306,16 @@ namespace Prism.Controllers
                         var grate = Math.Round(item.generalscrap / item.output * 100.0, 2);
                         if (grate > maxYrate)
                         { maxYrate = grate + 1.0; }
+                        if (item.output > maxYoutput)
+                        { maxYoutput = item.output; }
+
                         generalscraprate.Add(grate);
                         nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
                     }
+
+                    var bugetscrapval = new { name = "Max", color = "#C9302C", data = maxYoutput * 2, style = "dash" };
+                    if (bscrap != 0.0)
+                    { bugetscrapval = new { name = "Max", color = "#C9302C", data = Math.Round(bscrap,2), style = "dash" }; }
 
                     var onepjobj = new
                     {
@@ -303,7 +323,8 @@ namespace Prism.Controllers
                         title = co +" "+fyear+" "+fquarter+" SCRAP",
                         xAxis = new { data = xlist },
                         maxYrate = maxYrate,
-                        maxdata = maxdata,
+                        bugetscraprate = bugetscraprate,
+                        bugetscrapval = bugetscrapval,
                         generalscraprate = new { name = "General Scrap Rate", data = generalscraprate },
                         nonchinascraprate = new { name = "Non-China Scrap Rate", data = nonchinascraprate },
                         generalscrap = new { name="General Scrap",data = generalscrap },
@@ -444,20 +465,20 @@ namespace Prism.Controllers
                                 tempvm.spcortscrap += sumdata[wk].spcortscrap;
                             }
                         }//end for
+
                         if (tempvm.output == 0.0)
                         {
-                            //outputiszero = true;
                             continue;
                         }
                         sumscraplist.Add(tempvm);
                     }//end for
 
-                    //if (outputiszero)
-                    //{ continue; }
 
                     if (sumscraplist.Count > 0)
                     {
                         var maxYrate = 0.0;
+                        var maxYoutput = 0.0;
+
                         var xlist = new List<string>();
                         var generalscrap = new List<double>();
                         var nonchinascrap = new List<double>();
@@ -466,19 +487,25 @@ namespace Prism.Controllers
                         var nonchinascraprate = new List<double>();
 
                         var bugetrate = 0.0;
+                        var boutput = 0.0;
+                        var bscrap = 0.0;
+
                         if (productbuget.ContainsKey(pd))
                         {
-                            var boutput = productbuget[pd].output;
-                            var bscrap = productbuget[pd].generalscrap;
+                            boutput = productbuget[pd].output;
+                            bscrap = productbuget[pd].generalscrap;
 
                             bugetrate = Math.Round(bscrap / boutput * 100.0, 2);
                             if (bugetrate > maxYrate)
                             { maxYrate = bugetrate + 1.0; }
+
+                            if (boutput > maxYoutput)
+                            { maxYoutput = boutput; }
                         }
 
-                        var maxdata = new { name = "Max", color = "#C9302C", data = 0.0, style = "solid" };
+                        var bugetscraprate = new { name = "Max", color = "#C9302C", data = 0.0, style = "solid" };
                         if (bugetrate != 0.0)
-                        { maxdata = new { name = "Max", color = "#C9302C", data = bugetrate, style = "solid" }; }
+                        { bugetscraprate = new { name = "Max", color = "#C9302C", data = bugetrate, style = "solid" }; }
 
                         foreach (var item in sumscraplist)
                         {
@@ -489,9 +516,16 @@ namespace Prism.Controllers
                             var grate = Math.Round(item.generalscrap / item.output * 100.0, 2);
                             if (grate > maxYrate)
                             { maxYrate = grate + 1.0; }
+                            if (item.output > maxYoutput)
+                            { maxYoutput = item.output; }
+
                             generalscraprate.Add(grate);
                             nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
                         }
+
+                        var bugetscrapval = new { name = "Max", color = "#C9302C", data = maxYoutput * 2, style = "dash" };
+                        if (bscrap != 0.0)
+                        { bugetscrapval = new { name = "Max", color = "#C9302C", data = Math.Round(bscrap,2), style = "dash" }; }
 
                         var onepjobj = new
                         {
@@ -499,7 +533,8 @@ namespace Prism.Controllers
                             title = pd + " " + fyear + " " + fquarter + " SCRAP",
                             xAxis = new { data = xlist },
                             maxYrate = maxYrate,
-                            maxdata = maxdata,
+                            bugetscraprate = bugetscraprate,
+                            bugetscrapval = bugetscrapval,
                             generalscraprate = new { name = "General Scrap Rate", data = generalscraprate },
                             nonchinascraprate = new { name = "Non-China Scrap Rate", data = nonchinascraprate },
                             generalscrap = new { name = "General Scrap", data = generalscrap },

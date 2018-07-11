@@ -160,7 +160,7 @@ namespace Prism.Models
             return true;
         }
 
-        public static string CreateTableHtml(string greetig, string description, string comment, List<List<string>> table)
+        public static string CreateTableHtml(string greetig, string description, string comment, List<List<string>> table,List<List<string>> appendtable = null)
         {
             var idx = 0;
             var content = "<!DOCTYPE html>";
@@ -176,7 +176,7 @@ namespace Prism.Models
             {
                 content += "<div><p>" + comment + "</p>";
             }
-            if (table != null)
+            if (table != null && table.Count > 0)
             {
                 content += "<div><br>";
                 content += "<table border='1' cellpadding='0' cellspacing='0' width='100%'>";
@@ -202,6 +202,34 @@ namespace Prism.Models
                 content += "</table>";
                 content += "</div>";
             }
+
+            if (appendtable != null && appendtable.Count > 0)
+            {
+                content += "<div><br>";
+                content += "<table border='1' cellpadding='0' cellspacing='0' width='100%'>";
+                content += "<thead style='background-color: #006DC0; color: #fff;'>";
+                foreach (var th in appendtable[0])
+                {
+                    content += "<th>" + th + "</th>";
+                }
+                content += "</thead>";
+                foreach (var tr in appendtable)
+                {
+                    if (idx > 0)
+                    {
+                        content += "<tr>";
+                        foreach (var td in tr)
+                        {
+                            content += "<td>" + td + "</td>";
+                        }
+                        content += "</tr>";
+                    }
+                    idx++;
+                }
+                content += "</table>";
+                content += "</div>";
+            }
+
             content += "<br><br>";
             content += "<div><p style='font-size: 12px; font-style: italic;'>This is a system generated message, please do not reply to this email.</p></div>";
             content += "</body>";

@@ -26,7 +26,8 @@ namespace Prism.Models
             var fquarter = ExternalDataCollector.GetFQuarterByTime(now);
             var departmentlist = syscfg["COSTCENTERSCRAPWARNING"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            var warningtable = new List<List<string>>();
+            var scrapratewarningtable = new List<List<string>>();
+            var scrapwarningtable = new List<List<string>>();
 
             var iebugetdict = IEScrapBuget.RetrieveDataCentDict(fyear, fquarter);
             var costcenterpjdict = new Dictionary<string, string>();
@@ -39,10 +40,12 @@ namespace Prism.Models
                 foreach (var co in costcenterlist)
                 {
                     var bugetrate = 0.0;
+                    var boutput = 0.0;
+                    var bscrap = 0.0;
+                    
                     if (iebugetdict.ContainsKey(co))
                     {
-                        var boutput = 0.0;
-                        var bscrap = 0.0;
+
                         foreach (var item in iebugetdict[co])
                         {
                             boutput += ConvertToDouble(item.OutPut);
@@ -93,9 +96,32 @@ namespace Prism.Models
                         { templist.Add(""); }
 
 
-                        warningtable.Add(templist);
+                        scrapratewarningtable.Add(templist);
 
                     }
+
+                    if (sumdata.generalscrap > bscrap)
+                    {
+                        var templist = new List<string>();
+                        templist.Add(dp);
+                        templist.Add(co);
+                        templist.Add(Math.Round(bscrap,2).ToString());
+                        templist.Add(Math.Round(sumdata.generalscrap,2).ToString());
+
+                        if (costcenterpjdict.ContainsKey(co))
+                        { templist.Add(costcenterpjdict[co]); }
+                        else
+                        { templist.Add(""); }
+
+                        if (copmmap.ContainsKey(co))
+                        { templist.Add(copmmap[co]); }
+                        else
+                        { templist.Add(""); }
+
+
+                        scrapwarningtable.Add(templist);
+                    }
+
                 }//end foreach
             }//end foreach
 
@@ -106,10 +132,20 @@ namespace Prism.Models
             title.Add("Actual Scrap Rate");
             title.Add("PJ Name");
             title.Add("PM");
-            if (warningtable.Count > 0)
-            { warningtable.Insert(0, title); }
+            if (scrapratewarningtable.Count > 0)
+            { scrapratewarningtable.Insert(0, title); }
 
-            if (warningtable.Count > 0)
+            title = new List<string>();
+            title.Add("Department");
+            title.Add("Cost Center");
+            title.Add("Buget Scrap USD");
+            title.Add("Actual Scrap USD");
+            title.Add("PJ Name");
+            title.Add("PM");
+            if (scrapwarningtable.Count > 0)
+            { scrapwarningtable.Insert(0, title); }
+
+            if (scrapratewarningtable.Count > 0 || scrapwarningtable.Count > 0)
             {
                 var routevalue = new RouteValueDictionary();
                 routevalue.Add("x", string.Join(";", departmentlist));
@@ -121,7 +157,7 @@ namespace Prism.Models
                 var netcomputername = EmailUtility.RetrieveCurrentMachineName();
                 url = url.Replace("//localhost", "//" + netcomputername);
 
-                var table = EmailUtility.CreateTableHtml("Hi Guys", "Blow is the scrap warning table:",url, warningtable);
+                var table = EmailUtility.CreateTableHtml("Hi Guys", "Blow is the scrap warning table:",url, scrapratewarningtable, scrapwarningtable);
                 var tolist = syscfg["COSTCENTERWARNINGLIST"].Split(new string[] { }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 EmailUtility.SendEmail(ctrl,"WUXI Engineering Scrap Warning",tolist,table);
                 new System.Threading.ManualResetEvent(false).WaitOne(1000);
