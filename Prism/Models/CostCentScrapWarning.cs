@@ -130,7 +130,7 @@ namespace Prism.Models
             title.Add("Cost Center");
             title.Add("Buget Scrap Rate");
             title.Add("Actual Scrap Rate");
-            title.Add("PJ Name");
+            title.Add("Product Name");
             title.Add("PM");
             if (scrapratewarningtable.Count > 0)
             { scrapratewarningtable.Insert(0, title); }
@@ -140,7 +140,7 @@ namespace Prism.Models
             title.Add("Cost Center");
             title.Add("Buget Scrap USD");
             title.Add("Actual Scrap USD");
-            title.Add("PJ Name");
+            title.Add("Product Name");
             title.Add("PM");
             if (scrapwarningtable.Count > 0)
             { scrapwarningtable.Insert(0, title); }

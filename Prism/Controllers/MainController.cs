@@ -36,7 +36,8 @@ namespace Prism.Controllers
         public ActionResult HeartBeat()
         {
             var filename = "log" + DateTime.Now.ToString("yyyy-MM-dd");
-            if (!System.IO.File.Exists(filename))
+            var wholefilename = Server.MapPath("~/userfiles") + "\\" + filename;
+            if (!System.IO.File.Exists(wholefilename))
             {
                 try
                 {
