@@ -65,7 +65,7 @@ namespace Prism.Controllers
             var sumscraplist = new List<SCRAPSUMData>();
             foreach (var dp in departmentlist)
             {
-                if (dp.Contains("LNCD")) continue;
+                //if (dp.Contains("LNCD")) continue;
 
                 var onepjdata = ScrapData_Base.RetrieveDPQuarterData(dp, fyear, fquarter);
                 if (onepjdata.Count == 0)
