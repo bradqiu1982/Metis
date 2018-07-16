@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Runtime.InteropServices;
 using Excel = Microsoft.Office.Interop.Excel;
+using System.Windows.Documents;
 
 namespace Prism.Models
 {
@@ -76,7 +77,7 @@ bool updateLinks)
               "IA","IB","IC","ID","IE","IF","IG","IH","II","IJ","IK","IL","IM","IN","IO","IP","IQ","IR","IS","IT","IU","IV","IW","IX","IY","IZ",
               "JA","JB","JC","JD","JE","JF","JG","JH","JI","JJ","JK","JL","JM","JN","JO","JP","JQ","JR","JS","JT","JU","JV","JW","JX","JY","JZ"};
 
-        private static List<List<string>> RetrieveDataFromExcel2(Excel.Worksheet sheet, int columns = 101)
+        private static List<List<string>> RetrieveDataFromExcel2(Excel.Worksheet sheet, int columns = 101, bool getlink = false)
         {
             var ret = new List<List<string>>();
             var totalrow = 100000;
@@ -102,6 +103,21 @@ bool updateLinks)
                             newline.Add("");
                         }
                     }
+
+
+                    if (getlink)
+                    {
+                        var linkrange = range.Cells;
+
+                        foreach (Excel.Range c in linkrange)
+                        {
+                            if (c.Hyperlinks.Count > 0)
+                            {
+                                newline.Add(c.Hyperlinks[1].SubAddress);
+                            }
+                        }
+                    }
+
                 }
                 catch (Exception ex)
                 {
@@ -133,7 +149,7 @@ bool updateLinks)
             return ret;
         }
 
-        public static List<List<string>> RetrieveDataFromExcel(string wholefn, string sheetname, int columns = 101)
+        public static List<List<string>> RetrieveDataFromExcel(string wholefn, string sheetname, int columns = 101,bool getlink=false)
         {
             var data = new List<List<string>>();
 
@@ -158,7 +174,7 @@ bool updateLinks)
                     sheet = wkb.Sheets[sheetname] as Excel.Worksheet;
                 }
 
-                var ret = RetrieveDataFromExcel2(sheet, columns);
+                var ret = RetrieveDataFromExcel2(sheet, columns,getlink);
 
                 wkb.Close();
                 excel.Quit();

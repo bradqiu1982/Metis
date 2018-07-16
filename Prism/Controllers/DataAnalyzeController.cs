@@ -317,10 +317,12 @@ namespace Prism.Controllers
                     if (bscrap != 0.0)
                     { bugetscrapval = new { name = "Max", color = "#C9302C", data = Math.Round(bscrap,2), style = "dash" }; }
 
+                    var title = co + " " + fyear + " " + fquarter + " SCRAP";
+
                     var onepjobj = new
                     {
                         id = co.Replace(" ", "_") + "_line",
-                        title = co +" "+fyear+" "+fquarter+" SCRAP",
+                        title = title,
                         xAxis = new { data = xlist },
                         maxYrate = maxYrate,
                         bugetscraprate = bugetscraprate,

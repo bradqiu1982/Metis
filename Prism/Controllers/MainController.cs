@@ -72,6 +72,12 @@ namespace Prism.Controllers
             return View();
         }
 
+        public ActionResult HeartBeat2()
+        {
+            ExternalDataCollector.LoadIEHPU(this);
+            return View("HeartBeat");
+        }
+
         public ActionResult SendScrapReport()
         {
             try

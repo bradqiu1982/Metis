@@ -62,3 +62,65 @@ CREATE TABLE [dbo].[IEScrapBuget]
 	[Scrap]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
 	[Destination]    NVARCHAR (200)   DEFAULT ('') NOT NULL
 );
+
+
+CREATE TABLE [dbo].[HPUMainData]
+(
+	[PNLink]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[HPUOrder]    INT   DEFAULT (0) NOT NULL,
+	[HPUCode]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[ProductLine]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[Serial]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[Customer]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[Phase]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[TypicalPN]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[WorkingHourMeasure]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[WorkingHourCollect]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[WorkingHourChecked]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[YieldHPU]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[Owner]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[UpdateDate]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[SignDate]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[FormMake]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[Remark]    NVARCHAR (MAX)   DEFAULT ('') NOT NULL,
+	[Family]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[ProcessSplit]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[Quarter]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[QuarterDate]    DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
+);
+
+
+CREATE TABLE [dbo].[PNHPUData]
+(
+	[PNLink]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[DataOrder]    INT   DEFAULT (0) NOT NULL,
+	[A_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[B_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[C_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[D_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[E_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[F_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[G_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[H_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[I_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[J_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[K_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[L_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[M_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[N_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[O_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[P_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Q_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[R_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[S_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[T_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[U_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[V_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[W_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[X_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Y_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Z_Val]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Quarter]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[QuarterDate]    DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
+);
+

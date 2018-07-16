@@ -158,7 +158,7 @@ namespace Prism.Models
                 url = url.Replace("//localhost", "//" + netcomputername);
 
                 var table = EmailUtility.CreateTableHtml("Hi Guys", "Blow is the scrap warning table:",url, scrapratewarningtable, scrapwarningtable);
-                var tolist = syscfg["COSTCENTERWARNINGLIST"].Split(new string[] { }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                var tolist = syscfg["COSTCENTERSCRAPWARNINGLIST"].Split(new string[] { }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 EmailUtility.SendEmail(ctrl,"WUXI Engineering Scrap Warning",tolist,table);
                 new System.Threading.ManualResetEvent(false).WaitOne(1000);
             }//end if

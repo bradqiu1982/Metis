@@ -315,6 +315,285 @@ namespace Prism.Models
             }//end if
         }
 
+        private static Dictionary<string, int> RetrieveValidHPUCol(List<List<string>> maindata)
+        {
+            var dict = new Dictionary<string, int>();
+            dict.Add("序号".ToUpper(), -1);
+            dict.Add("NO.".ToUpper(), -1);
+
+            dict.Add("HPU Code".ToUpper(), -1);
+
+            dict.Add("产品线".ToUpper(), -1);
+            dict.Add("Line".ToUpper(), -1);
+
+            dict.Add("产品系列".ToUpper(), -1);
+            dict.Add("产品系列1".ToUpper(), -1);
+            dict.Add("Product".ToUpper(), -1);
+
+            dict.Add("Customer".ToUpper(), -1);
+
+            dict.Add("阶段".ToUpper(), -1);
+            dict.Add("Phase".ToUpper(), -1);
+
+            dict.Add("代表 PN".ToUpper(), -1);
+            dict.Add("Typical PN".ToUpper(), -1);
+
+            dict.Add("工时 量测".ToUpper(), -1);
+            dict.Add("工时 整理".ToUpper(), -1);
+            dict.Add("工时 签核".ToUpper(), -1);
+
+            dict.Add("Yield HPU".ToUpper(), -1);
+
+            dict.Add("PM".ToUpper(), -1);
+            dict.Add("Owner".ToUpper(), -1);
+
+            dict.Add("更新 日期".ToUpper(), -1);
+            dict.Add("Update date".ToUpper(), -1);
+
+
+            dict.Add("最近 签核".ToUpper(), -1);
+            dict.Add("Sign date".ToUpper(), -1);
+
+            dict.Add("Form Make".ToUpper(), -1);
+            dict.Add("Remark".ToUpper(), -1);
+            dict.Add("Family".ToUpper(), -1);
+            dict.Add("是否需要拆分".ToUpper(), -1);
+
+            var rowidx = 0;
+            foreach (var line in maindata)
+            {
+                var bhpucode = false;
+                var bhpu = false;
+                var bpn = false;
+                foreach (var item in line)
+                {
+                    if (string.Compare(item.Replace("\n", " ").ToUpper(), "HPU Code".ToUpper()) == 0)
+                    { bhpucode = true; }
+                    if (string.Compare(item.Replace("\n", " ").ToUpper(), "Yield HPU".ToUpper()) == 0)
+                    { bhpu = true; }
+                    if (string.Compare(item.Replace("\n", " ").ToUpper(), "代表 PN".ToUpper()) == 0)
+                    { bpn = true; }
+                    if (string.Compare(item.Replace("\n", " ").ToUpper(), "Typical PN".ToUpper()) == 0)
+                    { bpn = true; }
+                }
+
+                if (bhpucode && bhpu && bpn)
+                { break; }
+                rowidx++;
+            }
+
+            if (maindata.Count > rowidx)
+            {
+                var colidx = 0;
+                foreach (var item in maindata[rowidx])
+                {
+                    var key = item.Replace("\n", " ").ToUpper();
+                    if (dict.ContainsKey(key))
+                    { dict[key] = colidx; }
+                    colidx++;
+                }
+            }
+
+            return dict;
+        }
+
+        private static List<HPUMainData> RetrieveValidHPUValue(Dictionary<string, int> hpucol, List<List<string>> maindata,string fyearquarter)
+        {
+            var ret = new List<HPUMainData>();
+
+            var hpucodeidx = hpucol["HPU Code".ToUpper()];
+            var hpuidx = hpucol["Yield HPU".ToUpper()];
+            var pnidx = hpucol["代表 PN".ToUpper().ToUpper()];
+            if (pnidx == -1) { pnidx = hpucol["Typical PN".ToUpper().ToUpper()]; }
+
+            var vidx = 0;
+            foreach (var line in maindata)
+            {
+                if (!string.IsNullOrEmpty(line[hpucodeidx])
+                    && !string.IsNullOrEmpty(line[hpuidx])
+                    && !string.IsNullOrEmpty(line[pnidx]))
+                {
+                    var tempvm = new HPUMainData();
+                    
+                    tempvm.DetailLink = line[line.Count - 1];
+                    tempvm.Quarter = fyearquarter;
+                    tempvm.QuarterDate = ActrualDateFromQuarter(fyearquarter);
+
+                    tempvm.HPUOrder = vidx;
+
+                    tempvm.HPUCode = line[hpucodeidx];
+
+                    var idx = (hpucol["产品线".ToUpper()] == -1) ? hpucol["Line".ToUpper()] : hpucol["产品线".ToUpper()];
+                    if (idx != -1)
+                    { tempvm.ProductLine = line[idx]; }
+
+                    var searialidx = (hpucol["产品系列".ToUpper()] == -1) ? hpucol["产品系列1".ToUpper()] : hpucol["产品系列".ToUpper()];
+                    searialidx = (searialidx == -1) ? hpucol["Product".ToUpper()] : searialidx;
+                    if (searialidx != -1)
+                    { tempvm.Serial = line[searialidx]; }
+
+                    if (hpucol["Customer".ToUpper()] != -1)
+                    { tempvm.Customer = line[hpucol["Customer".ToUpper()]]; }
+
+                    idx = (hpucol["阶段".ToUpper()] == -1) ? hpucol["Phase".ToUpper()] : hpucol["阶段".ToUpper()];
+                    if (idx != -1)
+                    { tempvm.Phase = line[idx]; }
+
+                    tempvm.TypicalPN = line[pnidx];
+                    tempvm.PNLink = tempvm.TypicalPN+"_"+fyearquarter.Replace(" ","_");
+
+                    if (hpucol["工时 量测".ToUpper()] != -1)
+                    { tempvm.WorkingHourMeasure = line[hpucol["工时 量测".ToUpper()]]; }
+                    if (hpucol["工时 整理".ToUpper()] != -1)
+                    { tempvm.WorkingHourCollect = line[hpucol["工时 整理".ToUpper()]]; }
+                    if (hpucol["工时 签核".ToUpper()] != -1)
+                    { tempvm.WorkingHourChecked = line[hpucol["工时 签核".ToUpper()]]; }
+
+                    tempvm.YieldHPU = line[hpuidx];
+
+                    idx = (hpucol["PM".ToUpper()] == -1) ? hpucol["Owner".ToUpper()] : hpucol["PM".ToUpper()];
+                    if (idx != -1)
+                    { tempvm.Owner = line[idx]; }
+
+                    idx = (hpucol["更新 日期".ToUpper()] == -1) ? hpucol["Update date".ToUpper()] : hpucol["更新 日期".ToUpper()];
+                    if (idx != -1)
+                    { tempvm.UpdateDate = line[idx]; }
+
+                    idx = (hpucol["最近 签核".ToUpper()] == -1) ? hpucol["Sign date".ToUpper()] : hpucol["最近 签核".ToUpper()];
+                    if (idx != -1)
+                    { tempvm.SignDate = line[idx]; }
+
+                    if (hpucol["Form Make".ToUpper()] != -1)
+                    { tempvm.FormMake = line[hpucol["Form Make".ToUpper()]]; }
+                    if (hpucol["Remark".ToUpper()] != -1)
+                    { tempvm.Remark = line[hpucol["Remark".ToUpper()]]; }
+                    if (hpucol["Family".ToUpper()] != -1)
+                    { tempvm.Family = line[hpucol["Family".ToUpper()]]; }
+                    if (hpucol["是否需要拆分".ToUpper()] != -1)
+                    { tempvm.ProcessSplit = line[hpucol["是否需要拆分".ToUpper()]]; }
+
+                    ret.Add(tempvm);
+                    vidx++;
+                }//end if
+            }//end foreach
+
+            return ret;
+        }
+
+
+        private static List<PNHPUData> RetrievePNHPU(Controller ctrl,List<HPUMainData> maindata,string desf)
+        {
+            var ret = new List<PNHPUData>();
+            foreach (var hpudata in maindata)
+            {
+                if (!string.IsNullOrEmpty(hpudata.DetailLink))
+                {
+                    var sheetname = hpudata.DetailLink.Trim().Split(new string[] { "'" }, StringSplitOptions.RemoveEmptyEntries)[0];
+                    var pnrawdata = RetrieveDataFromExcelWithAuth(ctrl, desf, sheetname,27);
+                    var idx = 0;
+                    foreach (var line in pnrawdata)
+                    {
+                        var tempvm = new PNHPUData();
+                        tempvm.DataOrder = idx;
+                        tempvm.PNLink = hpudata.PNLink;
+                        tempvm.Quarter = hpudata.Quarter;
+                        tempvm.QuarterDate = hpudata.QuarterDate;
+
+                        tempvm.A_Val = line[0];
+                        tempvm.B_Val = line[1];
+                        tempvm.C_Val = line[2];
+                        tempvm.D_Val = line[3];
+                        tempvm.E_Val = line[4];
+                        tempvm.F_Val = line[5];
+                        tempvm.G_Val = line[6];
+                        tempvm.H_Val = line[7];
+                        tempvm.I_Val = line[8];
+                        tempvm.J_Val = line[9];
+                        tempvm.K_Val = line[10];
+                        tempvm.L_Val = line[11];
+                        tempvm.M_Val = line[12];
+                        tempvm.N_Val = line[13];
+                        tempvm.O_Val = line[14];
+                        tempvm.P_Val = line[15];
+                        tempvm.Q_Val = line[16];
+                        tempvm.R_Val = line[17];
+                        tempvm.S_Val = line[18];
+                        tempvm.T_Val = line[19];
+                        tempvm.U_Val = line[20];
+                        tempvm.V_Val = line[21];
+                        tempvm.W_Val = line[22];
+                        tempvm.X_Val = line[23];
+                        tempvm.Y_Val = line[24];
+                        tempvm.Z_Val = line[25];
+
+                        ret.Add(tempvm);
+
+                        idx++;
+                    }
+                }
+            }//end foreach
+
+            return ret;
+        }
+
+        public static void LoadIEHPU(Controller ctrl)
+        {
+            var syscfg = CfgUtility.GetSysConfig(ctrl);
+            var datafolder = syscfg["HPUSRCFOLDER"];
+            var srcfilters = syscfg["HPUPRODUCTLINE"].Split(new string[] { ";" },StringSplitOptions.RemoveEmptyEntries).ToList();
+
+            string fyearquarter = syscfg["HPUFYEARQUARTER"];
+
+            var srcfiles = DirectoryEnumerateFiles(ctrl,datafolder+ fyearquarter);
+            foreach (var src in srcfiles)
+            {
+                var passfilter = false;
+                foreach (var f in srcfilters)
+                {
+                    if (src.ToUpper().Contains(f.ToUpper()))
+                    {
+                        passfilter = true;
+                        break;
+                    }
+                }
+
+                if (!passfilter)
+                { continue; }
+
+                var desf = DownloadShareFile(src, ctrl);
+                if (desf != null && System.IO.File.Exists(desf))
+                {
+                    var maindata = RetrieveDataFromExcelWithAuth(ctrl, desf, "目录",101,true);
+                    if (maindata.Count > 0)
+                    {
+                        var hpucol = RetrieveValidHPUCol(maindata);
+                        var hpucodeidx = hpucol["HPU Code".ToUpper()];
+                        var hpuidx = hpucol["Yield HPU".ToUpper()];
+                        var pnidx = hpucol["代表 PN".ToUpper().ToUpper()];
+                        if (pnidx == -1) { pnidx = hpucol["Typical PN".ToUpper().ToUpper()]; }
+                        if (hpucodeidx == -1 || hpuidx == -1 || pnidx ==  -1)
+                        { continue; }
+
+                        var HPUDataList = RetrieveValidHPUValue(hpucol,maindata, fyearquarter);
+                        if (HPUDataList.Count > 1)
+                        {
+                            HPUDataList.RemoveAt(0);
+                        }
+                        var PNHPUData = RetrievePNHPU(ctrl,HPUDataList,desf);
+
+                        foreach (var data in HPUDataList)
+                        { data.StoreData(); }
+
+                        foreach (var data in PNHPUData)
+                        {
+                            data.StoreData();
+                        }
+                    }//end if
+                    try { System.IO.File.Delete(desf); } catch (Exception ex) { }
+                }
+            }//end foreach
+        }
+
         public static void LoadDataSample(Controller ctrl)
         {
             var syscfg = CfgUtility.GetSysConfig(ctrl);
@@ -444,6 +723,28 @@ namespace Prism.Models
             catch (Exception ex) { return string.Empty; }
         }
 
+        public static DateTime ActrualDateFromQuarter(string fyearquarter)
+        {
+            string fyear = fyearquarter.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries)[0];
+            string fquarter = fyearquarter.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries)[1];
+
+            if (string.Compare(fquarter, "Q1", true) == 0)
+            {
+                return DateTime.Parse((Convert.ToInt32(fyear) - 1).ToString() + "-05-01 01:00:00");
+            }
+            else if (string.Compare(fquarter, "Q2", true) == 0)
+            {
+                return DateTime.Parse((Convert.ToInt32(fyear) - 1).ToString() + "-08-01 01:00:00");
+            }
+            else if (string.Compare(fquarter, "Q3", true) == 0)
+            {
+                return DateTime.Parse((Convert.ToInt32(fyear) - 1).ToString() + "-11-01 01:00:00");
+            }
+            else
+            {
+                return DateTime.Parse(fyear + "-03-01 01:00:00");
+            }
+        }
         #endregion
 
         #region FILEOPERATE
@@ -469,7 +770,7 @@ namespace Prism.Models
             }
         }
 
-        private static List<List<string>> RetrieveDataFromExcelWithAuth(Controller ctrl, string filename, string sheetname = null, int columns = 101)
+        private static List<List<string>> RetrieveDataFromExcelWithAuth(Controller ctrl, string filename, string sheetname = null, int columns = 101, bool getlink=false)
         {
             try
             {
@@ -480,7 +781,7 @@ namespace Prism.Models
 
                 using (NativeMethods cv = new NativeMethods(folderuser, folderdomin, folderpwd))
                 {
-                    return ExcelReader.RetrieveDataFromExcel(filename, sheetname, columns);
+                    return ExcelReader.RetrieveDataFromExcel(filename, sheetname, columns, getlink);
                 }
             }
             catch (Exception ex)
@@ -641,7 +942,7 @@ namespace Prism.Models
 
         }
 
-        private static List<string> DirectoryEnumerateFiles(Controller ctrl, string dirname)
+        public static List<string> DirectoryEnumerateFiles(Controller ctrl, string dirname)
         {
             try
             {
