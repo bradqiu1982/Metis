@@ -294,6 +294,7 @@ namespace Prism.Controllers
             }
 
             var iebugetdict = IEScrapBuget.RetrieveDataCentDict(fyear, fquarter);
+            var copdmap = ScrapData_Base.CostCentProductMap();
 
             var costcenterlist = costcenters.Split(new string[] { ",", ";", " " }, StringSplitOptions.RemoveEmptyEntries).ToList();
             foreach (var co in costcenterlist)
@@ -392,6 +393,10 @@ namespace Prism.Controllers
                     { bugetscrapval = new { name = "Max", color = "#C9302C", data = Math.Round(bscrap,2), style = "dash" }; }
 
                     var title = co + " " + fyear + " " + fquarter + " SCRAP";
+                    if (copdmap.ContainsKey(co))
+                    {
+                        title = co+" "+copdmap[co] + " " + fyear + " " + fquarter + " SCRAP";
+                    }
 
                     var onepjobj = new
                     {

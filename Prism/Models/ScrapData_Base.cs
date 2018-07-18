@@ -232,6 +232,24 @@ namespace Prism.Models
             return ret;
         }
 
+        public static Dictionary<string, string> CostCentProductMap()
+        {
+            var ret = new Dictionary<string, string>();
+            var sql = "SELECT distinct ORIGINAL_PROJECT_CODE+':::'+PRODUCT from ScrapData_Base where ORIGINAL_PROJECT_CODE <> '' and PRODUCT <> ''";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var tempval = Convert.ToString(line[0]);
+                var co = tempval.Split(new string[] { ":::" }, StringSplitOptions.RemoveEmptyEntries)[0];
+                var pd = tempval.Split(new string[] { ":::" }, StringSplitOptions.RemoveEmptyEntries)[1];
+                if (!ret.ContainsKey(co))
+                {
+                    ret.Add(co, pd);
+                }
+            }
+            return ret;
+        }
+
         public ScrapData_Base()
         {
             DataKey = "";
