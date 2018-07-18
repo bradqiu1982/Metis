@@ -5,6 +5,7 @@ using System.Web;
 using System.Runtime.InteropServices;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Windows.Documents;
+using System.Diagnostics;
 
 namespace Prism.Models
 {
@@ -117,7 +118,6 @@ bool updateLinks)
                             }
                         }
                     }
-
                 }
                 catch (Exception ex)
                 {
@@ -149,6 +149,9 @@ bool updateLinks)
             return ret;
         }
 
+        [DllImport("user32.dll")]
+        private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
         public static List<List<string>> RetrieveDataFromExcel(string wholefn, string sheetname, int columns = 101,bool getlink=false)
         {
             var data = new List<List<string>>();
@@ -157,13 +160,20 @@ bool updateLinks)
             Excel.Workbook wkb = null;
             Excel.Workbooks books = null;
             Excel.Worksheet sheet = null;
+            int hWnd = 0;
+            uint processID = 0;
 
             try
             {
                 excel = new Excel.Application();
                 excel.DisplayAlerts = false;
+                excel.Interactive = false;
+
                 books = excel.Workbooks;
                 wkb = OpenBook(books, wholefn, true, false, false);
+
+                hWnd = excel.Application.Hwnd;
+                GetWindowThreadProcessId((IntPtr)hWnd, out processID);
 
                 if (string.IsNullOrEmpty(sheetname))
                 {
@@ -174,8 +184,8 @@ bool updateLinks)
                     sheet = wkb.Sheets[sheetname] as Excel.Worksheet;
                 }
 
-                var ret = RetrieveDataFromExcel2(sheet, columns,getlink);
-
+                var ret = RetrieveDataFromExcel2(sheet, columns, getlink);
+                
                 wkb.Close();
                 books.Close();
                 excel.Quit();
@@ -187,6 +197,8 @@ bool updateLinks)
 
                 if (wkb != null)
                     ReleaseRCM(wkb);
+                if (books != null)
+                    ReleaseRCM(books);
                 if (excel != null)
                     ReleaseRCM(excel);
 
@@ -195,10 +207,6 @@ bool updateLinks)
                 books = null;
                 excel = null;
 
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
 
@@ -220,14 +228,16 @@ bool updateLinks)
 
                 if (wkb != null)
                     ReleaseRCM(wkb);
+                if (books != null)
+                    ReleaseRCM(books);
                 if (excel != null)
-                    ReleaseRCM(excel);                    
+                    ReleaseRCM(excel);
 
                 sheet = null;
                 wkb = null;
                 books = null;
                 excel = null;
-
+                
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
@@ -236,6 +246,16 @@ bool updateLinks)
                 GC.WaitForPendingFinalizers();
 
                 return data;
+            }
+            finally {
+                try {
+                    Process[] procs = Process.GetProcessesByName("EXCEL");
+                    foreach (Process p in procs)
+                    {
+                        if (p.Id == processID)
+                            p.Kill();
+                    }
+                } catch (Exception e) { }
             }
 
         }
