@@ -177,6 +177,7 @@ bool updateLinks)
                 var ret = RetrieveDataFromExcel2(sheet, columns,getlink);
 
                 wkb.Close();
+                books.Close();
                 excel.Quit();
 
                 Marshal.ReleaseComObject(sheet);
@@ -220,7 +221,7 @@ bool updateLinks)
                 if (wkb != null)
                     ReleaseRCM(wkb);
                 if (excel != null)
-                    ReleaseRCM(excel);
+                    ReleaseRCM(excel);                    
 
                 sheet = null;
                 wkb = null;
