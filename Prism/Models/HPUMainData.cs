@@ -36,8 +36,8 @@ namespace Prism.Models
 
         public void StoreData()
         {
-            var sql = @"insert into HPUMainData(PNLink,HPUOrder,HPUCode,ProductLine,Serial,Customer,Phase,TypicalPN,WorkingHourMeasure,WorkingHourCollect,WorkingHourChecked,YieldHPU,Owner,UpdateDate,SignDate,FormMake,Remark,Family,ProcessSplit,Quarter,QuarterDate)  
-                         values(@PNLink,@HPUOrder,@HPUCode,@ProductLine,@Serial,@Customer,@Phase,@TypicalPN,@WorkingHourMeasure,@WorkingHourCollect,@WorkingHourChecked,@YieldHPU,@Owner,@UpdateDate,@SignDate,@FormMake,@Remark,@Family,@ProcessSplit,@Quarter,@QuarterDate)";
+            var sql = @"insert into HPUMainData(PNLink,HPUOrder,HPUCode,ProductLine,Serial,Customer,Phase,TypicalPN,WorkingHourMeasure,WorkingHourCollect,WorkingHourChecked,YieldHPU,Owner,UpdateDate,SignDate,FormMake,Remark,Family,ProcessSplit,Quarter,QuarterDate,DetailLink)  
+                         values(@PNLink,@HPUOrder,@HPUCode,@ProductLine,@Serial,@Customer,@Phase,@TypicalPN,@WorkingHourMeasure,@WorkingHourCollect,@WorkingHourChecked,@YieldHPU,@Owner,@UpdateDate,@SignDate,@FormMake,@Remark,@Family,@ProcessSplit,@Quarter,@QuarterDate,@DetailLink)";
             var param = new Dictionary<string, string>();
             param.Add("@PNLink", PNLink);
             param.Add("@HPUOrder", HPUOrder.ToString());
@@ -60,7 +60,90 @@ namespace Prism.Models
             param.Add("@ProcessSplit", ProcessSplit);
             param.Add("@Quarter", Quarter);
             param.Add("@QuarterDate", QuarterDate.ToString("yyyy-MM-dd HH:mm:ss"));
+            param.Add("@DetailLink", DetailLink);
             DBUtility.ExeLocalSqlNoRes(sql, param);
+        }
+
+        public static List<string> GetAllProductLines()
+        {
+            var ret = new List<string>();
+            var sql = "select distinct ProductLine from HPUMainData where ProductLine <> ''";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
+            ret.Sort();
+            return ret;
+        }
+
+        public static List<string> GetAllQuarters()
+        {
+            var ret = new List<string>();
+            var sql = "select distinct Quarter from HPUMainData where Quarter <> ''";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
+            ret.Sort();
+            return ret;
+        }
+
+        private static string Convert2DateStr(object d)
+        {
+            try
+            {
+                return Convert.ToDateTime(d).ToString("yy/MM/dd");
+            }
+            catch (Exception) { return string.Empty; }
+        }
+
+        public static List<HPUMainData> RetrieveHPUData(string pdline, string quarter)
+        {
+            var ret = new List<HPUMainData>();
+            var sql = @"select PNLink,HPUOrder,HPUCode,ProductLine,Serial,Customer,Phase,TypicalPN,WorkingHourMeasure,WorkingHourCollect
+                            ,WorkingHourChecked,YieldHPU,Owner,UpdateDate,SignDate,FormMake,Remark,Family,ProcessSplit,Quarter,QuarterDate,DetailLink from HPUMainData where ProductLine=@ProductLine and Quarter=@Quarter order by HPUOrder ASC";
+            var param = new Dictionary<string, string>();
+            param.Add("@ProductLine",pdline);
+            param.Add("@Quarter",quarter);
+
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, param);
+            foreach (var line in dbret)
+            {
+                try
+                {
+                    var tempvm = new HPUMainData();
+                    tempvm.PNLink = Convert.ToString(line[0]);
+                    tempvm.HPUOrder = Convert.ToInt32(line[1]);
+                    tempvm.HPUCode = Convert.ToString(line[2]);
+                    tempvm.ProductLine = Convert.ToString(line[3]);
+                    tempvm.Serial = Convert.ToString(line[4]);
+                    tempvm.Customer = Convert.ToString(line[5]);
+                    tempvm.Phase = Convert.ToString(line[6]);
+                    tempvm.TypicalPN = Convert.ToString(line[7]);
+                    tempvm.WorkingHourMeasure = Convert.ToString(line[8]);
+                    tempvm.WorkingHourCollect = Convert.ToString(line[9]);
+                    tempvm.WorkingHourChecked = Convert.ToString(line[10]);
+                    tempvm.YieldHPU = Math.Round(Convert.ToDouble(line[11]),4).ToString();
+                    tempvm.Owner = Convert.ToString(line[12]);
+                    tempvm.UpdateDate = Convert2DateStr(line[13]);
+                    tempvm.SignDate = Convert.ToString(line[14]);
+                    tempvm.FormMake = Convert.ToString(line[15]);
+                    tempvm.Remark = Convert.ToString(line[16]);
+                    tempvm.Family = Convert.ToString(line[17]);
+                    tempvm.ProcessSplit = Convert.ToString(line[18]);
+                    tempvm.Quarter = Convert.ToString(line[19]);
+                    tempvm.QuarterDate = Convert.ToDateTime(line[20]);
+                    tempvm.DetailLink = Convert.ToString(line[21]);
+                    ret.Add(tempvm);
+                }
+                catch (Exception ex) { }
+
+
+            }
+
+            return ret;
         }
 
         public string PNLink { set; get; }
@@ -165,6 +248,128 @@ namespace Prism.Models
             param.Add("@Quarter", Quarter);
             param.Add("@QuarterDate", QuarterDate.ToString("yyyy-MM-dd HH:mm:ss"));
             DBUtility.ExeLocalSqlNoRes(sql, param);
+        }
+
+        private static bool IsDigitsOnly(string str)
+        {
+            foreach (char c in str)
+            {
+                if (c < '0' || c > '9')
+                    return false;
+            }
+
+            return true;
+        }
+
+        private static List<List<string>> TrimData(List<List<string>> rawdata)
+        {
+            var maxcol = 0;
+            var titletrow = 0;
+
+            var ridx = 0;
+            var checkrows = (rawdata.Count > 10) ? 10 : rawdata.Count;
+
+            for (ridx = 0; ridx < checkrows; ridx++)
+            {
+                var tempmax = 0;
+                foreach (var data in rawdata[ridx])
+                {
+                    if (!string.IsNullOrEmpty(data))
+                    {
+                        tempmax++;
+                    }
+                }
+                if (tempmax > maxcol)
+                {
+                    maxcol = tempmax;
+                    titletrow = ridx;
+                }
+            }//end for
+
+            var ret = new List<List<string>>();
+            var titleline = new List<string>();
+
+            var validcolidxs = new List<int>();
+            ridx = 0;
+            foreach (var item in rawdata[titletrow])
+            {
+                if (!string.IsNullOrEmpty(item))
+                {
+                    titleline.Add(item);
+                    validcolidxs.Add(ridx);
+                }
+                ridx++;
+            }
+            ret.Add(titleline);
+
+            ridx = 0;
+            for (ridx = titletrow + 1; ridx < rawdata.Count; ridx++)
+            {
+                var datacount = 0;
+                var templine = new List<string>();
+                foreach (var cidx in validcolidxs)
+                {
+                    var d = rawdata[ridx][cidx];
+                    if (!string.IsNullOrEmpty(d) && IsDigitsOnly(d.Replace(".", "").Replace("E","").Replace("-","")))
+                    {
+                        d = (Math.Round(Convert.ToDouble(d), 4)).ToString();
+                    }
+
+                    templine.Add(d);
+                    if (!string.IsNullOrEmpty(d))
+                    {
+                        datacount++;
+                    }
+                }
+
+                if (datacount >= (maxcol-1)/2)
+                {
+                    ret.Add(templine);
+                }
+            }
+
+            return ret;
+        }
+
+        public static List<List<string>> RetrieveHPUData(string pnlink)
+        {
+            var rawdata = new List<List<string>>();
+            var sql = @"select  DataOrder,A_Val,B_Val,C_Val,D_Val,E_Val,F_Val,G_Val,H_Val,I_Val,J_Val,K_Val,L_Val,M_Val,N_Val
+                            ,O_Val,P_Val,Q_Val,R_Val,S_Val,T_Val,U_Val,V_Val,W_Val,X_Val,Y_Val,Z_Val from PNHPUData where PNLink=@PNLink order by DataOrder ASC";
+            var param = new Dictionary<string, string>();
+            param.Add("@PNLink", pnlink);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, param);
+            foreach (var line in dbret)
+            {
+                var templine = new List<string>();
+                for (var idx = 0; idx < 27; idx++)
+                {
+                    templine.Add(Convert.ToString(line[idx]));
+                }
+                rawdata.Add(templine);
+            }
+
+            if (rawdata.Count > 0)
+            {
+                return TrimData(rawdata);
+            }
+            else
+            {
+                return rawdata;
+            }
+
+        }
+
+        public static List<string> RetrievePNLinkList()
+        {
+            var sql = "select distinct PNLink from PNHPUData where PNLink <> '' order by PNLink ASC";
+            var ret = new List<string>();
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
+            return ret;
         }
 
         public string PNLink { set; get; }

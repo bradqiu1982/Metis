@@ -94,3 +94,10 @@ body{
     font-size: inherit;
     width: auto;
 }
+
+.tb-caption {
+    text-align: center;
+    font-size: 20px;
+    color: #000;
+    font-weight: bold;
+}

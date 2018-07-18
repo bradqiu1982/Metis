@@ -86,7 +86,8 @@ CREATE TABLE [dbo].[HPUMainData]
 	[Family]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
 	[ProcessSplit]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
 	[Quarter]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
-	[QuarterDate]    DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
+	[QuarterDate]    DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL,
+	[DetailLink]    NVARCHAR (200)   DEFAULT ('') NOT NULL
 );
 
 

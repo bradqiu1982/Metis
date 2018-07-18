@@ -22,3 +22,4 @@ HPUPRODUCTLINE:::Parallel Process HPU;Linecard Process HPU;OSA Process HPU;WSS P
 WUXIOTSFILE:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - OTS for WUXI.csv
 
 ##SCRAPFOCUSPJ:::
+###\\wux-fs\PUBLIC\WUXI IE\HPU

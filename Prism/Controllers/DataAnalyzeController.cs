@@ -10,6 +10,80 @@ namespace Prism.Controllers
 {
     public class DataAnalyzeController : Controller
     {
+        public ActionResult DepartmentHPU()
+        {
+            var productlines = HPUMainData.GetAllProductLines();
+            ViewBag.productlines = CreateSelectList(productlines, "");
+
+            var quarterlist = HPUMainData.GetAllQuarters();
+            quarterlist.Insert(0, FinanceQuarter.CURRENTQx);
+            ViewBag.quarterlist = CreateSelectList(quarterlist, "");
+
+            return View();
+        }
+
+        public JsonResult DepartmentHPUData()
+        {
+            var productline = Request.Form["pdline"];
+            var fquarter = Request.Form["quarter"];
+
+            if (string.Compare(fquarter, FinanceQuarter.CURRENTQx) == 0)
+            {
+                var now = DateTime.Now;
+                var year = ExternalDataCollector.GetFYearByTime(now);
+                var quarter = ExternalDataCollector.GetFQuarterByTime(now);
+                fquarter = year + " " + quarter;
+            }
+
+            var data = HPUMainData.RetrieveHPUData(productline,fquarter);
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                success = true,
+                data = data
+            };
+            return ret;
+        }
+
+        public ActionResult PNHPU(string PNLink)
+        {
+            ViewBag.pnlink = "";
+            if (!string.IsNullOrEmpty(PNLink))
+            { ViewBag.pnlink = PNLink; }
+            return View();
+        }
+
+        public JsonResult PNHPUPNLinkList()
+        {
+            var pnlist = PNHPUData.RetrievePNLinkList();
+            var ret = new JsonResult();
+            ret.Data = new {
+                data = pnlist
+            };
+            return ret;
+        }
+
+        public JsonResult GetPNHPUData()
+        {
+            var pnlink = Request.Form["pnlink"];
+            var data = PNHPUData.RetrieveHPUData(pnlink);
+            var title = new List<string>();
+            if (data.Count > 0)
+            {
+                title.AddRange(data[0]);
+                data.RemoveAt(0);
+            }
+
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                success = true,
+                title = title,
+                data = data
+            };
+            return ret;
+        }
+
         public ActionResult DepartmentScrap(string defyear, string defqrt,string defdepartment)
         {
             var year = "";

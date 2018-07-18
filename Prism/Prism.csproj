@@ -700,6 +700,7 @@
     <Content Include="Scripts\highcharts-modal.js" />
     <Content Include="Scripts\highcharts-more.js" />
     <Content Include="Scripts\highcharts.js" />
+    <Content Include="Scripts\HPU.js" />
     <Content Include="Scripts\jquery-1.12.4.min.js" />
     <Content Include="Scripts\jquery-autocomplete\jquery.auto-complete.css" />
     <Content Include="Scripts\jquery-autocomplete\jquery.auto-complete.js" />
@@ -747,6 +748,8 @@
     <Content Include="Views\DataAnalyze\CostCenterScrap.cshtml" />
     <Content Include="Views\DataAnalyze\DepartmentScrap.cshtml" />
     <Content Include="Views\DataAnalyze\ProductScrap.cshtml" />
+    <Content Include="Views\DataAnalyze\DepartmentHPU.cshtml" />
+    <Content Include="Views\DataAnalyze\PNHPU.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

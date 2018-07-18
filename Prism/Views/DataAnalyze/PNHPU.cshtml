@@ -1,0 +1,78 @@
+﻿@{
+    ViewBag.Title = "PN HPU";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link type="text/css" rel="stylesheet" href="~/Scripts/jquery-autocomplete/jquery.auto-complete.css" />
+<link type="text/css" rel="stylesheet" href="~/Content/SCRAP-RATE.css" />
+<link type="text/css" rel="stylesheet" href="~/Scripts/bootstrap-tagsinput/bootstrap-tagsinput.css" />
+
+
+<script type="text/javascript" src="~/Scripts/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap-tagsinput/bootstrap3-typeahead.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery-autocomplete/jquery.auto-complete.min.js"></script>
+<script type="text/javascript" src="~/Scripts/HPU.js"></script>
+<script type="text/javascript">
+        $(function(){
+            HPU.PNHPUINIT();
+        })
+</script>
+
+<div class="row">
+    <div class="nav navbar-nav navbar-left">
+        <img src="~/Content/images/Yield.png" style="height:40px; width:40px">
+    </div>
+    <div class="nav navbar-nav navbar-left">
+        <ol class="breadcrumb" style="width:600px">
+            <li><a data-toggle="tooltip" title="Goto Main Page" href="/Main/Index">Main</a></li>
+            <li class="active">PN HPU</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <nav class="col-xs-2 nav-sidebar">
+        <ul class="nav">
+            <li>
+                <a href="/DataAnalyze/DepartmentHPU">
+                    <span class="item-show">Department HPU</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="/DataAnalyze/PNHPU">
+                    <span class="item-show">PN HPU</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="col-xs-10">
+        <div class="v-container">
+            <div class="v-filter">
+                <div class="row row-margin">
+                    <label class="col-xs-2">PN</label>
+                    <div class="col-xs-3">
+                        <input class="form-control" type="text" id="pnlink" name="pnlink" placeholder="PN" value="@ViewBag.pnlink">
+                    </div>
+                    <div class="col-xs-1 box-search" style="padding-left:0">
+                        <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
+                    </div>
+                </div>
+            </div>
+            <div class="v-content">
+                <table class="table table-hover  table-condensed table-striped" id="hpumaintable" style="margin-top:1%">
+                    <caption class="tb-caption">PN HPU TABLE</caption>
+                    <thead id="hpuheadid">
+                    </thead>
+                    <tbody id="hpumaintableid">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="hidden">
+        <a id="exportLink"></a>
+    </div>
+</div>
+
+

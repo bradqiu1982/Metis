@@ -490,6 +490,11 @@ namespace Prism.Models
                 {
                     var sheetname = hpudata.DetailLink.Trim().Split(new string[] { "'" }, StringSplitOptions.RemoveEmptyEntries)[0];
                     var pnrawdata = RetrieveDataFromExcelWithAuth(ctrl, desf, sheetname,27);
+                    if (pnrawdata.Count > 0)
+                    { hpudata.DetailLink = hpudata.PNLink; }
+                    else
+                    { hpudata.DetailLink = ""; }
+
                     var idx = 0;
                     foreach (var line in pnrawdata)
                     {
@@ -728,15 +733,15 @@ namespace Prism.Models
             string fyear = fyearquarter.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries)[0];
             string fquarter = fyearquarter.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries)[1];
 
-            if (string.Compare(fquarter, "Q1", true) == 0)
+            if (string.Compare(fquarter, FinanceQuarter.Q1, true) == 0)
             {
                 return DateTime.Parse((Convert.ToInt32(fyear) - 1).ToString() + "-05-01 01:00:00");
             }
-            else if (string.Compare(fquarter, "Q2", true) == 0)
+            else if (string.Compare(fquarter, FinanceQuarter.Q2, true) == 0)
             {
                 return DateTime.Parse((Convert.ToInt32(fyear) - 1).ToString() + "-08-01 01:00:00");
             }
-            else if (string.Compare(fquarter, "Q3", true) == 0)
+            else if (string.Compare(fquarter, FinanceQuarter.Q3, true) == 0)
             {
                 return DateTime.Parse((Convert.ToInt32(fyear) - 1).ToString() + "-11-01 01:00:00");
             }

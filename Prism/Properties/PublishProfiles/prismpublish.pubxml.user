@@ -13,10 +13,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/22/2013 08:43:40</publishTime>
     </File>
     <File Include="bin/App_global.asax.compiled">
-      <publishTime>07/10/2018 16:44:37</publishTime>
+      <publishTime>07/18/2018 09:11:11</publishTime>
     </File>
     <File Include="bin/App_global.asax.dll">
-      <publishTime>07/10/2018 16:44:37</publishTime>
+      <publishTime>07/18/2018 09:11:11</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>03/02/2015 09:32:26</publishTime>
@@ -85,7 +85,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/27/2012 13:00:52</publishTime>
     </File>
     <File Include="bin/Prism.dll">
-      <publishTime>07/10/2018 16:44:15</publishTime>
+      <publishTime>07/18/2018 09:10:51</publishTime>
     </File>
     <File Include="bin/RestSharp.dll">
       <publishTime>06/10/2018 15:28:24</publishTime>
@@ -1534,7 +1534,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 10:56:29</publishTime>
     </File>
     <File Include="Content/SCRAP-RATE.css">
-      <publishTime>07/04/2018 09:36:58</publishTime>
+      <publishTime>07/17/2018 11:40:59</publishTime>
     </File>
     <File Include="Content/Site.css">
       <publishTime>06/28/2018 10:16:47</publishTime>
@@ -1561,7 +1561,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 10:00:10</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>07/10/2018 16:44:23</publishTime>
+      <publishTime>07/18/2018 09:10:55</publishTime>
     </File>
     <File Include="Scripts/ajaxfileupload.js">
       <publishTime>06/28/2018 10:27:19</publishTime>
@@ -1613,6 +1613,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="Scripts/highcharts.js">
       <publishTime>06/28/2018 10:27:19</publishTime>
+    </File>
+    <File Include="Scripts/HPU.js">
+      <publishTime>07/17/2018 15:57:40</publishTime>
     </File>
     <File Include="Scripts/jquery-1.12.4.min.js">
       <publishTime>06/28/2018 10:24:38</publishTime>
@@ -1684,10 +1687,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 10:27:21</publishTime>
     </File>
     <File Include="Scripts/prism-db-script.txt">
-      <publishTime>07/09/2018 11:29:05</publishTime>
+      <publishTime>07/18/2018 08:30:14</publishTime>
     </File>
     <File Include="Scripts/PrismCfg.txt">
-      <publishTime>07/10/2018 09:14:24</publishTime>
+      <publishTime>07/16/2018 15:46:32</publishTime>
     </File>
     <File Include="Scripts/respond.js">
       <publishTime>06/28/2018 09:14:31</publishTime>
@@ -1696,10 +1699,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 09:14:31</publishTime>
     </File>
     <File Include="Scripts/Scrap-Rate.js">
-      <publishTime>07/09/2018 14:27:42</publishTime>
+      <publishTime>07/11/2018 08:40:46</publishTime>
     </File>
     <File Include="Scripts/_references.js">
-      <publishTime>07/04/2018 09:50:38</publishTime>
+      <publishTime>07/17/2018 10:39:08</publishTime>
     </File>
     <File Include="userfiles/ImageUpload.ashx">
       <publishTime>07/10/2018 16:28:54</publishTime>
@@ -1710,8 +1713,14 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/DataAnalyze/CostCenterScrap.cshtml">
       <publishTime>07/10/2018 08:57:31</publishTime>
     </File>
+    <File Include="Views/DataAnalyze/DepartmentHPU.cshtml">
+      <publishTime>07/17/2018 16:14:02</publishTime>
+    </File>
     <File Include="Views/DataAnalyze/DepartmentScrap.cshtml">
       <publishTime>07/10/2018 08:57:31</publishTime>
+    </File>
+    <File Include="Views/DataAnalyze/PNHPU.cshtml">
+      <publishTime>07/17/2018 16:13:09</publishTime>
     </File>
     <File Include="Views/DataAnalyze/ProductScrap.cshtml">
       <publishTime>07/10/2018 08:57:31</publishTime>
@@ -1729,7 +1738,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 09:14:37</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>07/06/2018 10:03:04</publishTime>
+      <publishTime>07/17/2018 14:19:06</publishTime>
     </File>
     <File Include="Views/Shared/_LoginPartial.cshtml">
       <publishTime>07/10/2018 16:29:19</publishTime>
