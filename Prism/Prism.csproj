@@ -750,6 +750,8 @@
     <Content Include="Views\DataAnalyze\ProductScrap.cshtml" />
     <Content Include="Views\DataAnalyze\DepartmentHPU.cshtml" />
     <Content Include="Views\DataAnalyze\PNHPU.cshtml" />
+    <Content Include="Views\DataAnalyze\SerialHPU.cshtml" />
+    <Content Include="Views\DataAnalyze\HPUTrend.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -78,6 +78,7 @@ namespace Prism.Controllers
             return View("HeartBeat");
         }
 
+
         public ActionResult SendScrapReport()
         {
             try

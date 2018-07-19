@@ -30,8 +30,8 @@ namespace Prism.Models
             var scrapwarningtable = new List<List<string>>();
 
             var iebugetdict = IEScrapBuget.RetrieveDataCentDict(fyear, fquarter);
-            var costcenterpjdict = new Dictionary<string, string>();
-            var copmmap = ExternalDataCollector.GetCostCenterPMMap(costcenterpjdict);
+            var copdmap = ScrapData_Base.CostCentProductMap();
+            var copmmap = ExternalDataCollector.GetCostCenterPMMap();
 
             foreach (var dp in departmentlist)
             {
@@ -85,8 +85,8 @@ namespace Prism.Models
                         templist.Add(bugetrate.ToString());
                         templist.Add(grate.ToString());
 
-                        if (costcenterpjdict.ContainsKey(co))
-                        { templist.Add(costcenterpjdict[co]); }
+                        if (copdmap.ContainsKey(co))
+                        { templist.Add(copdmap[co]); }
                         else
                         { templist.Add(""); }
 
@@ -108,8 +108,8 @@ namespace Prism.Models
                         templist.Add(Math.Round(bscrap,2).ToString());
                         templist.Add(Math.Round(sumdata.generalscrap,2).ToString());
 
-                        if (costcenterpjdict.ContainsKey(co))
-                        { templist.Add(costcenterpjdict[co]); }
+                        if (copdmap.ContainsKey(co))
+                        { templist.Add(copdmap[co]); }
                         else
                         { templist.Add(""); }
 

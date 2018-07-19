@@ -105,24 +105,39 @@ bool updateLinks)
                         }
                     }
 
-
-                    if (getlink)
+                    try
                     {
-                        var linkrange = range.Cells;
-
-                        foreach (Excel.Range c in linkrange)
+                        if (getlink)
                         {
-                            if (c.Hyperlinks.Count > 0)
+                            var linkrange = range.Cells;
+
+                            foreach (Excel.Range c in linkrange)
                             {
-                                newline.Add(c.Hyperlinks[1].SubAddress);
+                                var hlink = c.Hyperlinks;
+                                if (hlink.Count > 0)
+                                {
+                                    var addr = hlink[1].SubAddress;
+                                    if (!string.IsNullOrEmpty(addr))
+                                    {
+                                        newline.Add(addr);
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
+                    catch (COMException ex) { }
+                    catch (Exception ex) { }
+                }
+                catch (COMException ex)
+                {
+                    newline.Clear();
                 }
                 catch (Exception ex)
                 {
                     newline.Clear();
                 }
+
 
                 if (!WholeLineEmpty(newline))
                 {
@@ -210,6 +225,28 @@ bool updateLinks)
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
 
+                try
+                {
+                    Process[] procs = Process.GetProcessesByName("EXCEL");
+                    foreach (Process p in procs)
+                    {
+                        if (p.Id == processID)
+                        {
+                            p.Kill();
+                        }
+                        else
+                        {
+                            var btime = p.TotalProcessorTime;
+                            new System.Threading.ManualResetEvent(false).WaitOne(100);
+                            p.Refresh();
+                            var etime = p.TotalProcessorTime;
+                            if (etime - btime < TimeSpan.FromMilliseconds(1))
+                            { p.Kill(); }
+                        }
+                    }
+                }
+                catch (Exception e) { }
+
                 return ret;
 
             }
@@ -245,17 +282,29 @@ bool updateLinks)
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
 
-                return data;
-            }
-            finally {
-                try {
+                try
+                {
                     Process[] procs = Process.GetProcessesByName("EXCEL");
                     foreach (Process p in procs)
                     {
                         if (p.Id == processID)
+                        {
                             p.Kill();
+                        }
+                        else
+                        {
+                            var btime = p.TotalProcessorTime;
+                            new System.Threading.ManualResetEvent(false).WaitOne(100);
+                            p.Refresh();
+                            var etime = p.TotalProcessorTime;
+                            if (etime - btime < TimeSpan.FromMilliseconds(1))
+                            { p.Kill(); }
+                        }
                     }
-                } catch (Exception e) { }
+                }
+                catch (Exception e) { }
+
+                return data;
             }
 
         }

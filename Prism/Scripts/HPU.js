@@ -64,6 +64,146 @@
         })
     }
 
+    var hputrend = function () {
+        $.post('/DataAnalyze/GetAllSerial', {}, function (output) {
+            $('.pd_serial_cla').tagsinput({
+                freeInput: false,
+                typeahead: {
+                    source: output.data,
+                    minLength: 0,
+                    showHintOnFocus: true,
+                    autoSelect: false,
+                    selectOnBlur: false,
+                    changeInputOnSelect: false,
+                    changeInputOnMove: false,
+                    afterSelect: function (val) {
+                        this.$element.val("");
+                    }
+                }
+            });
+
+            defaultsearch();
+        });
+
+        function searchdata() {
+            var serial = $.trim($('#pd_serial').tagsinput('items'));
+            if (serial == '') {
+                serial = $.trim($('#pd_serial').parent().find('input').eq(0).val());
+            }
+
+            if (serial == '') {
+                alert("Product serial need to be input!");
+                return false;
+            }
+
+            $.post('/DataAnalyze/SerialHPUData', {
+                serial: serial
+            }, function (output) {
+                if (output.success) {
+
+                }
+            })
+        }
+
+        $('body').on('click', '#btn-search', function () {
+            searchdata();
+        })
+
+        function defaultsearch()
+        {
+            var serial = $.trim($('#pd_serial').tagsinput('items'));
+            if (serial == '') {
+                serial = $.trim($('#pd_serial').parent().find('input').eq(0).val());
+            }
+            if (serial != '')
+            {
+                searchdata();
+            }
+        }
+    }
+
+
+    var searialhpu = function () {
+        var hputable = null;
+
+        $.post('/DataAnalyze/GetAllSerial', {}, function (output) {
+            $('.pd_serial_cla').tagsinput({
+                freeInput: false,
+                typeahead: {
+                    source: output.data,
+                    minLength: 0,
+                    showHintOnFocus: true,
+                    autoSelect: false,
+                    selectOnBlur: false,
+                    changeInputOnSelect: false,
+                    changeInputOnMove: false,
+                    afterSelect: function (val) {
+                        this.$element.val("");
+                    }
+                }
+            });
+        });
+
+        function searchdata() {
+            var serial = $.trim($('#pd_serial').tagsinput('items'));
+            if (serial == '') {
+                serial = $.trim($('#pd_serial').parent().find('input').eq(0).val());
+            }
+
+            if (serial == '') {
+                alert("Product serial need to be input!");
+                return false;
+            }
+
+            $.post('/DataAnalyze/SerialHPUData', {
+                serial: serial
+            }, function (output) {
+                if (output.success) {
+                    var idx = 0;
+                    var datacont = output.data.length;
+
+                    if (hputable) {
+                        hputable.destroy();
+                    }
+                    $("#hpumaintableid").empty();
+
+                    for (idx = 0; idx < datacont; idx++) {
+                        var line = output.data[idx];
+
+                        var hpucode = line.HPUCode;
+                        if (line.DetailLink != '') {
+                            hpucode = '<a href="/DataAnalyze/PNHPU?PNLink=' + line.DetailLink + '" target="_blank">' + hpucode + '</a>';
+                        }
+
+                        $("#hpumaintableid").append('<tr>' +
+                            '<td>' + line.TypicalPN + '</td>' +
+                            '<td>' + line.ProductLine + '</td>' +
+                            '<td>' + line.Serial + '</td>' +
+                            '<td>' + line.Phase + '</td>' +
+                            '<td>' + line.YieldHPU + '</td>' +
+                            '<td>' + line.Quarter + '</td>' +
+                            '<td>' + line.Remark + '</td>' +
+                            + '</tr>');
+                    }
+
+
+                    hputable = $('#hpumaintable').DataTable({
+                        'iDisplayLength': 50,
+                        'aLengthMenu': [[20, 50, 100, -1],
+                        [20, 50, 100, "All"]],
+                        "aaSorting": [],
+                        "order": []
+                    });
+                }
+            })
+        }
+
+        $('body').on('click', '#btn-search', function () {
+            searchdata();
+        })
+    }
+
+
     var pnhpu = function () {
 
         var hputable = null;
@@ -152,6 +292,13 @@
     return {
         DEPARTMENTINIT: function () {
             departmenthpu();
+        },
+        TRENDINIT: function () {
+            hputrend();
+        },
+        SERIALINIT: function ()
+        {
+            searialhpu();
         },
         PNHPUINIT: function ()
         {

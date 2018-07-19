@@ -1,5 +1,6 @@
-﻿@{
-    ViewBag.Title = "PN HPU";
+﻿
+@{
+    ViewBag.Title = "HPU Trend";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -14,7 +15,7 @@
 <script type="text/javascript" src="~/Scripts/HPU.js"></script>
 <script type="text/javascript">
         $(function(){
-            HPU.PNHPUINIT();
+            HPU.TRENDINIT();
         })
 </script>
 
@@ -25,7 +26,7 @@
     <div class="nav navbar-nav navbar-left">
         <ol class="breadcrumb" style="width:600px">
             <li><a data-toggle="tooltip" title="Goto Main Page" href="/Main/Index">Main</a></li>
-            <li class="active">PN HPU</li>
+            <li class="active">HPU Trend</li>
         </ol>
     </div>
 </div>
@@ -33,7 +34,7 @@
 <div class="row">
     <nav class="col-xs-2 nav-sidebar">
         <ul class="nav">
-            <li>
+            <li class="active">
                 <a href="/DataAnalyze/HPUTrend">
                     <span class="item-show">HPU Trend</span>
                 </a>
@@ -48,7 +49,7 @@
                     <span class="item-show">Serial HPU</span>
                 </a>
             </li>
-            <li class="active">
+            <li>
                 <a href="/DataAnalyze/PNHPU">
                     <span class="item-show">PN HPU</span>
                 </a>
@@ -60,9 +61,10 @@
         <div class="v-container">
             <div class="v-filter">
                 <div class="row row-margin">
-                    <label class="col-xs-2">PN</label>
-                    <div class="col-xs-3">
-                        <input class="form-control" type="text" id="pnlink" name="pnlink" placeholder="PN" value="@ViewBag.pnlink">
+                    <label class="col-xs-2">Product Serial</label>
+                    <div class="col-xs-8">
+                        <input type="text" class="pd_serial_cla" data-provide="typeahead"
+                               id="pd_serial" name="pd_serial" autocomplete="off" placeholder="Product Serial" value="@ViewBag.defaultserial">
                     </div>
                     <div class="col-xs-1 box-search" style="padding-left:0">
                         <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
@@ -70,13 +72,7 @@
                 </div>
             </div>
             <div class="v-content">
-                <table class="table table-hover  table-condensed table-striped" id="hpumaintable" style="margin-top:1%">
-                    <caption class="tb-caption">PN HPU TABLE</caption>
-                    <thead id="hpuheadid">
-                    </thead>
-                    <tbody id="hpumaintableid">
-                    </tbody>
-                </table>
+
             </div>
         </div>
     </div>

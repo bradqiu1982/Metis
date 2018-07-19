@@ -10,6 +10,28 @@ namespace Prism.Controllers
 {
     public class DataAnalyzeController : Controller
     {
+        public ActionResult HPUTrend()
+        {
+            ViewBag.defaultserial = "";
+            var syscfg = CfgUtility.GetSysConfig(this);
+            if (syscfg.ContainsKey("HPUTRENDSERIAL"))
+            { ViewBag.defaultserial = syscfg["HPUTRENDSERIAL"]; }
+            return View();
+        }
+
+        public JsonResult HPUTrendData()
+        {
+            var serial = Request.Form["serial"];
+            var data = HPUMainData.RetrieveHPUDataBySerial(serial);
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                success = true,
+                data = data
+            };
+            return ret;
+        }
+
         public ActionResult DepartmentHPU()
         {
             var productlines = HPUMainData.GetAllProductLines();
@@ -36,6 +58,35 @@ namespace Prism.Controllers
             }
 
             var data = HPUMainData.RetrieveHPUData(productline,fquarter);
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                success = true,
+                data = data
+            };
+            return ret;
+        }
+
+        public ActionResult SerialHPU()
+        {
+            return View();
+        }
+
+        public JsonResult GetAllSerial()
+        {
+            var slist = HPUMainData.RetrieveAllSerial();
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                data = slist
+            };
+            return ret;
+        }
+
+        public JsonResult SerialHPUData()
+        {
+            var serial = Request.Form["serial"];
+            var data = HPUMainData.RetrieveHPUDataBySerial(serial);
             var ret = new JsonResult();
             ret.Data = new
             {

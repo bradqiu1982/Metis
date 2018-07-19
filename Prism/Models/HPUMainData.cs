@@ -146,6 +146,122 @@ namespace Prism.Models
             return ret;
         }
 
+        public static List<HPUMainData> RetrieveHPUDataBySerial(string serials)
+        {
+            var ret = new List<HPUMainData>();
+            var sql = @"select PNLink,HPUOrder,HPUCode,ProductLine,Serial,Customer,Phase,TypicalPN,WorkingHourMeasure,WorkingHourCollect
+                            ,WorkingHourChecked,YieldHPU,Owner,UpdateDate,SignDate,FormMake,Remark,Family,ProcessSplit,Quarter,QuarterDate,DetailLink from HPUMainData where ";
+
+            var idx = 0;
+            var ss = serials.Split(new string[] { ";", "," }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var s in ss)
+            {
+                if (idx == 0)
+                {
+                    sql += " Serial like '%"+s.Replace("'","").Trim()+"%'";
+                    idx = idx + 1;
+                }
+                else
+                {
+                    sql += " or Serial like '%" + s.Replace("'", "").Trim() + "%'";
+                }
+            }
+            
+            sql += " order by Serial,QuarterDate asc";
+
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                try
+                {
+                    var tempvm = new HPUMainData();
+                    tempvm.PNLink = Convert.ToString(line[0]);
+                    tempvm.HPUOrder = Convert.ToInt32(line[1]);
+                    tempvm.HPUCode = Convert.ToString(line[2]);
+                    tempvm.ProductLine = Convert.ToString(line[3]);
+                    tempvm.Serial = Convert.ToString(line[4]);
+                    tempvm.Customer = Convert.ToString(line[5]);
+                    tempvm.Phase = Convert.ToString(line[6]);
+                    tempvm.TypicalPN = Convert.ToString(line[7]);
+                    tempvm.WorkingHourMeasure = Convert.ToString(line[8]);
+                    tempvm.WorkingHourCollect = Convert.ToString(line[9]);
+                    tempvm.WorkingHourChecked = Convert.ToString(line[10]);
+                    tempvm.YieldHPU = Math.Round(Convert.ToDouble(line[11]), 4).ToString();
+                    tempvm.Owner = Convert.ToString(line[12]);
+                    tempvm.UpdateDate = Convert2DateStr(line[13]);
+                    tempvm.SignDate = Convert.ToString(line[14]);
+                    tempvm.FormMake = Convert.ToString(line[15]);
+                    tempvm.Remark = Convert.ToString(line[16]);
+                    tempvm.Family = Convert.ToString(line[17]);
+                    tempvm.ProcessSplit = Convert.ToString(line[18]);
+                    tempvm.Quarter = Convert.ToString(line[19]);
+                    tempvm.QuarterDate = Convert.ToDateTime(line[20]);
+                    tempvm.DetailLink = Convert.ToString(line[21]);
+                    ret.Add(tempvm);
+                }
+                catch (Exception ex) { }
+
+
+            }
+
+            return ret;
+        }
+
+        public static List<string> RetrieveAllSerial()
+        {
+            var sql = "select distinct Serial FROM  HPUMainData where [Serial] not like 'ASY,%'";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            var dict = new Dictionary<string, bool>();
+            foreach (var line in dbret)
+            {
+                var val = Convert.ToString(line[0]);
+                if (val.Contains("-FG") || val.Contains("- FG") || val.Contains("-SFG") || val.Contains("- SFG"))
+                { val = val.Split(new string[] { "-FG", "- FG", "-SFG", "- SFG" }, StringSplitOptions.RemoveEmptyEntries)[0].Trim(); }
+                if (!dict.ContainsKey(val))
+                {
+                    dict.Add(val, true);
+                }
+            }//end foreach
+            
+            var ret = dict.Keys.ToList();
+            ret.Sort();
+            return ret;
+        }
+
+        public static void UPdateDateFormatPN()
+        {
+            var sql = "select distinct PNLink from HPUMainData where PNLink like '%12:00:00 AM%'";
+            var datepnlist = new List<string>();
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                datepnlist.Add(Convert.ToString(line[0]));
+            }
+
+            foreach (var item in datepnlist)
+            {
+                var datepn = item.Split(new string[] { "_" }, StringSplitOptions.RemoveEmptyEntries)[0];
+                var qt = item.Split(new string[] { "12:00:00 AM" }, StringSplitOptions.RemoveEmptyEntries)[1];
+
+                try
+                {
+                    var numpn = ((int)DateTime.Parse(datepn).ToOADate()).ToString();
+                    var newpnlik = numpn + "_" + qt;
+
+                    sql = "update HPUMainData set DetailLink = '<DetailLink>' where DetailLink = '<DetailLinkCond>'";
+                    sql = sql.Replace("<DetailLink>", newpnlik).Replace("<DetailLinkCond>", item);
+                    DBUtility.ExeLocalSqlNoRes(sql);
+                    sql = "update PNHPUData set PNLink = '<DetailLink>' where PNLink = '<DetailLinkCond>'";
+                    sql = sql.Replace("<DetailLink>", newpnlik).Replace("<DetailLinkCond>", item);
+                    DBUtility.ExeLocalSqlNoRes(sql);
+                    sql = "update HPUMainData set PNLink = '<DetailLink>',TypicalPN = '<TypicalPN>' where PNLink = '<DetailLinkCond>'";
+                    sql = sql.Replace("<DetailLink>", newpnlik).Replace("<DetailLinkCond>", item).Replace("<TypicalPN>",numpn);
+                    DBUtility.ExeLocalSqlNoRes(sql);
+                }
+                catch (Exception ex) { }
+            }
+        }
+
         public string PNLink { set; get; }
 
         public int HPUOrder { set; get; }
@@ -369,6 +485,7 @@ namespace Prism.Models
             {
                 ret.Add(Convert.ToString(line[0]));
             }
+            ret.Sort();
             return ret;
         }
 

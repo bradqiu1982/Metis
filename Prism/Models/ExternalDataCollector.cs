@@ -571,7 +571,14 @@ namespace Prism.Models
                     var maindata = RetrieveDataFromExcelWithAuth(ctrl, desf, "目录",101,true);
                     if (maindata.Count > 0)
                     {
-                        var hpucol = RetrieveValidHPUCol(maindata);
+                        var hpucol = new Dictionary<string, int>();
+                        try
+                        {
+                            hpucol = RetrieveValidHPUCol(maindata);
+                        }
+                        catch (Exception e) {
+                        }
+
                         var hpucodeidx = hpucol["HPU Code".ToUpper()];
                         var hpuidx = hpucol["Yield HPU".ToUpper()];
                         var pnidx = hpucol["代表 PN".ToUpper().ToUpper()];
@@ -579,7 +586,15 @@ namespace Prism.Models
                         if (hpucodeidx == -1 || hpuidx == -1 || pnidx ==  -1)
                         { continue; }
 
-                        var HPUDataList = RetrieveValidHPUValue(hpucol,maindata, fyearquarter);
+                        var HPUDataList = new List<HPUMainData>();
+
+                        try
+                        {
+                            HPUDataList = RetrieveValidHPUValue(hpucol,maindata, fyearquarter);
+                        }
+                        catch (Exception e) {
+                        }
+                            
                         if (HPUDataList.Count > 1)
                         {
                             HPUDataList.RemoveAt(0);

@@ -13,10 +13,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/22/2013 08:43:40</publishTime>
     </File>
     <File Include="bin/App_global.asax.compiled">
-      <publishTime>07/18/2018 09:11:11</publishTime>
+      <publishTime>07/19/2018 10:15:21</publishTime>
     </File>
     <File Include="bin/App_global.asax.dll">
-      <publishTime>07/18/2018 09:11:11</publishTime>
+      <publishTime>07/19/2018 10:15:21</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>03/02/2015 09:32:26</publishTime>
@@ -85,7 +85,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/27/2012 13:00:52</publishTime>
     </File>
     <File Include="bin/Prism.dll">
-      <publishTime>07/18/2018 09:10:51</publishTime>
+      <publishTime>07/19/2018 10:15:03</publishTime>
     </File>
     <File Include="bin/RestSharp.dll">
       <publishTime>06/10/2018 15:28:24</publishTime>
@@ -1561,7 +1561,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 10:00:10</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>07/18/2018 09:10:55</publishTime>
+      <publishTime>07/19/2018 10:15:07</publishTime>
     </File>
     <File Include="Scripts/ajaxfileupload.js">
       <publishTime>06/28/2018 10:27:19</publishTime>
@@ -1690,7 +1690,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/18/2018 08:30:14</publishTime>
     </File>
     <File Include="Scripts/PrismCfg.txt">
-      <publishTime>07/16/2018 15:46:32</publishTime>
+      <publishTime>07/18/2018 12:59:05</publishTime>
     </File>
     <File Include="Scripts/respond.js">
       <publishTime>06/28/2018 09:14:31</publishTime>
