@@ -96,11 +96,23 @@
                 return false;
             }
 
-            $.post('/DataAnalyze/SerialHPUData', {
+            $.post('/DataAnalyze/HPUTrendData', {
                 serial: serial
             }, function (output) {
                 if (output.success) {
+                    $('.v-content').empty();
+                    var appendstr = "";
 
+                    $.each(output.hpuarray, function (i, val) {
+                        appendstr = '<div class="col-xs-12">' +
+                               '<div class="v-box" id="' + val.id + '"></div>' +
+                               '</div>';
+                        $('.v-content').append(appendstr);
+                        drawline(val);
+                    })
+                    //setTimeout(function () {
+                    //    $('#loadcomplete').html('TRUE');
+                    //}, 10000);
                 }
             })
         }
@@ -142,6 +154,7 @@
                     }
                 }
             });
+            defaultsearch();
         });
 
         function searchdata() {
@@ -201,6 +214,16 @@
         $('body').on('click', '#btn-search', function () {
             searchdata();
         })
+
+        function defaultsearch() {
+            var serial = $.trim($('#pd_serial').tagsinput('items'));
+            if (serial == '') {
+                serial = $.trim($('#pd_serial').parent().find('input').eq(0).val());
+            }
+            if (serial != '') {
+                searchdata();
+            }
+        }
     }
 
 
@@ -287,6 +310,148 @@
                 searchdata();
             }
         }
+    }
+
+    var drawline = function (line_data) {
+        var options = {
+            chart: {
+                zoomType: 'xy',
+                type: 'line'
+            },
+            title: {
+                text: line_data.title
+            },
+            xAxis: {
+                categories: line_data.xAxis.data
+            },
+            yAxis: [{
+                min: 0,
+                max: line_data.maxhpu,
+                title: {
+                    text: 'YIELD HPU'
+                }
+            }, {
+                opposite: true,
+                min: line_data.minhpureduction,
+                max: line_data.maxhpureduction,
+                title: {
+                    text: 'HPU Reduction (%)'
+                },
+                plotLines: [{
+                    value: line_data.hpuguideline.data,
+                    color: line_data.hpuguideline.color,
+                    dashStyle: line_data.hpuguideline.style,
+                    width: 1,
+                    label: {
+                        text: line_data.hpuguideline.name + ':' + line_data.hpuguideline.data,
+                        align: 'left'
+                    }
+                }]
+            }],
+            plotOptions: {
+                series: {
+                    cursor: 'pointer',
+                    events: {
+                        click: function (event) {
+                            if (line_data.url != '') {
+                                window.open(line_data.url);
+                            }
+                        }
+                    }
+                }
+            },
+            series: [
+                {
+                    name: line_data.yieldhpu.name,
+                    type: 'line',
+                    data: line_data.yieldhpu.data,
+                    yAxis: 0
+                },
+                {
+                    name: line_data.hpureduction.name,
+                    type: 'column',
+                    data: line_data.hpureduction.data,
+                    yAxis: 1
+                }
+            ],
+            exporting: {
+                menuItemDefinitions: {
+                    fullscreen: {
+                        onclick: function () {
+                            $('#' + line_data.id).parent().toggleClass('chart-modal');
+                            $('#' + line_data.id).highcharts().reflow();
+                        },
+                        text: 'Full Screen'
+                    },
+                    exportdata: {
+                        onclick: function () {
+                            //var filename = line_data.title + '.csv';
+                            //var outputCSV = 'Time,';
+                            //$(line_data.xAxis.data).each(function (i, val) {
+                            //    outputCSV += val + ",";
+                            //});
+                            //outputCSV += "\r\n";
+
+                            //outputCSV += line_data.generalscraprate.name + ',';
+                            //$(line_data.generalscraprate.data).each(function (i, val) {
+                            //    outputCSV += val + ",";
+                            //});
+                            //outputCSV += "\r\n";
+
+                            //outputCSV += line_data.nonchinascraprate.name + ',';
+                            //$(line_data.nonchinascraprate.data).each(function (i, val) {
+                            //    outputCSV += val + ",";
+                            //});
+                            //outputCSV += "\r\n";
+
+                            //outputCSV += line_data.nonchinascrap.name + ',';
+                            //$(line_data.nonchinascrap.data).each(function (i, val) {
+                            //    outputCSV += val + ",";
+                            //});
+                            //outputCSV += "\r\n";
+
+                            //outputCSV += line_data.generalscrap.name + ',';
+                            //$(line_data.generalscrap.data).each(function (i, val) {
+                            //    outputCSV += val + ",";
+                            //});
+                            //outputCSV += "\r\n";
+
+                            //outputCSV += line_data.output.name + ',';
+                            //$(line_data.output.data).each(function (i, val) {
+                            //    outputCSV += val + ",";
+                            //});
+                            //outputCSV += "\r\n";
+
+                            //var blobby = new Blob([outputCSV], { type: 'text/csv;chartset=utf-8' });
+                            //$(exportLink).attr({
+                            //    'download': filename,
+                            //    'href': window.URL.createObjectURL(blobby),
+                            //    'target': '_blank'
+                            //});
+                            //exportLink.click();
+                        },
+                        text: 'Export Data'
+                    },
+                    datalabel: {
+                        onclick: function () {
+                            var labelflag = !this.series[0].options.dataLabels.enabled;
+                            $.each(this.series, function (idx, val) {
+                                var opt = val.options;
+                                opt.dataLabels.enabled = labelflag;
+                                val.update(opt);
+                            })
+                        },
+                        text: 'Data Label'
+                    }
+                },
+                buttons: {
+                    contextButton: {
+                        menuItems: ['fullscreen', 'exportdata', 'datalabel', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG']
+                    }
+                }
+            }
+        };
+        Highcharts.chart(line_data.id, options);
     }
 
     return {

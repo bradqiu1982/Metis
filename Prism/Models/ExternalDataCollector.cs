@@ -1138,4 +1138,17 @@ namespace Prism.Models
         public string Key { set; get; }
         public string Value { set; get; }
     }
+
+    public class KeyDateCLA
+    {
+        public KeyDateCLA()
+        {
+            Key = "";
+            Value = DateTime.Now;
+        }
+
+        public string Key { set; get; }
+        public DateTime Value { set; get; }
+    }
+
 }

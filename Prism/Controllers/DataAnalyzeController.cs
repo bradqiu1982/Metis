@@ -19,15 +19,142 @@ namespace Prism.Controllers
             return View();
         }
 
+        private List<double> GetHPUDataBySerial(string serial,List<string> xaxis,List<HPUMainData> srcdata)
+        {
+            var yieldhpulist = new List<double>();
+            if (serial.Contains("-FG") || serial.Contains("- FG"))
+            {
+                foreach (var q in xaxis)
+                {
+                    var temphpu = 0.0;
+                    foreach (var data in srcdata)
+                    {
+                        if (string.Compare(data.Serial.Replace("-SFG", "").Replace("- SFG", "").Replace("-FG", "").Replace("- FG", ""), serial.Replace("-FG", "").Replace("- FG", "")) == 0
+                            && string.Compare(data.Quarter, q) == 0
+                            && (data.Serial.Contains("-SFG") || data.Serial.Contains("- SFG")))
+                        {
+                            temphpu += 2.0 * Convert.ToDouble(data.YieldHPU);
+                        }
+                        if (string.Compare(data.Serial.Replace("-SFG", "").Replace("- SFG", "").Replace("-FG", "").Replace("- FG", ""), serial.Replace("-FG", "").Replace("- FG", "")) == 0
+                            && string.Compare(data.Quarter, q) == 0
+                            && (data.Serial.Contains("-FG") || data.Serial.Contains("- FG")))
+                        {
+                            temphpu += Convert.ToDouble(data.YieldHPU);
+                        }
+                    }
+                    yieldhpulist.Add(Math.Round(temphpu,4));
+                }
+            }
+            else
+            {
+                foreach (var q in xaxis)
+                {
+                    foreach (var data in srcdata)
+                    {
+                        if (string.Compare(data.Serial, serial) == 0 && string.Compare(data.Quarter, q) == 0)
+                        {
+                            yieldhpulist.Add(Math.Round(Convert.ToDouble(data.YieldHPU),4));
+                        }
+                    }
+                }
+            }
+
+            return yieldhpulist;
+        }
+
+        private List<double> GetHPUReduction(List<double> yieldhpulist)
+        {
+            var hpureduction = new List<double>();
+            hpureduction.Add(0.0);
+            for (var idx = 1; idx < yieldhpulist.Count; idx++)
+            {
+                hpureduction.Add(Math.Round((yieldhpulist[idx - 1] - yieldhpulist[idx]) / yieldhpulist[idx - 1] * 100.0, 2));
+            }
+            return hpureduction;
+        }
+
         public JsonResult HPUTrendData()
         {
             var serial = Request.Form["serial"];
-            var data = HPUMainData.RetrieveHPUDataBySerial(serial);
+            var srcdata = HPUMainData.RetrieveHPUDataBySerial(serial);
+
+            var hpuarray = new List<object>();
+            try {
+                if (srcdata.Count > 0)
+                {
+                    var seriallist = new List<string>();
+                    var serialdict = new Dictionary<string, bool>();
+                    foreach (var item in srcdata)
+                    {
+                        if (!item.Serial.Contains("-SFG") && !item.Serial.Contains("- SFG"))
+                        {
+                            if (!serialdict.ContainsKey(item.Serial))
+                            {
+                                serialdict.Add(item.Serial,true);
+                                seriallist.Add(item.Serial);
+                            }
+                        }
+                    }//get serials
+
+                    foreach (var sitem in seriallist)
+                    {
+                        var xaxis = new List<string>();
+                        foreach (var data in srcdata)
+                        {
+                            if (string.Compare(data.Serial, sitem) == 0)
+                            {
+                                xaxis.Add(data.Quarter);
+                            }
+                        }//get quarter x list
+
+                        if (xaxis.Count == 1)
+                        { continue; }
+
+                        var yieldhpulist = GetHPUDataBySerial(sitem, xaxis, srcdata);
+                        var hpureduction = GetHPUReduction(yieldhpulist);
+
+                        var maxhpu = 0.0;
+                        foreach (var yhp in yieldhpulist)
+                        { if (yhp > maxhpu) { maxhpu = yhp; } }
+
+                        var maxhpureduction = 5.0;
+                        foreach (var hrd in hpureduction)
+                        { if (hrd > maxhpureduction) { maxhpureduction = hrd; } }
+                        var minhpureduction = 0.0;
+                        foreach (var hrd in hpureduction)
+                        { if (hrd < minhpureduction) { minhpureduction = hrd; } }
+
+                        var hpuguideline = new { name = "HPU Reduction Guideline", color = "#C9302C", data = 5.0, style = "dash" };
+                        var title = sitem.Replace("-FG", "").Replace("- FG", "") + " HPU";
+
+                        var oneobj = new
+                        {
+                            id = sitem.Replace(" ", "_") + "_line",
+                            title = title,
+                            xAxis = new { data = xaxis },
+                            maxhpu = maxhpu,
+                            maxhpureduction = maxhpureduction,
+                            hpuguideline = hpuguideline,
+                            yieldhpu = new { name = "Yield HPU", data = yieldhpulist },
+                            hpureduction = new { name = "HPU Reduction", data = hpureduction },
+                            url = "/DataAnalyze/SerialHPU?defaultserial=" + sitem.Split(new string[] { "-FG", "- FG" },StringSplitOptions.RemoveEmptyEntries)[0]
+                        };
+
+                        hpuarray.Add(oneobj);
+
+                    }//get chart data from each serial
+
+                }
+            } catch (Exception ex) { }
+
+
+
+
             var ret = new JsonResult();
             ret.Data = new
             {
                 success = true,
-                data = data
+                hpuarray = hpuarray
             };
             return ret;
         }
@@ -67,8 +194,13 @@ namespace Prism.Controllers
             return ret;
         }
 
-        public ActionResult SerialHPU()
+        public ActionResult SerialHPU(string defaultserial)
         {
+            ViewBag.defaultserial = "";
+            if (!string.IsNullOrEmpty(defaultserial))
+            {
+                ViewBag.defaultserial = defaultserial;
+            }
             return View();
         }
 
