@@ -183,13 +183,13 @@
                     for (idx = 0; idx < datacont; idx++) {
                         var line = output.data[idx];
 
-                        var hpucode = line.HPUCode;
+                        var hpupn = line.TypicalPN;
                         if (line.DetailLink != '') {
-                            hpucode = '<a href="/DataAnalyze/PNHPU?PNLink=' + line.DetailLink + '" target="_blank">' + hpucode + '</a>';
+                            hpupn = '<a href="/DataAnalyze/PNHPU?PNLink=' + line.DetailLink + '" target="_blank">' + hpupn + '</a>';
                         }
 
                         $("#hpumaintableid").append('<tr>' +
-                            '<td>' + line.TypicalPN + '</td>' +
+                            '<td>' + hpupn + '</td>' +
                             '<td>' + line.ProductLine + '</td>' +
                             '<td>' + line.Serial + '</td>' +
                             '<td>' + line.Phase + '</td>' +
