@@ -64,6 +64,16 @@ namespace Prism.Models
             DBUtility.ExeLocalSqlNoRes(sql, param);
         }
 
+        public void UpdateData()
+        {
+            var sql = "update HPUMainData set YieldHPU=@YieldHPU,DetailLink=@DetailLink where PNLink=@PNLink";
+            var param = new Dictionary<string, string>();
+            param.Add("@PNLink", PNLink);
+            param.Add("@YieldHPU", YieldHPU);
+            param.Add("@DetailLink", DetailLink);
+            DBUtility.ExeLocalSqlNoRes(sql, param);
+        }
+
         public static List<string> GetAllProductLines()
         {
             var ret = new List<string>();
@@ -225,6 +235,22 @@ namespace Prism.Models
             
             var ret = dict.Keys.ToList();
             ret.Sort();
+            return ret;
+        }
+
+        public static Dictionary<string, bool> RetrieveAllPNLink()
+        {
+            var ret = new Dictionary<string, bool>();
+            var sql = "select distinct PNLink from HPUMainData where PNLink <> ''";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var val = Convert.ToString(line[0]);
+                if (!ret.ContainsKey(val))
+                {
+                    ret.Add(val, true);
+                }
+            }
             return ret;
         }
 
@@ -474,6 +500,14 @@ namespace Prism.Models
                 return rawdata;
             }
 
+        }
+
+        public static void CleanData(string pnlink)
+        {
+            var sql = "delete from PNHPUData where  PNLink=@PNLink ";
+            var param = new Dictionary<string, string>();
+            param.Add("@PNLink", pnlink);
+            DBUtility.ExeLocalSqlNoRes(sql, param);
         }
 
         public static List<string> RetrievePNLinkList()

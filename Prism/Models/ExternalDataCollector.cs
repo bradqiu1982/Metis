@@ -440,6 +440,11 @@ namespace Prism.Models
                     { tempvm.Phase = line[idx]; }
 
                     tempvm.TypicalPN = line[pnidx];
+                    if (tempvm.TypicalPN.Contains("12:00:00 AM"))
+                    {
+                        tempvm.TypicalPN = ((int)DateTime.Parse(tempvm.TypicalPN).ToOADate()).ToString();
+                    }
+
                     tempvm.PNLink = tempvm.TypicalPN+"_"+fyearquarter.Replace(" ","_");
 
                     if (hpucol["工时 量测".ToUpper()] != -1)
@@ -547,9 +552,11 @@ namespace Prism.Models
             var datafolder = syscfg["HPUSRCFOLDER"];
             var srcfilters = syscfg["HPUPRODUCTLINE"].Split(new string[] { ";" },StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            string fyearquarter = syscfg["HPUFYEARQUARTER"];
+            var now = DateTime.Now;
+            string fyearquarter = GetFYearByTime(now) + " "+GetFQuarterByTime(now);
+            var pnlinkmap = HPUMainData.RetrieveAllPNLink();
 
-            var srcfiles = DirectoryEnumerateFiles(ctrl,datafolder+ fyearquarter);
+            var srcfiles = DirectoryEnumerateFiles(ctrl,datafolder);
             foreach (var src in srcfiles)
             {
                 var passfilter = false;
@@ -571,14 +578,8 @@ namespace Prism.Models
                     var maindata = RetrieveDataFromExcelWithAuth(ctrl, desf, "目录",101,true);
                     if (maindata.Count > 0)
                     {
-                        var hpucol = new Dictionary<string, int>();
-                        try
-                        {
-                            hpucol = RetrieveValidHPUCol(maindata);
-                        }
-                        catch (Exception e) {
-                        }
-
+                        var hpucol =  RetrieveValidHPUCol(maindata);
+                        
                         var hpucodeidx = hpucol["HPU Code".ToUpper()];
                         var hpuidx = hpucol["Yield HPU".ToUpper()];
                         var pnidx = hpucol["代表 PN".ToUpper().ToUpper()];
@@ -586,26 +587,39 @@ namespace Prism.Models
                         if (hpucodeidx == -1 || hpuidx == -1 || pnidx ==  -1)
                         { continue; }
 
-                        var HPUDataList = new List<HPUMainData>();
-
-                        try
-                        {
-                            HPUDataList = RetrieveValidHPUValue(hpucol,maindata, fyearquarter);
-                        }
-                        catch (Exception e) {
-                        }
+                        var HPUDataList =  RetrieveValidHPUValue(hpucol,maindata, fyearquarter);
                             
                         if (HPUDataList.Count > 1)
                         {
                             HPUDataList.RemoveAt(0);
                         }
-                        var PNHPUData = RetrievePNHPU(ctrl,HPUDataList,desf);
+                        var PNHPUDatalist = RetrievePNHPU(ctrl,HPUDataList,desf);
 
                         foreach (var data in HPUDataList)
-                        { data.StoreData(); }
-
-                        foreach (var data in PNHPUData)
                         {
+                            if (pnlinkmap.ContainsKey(data.PNLink))
+                            {
+                                data.UpdateData();
+                            }
+                            else
+                            {
+                                data.StoreData();
+                            }
+                        }
+
+                        var cleardict = new Dictionary<string, bool>();
+
+                        foreach (var data in PNHPUDatalist)
+                        {
+                            if (pnlinkmap.ContainsKey(data.PNLink))
+                            {
+                                if (!cleardict.ContainsKey(data.PNLink))
+                                {
+                                    cleardict.Add(data.PNLink,true);
+                                    PNHPUData.CleanData(data.PNLink);
+                                }
+                            }
+
                             data.StoreData();
                         }
                     }//end if

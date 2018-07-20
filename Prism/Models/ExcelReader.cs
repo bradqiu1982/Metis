@@ -237,10 +237,10 @@ bool updateLinks)
                         else
                         {
                             var btime = p.TotalProcessorTime;
-                            new System.Threading.ManualResetEvent(false).WaitOne(100);
+                            new System.Threading.ManualResetEvent(false).WaitOne(50);
                             p.Refresh();
                             var etime = p.TotalProcessorTime;
-                            if (etime - btime < TimeSpan.FromMilliseconds(1))
+                            if ((etime - btime).Ticks <= 10)
                             { p.Kill(); }
                         }
                     }
@@ -294,10 +294,10 @@ bool updateLinks)
                         else
                         {
                             var btime = p.TotalProcessorTime;
-                            new System.Threading.ManualResetEvent(false).WaitOne(100);
+                            new System.Threading.ManualResetEvent(false).WaitOne(50);
                             p.Refresh();
                             var etime = p.TotalProcessorTime;
-                            if (etime - btime < TimeSpan.FromMilliseconds(1))
+                            if ((etime - btime).Ticks <= 10)
                             { p.Kill(); }
                         }
                     }

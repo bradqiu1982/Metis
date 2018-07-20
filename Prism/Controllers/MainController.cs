@@ -59,6 +59,12 @@ namespace Prism.Controllers
 
                 try
                 {
+                    ExternalDataCollector.LoadIEHPU(this);
+                }
+                catch (Exception ex) { }
+
+                try
+                {
                     if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday)
                     {
                         CostCentScrapWarning.Waring(this);
