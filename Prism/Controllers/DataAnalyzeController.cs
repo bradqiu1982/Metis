@@ -77,6 +77,7 @@ namespace Prism.Controllers
         {
             var serial = Request.Form["serial"];
             var srcdata = HPUMainData.RetrieveHPUDataBySerial(serial);
+            var syscfg = CfgUtility.GetSysConfig(this);
 
             var hpuarray = new List<object>();
             try {
@@ -112,6 +113,7 @@ namespace Prism.Controllers
 
                         var yieldhpulist = GetHPUDataBySerial(sitem, xaxis, srcdata);
                         var hpureduction = GetHPUReduction(yieldhpulist);
+                        
 
                         var maxhpu = 0.0;
                         foreach (var yhp in yieldhpulist)
@@ -124,7 +126,23 @@ namespace Prism.Controllers
                         foreach (var hrd in hpureduction)
                         { if (hrd < minhpureduction) { minhpureduction = hrd; } }
 
-                        var hpuguideline = new { name = "HPU Reduction Guideline", color = "#C9302C", data = 5.0, style = "dash" };
+                        var defaultguideline = 5.0;
+                        if (syscfg.ContainsKey(sitem + "-GUIDELINE"))
+                        {
+                            defaultguideline = Convert.ToDouble(syscfg[sitem + "-GUIDELINE"]);
+                        }
+
+                        var hpuguideline = new { name = "HPU Reduction Guideline", color = "#C9302C", data = defaultguideline, style = "dash" };
+
+                        var columncolors = new List<string>();
+                        foreach (var hrd in hpureduction)
+                        {
+                            if (hrd < defaultguideline)
+                            { columncolors.Add("#cc044d"); }
+                            else
+                            { columncolors.Add("#12cc92"); }
+                        }
+
                         var title = sitem.Replace("-FG", "").Replace("- FG", "") + " HPU";
 
                         var oneobj = new
@@ -135,6 +153,7 @@ namespace Prism.Controllers
                             maxhpu = maxhpu,
                             maxhpureduction = maxhpureduction,
                             hpuguideline = hpuguideline,
+                            columncolors = columncolors,
                             yieldhpu = new { name = "Yield HPU", data = yieldhpulist },
                             hpureduction = new { name = "HPU Reduction", data = hpureduction },
                             url = "/DataAnalyze/SerialHPU?defaultserial=" + sitem.Split(new string[] { "-FG", "- FG" },StringSplitOptions.RemoveEmptyEntries)[0]

@@ -20,7 +20,7 @@ HPUSRCFOLDER:::\\wux-fs\PUBLIC\WUXI IE\HPU
 HPUPRODUCTLINE:::Parallel Process HPU;Linecard Process HPU;OSA Process HPU;WSS Process HPU;WDM Process HPU;POU Process HPU;POS Process HPU;PISO Process HPU;LCR Process HPU;FLB Process HPU;FISO Process HPU;EDFA Process HPU;40G transponder Process HPU;
 
 HPUTRENDSERIAL:::Quadwire EDR - QB1C
-
+Quadwire EDR - QB1C-FG-GUIDELINE:::6.0
 
 WUXIOTSFILE:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - OTS for WUXI.csv
 

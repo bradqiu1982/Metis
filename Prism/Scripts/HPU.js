@@ -358,8 +358,12 @@
                             }
                         }
                     }
+                },
+                column: {
+                    colorByPoint: true
                 }
             },
+            colors : line_data.columncolors,
             series: [
                 {
                     name: line_data.yieldhpu.name,
