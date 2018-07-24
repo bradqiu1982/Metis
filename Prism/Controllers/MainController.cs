@@ -80,7 +80,8 @@ namespace Prism.Controllers
 
         public ActionResult HeartBeat2()
         {
-            ExternalDataCollector.LoadIEHPU(this);
+            var syscfg = CfgUtility.GetSysConfig(this);
+            ExternalDataCollector.LoadIEHPU(this,syscfg["MANUALHPUQUARTER"]);
             return View("HeartBeat");
         }
 

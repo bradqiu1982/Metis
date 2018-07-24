@@ -32,6 +32,9 @@ namespace Prism.Models
             Quarter = "";
             QuarterDate = DateTime.Parse("1982-05-06 10:00:00");
             DetailLink = "";
+
+            WeeklyCapacity = 0.0;
+            SeasonCapacity = 0.0;
         }
 
         public void StoreData()
@@ -313,6 +316,9 @@ namespace Prism.Models
         public DateTime QuarterDate { set; get; }
 
         public string DetailLink { set; get; }
+
+        public double WeeklyCapacity { set; get; }
+        public double SeasonCapacity { set; get; }
          
     }
 
@@ -409,7 +415,7 @@ namespace Prism.Models
             var titletrow = 0;
 
             var ridx = 0;
-            var checkrows = (rawdata.Count > 10) ? 10 : rawdata.Count;
+            var checkrows = (rawdata.Count > 6) ? 6 : rawdata.Count;
 
             for (ridx = 0; ridx < checkrows; ridx++)
             {

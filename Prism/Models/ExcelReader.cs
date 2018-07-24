@@ -120,7 +120,7 @@ bool updateLinks)
                                     if (!string.IsNullOrEmpty(addr))
                                     {
                                         newline.Add(addr);
-                                        break;
+                                        //break;
                                     }
                                 }
                             }
@@ -190,13 +190,29 @@ bool updateLinks)
                 hWnd = excel.Application.Hwnd;
                 GetWindowThreadProcessId((IntPtr)hWnd, out processID);
 
+                
                 if (string.IsNullOrEmpty(sheetname))
                 {
                     sheet = wkb.Sheets[1] as Excel.Worksheet;
                 }
                 else
                 {
-                    sheet = wkb.Sheets[sheetname] as Excel.Worksheet;
+                    var sheetdict = new Dictionary<string, string>();
+                    foreach (Excel.Worksheet wksheet in wkb.Sheets)
+                    {
+                        var keyname = wksheet.Name.Split(new string[] { "(V","(v", "( V", "( v" }, StringSplitOptions.RemoveEmptyEntries)[0];
+                        if (!sheetdict.ContainsKey(keyname))
+                        {
+                            sheetdict.Add(keyname, wksheet.Name);
+                        }
+                        
+                    }
+
+                    var orgname = sheetname.Split(new string[] { "(V", "(v", "( V", "( v" }, StringSplitOptions.RemoveEmptyEntries)[0];
+                    if (sheetdict.ContainsKey(orgname))
+                    {
+                        sheet = wkb.Sheets[sheetdict[orgname]] as Excel.Worksheet;
+                    }
                 }
 
                 var ret = RetrieveDataFromExcel2(sheet, columns, getlink);
@@ -205,7 +221,9 @@ bool updateLinks)
                 books.Close();
                 excel.Quit();
 
-                Marshal.ReleaseComObject(sheet);
+                if(sheet != null)
+                    Marshal.ReleaseComObject(sheet);
+
                 Marshal.ReleaseComObject(wkb);
                 Marshal.ReleaseComObject(books);
                 Marshal.ReleaseComObject(excel);

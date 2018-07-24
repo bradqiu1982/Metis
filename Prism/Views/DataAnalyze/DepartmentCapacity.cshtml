@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "Serial HPU";
+    ViewBag.Title = "Department Capacity";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -12,10 +12,10 @@
 <script type="text/javascript" src="~/Scripts/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
 <script type="text/javascript" src="~/Scripts/bootstrap-tagsinput/bootstrap3-typeahead.js"></script>
 <script type="text/javascript" src="~/Scripts/jquery-autocomplete/jquery.auto-complete.min.js"></script>
-<script type="text/javascript" src="~/Scripts/HPU.js"></script>
+<script type="text/javascript" src="~/Scripts/Capacity.js"></script>
 <script type="text/javascript">
         $(function(){
-            HPU.SERIALINIT();
+            CAPACITY.DEPARTMENTINIT();
         })
 </script>
 
@@ -26,7 +26,7 @@
     <div class="nav navbar-nav navbar-left">
         <ol class="breadcrumb" style="width:600px">
             <li><a data-toggle="tooltip" title="Goto Main Page" href="/Main/Index">Main</a></li>
-            <li class="active">Serial HPU</li>
+            <li class="active">Department Capacity</li>
         </ol>
     </div>
 </div>
@@ -35,23 +35,18 @@
     <nav class="col-xs-2 nav-sidebar">
         <ul class="nav">
             <li>
-                <a href="/DataAnalyze/HPUTrend">
-                    <span class="item-show">HPU Trend</span>
-                </a>
-            </li>
-            <li>
-                <a href="/DataAnalyze/DepartmentHPU">
-                    <span class="item-show">Department HPU</span>
+                <a href="/DataAnalyze/CapacityTrend">
+                    <span class="item-show">Capacity Trend</span>
                 </a>
             </li>
             <li class="active">
-                <a href="/DataAnalyze/SerialHPU">
-                    <span class="item-show">Serial HPU</span>
+                <a href="/DataAnalyze/DepartmentCapacity">
+                    <span class="item-show">Department Capacity</span>
                 </a>
             </li>
             <li>
-                <a href="/DataAnalyze/PNHPU">
-                    <span class="item-show">PN HPU</span>
+                <a href="/DataAnalyze/SerialCapacity">
+                    <span class="item-show">Serial Capacity</span>
                 </a>
             </li>
         </ul>
@@ -61,10 +56,14 @@
         <div class="v-container">
             <div class="v-filter">
                 <div class="row row-margin">
-                    <label class="col-xs-2">Product Serial</label>
-                    <div class="col-xs-8">
-                        <input type="text" class="pd_serial_cla" data-provide="typeahead"
-                               id="pd_serial" name="pd_serial" autocomplete="off" placeholder="Product Serial" value="@ViewBag.defaultserial">
+                    <label class="col-xs-2">Product Line</label>
+                    <div class="col-xs-2">
+                        @Html.DropDownList("productlines", null, new { @id = "productlines", @class = "form-control" })
+                    </div>
+                    <div class="col-xs-1 text-center"></div>
+                    <label class="col-xs-2">Finance Quarter</label>
+                    <div class="col-xs-3">
+                        @Html.DropDownList("quarterlist", null, new { @id = "quarterlist", @class = "form-control" })
                     </div>
                     <div class="col-xs-1 box-search" style="padding-left:0">
                         <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
@@ -73,14 +72,15 @@
             </div>
             <div class="v-content">
                 <table class="table table-hover  table-condensed table-striped" id="hpumaintable" style="margin-top:1%">
-                    <caption class="tb-caption">SERIAL HPU TABLE</caption>
+                    <caption class="tb-caption">DEPARTMENT CAPACITY TABLE</caption>
                     <thead>
                         <tr>
-                            <th>Quarter</th>
                             <th>PN</th>
                             <th>Product Line</th>
                             <th>Serial</th>
                             <th>Phase</th>
+                            <th>Weekly Capacity</th>
+                            <th>Season Capacity</th>
                             <th>Yield HPU</th>
                             <th>Remark</th>
                         </tr>
@@ -94,4 +94,7 @@
         <a id="exportLink"></a>
     </div>
 </div>
+
+
+
 

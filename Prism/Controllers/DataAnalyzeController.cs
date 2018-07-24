@@ -10,6 +10,7 @@ namespace Prism.Controllers
 {
     public class DataAnalyzeController : Controller
     {
+
         public ActionResult HPUTrend()
         {
             ViewBag.defaultserial = "";
@@ -152,6 +153,7 @@ namespace Prism.Controllers
                             xAxis = new { data = xaxis },
                             maxhpu = maxhpu,
                             maxhpureduction = maxhpureduction,
+                            minhpureduction = minhpureduction,
                             hpuguideline = hpuguideline,
                             columncolors = columncolors,
                             yieldhpu = new { name = "Yield HPU", data = yieldhpulist },
@@ -177,6 +179,111 @@ namespace Prism.Controllers
             };
             return ret;
         }
+
+
+        public ActionResult CapacityTrend()
+        {
+            ViewBag.defaultserial = "";
+            var syscfg = CfgUtility.GetSysConfig(this);
+            if (syscfg.ContainsKey("CAPACITYTRENDSERIAL"))
+            { ViewBag.defaultserial = syscfg["CAPACITYTRENDSERIAL"]; }
+            return View();
+        }
+
+        public JsonResult CapacityTrendData()
+        {
+            var serial = Request.Form["serial"];
+            var srcdata = HPUMainData.RetrieveHPUDataBySerial(serial);
+            var syscfg = CfgUtility.GetSysConfig(this);
+
+            var hpuarray = new List<object>();
+            try
+            {
+                if (srcdata.Count > 0)
+                {
+                    var seriallist = new List<string>();
+                    var serialdict = new Dictionary<string, bool>();
+                    foreach (var item in srcdata)
+                    {
+                        if (!item.Serial.Contains("-SFG") && !item.Serial.Contains("- SFG"))
+                        {
+                            if (!serialdict.ContainsKey(item.Serial))
+                            {
+                                serialdict.Add(item.Serial, true);
+                                seriallist.Add(item.Serial);
+                            }
+                        }
+                    }//get serials
+
+                    foreach (var sitem in seriallist)
+                    {
+                        var xaxis = new List<string>();
+                        foreach (var data in srcdata)
+                        {
+                            if (string.Compare(data.Serial, sitem) == 0)
+                            {
+                                xaxis.Add(data.Quarter);
+                            }
+                        }//get quarter x list
+
+                        if (xaxis.Count == 1)
+                        { continue; }
+
+                        var yieldhpulist = GetHPUDataBySerial(sitem, xaxis, srcdata);
+                        var weeklycapacity = new List<double>();
+                        foreach (var hpu in yieldhpulist)
+                        {
+                            if (hpu != 0.0)
+                            { weeklycapacity.Add(Math.Round(24.0 / hpu * 6.5, 2)); }
+                            else
+                            { weeklycapacity.Add(0.0); }
+                        }
+
+
+                        var maxhpu = 0.0;
+                        foreach (var yhp in yieldhpulist)
+                        { if (yhp > maxhpu) { maxhpu = yhp; } }
+
+                        var maxcapacity = 0.0;
+                        foreach (var hrd in weeklycapacity)
+                        { if (hrd > maxcapacity) { maxcapacity = hrd; } }
+
+
+                        var title = sitem.Replace("-FG", "").Replace("- FG", "") + " Capacity";
+
+                        var oneobj = new
+                        {
+                            id = sitem.Replace(" ", "_") + "_line",
+                            title = title,
+                            xAxis = new { data = xaxis },
+                            maxhpu = maxhpu,
+                            maxcapacity = maxcapacity,
+                            yieldhpu = new { name = "Yield HPU", data = yieldhpulist },
+                            capacity = new { name = "Capacity", data = weeklycapacity },
+                            url = "/DataAnalyze/SerialCapacity?defaultserial=" + sitem.Split(new string[] { "-FG", "- FG" }, StringSplitOptions.RemoveEmptyEntries)[0]
+                        };
+
+                        hpuarray.Add(oneobj);
+
+                    }//get chart data from each serial
+
+                }
+            }
+            catch (Exception ex) { }
+
+
+
+
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                success = true,
+                hpuarray = hpuarray
+            };
+            return ret;
+        }
+
+
 
         public ActionResult DepartmentHPU()
         {
@@ -213,6 +320,104 @@ namespace Prism.Controllers
             return ret;
         }
 
+        public ActionResult DepartmentCapacity()
+        {
+            var productlines = HPUMainData.GetAllProductLines();
+            ViewBag.productlines = CreateSelectList(productlines, "");
+
+            var quarterlist = HPUMainData.GetAllQuarters();
+            quarterlist.Insert(0, FinanceQuarter.CURRENTQx);
+            ViewBag.quarterlist = CreateSelectList(quarterlist, "");
+
+            return View();
+        }
+
+        private double Convert2Double(string val)
+        {
+            try
+            {
+                return Convert.ToDouble(val);
+            }
+            catch (Exception ex) {
+                return 0.0;
+            }
+        }
+
+        public JsonResult DepartmentCapacityData()
+        {
+            var productline = Request.Form["pdline"];
+            var fquarter = Request.Form["quarter"];
+
+            if (string.Compare(fquarter, FinanceQuarter.CURRENTQx) == 0)
+            {
+                var now = DateTime.Now;
+                var year = ExternalDataCollector.GetFYearByTime(now);
+                var quarter = ExternalDataCollector.GetFQuarterByTime(now);
+                fquarter = year + " " + quarter;
+            }
+
+            var srcdata = HPUMainData.RetrieveHPUData(productline, fquarter);
+            var newdata = new List<HPUMainData>();
+
+            var seriallist = new List<string>();
+            var serialdict = new Dictionary<string, bool>();
+            foreach (var item in srcdata)
+            {
+                if (!item.Serial.Contains("-SFG") && !item.Serial.Contains("- SFG"))
+                {
+                    if (!serialdict.ContainsKey(item.Serial))
+                    {
+                        serialdict.Add(item.Serial, true);
+                        seriallist.Add(item.Serial);
+                    }
+                }
+            }//get serials
+
+            foreach (var sitem in seriallist)
+            {
+                var xaxis = new List<string>();
+                foreach (var data in srcdata)
+                {
+                    if (string.Compare(data.Serial, sitem) == 0)
+                    {
+                        xaxis.Add(data.Quarter);
+                    }
+                }//get quarter x list
+
+                var yieldhpulist = GetHPUDataBySerial(sitem, xaxis, srcdata);
+
+                var idx = 0;
+                foreach (var item in srcdata)
+                {
+                    if (string.Compare(item.Serial, sitem) == 0)
+                    {
+                        item.YieldHPU = yieldhpulist[idx].ToString();
+                        newdata.Add(item);
+                        idx++;
+                    }//end if
+                }//end foreach
+            }//get yield for each serial
+            
+            foreach (var item in newdata)
+            {
+                var hpu = Convert2Double(item.YieldHPU);
+                if (hpu != 0.0)
+                {
+                    item.WeeklyCapacity = Math.Round(24.0 / hpu * 6.5,2);
+                    item.SeasonCapacity = Math.Round(13.0 * item.WeeklyCapacity,2);
+                }
+            }
+
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                success = true,
+                data = newdata
+            };
+            return ret;
+        }
+
+
         public ActionResult SerialHPU(string defaultserial)
         {
             ViewBag.defaultserial = "";
@@ -243,6 +448,80 @@ namespace Prism.Controllers
             {
                 success = true,
                 data = data
+            };
+            return ret;
+        }
+
+        public ActionResult SerialCapacity(string defaultserial)
+        {
+            ViewBag.defaultserial = "";
+            if (!string.IsNullOrEmpty(defaultserial))
+            {
+                ViewBag.defaultserial = defaultserial;
+            }
+            return View();
+        }
+
+        public JsonResult SerialCapacityData()
+        {
+            var serial = Request.Form["serial"];
+            var srcdata = HPUMainData.RetrieveHPUDataBySerial(serial);
+
+            var newdata = new List<HPUMainData>();
+
+            var seriallist = new List<string>();
+            var serialdict = new Dictionary<string, bool>();
+            foreach (var item in srcdata)
+            {
+                if (!item.Serial.Contains("-SFG") && !item.Serial.Contains("- SFG"))
+                {
+                    if (!serialdict.ContainsKey(item.Serial))
+                    {
+                        serialdict.Add(item.Serial, true);
+                        seriallist.Add(item.Serial);
+                    }
+                }
+            }//get serials
+
+            foreach (var sitem in seriallist)
+            {
+                var xaxis = new List<string>();
+                foreach (var data in srcdata)
+                {
+                    if (string.Compare(data.Serial, sitem) == 0)
+                    {
+                        xaxis.Add(data.Quarter);
+                    }
+                }//get quarter x list
+
+                var yieldhpulist = GetHPUDataBySerial(sitem, xaxis, srcdata);
+
+                var idx = 0;
+                foreach (var item in srcdata)
+                {
+                    if (string.Compare(item.Serial, sitem) == 0)
+                    {
+                        item.YieldHPU = yieldhpulist[idx].ToString();
+                        newdata.Add(item);
+                        idx++;
+                    }//end if
+                }//end foreach
+            }//get yield for each serial
+
+            foreach (var item in newdata)
+            {
+                var hpu = Convert2Double(item.YieldHPU);
+                if (hpu != 0.0)
+                {
+                    item.WeeklyCapacity = Math.Round(24.0 / hpu * 6.5, 2);
+                    item.SeasonCapacity = Math.Round(13.0 * item.WeeklyCapacity,2);
+                }
+            }
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                success = true,
+                data = newdata
             };
             return ret;
         }

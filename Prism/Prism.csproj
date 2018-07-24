@@ -696,6 +696,7 @@
     <Content Include="Scripts\bootstrap\bootstrap.js" />
     <Content Include="Scripts\bootstrap\bootstrap.min.js" />
     <Content Include="Scripts\bootstrap\npm.js" />
+    <Content Include="Scripts\Capacity.js" />
     <Content Include="Scripts\exporting.js" />
     <Content Include="Scripts\highcharts-modal.js" />
     <Content Include="Scripts\highcharts-more.js" />
@@ -752,6 +753,9 @@
     <Content Include="Views\DataAnalyze\PNHPU.cshtml" />
     <Content Include="Views\DataAnalyze\SerialHPU.cshtml" />
     <Content Include="Views\DataAnalyze\HPUTrend.cshtml" />
+    <Content Include="Views\DataAnalyze\DepartmentCapacity.cshtml" />
+    <Content Include="Views\DataAnalyze\SerialCapacity.cshtml" />
+    <Content Include="Views\DataAnalyze\CapacityTrend.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

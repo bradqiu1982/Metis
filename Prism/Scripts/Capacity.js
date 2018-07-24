@@ -1,13 +1,13 @@
-﻿var HPU = function () {
-    
-    var departmenthpu = function () {
+﻿var CAPACITY = function () {
+
+    var departmentcapacity = function () {
         var hputable = null;
 
         function searchdata() {
             var pdline = $.trim($('#productlines').val());
             var quarter = $.trim($('#quarterlist').val());
 
-            $.post('/DataAnalyze/DepartmentHPUData', {
+            $.post('/DataAnalyze/DepartmentCapacityData', {
                 pdline: pdline,
                 quarter: quarter
             }, function (output) {
@@ -23,26 +23,19 @@
                     for (idx = 0; idx < datacont; idx++) {
                         var line = output.data[idx];
 
-                        var hpucode = line.HPUCode;
-                        if (line.DetailLink != '')
-                        {
-                            hpucode = '<a href="/DataAnalyze/PNHPU?PNLink=' + line.DetailLink + '" target="_blank">' + hpucode + '</a>';
+                        var pn = line.TypicalPN;
+                        if (line.DetailLink != '') {
+                            pn = '<a href="/DataAnalyze/PNHPU?PNLink=' + line.DetailLink + '" target="_blank">' + pn + '</a>';
                         }
 
-                        $("#hpumaintableid").append('<tr>'+
-                            '<td>' + line.HPUOrder + '</td>' +
-                            '<td>' + hpucode + '</td>' +
+                        $("#hpumaintableid").append('<tr>' +
+                            '<td>' + pn + '</td>' +
                             '<td>' + line.ProductLine + '</td>' +
                             '<td>' + line.Serial + '</td>' +
                             '<td>' + line.Phase + '</td>' +
-                            '<td>' + line.TypicalPN + '</td>' +
-                            //'<td>' + line.WorkingHourMeasure + '</td>' +
-                            //'<td>' + line.WorkingHourCollect + '</td>' +
-                            //'<td>' + line.WorkingHourChecked + '</td>' +
+                            '<td>' + line.WeeklyCapacity + '</td>' +
+                            '<td>' + line.SeasonCapacity + '</td>' +
                             '<td>' + line.YieldHPU + '</td>' +
-                            '<td>' + line.Owner + '</td>' +
-                            '<td>' + line.UpdateDate + '</td>' +
-                            //'<td>' + line.FormMake + '</td>' +
                             '<td>' + line.Remark + '</td>' +
                             + '</tr>');
                     }
@@ -64,7 +57,7 @@
         })
     }
 
-    var hputrend = function () {
+    var capacitytrend = function () {
         $.post('/DataAnalyze/GetAllSerial', {}, function (output) {
             $('.pd_serial_cla').tagsinput({
                 freeInput: false,
@@ -96,7 +89,7 @@
                 return false;
             }
 
-            $.post('/DataAnalyze/HPUTrendData', {
+            $.post('/DataAnalyze/CapacityTrendData', {
                 serial: serial
             }, function (output) {
                 if (output.success) {
@@ -121,21 +114,18 @@
             searchdata();
         })
 
-        function defaultsearch()
-        {
+        function defaultsearch() {
             var serial = $.trim($('#pd_serial').tagsinput('items'));
             if (serial == '') {
                 serial = $.trim($('#pd_serial').parent().find('input').eq(0).val());
             }
-            if (serial != '')
-            {
+            if (serial != '') {
                 searchdata();
             }
         }
     }
 
-
-    var searialhpu = function () {
+    var searialcapacity = function () {
         var hputable = null;
 
         $.post('/DataAnalyze/GetAllSerial', {}, function (output) {
@@ -168,7 +158,7 @@
                 return false;
             }
 
-            $.post('/DataAnalyze/SerialHPUData', {
+            $.post('/DataAnalyze/SerialCapacityData', {
                 serial: serial
             }, function (output) {
                 if (output.success) {
@@ -194,6 +184,8 @@
                             '<td>' + line.ProductLine + '</td>' +
                             '<td>' + line.Serial + '</td>' +
                             '<td>' + line.Phase + '</td>' +
+                            '<td>' + line.WeeklyCapacity + '</td>' +
+                            '<td>' + line.SeasonCapacity + '</td>' +
                             '<td>' + line.YieldHPU + '</td>' +
                             '<td>' + line.Remark + '</td>' +
                             + '</tr>');
@@ -226,92 +218,6 @@
         }
     }
 
-
-    var pnhpu = function () {
-
-        var hputable = null;
-
-        $.post('/DataAnalyze/PNHPUPNLinkList', {}, function (output) {
-            $('#pnlink').autoComplete({
-                minChars: 0,
-                source: function (term, suggest) {
-                    term = term.toLowerCase();
-                    var choices = output.data;
-                    var suggestions = [];
-                    for (i = 0; i < choices.length; i++)
-                        if (~choices[i].toLowerCase().indexOf(term)) suggestions.push(choices[i]);
-                    suggest(suggestions);
-                }
-            });
-
-            defaultsearch();
-        });
-
-        function searchdata()
-        {
-            var pnlink = $.trim($('#pnlink').val());
-            if (pnlink == '') {
-                alert("PN need to be input!");
-                return false;
-            }
-            
-            $.post('/DataAnalyze/GetPNHPUData', {
-                pnlink: pnlink
-            }, function (output) {
-                if (output.success) {
-                    
-                    if (hputable) {
-                        hputable.destroy();
-                    }
-                    $("#hpuheadid").empty();
-                    $("#hpumaintableid").empty();
-
-                    if (output.data.length == 0)
-                    { return false; }
-
-                    var appendstr = '<tr>';
-                    $.each(output.title,function (idx, v) {
-                        appendstr +='<th>'+v+'</th>'
-                    })
-                    appendstr += '</tr>';
-                    $("#hpuheadid").append(appendstr);
-
-                    appendstr = '';
-                    $.each(output.data, function (idx, va)
-                    {
-                        appendstr += '<tr>';
-                        $.each(va, function (i, v){
-                            appendstr += '<td>'+v+'</td>';
-                        })
-                        appendstr += '</tr>';
-                    })
-                    $("#hpumaintableid").append(appendstr);
-
-                    hputable = $('#hpumaintable').DataTable({
-                        'iDisplayLength': 50,
-                        'aLengthMenu': [[20, 50, 100, -1],
-                        [20, 50, 100, "All"]],
-                        "aaSorting": [],
-                        "order": []
-                    });
-                }
-            });
-        }
-
-        $('body').on('click', '#btn-search', function () {
-            searchdata();
-        })
-
-        function defaultsearch()
-        {
-            var pnlink = $.trim($('#pnlink').val());
-            if (pnlink != '')
-            {
-                searchdata();
-            }
-        }
-    }
-
     var drawline = function (line_data) {
         var options = {
             chart: {
@@ -324,30 +230,22 @@
             xAxis: {
                 categories: line_data.xAxis.data
             },
-            yAxis: [{
-                min: 0,
-                max: line_data.maxhpu,
-                title: {
-                    text: 'YIELD HPU'
-                }
-            }, {
-                opposite: true,
-                min: line_data.minhpureduction,
-                max: line_data.maxhpureduction,
-                title: {
-                    text: 'HPU Reduction (%)'
-                },
-                plotLines: [{
-                    value: line_data.hpuguideline.data,
-                    color: line_data.hpuguideline.color,
-                    dashStyle: line_data.hpuguideline.style,
-                    width: 1,
-                    label: {
-                        text: line_data.hpuguideline.name + ':' + line_data.hpuguideline.data,
-                        align: 'left'
+            yAxis: [
+                {
+                    min: 0,
+                    max: line_data.maxcapacity,
+                    title: {
+                        text: 'CAPACITY'
                     }
-                }]
-            }],
+                },
+                {
+                    opposite: true,
+                    min: 0,
+                    max: line_data.maxhpu,
+                    title: {
+                        text: 'YIELD HPU'
+                    }
+                }],
             plotOptions: {
                 series: {
                     cursor: 'pointer',
@@ -358,24 +256,20 @@
                             }
                         }
                     }
-                },
-                column: {
-                    colorByPoint: true
                 }
             },
-            colors : line_data.columncolors,
             series: [
                 {
                     name: line_data.yieldhpu.name,
                     type: 'line',
                     data: line_data.yieldhpu.data,
-                    yAxis: 0
+                    yAxis: 1
                 },
                 {
-                    name: line_data.hpureduction.name,
+                    name: line_data.capacity.name,
                     type: 'column',
-                    data: line_data.hpureduction.data,
-                    yAxis: 1
+                    data: line_data.capacity.data,
+                    yAxis: 0
                 }
             ],
             exporting: {
@@ -460,18 +354,13 @@
 
     return {
         DEPARTMENTINIT: function () {
-            departmenthpu();
+            departmentcapacity();
         },
         TRENDINIT: function () {
-            hputrend();
+            capacitytrend();
         },
-        SERIALINIT: function ()
-        {
-            searialhpu();
-        },
-        PNHPUINIT: function ()
-        {
-            pnhpu();
+        SERIALINIT: function () {
+            searialcapacity();
         },
     }
 }();

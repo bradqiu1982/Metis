@@ -545,15 +545,24 @@ namespace Prism.Models
 
             return ret;
         }
-
-        public static void LoadIEHPU(Controller ctrl)
+        
+        public static void LoadIEHPU(Controller ctrl,string defaultquarter = null)
         {
             var syscfg = CfgUtility.GetSysConfig(ctrl);
             var datafolder = syscfg["HPUSRCFOLDER"];
             var srcfilters = syscfg["HPUPRODUCTLINE"].Split(new string[] { ";" },StringSplitOptions.RemoveEmptyEntries).ToList();
 
-            var now = DateTime.Now;
-            string fyearquarter = GetFYearByTime(now) + " "+GetFQuarterByTime(now);
+            string fyearquarter = "";
+            if (defaultquarter == null)
+            {
+                var now = DateTime.Now;
+                fyearquarter = GetFYearByTime(now) + " "+GetFQuarterByTime(now);
+            }
+            else
+            {
+                fyearquarter = defaultquarter;
+            }
+
             var pnlinkmap = HPUMainData.RetrieveAllPNLink();
 
             var srcfiles = DirectoryEnumerateFiles(ctrl,datafolder);
