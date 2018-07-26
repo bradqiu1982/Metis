@@ -34,7 +34,14 @@ namespace Prism.Controllers
                             && string.Compare(data.Quarter, q) == 0
                             && (data.Serial.Contains("-SFG") || data.Serial.Contains("- SFG")))
                         {
-                            temphpu += 2.0 * Convert.ToDouble(data.YieldHPU);
+                            if (data.Serial.ToUpper().Contains("WIRE") && !data.Serial.ToUpper().Contains("WIRELESS"))
+                            {
+                                temphpu += 2.0 * Convert.ToDouble(data.YieldHPU);
+                            }
+                            else
+                            {
+                                temphpu +=  Convert.ToDouble(data.YieldHPU);
+                            }
                         }
                         if (string.Compare(data.Serial.Replace("-SFG", "").Replace("- SFG", "").Replace("-FG", "").Replace("- FG", ""), serial.Replace("-FG", "").Replace("- FG", "")) == 0
                             && string.Compare(data.Quarter, q) == 0
