@@ -7,6 +7,16 @@
             var fquarter = $.trim($('#fquarterlist').val());
             var department = $.trim($('#department').val());
 
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
+
             $.post('/DataAnalyze/DepartmentScrapRateData', {
                 fyear: fyear,
                 fquarter: fquarter,
@@ -21,12 +31,12 @@
                                '<div class="v-box" id="' + val.id + '"></div>' +
                                '</div>';
                         $('.v-content').append(appendstr);
-                        drawline(val);
+                        drawline(val,false);
                     })
-
-                    setTimeout(function () {
-                        $('#loadcomplete').html('TRUE');
-                    }, 10000);
+                    $.bootstrapLoading.end();
+                    //setTimeout(function () {
+                    //    $('#loadcomplete').html('TRUE');
+                    //}, 10000);
                 }
             })
         }
@@ -76,6 +86,16 @@
                 return false;
             }
 
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
+
             $.post('/DataAnalyze/CostCenterScrapRateData', {
                 fyear: fyear,
                 fquarter: fquarter,
@@ -90,12 +110,14 @@
                                '<div class="v-box" id="' + val.id + '"></div>' +
                                '</div>';
                         $('.v-content').append(appendstr);
-                        drawline(val);
+                        drawline(val,true);
                     })
 
-                    setTimeout(function () {
-                        $('#loadcomplete').html('TRUE');
-                    }, 10000);
+                    $.bootstrapLoading.end();
+
+                    //setTimeout(function () {
+                    //    $('#loadcomplete').html('TRUE');
+                    //}, 10000);
                 }
             })
         }
@@ -114,12 +136,11 @@
             }
         }
 
-        //$('body').on('click', '#btn-wf-download', function () {
-        //    var wafer_no = $.trim($('#m-wf-no').val());
-        //    var vcseltype = $.trim($('#vcseltypeselectlist').val());
-        //    $('#boxplot-alert').modal('hide');
-        //    window.open("/DataAnalyze/DownLoadWaferByMonth?" + "month=" + wafer_no + "&vtype=" + vcseltype);
-        //})
+        $('body').on('click', '#editreport', function () {
+            var reportid = $.trim($('#reportid').val());
+            $('#report-alert').modal('hide');
+            window.open("/DataAnalyze/ModifyReport?" + "reportid=" + reportid);
+        })
     }
 
     var productscrap = function () {
@@ -157,6 +178,16 @@
                 return false;
             }
 
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
+
             $.post('/DataAnalyze/ProductScrapRateData', {
                 fyear: fyear,
                 fquarter: fquarter,
@@ -171,12 +202,14 @@
                                '<div class="v-box" id="' + val.id + '"></div>' +
                                '</div>';
                         $('.v-content').append(appendstr);
-                        drawline(val);
+                        drawline(val,true);
                     })
 
-                    setTimeout(function () {
-                        $('#loadcomplete').html('TRUE');
-                    }, 10000);
+                    $.bootstrapLoading.end();
+
+                    //setTimeout(function () {
+                    //    $('#loadcomplete').html('TRUE');
+                    //}, 10000);
                 }
             })
         }
@@ -195,9 +228,15 @@
             }
         }
 
+        $('body').on('click', '#editreport', function () {
+            var reportid = $.trim($('#reportid').val());
+            $('#report-alert').modal('hide');
+            window.open("/DataAnalyze/ModifyReport?" + "reportid=" + reportid);
+        })
+
     }
 
-    var drawline = function (line_data) {
+    var drawline = function (line_data, withreport) {
         var options = {
             chart: {
                 zoomType: 'xy',
@@ -246,11 +285,34 @@
                     cursor: 'pointer',
                     events: {
                         click: function (event) {
-                            if (line_data.url != '')
-                            {
-                                var fyear = $.trim($('#fyearlist').val());
-                                var fquarter = $.trim($('#fquarterlist').val());
-                                window.open(line_data.url + event.point.category + '&defyear=' + fyear + '&defqrt=' + fquarter);
+                            if (withreport) {
+                                $("#reportid").val(line_data.id);
+                                $.post('/DataAnalyze/RetrieveReport', {
+                                    reportid: line_data.id,
+                                    reporttype: 'SCRAP'
+                                }, function (output) {
+
+                                    if (line_data.url != '') {
+                                        var fyear = $.trim($('#fyearlist').val());
+                                        var fquarter = $.trim($('#fquarterlist').val());
+                                        $("#productscrap").attr('href',line_data.url + event.point.category + '&defyear=' + fyear + '&defqrt=' + fquarter);
+                                    }
+
+                                    if (output.success) {
+                                        $('#rc-info').html(output.report.content);
+                                        $('#rc-reporter').html(output.report.reporter);
+                                        $('#rc-datetime').html(output.report.time);
+                                    }
+                                    $('#report-alert').modal('show');
+                                });
+                            }
+                            else {
+                                    if (line_data.url != '')
+                                    {
+                                        var fyear = $.trim($('#fyearlist').val());
+                                        var fquarter = $.trim($('#fquarterlist').val());
+                                        window.open(line_data.url + event.point.category + '&defyear=' + fyear + '&defqrt=' + fquarter);
+                                    }
                             }
                          }
                     }
@@ -367,6 +429,7 @@
         };
         Highcharts.chart(line_data.id, options);
     }
+
 
     var drawcolumn = function (col_data) {
         var options = {

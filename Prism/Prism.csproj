@@ -204,7 +204,9 @@
     <Compile Include="Models\ExternalDataCollector.cs" />
     <Compile Include="Models\HPUMainData.cs" />
     <Compile Include="Models\IEScrapBuget.cs" />
+    <Compile Include="Models\MachineUserMap.cs" />
     <Compile Include="Models\PNPlannerCodeMap.cs" />
+    <Compile Include="Models\PrismComment.cs" />
     <Compile Include="Models\ScrapData_Base.cs" />
     <Compile Include="Models\WebsiteToImage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -631,6 +633,12 @@
     <Content Include="Content\bootstrap\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap\bootstrap.css" />
     <Content Include="Content\bootstrap\bootstrap.min.css" />
+    <Content Include="Content\images\end.png" />
+    <Content Include="Content\images\Report.png" />
+    <Content Include="Content\images\start.png" />
+    <Content Include="Content\images\upload.png" />
+    <Content Include="Content\images\videoloading.gif" />
+    <Content Include="Content\images\welcome.png" />
     <Content Include="Content\images\Yield.png" />
     <Content Include="Content\SCRAP-RATE.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
@@ -641,6 +649,8 @@
     <Content Include="Content\jquery.dataTables.min.css" />
     <Content Include="Content\Layout.css" />
     <Content Include="Content\Site.css" />
+    <Content Include="Content\videorecorder.css" />
+    <Content Include="Content\welcome.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -714,6 +724,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\MyVideoRecord.js" />
     <Content Include="Scripts\prism-db-script.txt" />
     <Content Include="Scripts\PrismCfg.txt" />
     <Content Include="Scripts\MetisHeartBeat.exe" />
@@ -728,6 +739,8 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\Scrap-Rate.js" />
+    <Content Include="Scripts\VideoRecorderJs-master\dist\recorderWorker.js" />
+    <Content Include="Scripts\VideoRecorderJs-master\dist\VideoRecorderJS.min.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -756,6 +769,9 @@
     <Content Include="Views\DataAnalyze\DepartmentCapacity.cshtml" />
     <Content Include="Views\DataAnalyze\SerialCapacity.cshtml" />
     <Content Include="Views\DataAnalyze\CapacityTrend.cshtml" />
+    <Content Include="Views\Main\Welcome.cshtml" />
+    <Content Include="Views\DataAnalyze\ModifyReport.cshtml" />
+    <Content Include="Views\Shared\_VideoRecordModal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

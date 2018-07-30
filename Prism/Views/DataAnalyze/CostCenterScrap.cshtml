@@ -50,11 +50,6 @@
                     <span class="item-show">Product Scrap</span>
                 </a>
             </li>
-            @*<li>
-                <a href="/DataAnalyze/BRJOScrap">
-                    <span class="item-show">BR/JO Scrap</span>
-                </a>
-            </li>*@
         </ul>
     </nav>
     <div class="col-xs-10">
@@ -89,5 +84,46 @@
     </div>
     <div class="hidden">
         <a id="exportLink"></a>
+    </div>
+</div>
+
+<div class="modal fade" id="report-alert" tabindex="-1" role="dialog" style="margin-top:10%">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Report</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="reportid" id="reportid">
+                <div class="row" style="padding-left:10px;padding-bottom:10px;">
+                    <a id="productscrap" name="productscrap" href="#" class="btn btn-success" target="_blank">Product Scrap</a>
+                </div>
+                <div class="row" style="padding:10px;">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title" style="display:inline-block">Report</h3>
+                            <span id="editreport" name="editreport" class="glyphicon glyphicon-edit" style="display:inline-block;float:right;color:#428bca;font-size:22px;cursor:pointer;"></span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row" id="rc-info" style="padding-left:10px;padding-right:10px;">Report</div>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="row">
+                                <div class="col-xs-3 col-xs-offset-6">
+                                    Reporter: <span id="rc-reporter">System</span>
+                                </div>
+                                <div class="col-xs-3">
+                                    <span id="rc-datetime">@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btn-wf-cancel" name="btn-wf-cancel" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>

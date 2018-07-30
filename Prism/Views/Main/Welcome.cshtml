@@ -1,0 +1,63 @@
+﻿
+@{
+    ViewBag.Title = "Welcome";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/welcome.css" rel="stylesheet" type="text/css" />
+
+<div class="row" style="min-height:90%">
+<div class="wel-container">
+    <div class="wel-bg">
+        <img src="~/Content/images/welcome.png" class="wel-bg-img" />
+    </div>
+    <div class="wel-body">
+        <div class="wel-title">Welcome to PRISM </div>
+        <div class="wel-subtitle">To serve you better, your email address is needed</div>
+        <div class="wel-op">
+            <div class="input-group">
+                <input type="text" class="form-control wel-input" id="username" name="username">
+                <span class="input-group-addon">@@Finisar.com</span>
+            </div>
+            <div class="wel-eg">
+                <span class="wel-eg-txt">EG. Brad.Qiu@Finisar.com</span>
+                <input type="text" class="form-control hide" id="url" name="url" value="@ViewBag.url">
+            </div>
+            <div class="wel-submit">
+                <input type="button" class="btn btn-success btn-wel-submit" value="Submit" onclick="UpdateUserName()" />
+            </div>
+
+        </div>
+        <script type="text/javascript">
+            $(function () {
+                $('#username').focus();
+            })
+
+            function UpdateUserName() {
+                var username = $('#username').val();
+                var url = $('#url').val();
+
+                if (username) {
+                    $.post('/Main/UpdateMachineUserName',
+                        {
+                            username: username
+                        },
+                        function (output) {
+                            window.location.href = url;
+                        });
+                }
+
+                return false;
+            }
+
+            $('body').on('keypress', '#username', function (e) {
+                if (e.keyCode == 13) {
+                   UpdateUserName();
+               }
+            })
+        </script>
+
+    </div>
+
+</div>
+</div>

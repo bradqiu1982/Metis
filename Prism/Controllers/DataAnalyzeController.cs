@@ -5,14 +5,55 @@ using System.Web;
 using System.Web.Mvc;
 using Prism.Models;
 using System.Web.Routing;
+using System.Net;
+using System.IO;
 
 namespace Prism.Controllers
 {
     public class DataAnalyzeController : Controller
     {
+        private static string DetermineCompName(string IP)
+        {
+            try
+            {
+                IPAddress myIP = IPAddress.Parse(IP);
+                IPHostEntry GetIPHost = Dns.GetHostEntry(myIP);
+                List<string> compName = GetIPHost.HostName.ToString().Split('.').ToList();
+                return compName.First();
+            }
+            catch (Exception ex)
+            { return string.Empty; }
+        }
+
+        private void UserAuth()
+        {
+            string IP = Request.UserHostName;
+            var compName = DetermineCompName(IP);
+            ViewBag.compName = compName.ToUpper();
+            //var glbcfg = CfgUtility.GetSysConfig(this);
+
+            var usermap = MachineUserMap.RetrieveUserMap();
+
+            if (usermap.ContainsKey(ViewBag.compName))
+            {
+                ViewBag.username = usermap[ViewBag.compName].Trim().ToUpper();
+            }
+            else
+            {
+                ViewBag.username = string.Empty;
+            }
+        }
 
         public ActionResult HPUTrend()
         {
+            UserAuth();
+            if (string.IsNullOrEmpty(ViewBag.username))
+            {
+                var valuedict = new RouteValueDictionary();
+                valuedict.Add("url", "/DataAnalyze/HPUTrend");
+                return RedirectToAction("Welcome", "Main", valuedict);
+            }
+
             ViewBag.defaultserial = "";
             var syscfg = CfgUtility.GetSysConfig(this);
             if (syscfg.ContainsKey("HPUTRENDSERIAL"))
@@ -155,7 +196,7 @@ namespace Prism.Controllers
 
                         var oneobj = new
                         {
-                            id = sitem.Replace(" ", "_") + "_line",
+                            id = title.Replace(" ", "_") + "_line",
                             title = title,
                             xAxis = new { data = xaxis },
                             maxhpu = maxhpu,
@@ -190,6 +231,15 @@ namespace Prism.Controllers
 
         public ActionResult CapacityTrend()
         {
+            UserAuth();
+            if (string.IsNullOrEmpty(ViewBag.username))
+            {
+                var valuedict = new RouteValueDictionary();
+                valuedict.Add("url", "/DataAnalyze/CapacityTrend");
+                return RedirectToAction("Welcome", "Main", valuedict);
+            }
+
+
             ViewBag.defaultserial = "";
             var syscfg = CfgUtility.GetSysConfig(this);
             if (syscfg.ContainsKey("CAPACITYTRENDSERIAL"))
@@ -294,6 +344,14 @@ namespace Prism.Controllers
 
         public ActionResult DepartmentHPU()
         {
+            UserAuth();
+            if (string.IsNullOrEmpty(ViewBag.username))
+            {
+                var valuedict = new RouteValueDictionary();
+                valuedict.Add("url", "/DataAnalyze/DepartmentHPU");
+                return RedirectToAction("Welcome", "Main", valuedict);
+            }
+
             var productlines = HPUMainData.GetAllProductLines();
             ViewBag.productlines = CreateSelectList(productlines, "");
 
@@ -329,6 +387,14 @@ namespace Prism.Controllers
 
         public ActionResult DepartmentCapacity()
         {
+            UserAuth();
+            if (string.IsNullOrEmpty(ViewBag.username))
+            {
+                var valuedict = new RouteValueDictionary();
+                valuedict.Add("url", "/DataAnalyze/DepartmentCapacity");
+                return RedirectToAction("Welcome", "Main", valuedict);
+            }
+
             var productlines = HPUMainData.GetAllProductLines();
             ViewBag.productlines = CreateSelectList(productlines, "");
 
@@ -574,6 +640,14 @@ namespace Prism.Controllers
 
         public ActionResult DepartmentScrap(string defyear, string defqrt,string defdepartment)
         {
+            UserAuth();
+            if (string.IsNullOrEmpty(ViewBag.username))
+            {
+                var valuedict = new RouteValueDictionary();
+                valuedict.Add("url", "/DataAnalyze/DepartmentScrap");
+                return RedirectToAction("Welcome", "Main", valuedict);
+            }
+
             var year = "";
             if (!string.IsNullOrEmpty(defyear))
             { year = defyear; }
@@ -724,6 +798,14 @@ namespace Prism.Controllers
 
         public ActionResult CostCenterScrap(string defyear,string defqrt,string defpj)
         {
+            UserAuth();
+            if (string.IsNullOrEmpty(ViewBag.username))
+            {
+                var valuedict = new RouteValueDictionary();
+                valuedict.Add("url", "/DataAnalyze/CostCenterScrap");
+                return RedirectToAction("Welcome", "Main", valuedict);
+            }
+
             var year = "";
             if (!string.IsNullOrEmpty(defyear))
             { year = defyear; }
@@ -888,7 +970,7 @@ namespace Prism.Controllers
 
                     var onepjobj = new
                     {
-                        id = co.Replace(" ", "_") + "_line",
+                        id = title.Replace(" ", "_") + "_line",
                         title = title,
                         xAxis = new { data = xlist },
                         maxYrate = maxYrate,
@@ -1096,10 +1178,12 @@ namespace Prism.Controllers
                         if (bscrap != 0.0)
                         { bugetscrapval = new { name = "Max", color = "#C9302C", data = Math.Round(bscrap,2), style = "dash" }; }
 
+                        var title = pd + " " + fyear + " " + fquarter + " SCRAP";
+
                         var onepjobj = new
                         {
-                            id = pd.Replace(" ", "_") + "_line",
-                            title = pd + " " + fyear + " " + fquarter + " SCRAP",
+                            id = title.Replace(" ", "_") + "_line",
+                            title = title,
                             xAxis = new { data = xlist },
                             maxYrate = maxYrate,
                             bugetscraprate = bugetscraprate,
@@ -1159,7 +1243,142 @@ namespace Prism.Controllers
             return pslist;
         }
 
+        public JsonResult RetrieveReport()
+        {
+            var reportid = Request.Form["reportid"];
+            var reporttype = Request.Form["reporttype"];
 
+            var wreportlist = PrismComment.RetrieveComment(reportid);
+            if (wreportlist.Count == 0)
+            {
+                PrismComment.StoreComment(reportid, "TO BE EDIT", "System", reporttype);
+
+                var report = new
+                {
+                    time = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
+                    reporter = "System",
+                    content = "TO BE EDIT"
+                };
+
+                var ret = new JsonResult();
+                ret.Data = new
+                {
+                    success = true,
+                    report = report
+                };
+                return ret;
+            }
+            else
+            {
+                var report = new
+                {
+                    time = wreportlist[0].CommentDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                    reporter = wreportlist[0].Reporter.ToUpper(),
+                    content = wreportlist[0].Comment
+                };
+                var ret = new JsonResult();
+                ret.Data = new
+                {
+                    success = true,
+                    report = report
+                };
+                return ret;
+            }
+        }
+
+        public ActionResult ModifyReport(string reportid)
+        {
+            UserAuth();
+            if (string.IsNullOrEmpty(ViewBag.username))
+            {
+                var valuedict = new RouteValueDictionary();
+                valuedict.Add("url", "/Main/Index");
+                return RedirectToAction("Welcome", "Main", valuedict);
+            }
+
+            var wreportlist = PrismComment.RetrieveComment(reportid);
+            if (wreportlist.Count > 0)
+            {
+                return View(wreportlist[0]);
+            }
+            return View();
+        }
+
+        [HttpPost, ActionName("ModifyWaferReport")]
+        [ValidateAntiForgeryToken]
+        public ActionResult ModifyWaferReportPost()
+        {
+            UserAuth();
+
+            var reportid = Request.Form["ReportId"];
+
+            if (!string.IsNullOrEmpty(Request.Form["editor1"]))
+            {
+                var comment = SeverHtmlDecode.Decode(this, Request.Form["editor1"]);
+                PrismComment.UpdateComment(reportid, comment, ViewBag.username);
+            }
+            else
+            {
+                PrismComment.UpdateComment(reportid, "<p>To Be Edit</p>" , ViewBag.username);
+            }
+
+            return RedirectToAction("Index", "Main");
+        }
+
+
+        public JsonResult UploadWebmVideoData()
+        {
+            foreach (string fl in Request.Files)
+            {
+                if (fl != null && Request.Files[fl].ContentLength > 0)
+                {
+                    string datestring = DateTime.Now.ToString("yyyyMMdd");
+                    string imgdir = Server.MapPath("~/userfiles") + "\\docs\\" + datestring + "\\";
+                    if (!Directory.Exists(imgdir))
+                    {
+                        Directory.CreateDirectory(imgdir);
+                    }
+
+                    var fn = "V" + "-" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".webm";
+                    var onlyname = Path.GetFileNameWithoutExtension(fn);
+                    var srcvfile = imgdir + fn;
+                    Request.Files[fl].SaveAs(srcvfile);
+
+                    //var imgname = onlyname + ".jpg";
+                    //var imgpath = imgdir + imgname;
+                    //var ffMpeg = new NReco.VideoConverter.FFMpegConverter();
+                    //ffMpeg.GetVideoThumbnail(srcvfile, imgpath);
+
+                    //var oggname = onlyname + ".ogg";
+                    //var oggpath = imgdir + oggname;
+                    //var ffMpeg1 = new NReco.VideoConverter.FFMpegConverter();
+                    //ffMpeg1.ConvertMedia(srcvfile, oggpath, NReco.VideoConverter.Format.ogg);
+
+                    var mp4name = onlyname + ".mp4";
+                    var mp4path = imgdir + mp4name;
+                    var ffMpeg2 = new NReco.VideoConverter.FFMpegConverter();
+
+                    var setting = new NReco.VideoConverter.ConvertSettings();
+                    setting.VideoFrameRate = 30;
+                    setting.AudioSampleRate = 44100;
+
+                    ffMpeg2.ConvertMedia(srcvfile, NReco.VideoConverter.Format.webm, mp4path, NReco.VideoConverter.Format.mp4, setting);
+
+                    try { System.IO.File.Delete(srcvfile); } catch (Exception ex) { }
+
+                    var url = "/userfiles/docs/" + datestring + "/" + mp4name;
+                    var videohtml = "<p><video width='640' height='480' controls src='" + url + "' type='video/mp4'>"
+                        + "Your browser does not support the video tag. </video></p>";
+
+                    var ret1 = new JsonResult();
+                    ret1.Data = new { data = videohtml };
+                    return ret1;
+                }
+            }
+            var ret = new JsonResult();
+            ret.Data = new { data = "<p></p>" };
+            return ret;
+        }
 
     }
 }

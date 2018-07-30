@@ -54,14 +54,14 @@ public class Upload : IHttpHandler {
                 uploads.SaveAs(imgdir + fn);
                 url = "/userfiles/docs/" +datestring+"/"+ fn;
 
-                var dict = CookieUtility.UnpackCookie(new HttpRequestWrapper(context.Request));
-                if (dict.ContainsKey("issuekey")
-                    && !string.IsNullOrEmpty(dict["issuekey"])
-                    && dict.ContainsKey("currentaction")
-                    && string.Compare(dict["currentaction"],"UpdateIssue") == 0)
-                {
-                    IssueViewModels.StoreIssueAttachment(dict["issuekey"], url);
-                }
+                //var dict = CookieUtility.UnpackCookie(new HttpRequestWrapper(context.Request));
+                //if (dict.ContainsKey("issuekey")
+                //    && !string.IsNullOrEmpty(dict["issuekey"])
+                //    && dict.ContainsKey("currentaction")
+                //    && string.Compare(dict["currentaction"],"UpdateIssue") == 0)
+                //{
+                //    IssueViewModels.StoreIssueAttachment(dict["issuekey"], url);
+                //}
             }
 
             if (string.Compare(type, "json") != 0)

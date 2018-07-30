@@ -1,0 +1,108 @@
+﻿html, body {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+body {
+}
+
+.body-header {
+    height: 15%;
+    margin-bottom: 1%;
+    border-bottom: 1px solid #00539F;
+}
+
+.logo-img {
+    height: 100%;
+    width: 30%;
+    padding: 2% 5%;
+}
+
+.body-content {
+    height: 85%;
+    margin-left:10%;
+    margin-right:10%;
+}
+
+
+.wel-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.wel-bg {
+    padding-top: 7%;
+    padding-left: 10%;
+    padding-right: 10%;
+    opacity: 0.5;
+    -moz-opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+
+.wel-bg-img{
+    width: 100%;
+}
+
+.wel-body {
+    position: absolute;
+    top: 25%;
+    left: 15%;
+    right: 15%;
+    width: 70%;
+    color: #000;
+}
+
+.wel-title {
+    padding-top: 5%;
+    font-size: 48px;
+}
+
+.wel-subtitle {
+    padding-top: 2%;
+    font-size: 24px;
+}
+
+.wel-op{
+    padding-top: 2%;
+    width: 40%;
+}
+
+.wel-input{
+    height: 35px;
+    background-color: transparent;
+    color: #000;
+    border: #000 solid 1px;
+}
+
+.wel-eg {
+    padding-top: 2%;
+    font-size: 16px;
+    font-style: italic;
+    text-decoration: underline;
+}
+
+.wel-submit{
+    padding-top: 5%;
+    font-size: 35px;
+    width: 30%;
+}
+
+.btn-wel-submit{
+    width: 100%;
+}
+
+.vlog-container {
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.vlog-img{
+    cursor: pointer;
+}
+
+

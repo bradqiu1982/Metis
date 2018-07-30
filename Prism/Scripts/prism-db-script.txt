@@ -125,3 +125,18 @@ CREATE TABLE [dbo].[PNHPUData]
 	[QuarterDate]    DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
 );
 
+
+CREATE TABLE [dbo].[machineusermap] (
+    [machine]   NVARCHAR (300)   DEFAULT ('')  NOT NULL,
+    [username]   NVARCHAR (300)   DEFAULT ('')  NOT NULL
+);
+
+
+CREATE TABLE [dbo].[PrismComment] (
+    [CommentID]    NVARCHAR (200)  NOT NULL,
+    [Comment]     NVARCHAR (MAX) NOT NULL,
+    [Reporter]    NVARCHAR (200) NOT NULL,
+    [CommentDate] DATETIME       NOT NULL,
+    [CommentType] NVARCHAR (100)  DEFAULT ('Description') NOT NULL
+);
+

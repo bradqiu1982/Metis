@@ -1,0 +1,30 @@
+﻿<div id="modal-video" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog m-video" role="document">
+        <div class="modal-content">
+            <div class="modal-body m-video-body">
+                <div class="m-video-header">
+                    <button type="button" class="video-close close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="m-video-container">
+                    <video id="m-video-record" class=""></video>
+                    <video id="m-video-play" class="hidden" controls></video>
+                </div>
+                <div class="m-video-footer">
+                    <div class="mc-start">
+                        <img src="~/Content/images/start.png" class="m-video-start m-video-op" data-val="start" />
+                    </div>
+                    <div class="mc-end hidden">
+                        <img src="~/Content/images/end.png" class="m-video-end m-video-op" data-val="end" />
+                        <label class="m-video-cntdown m-video-op" id="countdown">60</label>
+                    </div>
+                    <div class="mc-play hidden">
+                        @*<span class="glyphicon glyphicon-play m-video-op" id="m-play" data-val="play"></span>
+                            <span class="glyphicon glyphicon-pause m-video-op hidden" id="m-pause" data-val="pause"></span>*@
+                        <img src="~/Content/images/upload.png" class="m-video-upload m-video-op" id="m-upload" data-val="upload" />
+                        <img src="~/Content/images/videoloading.gif" class="m-video-loading m-video-op" id="m-loading" data-val="loading" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

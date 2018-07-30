@@ -132,6 +132,12 @@
                 searchdata();
             }
         }
+
+        $('body').on('click', '#editreport', function () {
+            var reportid = $.trim($('#reportid').val());
+            $('#report-alert').modal('hide');
+            window.open("/DataAnalyze/ModifyReport?" + "reportid=" + reportid);
+        })
     }
 
 
@@ -353,9 +359,24 @@
                     cursor: 'pointer',
                     events: {
                         click: function (event) {
-                            if (line_data.url != '') {
-                                window.open(line_data.url);
-                            }
+                            $("#reportid").val(line_data.id +'_'+ event.point.category);
+                            $.post('/DataAnalyze/RetrieveReport', {
+                                reportid: line_data.id +'_'+ event.point.category,
+                                reporttype: 'HPU'
+                            }, function (output) {
+
+                                if (line_data.url != '') {
+                                    $("#serialhpu").attr('href', line_data.url);
+                                }
+
+                                if (output.success) {
+                                    $('#rc-info').html(output.report.content);
+                                    $('#rc-reporter').html(output.report.reporter);
+                                    $('#rc-datetime').html(output.report.time);
+                                }
+                                $('#report-alert').modal('show');
+                            });
+
                         }
                     }
                 },
