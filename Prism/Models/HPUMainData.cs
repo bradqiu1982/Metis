@@ -149,6 +149,12 @@ namespace Prism.Models
                     tempvm.Quarter = Convert.ToString(line[19]);
                     tempvm.QuarterDate = Convert.ToDateTime(line[20]);
                     tempvm.DetailLink = Convert.ToString(line[21]);
+
+                    if (string.IsNullOrEmpty(tempvm.HPUCode))
+                    {
+                        tempvm.HPUCode = tempvm.TypicalPN;
+                    }
+
                     ret.Add(tempvm);
                 }
                 catch (Exception ex) { }
@@ -210,6 +216,12 @@ namespace Prism.Models
                     tempvm.Quarter = Convert.ToString(line[19]);
                     tempvm.QuarterDate = Convert.ToDateTime(line[20]);
                     tempvm.DetailLink = Convert.ToString(line[21]);
+
+                    if (string.IsNullOrEmpty(tempvm.HPUCode))
+                    {
+                        tempvm.HPUCode = tempvm.TypicalPN;
+                    }
+
                     ret.Add(tempvm);
                 }
                 catch (Exception ex) { }

@@ -362,13 +362,13 @@ namespace Prism.Models
             var rowidx = 0;
             foreach (var line in maindata)
             {
-                var bhpucode = false;
+                //var bhpucode = false;
                 var bhpu = false;
                 var bpn = false;
                 foreach (var item in line)
                 {
-                    if (string.Compare(item.Replace("\n", " ").ToUpper(), "HPU Code".ToUpper()) == 0)
-                    { bhpucode = true; }
+                    //if (string.Compare(item.Replace("\n", " ").ToUpper(), "HPU Code".ToUpper()) == 0)
+                    //{ bhpucode = true; }
                     if (string.Compare(item.Replace("\n", " ").ToUpper(), "Yield HPU".ToUpper()) == 0)
                     { bhpu = true; }
                     if (string.Compare(item.Replace("\n", " ").ToUpper(), "代表 PN".ToUpper()) == 0)
@@ -377,7 +377,7 @@ namespace Prism.Models
                     { bpn = true; }
                 }
 
-                if (bhpucode && bhpu && bpn)
+                if (bhpu && bpn)
                 { break; }
                 rowidx++;
             }
@@ -401,7 +401,7 @@ namespace Prism.Models
         {
             var ret = new List<HPUMainData>();
 
-            var hpucodeidx = hpucol["HPU Code".ToUpper()];
+            
             var hpuidx = hpucol["Yield HPU".ToUpper()];
             var pnidx = hpucol["代表 PN".ToUpper().ToUpper()];
             if (pnidx == -1) { pnidx = hpucol["Typical PN".ToUpper().ToUpper()]; }
@@ -409,8 +409,7 @@ namespace Prism.Models
             var vidx = 0;
             foreach (var line in maindata)
             {
-                if (!string.IsNullOrEmpty(line[hpucodeidx])
-                    && !string.IsNullOrEmpty(line[hpuidx])
+                if (!string.IsNullOrEmpty(line[hpuidx])
                     && !string.IsNullOrEmpty(line[pnidx]))
                 {
                     var tempvm = new HPUMainData();
@@ -421,7 +420,9 @@ namespace Prism.Models
 
                     tempvm.HPUOrder = vidx;
 
-                    tempvm.HPUCode = line[hpucodeidx];
+                    var hpucodeidx = hpucol["HPU Code".ToUpper()];
+                    if (hpucodeidx != -1)
+                    { tempvm.HPUCode = line[hpucodeidx]; }
 
                     var idx = (hpucol["产品线".ToUpper()] == -1) ? hpucol["Line".ToUpper()] : hpucol["产品线".ToUpper()];
                     if (idx != -1)
@@ -589,11 +590,11 @@ namespace Prism.Models
                     {
                         var hpucol =  RetrieveValidHPUCol(maindata);
                         
-                        var hpucodeidx = hpucol["HPU Code".ToUpper()];
+                        //var hpucodeidx = hpucol["HPU Code".ToUpper()];
                         var hpuidx = hpucol["Yield HPU".ToUpper()];
                         var pnidx = hpucol["代表 PN".ToUpper().ToUpper()];
                         if (pnidx == -1) { pnidx = hpucol["Typical PN".ToUpper().ToUpper()]; }
-                        if (hpucodeidx == -1 || hpuidx == -1 || pnidx ==  -1)
+                        if ( hpuidx == -1 || pnidx ==  -1)
                         { continue; }
 
                         var HPUDataList =  RetrieveValidHPUValue(hpucol,maindata, fyearquarter);
