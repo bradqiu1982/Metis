@@ -1,0 +1,164 @@
+﻿
+  select ProductFamilyId,ProductFamilyName from [InsiteDB].[insite].[ProductFamily] where ProductFamilyName like 'Parallel.%'
+  select ProductFamilyId,ProductFamilyName from [InsiteDB].[insite].[ProductFamily] where ProductFamilyName like 'LineCard.%'
+
+  select distinct pb.ProductName,pf.ProductFamilyName from [InsiteDB].[insite].[ProductFamily] pf
+  left join [InsiteDB].[insite].[Product] pd on pd.ProductFamilyId = pf.ProductFamilyId
+  left join [InsiteDB].[insite].[ProductBase] pb on pb.ProductBaseId = pd.ProductBaseId
+  where pf.ProductFamilyName like 'Parallel.%' and pd.[Description] is not null 
+  and (pd.[Description] not like 'ASY%' and pd.[Description] not like 'LEN%' and pd.[Description] not like 'Shell%')
+  and ISNUMERIC(pb.ProductName) = 1 order by pf.ProductFamilyName
+
+
+  select distinct pb.ProductName from [InsiteDB].[insite].[ProductFamily] pf
+  left join [InsiteDB].[insite].[Product] pd on pd.ProductFamilyId = pf.ProductFamilyId
+  left join [InsiteDB].[insite].[ProductBase] pb on pb.ProductBaseId = pd.ProductBaseId
+  where pf.ProductFamilyName like 'Parallel.%' and pd.[Description] is not null 
+  and (pd.[Description] not like 'ASY%' and pd.[Description] not like 'LEN%' and pd.[Description] not like 'Shell%') 
+
+
+   select distinct ddr.DataCollectionDefName from insitedb.insite.DataCollectionDefBase ddr  (nolock)
+    inner join insitedb.insite.TxnMap tm with(noloCK) ON tm.DataCollectionDefinitionBaseId = ddr.DataCollectionDefBaseId
+    inner join insitedb.insite.spec sp with(nolock) on sp.specid =  tm.specid
+    inner join InsiteDB.insite.WorkflowStep ws (nolock)on  ws.specbaseid = sp.specbaseid
+    inner join InsiteDB.insite.Workflow w (nolock)on w.WorkflowID = ws.WorkflowID
+    inner join InsiteDB.insite.Product p(nolock) on w.WorkflowBaseId = p.WorkflowBaseId
+    inner join [InsiteDB].[insite].[ProductBase] pb on pb.ProductBaseId = p.ProductBaseId
+    where pb.ProductName in(
+      select distinct pb.ProductName from [InsiteDB].[insite].[ProductFamily] pf
+      left join [InsiteDB].[insite].[Product] pd on pd.ProductFamilyId = pf.ProductFamilyId
+      left join [InsiteDB].[insite].[ProductBase] pb on pb.ProductBaseId = pd.ProductBaseId
+      where  (pf.ProductFamilyName like 'Parallel%' or pf.ProductFamilyName like 'LineCard%')  and pd.[Description] is not null 
+      and (pd.[Description] not like 'ASY%' and pd.[Description] not like 'LEN%' and pd.[Description] not like 'Shell%') 
+    ) and  ddr.DataCollectionDefName like 'DCD_%'
+
+
+   SELECT TOP 1000 [dc_Final_RxHistoryId] ,[AssemblyPartNum] ,[ErrAbbr] ,[ModulePartNum] ,[IsRetest] ,[ModuleType] ,[ModuleSerialNum]
+   ,[SpecFreq_GHz] ,[TestDuration_s] ,[TestResult] ,[TestTimeStamp] ,[TestStation] ,[WhichTest],pf.ProductFamilyName
+  FROM [InsiteDB].[insite].[dc_Final_Rx] dc 
+  left join [InsiteDB].[insite].[ProductBase] pb on pb.ProductName = dc.AssemblyPartNum 
+  left join [InsiteDB].[insite].[Product] pd on pd.ProductBaseId = pb.ProductBaseId 
+  left join [InsiteDB].[insite].[ProductFamily] pf on pf.ProductFamilyId = pd.ProductFamilyId
+  where pf.ProductFamilyName like 'Parallel.%' and dc.TestTimeStamp > '2018-09-10 00:00:00' order by ModuleSerialNum,TestTimeStamp ASC
+
+
+
+TUNABLE
+  select distinct ProductFamilyName FROM [InsiteDB].[insite].[ProductFamily] where  ProductFamilyName not like 'LineCard%' and ProductFamilyName not like 'Parallel%' and ProductFamilyName not like 'OSA%'
+  and ProductFamilyName not like 'WSS%' and ProductFamilyName not like 'DEL_WSS%' and ProductFamilyName not like 'PAS%' and ProductFamilyName not like 'NoUse%'
+
+
+TURNABLE MES:
+
+10G Tunable BIDI
+Act.Txfp
+COHERENT
+Coherent CFP2
+ODB
+ODB CFP (100G)
+T-XFP
+
+TURNABLE ATE:
+BIDI P2P
+COHERENT 
+SFP+ TUNABLE
+XFP TUNABLE  
+
+
+
+Ignore
+
+_AOC_ManualInspection
+_CL_FinalTest
+_0811
+_EML_COC
+_EML_Shim_Select
+_OQCParallel
+_ict
+_INTL_LensGluewater
+_Lens_Alignment
+_OQC_Parallel
+_Post-die-attach_Inspection
+_Post-die-attach_Inspection
+_Post-epoxy-cure_PC
+_Post-hot-bar_Probe
+_Post-reflow_Inspection
+_PostVCSELBurn
+_Pre_Align
+_Pre-Burn-in_Test
+_Pre-underfill_Probe
+_PreVCSELBurn
+_QSFP_ERTempComp
+_QSFP_Final1
+_QSFP_Final2
+_SpecResult
+
+
+
+
+LineCard
+
+dc_ate_edfa_test 
+      SELECT distinct  [dc_ate_edfa_testHistoryId] ,[AssemblyPartNum] ,[ErrAbbr] ,[ModulePartNum] ,[IsRetest] ,[ModuleType] ,[ModuleSerialNum]
+       ,[SpecFreq_GHz] ,[TestDuration_s] ,[TestResult] ,[TestTimeStamp] ,[TestStation] ,[WhichTest],pf.ProductFamilyName
+      FROM [InsiteDB].[insite].[dc_ate_edfa_test] dc 
+      left join [InsiteDB].[insite].[ProductBase] pb on (pb.ProductName = dc.AssemblyPartNum or pb.ProductName = dc.ModulePartNum)
+      left join [InsiteDB].[insite].[Product] pd on pd.ProductBaseId = pb.ProductBaseId 
+      left join [InsiteDB].[insite].[ProductFamily] pf on pf.ProductFamilyId = pd.ProductFamilyId
+      where pf.ProductFamilyName like 'LineCard%' and dc.TestTimeStamp > '2018-09-08 00:00:00' and ErrAbbr is not null  and [ModuleSerialNum] is not null order by ModuleSerialNum,TestTimeStamp ASC
+
+      select DataColumn,DataValue1,DataValue2,DataValue3 from [InsiteDB].[insite].[dce_ate_edfa_test_main] where ParentHistoryID = '48042480007218db' and DataValue2 = 'FAIL' 
+
+dc_ate_lcd_test
+
+  SELECT distinct  [dc_ate_lcd_testHistoryId] ,[AssemblyPartNum] ,[ErrAbbr] ,[ModulePartNum] ,[IsRetest] ,[ModuleType] ,[ModuleSerialNum]
+   ,[SpecFreq_GHz] ,[TestDuration_s] ,[TestResult] ,[TestTimeStamp] ,[TestStation] ,[WhichTest],pf.ProductFamilyName
+  FROM [InsiteDB].[insite].[dc_ate_lcd_test] dc 
+  left join [InsiteDB].[insite].[ProductBase] pb on (pb.ProductName = dc.AssemblyPartNum or pb.ProductName = dc.ModulePartNum)
+  left join [InsiteDB].[insite].[Product] pd on pd.ProductBaseId = pb.ProductBaseId 
+  left join [InsiteDB].[insite].[ProductFamily] pf on pf.ProductFamilyId = pd.ProductFamilyId
+  where pf.ProductFamilyName like 'LineCard%' and dc.TestTimeStamp > '2018-09-15 00:00:00' and ErrAbbr is not null and [ModuleSerialNum] is not null  order by ModuleSerialNum,TestTimeStamp ASC
+
+  select DataColumn,DataValue1,DataValue2,DataValue3 from [InsiteDB].[insite].[dce_ate_lcd_test_main] where ParentHistoryID = '480418800013a7d0'  and DataValue2 = 'FAIL' 
+
+APPEND DC 
+  dc_initial
+
+Parallel
+  SELECT distinct [dc_ER_TempComp_TxHistoryId] ,[AssemblyPartNum] ,[ErrAbbr] ,[ModulePartNum] ,[IsRetest] ,[ModuleType] ,[ModuleSerialNum]
+   ,[SpecFreq_GHz] ,[TestDuration_s] ,[TestResult] ,[TestTimeStamp] ,[TestStation] ,[WhichTest],pf.ProductFamilyName
+  FROM [InsiteDB].[insite].[dc_ER_TempComp_Tx] dc 
+  left join [InsiteDB].[insite].[ProductBase] pb on (pb.ProductName = dc.AssemblyPartNum or pb.ProductName = dc.ModulePartNum)
+  left join [InsiteDB].[insite].[Product] pd on pd.ProductBaseId = pb.ProductBaseId 
+  left join [InsiteDB].[insite].[ProductFamily] pf on pf.ProductFamilyId = pd.ProductFamilyId
+  where pf.ProductFamilyName like 'Parallel%' and dc.TestTimeStamp > '2018-08-01 00:00:00'  and [ModuleSerialNum] is not null and Len([ModuleSerialNum]) = 7 order by ModuleSerialNum,TestTimeStamp ASC
+
+dc_barcode
+dc_CUSTOM
+dc_ER_TempComp_Rx
+dc_ER_TempComp_Tx
+dc_ersetup
+dc_final
+dc_Final_Rx
+dc_Final_Tx
+dc_final1
+dc_final2
+dc_initial2
+dc_Label
+dc_Label2
+dc_Label3
+dc_ML_bcft
+dc_ML_st
+dc_ModuleDC
+dcd_oba
+DC_OQA_RX
+DC_OQA_Tx
+dc_Post_Burn
+dc_Pre_Burn
+dc_QSample_RXE
+dc_QSample_RXO
+dc_QSample_TXO
+DC_QUICKTEST
+dc_sensitivity
+DC_smsr
+
