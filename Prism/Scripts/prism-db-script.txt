@@ -140,3 +140,25 @@ CREATE TABLE [dbo].[PrismComment] (
     [CommentType] NVARCHAR (100)  DEFAULT ('Description') NOT NULL
 );
 
+
+CREATE TABLE [dbo].[MesDataUpdate] (
+    [month]   NVARCHAR (300)   DEFAULT ('')  NOT NULL,
+    [mestab]   NVARCHAR (300)   DEFAULT ('')  NOT NULL
+);
+
+CREATE TABLE [dbo].[ModuleTestData]
+(
+	[DataID]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[ModuleSN]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[TestTimeStamp]    DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL,
+	[WhichTest]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[ErrAbbr]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[TestStation]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[ProductFamily]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[PN]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[PNDesc]    NVARCHAR (MAX)   DEFAULT ('') NOT NULL,
+	[ModuleType]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[SpeedRate]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[SpendTime]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[MESTab]    NVARCHAR (300)   DEFAULT ('') NOT NULL
+);

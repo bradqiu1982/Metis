@@ -31,6 +31,29 @@ namespace Prism.Models
             return ret;
         }
 
+        public static Dictionary<string, string> LoadYieldConfig(Controller ctrl)
+        {
+            var lines = System.IO.File.ReadAllLines(ctrl.Server.MapPath("~/Scripts/YieldData.cfg"));
+            var ret = new Dictionary<string, string>();
+            foreach (var line in lines)
+            {
+                if (line.Contains("##"))
+                {
+                    continue;
+                }
+
+                if (line.Contains(":::"))
+                {
+                    var kvpair = line.Split(new string[] { ":::" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (!ret.ContainsKey(kvpair[0].Trim()) && kvpair.Length > 1)
+                    {
+                        ret.Add(kvpair[0].Trim(), kvpair[1].ToUpper().Trim());
+                    }
+                }//end if
+            }//end foreach
+            return ret;
+        }
+
         public static Dictionary<string, string> GetStandardPJList(Controller ctrl)
         {
             var ret = new Dictionary<string, string>();

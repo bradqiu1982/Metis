@@ -9,6 +9,7 @@ using Oracle.DataAccess.Client;
 using System.Web.Caching;
 using System.Web.Mvc;
 using System.Text;
+using System.Reflection;
 
 namespace Prism.Models
 {
@@ -683,7 +684,7 @@ namespace Prism.Models
                     return ret;
 
                 var command = conn.CreateCommand();
-                command.CommandTimeout = 120;
+                command.CommandTimeout = 180;
                 command.CommandText = sql;
                 if (parameters != null)
                 {
@@ -1429,6 +1430,54 @@ namespace Prism.Models
             }
             return ret;
 
+        }
+
+        public static void WriteDBWithTable(List<object> datalist,Type x, string tablename)
+        {
+            var dt = new System.Data.DataTable();
+
+            PropertyInfo[] properties = x.GetProperties();
+            var i = 0;
+            for (i = 0; i < properties.Length;)
+            {
+                dt.Columns.Add(properties[i].Name, properties[i].PropertyType);
+                i = i + 1;
+            }
+
+            foreach (var testresult in datalist)
+            {
+                properties = x.GetProperties();
+                var temprow = new object[properties.Length];
+                for (i = 0; i < properties.Length;)
+                {
+                    temprow[i] = properties[i].GetValue(testresult);
+                    i = i + 1;
+                }
+                dt.Rows.Add(temprow);
+            }
+
+            if (dt.Rows.Count > 0)
+            {
+                var targetcon = DBUtility.GetLocalConnector();
+                using (SqlBulkCopy bulkCopy = new SqlBulkCopy(targetcon))
+                {
+                    bulkCopy.DestinationTableName = tablename;
+                    bulkCopy.BulkCopyTimeout = 180;
+
+                    try
+                    {
+                        for (int idx = 0; idx < dt.Columns.Count; idx++)
+                        {
+                            bulkCopy.ColumnMappings.Add(dt.Columns[idx].ColumnName, dt.Columns[idx].ColumnName);
+                        }
+                        bulkCopy.WriteToServer(dt);
+                        dt.Clear();
+                    }
+                    catch (Exception ex) { System.Windows.MessageBox.Show(ex.Message); }
+
+                }//end using
+                DBUtility.CloseConnector(targetcon);
+            }//end if
         }
 
     }

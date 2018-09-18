@@ -205,10 +205,12 @@
     <Compile Include="Models\HPUMainData.cs" />
     <Compile Include="Models\IEScrapBuget.cs" />
     <Compile Include="Models\MachineUserMap.cs" />
+    <Compile Include="Models\ModuleTestData.cs" />
     <Compile Include="Models\PNPlannerCodeMap.cs" />
     <Compile Include="Models\PrismComment.cs" />
     <Compile Include="Models\ScrapData_Base.cs" />
     <Compile Include="Models\WebsiteToImage.cs" />
+    <Compile Include="Models\YieldRawData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -725,6 +727,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\MyVideoRecord.js" />
+    <Content Include="Scripts\NPI_TestData_Table.txt" />
     <Content Include="Scripts\prism-db-script.txt" />
     <Content Include="Scripts\PrismCfg.txt" />
     <Content Include="Scripts\MetisHeartBeat.exe" />
@@ -772,6 +775,7 @@
     <Content Include="Views\Main\Welcome.cshtml" />
     <Content Include="Views\DataAnalyze\ModifyReport.cshtml" />
     <Content Include="Views\Shared\_VideoRecordModal.cshtml" />
+    <Content Include="Scripts\YieldData.cfg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

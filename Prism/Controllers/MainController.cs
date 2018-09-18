@@ -157,5 +157,16 @@ namespace Prism.Controllers
         }
 
 
+        public ActionResult LoadYieldRawData()
+        {
+            try
+            {
+                YieldRawData.LoadData(this);
+            }
+            catch (Exception ex) { }
+            return View("HeartBeat");
+        }
+        
+
     }
 }

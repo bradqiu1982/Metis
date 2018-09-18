@@ -13,10 +13,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/22/2013 08:43:40</publishTime>
     </File>
     <File Include="bin/App_global.asax.compiled">
-      <publishTime>07/24/2018 10:53:05</publishTime>
+      <publishTime>08/01/2018 15:11:41</publishTime>
     </File>
     <File Include="bin/App_global.asax.dll">
-      <publishTime>07/24/2018 10:53:05</publishTime>
+      <publishTime>08/01/2018 15:11:41</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>03/02/2015 09:32:26</publishTime>
@@ -85,7 +85,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/27/2012 13:00:52</publishTime>
     </File>
     <File Include="bin/Prism.dll">
-      <publishTime>07/24/2018 10:52:51</publishTime>
+      <publishTime>08/01/2018 15:11:24</publishTime>
     </File>
     <File Include="bin/RestSharp.dll">
       <publishTime>06/10/2018 15:28:24</publishTime>
@@ -1518,8 +1518,26 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Content/images/dataloading.gif">
       <publishTime>06/28/2018 10:19:35</publishTime>
     </File>
+    <File Include="Content/images/end.png">
+      <publishTime>07/30/2018 15:59:04</publishTime>
+    </File>
     <File Include="Content/images/FinisarLogo.jpg">
       <publishTime>06/28/2018 10:20:26</publishTime>
+    </File>
+    <File Include="Content/images/Report.png">
+      <publishTime>07/30/2018 15:57:58</publishTime>
+    </File>
+    <File Include="Content/images/start.png">
+      <publishTime>07/30/2018 15:59:04</publishTime>
+    </File>
+    <File Include="Content/images/upload.png">
+      <publishTime>07/30/2018 15:59:04</publishTime>
+    </File>
+    <File Include="Content/images/videoloading.gif">
+      <publishTime>07/30/2018 15:59:04</publishTime>
+    </File>
+    <File Include="Content/images/welcome.png">
+      <publishTime>07/30/2018 09:34:40</publishTime>
     </File>
     <File Include="Content/images/Yield.png">
       <publishTime>07/04/2018 09:43:25</publishTime>
@@ -1538,6 +1556,12 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="Content/Site.css">
       <publishTime>06/28/2018 10:16:47</publishTime>
+    </File>
+    <File Include="Content/videorecorder.css">
+      <publishTime>07/30/2018 15:26:05</publishTime>
+    </File>
+    <File Include="Content/welcome.css">
+      <publishTime>07/30/2018 10:49:55</publishTime>
     </File>
     <File Include="favicon.ico">
       <publishTime>06/28/2018 09:14:13</publishTime>
@@ -1561,7 +1585,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 10:00:10</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>07/24/2018 10:52:54</publishTime>
+      <publishTime>08/01/2018 15:11:26</publishTime>
     </File>
     <File Include="Scripts/ajaxfileupload.js">
       <publishTime>06/28/2018 10:27:19</publishTime>
@@ -1602,6 +1626,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Scripts/bootstrap/npm.js">
       <publishTime>06/28/2018 16:58:24</publishTime>
     </File>
+    <File Include="Scripts/Capacity.js">
+      <publishTime>07/24/2018 15:12:59</publishTime>
+    </File>
     <File Include="Scripts/exporting.js">
       <publishTime>06/28/2018 10:27:19</publishTime>
     </File>
@@ -1615,7 +1642,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 10:27:19</publishTime>
     </File>
     <File Include="Scripts/HPU.js">
-      <publishTime>07/20/2018 16:00:46</publishTime>
+      <publishTime>07/30/2018 17:16:29</publishTime>
     </File>
     <File Include="Scripts/jquery-1.12.4.min.js">
       <publishTime>06/28/2018 10:24:38</publishTime>
@@ -1680,6 +1707,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Scripts/moment.min.js">
       <publishTime>06/28/2018 10:27:21</publishTime>
     </File>
+    <File Include="Scripts/MyVideoRecord.js">
+      <publishTime>07/30/2018 15:28:42</publishTime>
+    </File>
     <File Include="Scripts/offline-exporting.js">
       <publishTime>06/28/2018 10:27:21</publishTime>
     </File>
@@ -1687,10 +1717,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 10:27:21</publishTime>
     </File>
     <File Include="Scripts/prism-db-script.txt">
-      <publishTime>07/18/2018 08:30:14</publishTime>
+      <publishTime>07/30/2018 13:54:58</publishTime>
     </File>
     <File Include="Scripts/PrismCfg.txt">
-      <publishTime>07/24/2018 10:52:02</publishTime>
+      <publishTime>08/01/2018 15:10:12</publishTime>
     </File>
     <File Include="Scripts/respond.js">
       <publishTime>06/28/2018 09:14:31</publishTime>
@@ -1699,19 +1729,31 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 09:14:31</publishTime>
     </File>
     <File Include="Scripts/Scrap-Rate.js">
-      <publishTime>07/11/2018 08:40:46</publishTime>
+      <publishTime>07/30/2018 16:16:58</publishTime>
+    </File>
+    <File Include="Scripts/VideoRecorderJs-master/dist/recorderWorker.js">
+      <publishTime>07/30/2018 15:28:20</publishTime>
+    </File>
+    <File Include="Scripts/VideoRecorderJs-master/dist/VideoRecorderJS.min.js">
+      <publishTime>07/30/2018 15:28:21</publishTime>
     </File>
     <File Include="Scripts/_references.js">
-      <publishTime>07/17/2018 10:39:08</publishTime>
+      <publishTime>07/30/2018 15:28:43</publishTime>
     </File>
     <File Include="userfiles/ImageUpload.ashx">
       <publishTime>07/10/2018 16:28:54</publishTime>
     </File>
     <File Include="userfiles/Upload.ashx">
-      <publishTime>07/10/2018 16:29:04</publishTime>
+      <publishTime>07/30/2018 15:40:53</publishTime>
+    </File>
+    <File Include="Views/DataAnalyze/CapacityTrend.cshtml">
+      <publishTime>07/24/2018 15:22:09</publishTime>
     </File>
     <File Include="Views/DataAnalyze/CostCenterScrap.cshtml">
-      <publishTime>07/10/2018 08:57:31</publishTime>
+      <publishTime>07/30/2018 15:52:49</publishTime>
+    </File>
+    <File Include="Views/DataAnalyze/DepartmentCapacity.cshtml">
+      <publishTime>07/24/2018 14:22:39</publishTime>
     </File>
     <File Include="Views/DataAnalyze/DepartmentHPU.cshtml">
       <publishTime>07/19/2018 18:33:06</publishTime>
@@ -1720,22 +1762,31 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/10/2018 08:57:31</publishTime>
     </File>
     <File Include="Views/DataAnalyze/HPUTrend.cshtml">
-      <publishTime>07/20/2018 08:41:22</publishTime>
+      <publishTime>07/30/2018 16:57:42</publishTime>
+    </File>
+    <File Include="Views/DataAnalyze/ModifyReport.cshtml">
+      <publishTime>07/30/2018 16:35:26</publishTime>
     </File>
     <File Include="Views/DataAnalyze/PNHPU.cshtml">
       <publishTime>07/19/2018 18:33:39</publishTime>
     </File>
     <File Include="Views/DataAnalyze/ProductScrap.cshtml">
-      <publishTime>07/10/2018 08:57:31</publishTime>
+      <publishTime>07/30/2018 15:53:03</publishTime>
+    </File>
+    <File Include="Views/DataAnalyze/SerialCapacity.cshtml">
+      <publishTime>07/24/2018 14:25:00</publishTime>
     </File>
     <File Include="Views/DataAnalyze/SerialHPU.cshtml">
-      <publishTime>07/20/2018 15:58:49</publishTime>
+      <publishTime>07/24/2018 14:25:24</publishTime>
     </File>
     <File Include="Views/Main/HeartBeat.cshtml">
       <publishTime>06/28/2018 10:08:17</publishTime>
     </File>
     <File Include="Views/Main/Index.cshtml">
       <publishTime>06/28/2018 10:08:45</publishTime>
+    </File>
+    <File Include="Views/Main/Welcome.cshtml">
+      <publishTime>07/30/2018 10:50:48</publishTime>
     </File>
     <File Include="Views/Shared/Error.cshtml">
       <publishTime>06/28/2018 09:14:37</publishTime>
@@ -1744,10 +1795,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 09:14:37</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>07/19/2018 18:34:37</publishTime>
+      <publishTime>07/24/2018 14:08:57</publishTime>
     </File>
     <File Include="Views/Shared/_LoginPartial.cshtml">
       <publishTime>07/10/2018 16:29:19</publishTime>
+    </File>
+    <File Include="Views/Shared/_VideoRecordModal.cshtml">
+      <publishTime>07/30/2018 15:31:47</publishTime>
     </File>
     <File Include="Views/Web.config">
       <publishTime>07/10/2018 16:29:44</publishTime>
