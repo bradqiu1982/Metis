@@ -1397,6 +1397,7 @@ namespace Prism.Models
                 }
 
                 OracleCommand cmd = new OracleCommand(sql, Oracleconn);
+                cmd.CommandTimeout = 180;
                 cmd.CommandType = CommandType.Text;
                 OracleDataReader dr = cmd.ExecuteReader();
 

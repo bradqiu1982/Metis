@@ -70,7 +70,7 @@ namespace Prism.Models
             return string.Empty;
         }
 
-        private static void _LoadParallelData(Controller ctrl, string mestab,string familycond)
+        private static void _LoadParallelData(Controller ctrl, string mestab,string familycond,string yieldfamily)
         {
             var yieldcfg = CfgUtility.LoadYieldConfig(ctrl);
             var zerodate = DateTime.Parse(yieldcfg["YIELDZERODATE"]);
@@ -80,7 +80,7 @@ namespace Prism.Models
                 if (string.Compare(zerodate.ToString("yyyy-MM"), nowmonth) == 0)
                 { break;}
 
-                if (IsMesDataUpdated(zerodate.ToString("yyyy-MM"), mestab))
+                if (IsMesDataUpdated(zerodate.ToString("yyyy-MM"), mestab, yieldfamily))
                 {
                     zerodate = zerodate.AddMonths(1);
                     continue;
@@ -111,13 +111,13 @@ namespace Prism.Models
 
                 ModuleTestData.StoreData(rawdata);
 
-                UpdateMesRecord(zerodate.ToString("yyyy-MM"), mestab);
+                UpdateMesRecord(zerodate.ToString("yyyy-MM"), mestab, yieldfamily);
                 break;
             }
             
         }
 
-        private static void LoadParallelData(Controller ctrl,string pdfamily)
+        private static void LoadParallelData(Controller ctrl,string pdfamily,string yieldfamily)
         {
             var pdfamilylist = pdfamily.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var sb = new System.Text.StringBuilder((pdfamilylist.Count + 1) * 80);
@@ -130,11 +130,11 @@ namespace Prism.Models
             var mestables = LoadMESTabs(ctrl, familycond, true);
             foreach (var mestab in mestables)
             {
-                _LoadParallelData(ctrl, mestab, familycond);
+                _LoadParallelData(ctrl, mestab, familycond, yieldfamily);
             }
         }
 
-        private static void _LoadLineCardData(Controller ctrl, string mestab,string familycond)
+        private static void _LoadLineCardData(Controller ctrl, string mestab,string familycond,string yieldfamily)
         {
             var yieldcfg = CfgUtility.LoadYieldConfig(ctrl);
             var zerodate = DateTime.Parse(yieldcfg["YIELDZERODATE"]);
@@ -144,7 +144,7 @@ namespace Prism.Models
                 if (string.Compare(zerodate.ToString("yyyy-MM"), nowmonth) == 0)
                 { break; }
 
-                if (IsMesDataUpdated(zerodate.ToString("yyyy-MM"), mestab))
+                if (IsMesDataUpdated(zerodate.ToString("yyyy-MM"), mestab, yieldfamily))
                 {
                     zerodate = zerodate.AddMonths(1);
                     continue;
@@ -192,11 +192,11 @@ namespace Prism.Models
                     var csql = @"select ParentHistoryID,DataColumn from[InsiteDB].[insite].[dce<DCTABLE>_main] 
                                 where ParentHistoryID in <IDCOND> and DataValue2 = 'FAIL'";
                     csql = csql.Replace("<DCTABLE>", mestab).Replace("<IDCOND>", idcond);
-                    var dbret2 = DBUtility.ExeMESSqlWithRes(sql);
+                    var dbret2 = DBUtility.ExeMESSqlWithRes(csql);
                     foreach (var line in dbret2)
                     {
-                        var id = Convert2Str(line[0]);
-                        var err = Convert2Str(line[1]);
+                        var id = Convert2Str(line[0]).Trim();
+                        var err = Convert2Str(line[1]).Trim();
                         if (!iderrordict.ContainsKey(id))
                         { iderrordict.Add(id,err); }
                     }
@@ -207,17 +207,19 @@ namespace Prism.Models
                     if (string.IsNullOrEmpty(item.PN))
                     { item.PN = item.PNDesc; }
                     if (iderrordict.ContainsKey(item.DataID))
-                    { item.ErrAbbr = iderrordict[item.DataID]; }
+                    {
+                        item.ErrAbbr = iderrordict[item.DataID];
+                    }
                 }
 
                 ModuleTestData.StoreData(rawdata);
 
-                UpdateMesRecord(zerodate.ToString("yyyy-MM"), mestab);
+                UpdateMesRecord(zerodate.ToString("yyyy-MM"), mestab, yieldfamily);
                 break;
             }
         }
 
-        private static void LoadLineCardData(Controller ctrl,string pdfamily)
+        private static void LoadLineCardData(Controller ctrl,string pdfamily,string yieldfamily)
         {
             var pdfamilylist = pdfamily.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var sb = new System.Text.StringBuilder((pdfamilylist.Count + 1) * 80);
@@ -230,13 +232,38 @@ namespace Prism.Models
             var mestables = LoadMESTabs(ctrl, familycond);
             foreach (var mestab in mestables)
             {
-                _LoadLineCardData(ctrl, mestab, familycond);
+                _LoadLineCardData(ctrl, mestab, familycond, yieldfamily);
             }
         }
 
-        private static void LoadTunableData(Controller ctrl,string pdfamily)
+        private static void _LoadTunableData(Controller ctrl, string familycond, string yieldfamily)
         {
+            var yieldcfg = CfgUtility.LoadYieldConfig(ctrl);
+            var zerodate = DateTime.Parse(yieldcfg["YIELDZERODATE"]);
+            var nowmonth = DateTime.Now.ToString("yyyy-MM");
+            for (; zerodate < DateTime.Now;)
+            {
+                if (string.Compare(zerodate.ToString("yyyy-MM"), nowmonth) == 0)
+                { break; }
 
+                if (IsMesDataUpdated(zerodate.ToString("yyyy-MM"), "ROUTE_DATA", yieldfamily))
+                {
+                    zerodate = zerodate.AddMonths(1);
+                    continue;
+                }
+
+                var rawdata = ATETestData.LoadATETestData(familycond, zerodate, zerodate.AddMonths(1), ctrl);
+                ModuleTestData.StoreData(rawdata);
+
+                UpdateMesRecord(zerodate.ToString("yyyy-MM"), "ROUTE_DATA", yieldfamily);
+                break;
+            }
+        }
+        private static void LoadTunableData(Controller ctrl,string pdfamily,string yieldfamily)
+        {
+            var pdfamilylist = pdfamily.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var familycond = "('" + string.Join("','", pdfamilylist) + "')";
+            _LoadTunableData(ctrl, familycond, yieldfamily);
         }
 
         public static void LoadData(Controller ctrl)
@@ -248,34 +275,34 @@ namespace Prism.Models
                 var pdfamily = yieldcfg[yf + "_FAMILY"];
                 if (string.Compare(yf, "PARALLEL", true) == 0)
                 {
-                    LoadParallelData(ctrl,pdfamily);
+                    LoadParallelData(ctrl,pdfamily,yf);
                 }
                 else if (string.Compare(yf, "LINECARD", true) == 0)
                 {
-                    LoadLineCardData(ctrl,pdfamily);
+                    LoadLineCardData(ctrl,pdfamily,yf);
                 }
                 else if (string.Compare(yf, "TUNABLE", true) == 0)
                 {
-                    LoadTunableData(ctrl,pdfamily);
+                    LoadTunableData(ctrl,pdfamily,yf);
                 }
             }
         }
 
 
-        private static bool IsMesDataUpdated(string month, string mestab)
+        private static bool IsMesDataUpdated(string month, string mestab,string yieldfamily)
         {
-            var sql = "select month,mestab from MesDataUpdate where month='<month>' and mestab='<mestab>'";
-            sql = sql.Replace("<month>", month).Replace("<mestab>", mestab);
+            var sql = "select month,mestab,yieldfamily from MesDataUpdate where month='<month>' and mestab='<mestab>' and yieldfamily='<yieldfamily>'";
+            sql = sql.Replace("<month>", month).Replace("<mestab>", mestab).Replace("<yieldfamily>", yieldfamily);
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             if (dbret.Count > 0)
             { return true; }
             return false;
         }
 
-        private static void UpdateMesRecord(string month, string mestab)
+        private static void UpdateMesRecord(string month, string mestab,string yieldfamily)
         {
-            var sql = "insert into MesDataUpdate(month,mestab) values('<month>','<mestab>')";
-            sql = sql.Replace("<month>", month).Replace("<mestab>", mestab);
+            var sql = "insert into MesDataUpdate(month,mestab,yieldfamily) values('<month>','<mestab>','<yieldfamily>')";
+            sql = sql.Replace("<month>", month).Replace("<mestab>", mestab).Replace("<yieldfamily>", yieldfamily);
             DBUtility.ExeLocalSqlNoRes(sql);
         }
 
