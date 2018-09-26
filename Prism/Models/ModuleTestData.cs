@@ -66,6 +66,18 @@ namespace Prism.Models
             DBUtility.ExeLocalSqlNoRes(sql);
         }
 
+        public static List<string> RetrieveAllProductFamily()
+        {
+            var ret = new List<string>();
+            var sql = "select distinct ProductFamily from ModuleTestData";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql,null);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
+            return ret;
+        }
+
         public static List<ModuleTestData> RetrieveTestDate(string productfamily, DateTime startdate,DateTime enddate)
         {
             var ret = new List<ModuleTestData>();

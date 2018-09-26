@@ -211,6 +211,7 @@
     <Compile Include="Models\PrismComment.cs" />
     <Compile Include="Models\ScrapData_Base.cs" />
     <Compile Include="Models\WebsiteToImage.cs" />
+    <Compile Include="Models\YieldPreWorker.cs" />
     <Compile Include="Models\YieldRawData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />

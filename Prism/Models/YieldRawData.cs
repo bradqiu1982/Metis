@@ -311,7 +311,7 @@ namespace Prism.Models
         }
 
 
-        private static bool IsYieldDataActionUpdated(string month, string mestab,string yieldfamily,string actiontype)
+        public static bool IsYieldDataActionUpdated(string month, string mestab,string yieldfamily,string actiontype)
         {
             var sql = "select month,mestab,yieldfamily from MesDataUpdate where month='<month>' and mestab='<mestab>' and yieldfamily='<yieldfamily>' and actiontype = '<actiontype>'";
             sql = sql.Replace("<month>", month).Replace("<mestab>", mestab).Replace("<yieldfamily>", yieldfamily).Replace("<actiontype>",actiontype);
@@ -321,7 +321,7 @@ namespace Prism.Models
             return false;
         }
 
-        private static void UpdateYieldDataAction(string month, string mestab,string yieldfamily,string actiontype)
+        public static void UpdateYieldDataAction(string month, string mestab,string yieldfamily,string actiontype)
         {
             var sql = "insert into MesDataUpdate(month,mestab,yieldfamily,actiontype) values('<month>','<mestab>','<yieldfamily>','<actiontype>')";
             sql = sql.Replace("<month>", month).Replace("<mestab>", mestab).Replace("<yieldfamily>", yieldfamily).Replace("<actiontype>", actiontype);
