@@ -166,7 +166,6 @@ namespace Prism.Controllers
             catch (Exception ex) { }
             return View("HeartBeat");
         }
-        
 
     }
 }

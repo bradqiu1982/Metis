@@ -144,7 +144,8 @@ CREATE TABLE [dbo].[PrismComment] (
 CREATE TABLE [dbo].[MesDataUpdate] (
     [month]   NVARCHAR (300)   DEFAULT ('')  NOT NULL,
     [mestab]   NVARCHAR (300)   DEFAULT ('')  NOT NULL,
-	[yieldfamily]   NVARCHAR (300)   DEFAULT ('')  NOT NULL
+	[yieldfamily]   NVARCHAR (300)   DEFAULT ('')  NOT NULL,
+	[actiontype]    NVARCHAR (200)   DEFAULT ('')  NOT NULL
 );
 
 CREATE TABLE [dbo].[ModuleTestData]
@@ -161,5 +162,6 @@ CREATE TABLE [dbo].[ModuleTestData]
 	[ModuleType]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
 	[SpeedRate]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
 	[SpendTime]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
-	[MESTab]    NVARCHAR (300)   DEFAULT ('') NOT NULL
+	[MESTab]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[YieldFamily]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
 );

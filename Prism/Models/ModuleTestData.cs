@@ -14,7 +14,7 @@ namespace Prism.Models
         }
 
         public ModuleTestData(string dataid,string sn,string tm,string wt,string err,string station,
-            string pf,string pn,string pndesc,string mt,string spd,string spt,string mes)
+            string pf,string pn,string pndesc,string mt,string spd,string spt,string mes,string yf)
         {
             DataID = dataid;
             ModuleSN = sn;
@@ -29,6 +29,7 @@ namespace Prism.Models
             SpeedRate = spd;
             SpendTime = spt;
             MESTab = mes;
+            YieldFamily = yf;
         }
 
         private void Init()
@@ -46,6 +47,7 @@ namespace Prism.Models
             SpeedRate = "";
             SpendTime = "";
             MESTab = "";
+            YieldFamily = "";
         }
 
         public static void StoreData(List<ModuleTestData> datalist)
@@ -56,6 +58,31 @@ namespace Prism.Models
             DBUtility.WriteDBWithTable(newlist, typeof(ModuleTestData), "ModuleTestData");
         }
 
+        public static void CleanTestData(string yieldfamily, string mestab, DateTime startdate)
+        {
+            var sql = "delete from ModuleTestData where MESTab='<MESTab>' and YieldFamily = '<YieldFamily>' and TestTimeStamp >= '<startdate>' and TestTimeStamp < '<enddate>'";
+            sql = sql.Replace("<MESTab>",mestab).Replace("<YieldFamily>",yieldfamily)
+                .Replace("<startdate>",startdate.ToString("yyyy-MM-dd HH:mm:dd")).Replace("<enddate>", startdate.AddMonths(1).ToString("yyyy-MM-dd HH:mm:dd"));
+            DBUtility.ExeLocalSqlNoRes(sql);
+        }
+
+        public static List<ModuleTestData> RetrieveTestDate(string productfamily, DateTime startdate,DateTime enddate)
+        {
+            var ret = new List<ModuleTestData>();
+
+            var sql = @"select DataID,ModuleSN,TestTimeStamp,WhichTest,ErrAbbr,TestStation,ProductFamily,PN,PNDesc,ModuleType,SpeedRate,SpendTime,MESTab,YieldFamily from ModuleTestData 
+                            where ProductFamily = '<ProductFamily>' and TestTimeStamp >= '<startdate>' and TestTimeStamp < '<enddate>' order by ModuleSN,TestTimeStamp desc";
+            sql = sql.Replace("<ProductFamily>", productfamily).Replace("<startdate>", startdate.ToString("yyyy-MM-dd HH:mm:ss")).Replace("<enddate>", enddate.ToString("yyyy-MM-dd HH:mm:ss"));
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(new ModuleTestData(Convert.ToString(line[0]), Convert.ToString(line[1]), Convert.ToDateTime(line[2]).ToString("yyyy-MM-dd HH:mm:ss")
+                    , Convert.ToString(line[3]), Convert.ToString(line[4]), Convert.ToString(line[5]), Convert.ToString(line[6])
+                    , Convert.ToString(line[7]), Convert.ToString(line[8]), Convert.ToString(line[9]), Convert.ToString(line[10])
+                    , Convert.ToString(line[11]), Convert.ToString(line[12]), Convert.ToString(line[13])));
+            }
+            return ret;
+        }
 
         public string DataID { set; get; }
         public string ModuleSN { set; get; }
@@ -72,6 +99,7 @@ namespace Prism.Models
         public string SpendTime { set; get; }
 
         public string MESTab { set; get; }
+        public string YieldFamily { set; get; }
 
     }
 }

@@ -48,7 +48,7 @@ namespace Prism.Models
             ProductFamily = "";
         }
 
-        private static List<ModuleTestData> RetrieveValidATETestData(List<List<object>> dbret,Dictionary<string,string> yddict)
+        private static List<ModuleTestData> RetrieveValidATETestData(List<List<object>> dbret,Dictionary<string,string> yddict, string yieldfamily)
         {
             var retdata = new List<ModuleTestData>();
 
@@ -173,7 +173,7 @@ namespace Prism.Models
             foreach (var item in validatedata)
             {
                 var tempvm = new ModuleTestData(item.DataID, item.ModuleSerialNum, item.TestTimeStamp.ToString("yyyy-MM-dd HH:mm:ss")
-                                                , item.WhichTest, item.ErrAbbr, item.TestStation, item.ProductFamily, item.PN, item.PNDesc, item.ModuleType, item.SpeedRate,item.SpendTime, "ROUTE_DATA");
+                                                , item.WhichTest, item.ErrAbbr, item.TestStation, item.ProductFamily, item.PN, item.PNDesc, item.ModuleType, item.SpeedRate,item.SpendTime, "ROUTE_DATA",yieldfamily);
                 retdata.Add(tempvm);
             }
 
@@ -181,7 +181,7 @@ namespace Prism.Models
 
         }
 
-        public static List<ModuleTestData> LoadATETestData(string familycond, DateTime startdate, DateTime enddate, Controller ctrl)
+        public static List<ModuleTestData> LoadATETestData(string familycond, DateTime startdate, DateTime enddate, Controller ctrl, string yieldfamily)
         {
             var ydcfg = CfgUtility.LoadYieldConfig(ctrl);
             var sql = @"SELECT d.dataset_id,a.MFR_SN,d.start_time,d.DATASET_NAME,d.STATION,c.FAMILY,a.MFR_PN,d.STATUS,d.END_TIME,d.ROUTE_ID,c.model_id,c.product_group FROM PARTS a   
@@ -191,7 +191,7 @@ namespace Prism.Models
                     WHERE c.FAMILY in <FAMILYCOND> and d.start_time >= '<STARTDATE>' and d.start_time < '<ENDDATE>' AND b.state <> 'GOLDEN' ORDER BY a.MFR_SN,d.start_time ASC";
             sql = sql.Replace("<FAMILYCOND>",familycond).Replace("<STARTDATE>", startdate.ToString("yyyyMMddHHmmss")).Replace("<ENDDATE>", enddate.ToString("yyyyMMddHHmmss"));
             var dbret = DBUtility.ExeATESqlWithRes(sql);
-            return RetrieveValidATETestData(dbret,ydcfg);
+            return RetrieveValidATETestData(dbret,ydcfg,yieldfamily);
         }
 
 

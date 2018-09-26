@@ -6,6 +6,11 @@ using System.Web.Mvc;
 
 namespace Prism.Models
 {
+    public class YIELDACTIONTYPE {
+        public static string LOAD = "LOAD";
+        public static string COMPUTER = "COMPUTER";
+    }
+    
     public class YieldRawData
     {
         private static List<string> LoadMESTabs(Controller ctrl, string familycond, bool withappendtab = false)
@@ -77,14 +82,17 @@ namespace Prism.Models
             var nowmonth = DateTime.Now.ToString("yyyy-MM");
             for (; zerodate < DateTime.Now;)
             {
+                var iscurrentmonth = false;
                 if (string.Compare(zerodate.ToString("yyyy-MM"), nowmonth) == 0)
-                { break;}
+                { iscurrentmonth = true; }
 
-                if (IsMesDataUpdated(zerodate.ToString("yyyy-MM"), mestab, yieldfamily))
+                if (IsYieldDataActionUpdated(zerodate.ToString("yyyy-MM"), mestab, yieldfamily,YIELDACTIONTYPE.LOAD))
                 {
                     zerodate = zerodate.AddMonths(1);
                     continue;
                 }
+
+                ModuleTestData.CleanTestData(yieldfamily, "DC" + mestab, zerodate);
 
                 var sql = @"SELECT distinct [dc<DCTABLE>HistoryId] ,[ModuleSerialNum],[TestTimeStamp],[WhichTest],[ErrAbbr] ,[TestStation]
                             ,pf.ProductFamilyName ,[AssemblyPartNum],[ModulePartNum],[ModuleType],[SpecFreq_GHz] ,[TestDuration_s] 
@@ -105,13 +113,16 @@ namespace Prism.Models
                         rawdata.Add(new ModuleTestData(Convert2Str(line[0]), Convert2Str(line[1]), Convert.ToDateTime(line[2]).ToString("yyyy-MM-dd HH:mm:ss")
                             , Convert2Str(line[3]), Convert2Str(line[4]), Convert2Str(line[5])
                             , Convert2Str(line[6]), Convert2Str(line[7]), Convert2Str(line[8])
-                            , Convert2Str(line[9]), Convert2Str(line[10]), Convert2Str(line[11]),"DC"+mestab));
+                            , Convert2Str(line[9]), Convert2Str(line[10]), Convert2Str(line[11]),"DC"+mestab,yieldfamily));
                     } catch (Exception ex) { }
                 }
 
                 ModuleTestData.StoreData(rawdata);
 
-                UpdateMesRecord(zerodate.ToString("yyyy-MM"), mestab, yieldfamily);
+                if (!iscurrentmonth)
+                {
+                    UpdateYieldDataAction(zerodate.ToString("yyyy-MM"), mestab, yieldfamily, YIELDACTIONTYPE.LOAD);
+                }
                 break;
             }
             
@@ -141,14 +152,17 @@ namespace Prism.Models
             var nowmonth = DateTime.Now.ToString("yyyy-MM");
             for (; zerodate < DateTime.Now;)
             {
+                var iscurrentmonth = false;
                 if (string.Compare(zerodate.ToString("yyyy-MM"), nowmonth) == 0)
-                { break; }
+                { iscurrentmonth = true; }
 
-                if (IsMesDataUpdated(zerodate.ToString("yyyy-MM"), mestab, yieldfamily))
+                if (IsYieldDataActionUpdated(zerodate.ToString("yyyy-MM"), mestab, yieldfamily, YIELDACTIONTYPE.LOAD))
                 {
                     zerodate = zerodate.AddMonths(1);
                     continue;
                 }
+
+                ModuleTestData.CleanTestData(yieldfamily, "DC" + mestab, zerodate);
 
                 var sql = @"SELECT distinct [dc<DCTABLE>HistoryId] ,[ModuleSerialNum],[TestTimeStamp],[WhichTest],[ErrAbbr] ,[TestStation]
                             ,pf.ProductFamilyName ,[AssemblyPartNum],[ModulePartNum],[ModuleType],[SpecFreq_GHz] ,[TestDuration_s] 
@@ -172,7 +186,7 @@ namespace Prism.Models
                         var tempvm = new ModuleTestData(Convert2Str(line[0]), Convert2Str(line[1]), Convert.ToDateTime(line[2]).ToString("yyyy-MM-dd HH:mm:ss")
                             , Convert2Str(line[3]), Convert2Str(line[4]), Convert2Str(line[5])
                             , Convert2Str(line[6]), Convert2Str(line[7]), Convert2Str(line[8])
-                            , Convert2Str(line[9]), Convert2Str(line[10]), Convert2Str(line[11]), "DC" + mestab);
+                            , Convert2Str(line[9]), Convert2Str(line[10]), Convert2Str(line[11]), "DC" + mestab,yieldfamily);
                         rawdata.Add(tempvm);
                         if (string.Compare(tempvm.ErrAbbr, "pass", true) != 0)
                         {
@@ -213,8 +227,10 @@ namespace Prism.Models
                 }
 
                 ModuleTestData.StoreData(rawdata);
-
-                UpdateMesRecord(zerodate.ToString("yyyy-MM"), mestab, yieldfamily);
+                if (!iscurrentmonth)
+                {
+                    UpdateYieldDataAction(zerodate.ToString("yyyy-MM"), mestab, yieldfamily, YIELDACTIONTYPE.LOAD);
+                }
                 break;
             }
         }
@@ -243,19 +259,25 @@ namespace Prism.Models
             var nowmonth = DateTime.Now.ToString("yyyy-MM");
             for (; zerodate < DateTime.Now;)
             {
+                var iscurrentmonth = false;
                 if (string.Compare(zerodate.ToString("yyyy-MM"), nowmonth) == 0)
-                { break; }
+                { iscurrentmonth = true; }
 
-                if (IsMesDataUpdated(zerodate.ToString("yyyy-MM"), "ROUTE_DATA", yieldfamily))
+                if (IsYieldDataActionUpdated(zerodate.ToString("yyyy-MM"), "ROUTE_DATA", yieldfamily, YIELDACTIONTYPE.LOAD))
                 {
                     zerodate = zerodate.AddMonths(1);
                     continue;
                 }
 
-                var rawdata = ATETestData.LoadATETestData(familycond, zerodate, zerodate.AddMonths(1), ctrl);
+                ModuleTestData.CleanTestData(yieldfamily, "ROUTE_DATA", zerodate);
+
+                var rawdata = ATETestData.LoadATETestData(familycond, zerodate, zerodate.AddMonths(1), ctrl,yieldfamily);
                 ModuleTestData.StoreData(rawdata);
 
-                UpdateMesRecord(zerodate.ToString("yyyy-MM"), "ROUTE_DATA", yieldfamily);
+                if (!iscurrentmonth)
+                {
+                    UpdateYieldDataAction(zerodate.ToString("yyyy-MM"), "ROUTE_DATA", yieldfamily, YIELDACTIONTYPE.LOAD);
+                }
                 break;
             }
         }
@@ -289,20 +311,20 @@ namespace Prism.Models
         }
 
 
-        private static bool IsMesDataUpdated(string month, string mestab,string yieldfamily)
+        private static bool IsYieldDataActionUpdated(string month, string mestab,string yieldfamily,string actiontype)
         {
-            var sql = "select month,mestab,yieldfamily from MesDataUpdate where month='<month>' and mestab='<mestab>' and yieldfamily='<yieldfamily>'";
-            sql = sql.Replace("<month>", month).Replace("<mestab>", mestab).Replace("<yieldfamily>", yieldfamily);
+            var sql = "select month,mestab,yieldfamily from MesDataUpdate where month='<month>' and mestab='<mestab>' and yieldfamily='<yieldfamily>' and actiontype = '<actiontype>'";
+            sql = sql.Replace("<month>", month).Replace("<mestab>", mestab).Replace("<yieldfamily>", yieldfamily).Replace("<actiontype>",actiontype);
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             if (dbret.Count > 0)
             { return true; }
             return false;
         }
 
-        private static void UpdateMesRecord(string month, string mestab,string yieldfamily)
+        private static void UpdateYieldDataAction(string month, string mestab,string yieldfamily,string actiontype)
         {
-            var sql = "insert into MesDataUpdate(month,mestab,yieldfamily) values('<month>','<mestab>','<yieldfamily>')";
-            sql = sql.Replace("<month>", month).Replace("<mestab>", mestab).Replace("<yieldfamily>", yieldfamily);
+            var sql = "insert into MesDataUpdate(month,mestab,yieldfamily,actiontype) values('<month>','<mestab>','<yieldfamily>','<actiontype>')";
+            sql = sql.Replace("<month>", month).Replace("<mestab>", mestab).Replace("<yieldfamily>", yieldfamily).Replace("<actiontype>", actiontype);
             DBUtility.ExeLocalSqlNoRes(sql);
         }
 
