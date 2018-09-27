@@ -165,3 +165,19 @@ CREATE TABLE [dbo].[ModuleTestData]
 	[MESTab]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
 	[YieldFamily]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
 );
+
+CREATE TABLE [dbo].[YieldPreData]
+(
+	[YieldMonth]    DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL,
+	[ProductFamily]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[WhichTest]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Failure]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[FailureNum]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[YieldType]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Appv_1]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_2]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_3]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_4]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
+);
+
+

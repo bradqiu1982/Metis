@@ -92,7 +92,10 @@ namespace Prism.Models
                     continue;
                 }
 
-                ModuleTestData.CleanTestData(yieldfamily, "DC" + mestab, zerodate);
+                if (iscurrentmonth)
+                {
+                    ModuleTestData.CleanTestData(yieldfamily, "DC" + mestab, zerodate);
+                }
 
                 var sql = @"SELECT distinct [dc<DCTABLE>HistoryId] ,[ModuleSerialNum],[TestTimeStamp],[WhichTest],[ErrAbbr] ,[TestStation]
                             ,pf.ProductFamilyName ,[AssemblyPartNum],[ModulePartNum],[ModuleType],[SpecFreq_GHz] ,[TestDuration_s] 
@@ -162,7 +165,11 @@ namespace Prism.Models
                     continue;
                 }
 
-                ModuleTestData.CleanTestData(yieldfamily, "DC" + mestab, zerodate);
+                if (iscurrentmonth)
+                {
+                    ModuleTestData.CleanTestData(yieldfamily, "DC" + mestab, zerodate);
+                }
+
 
                 var sql = @"SELECT distinct [dc<DCTABLE>HistoryId] ,[ModuleSerialNum],[TestTimeStamp],[WhichTest],[ErrAbbr] ,[TestStation]
                             ,pf.ProductFamilyName ,[AssemblyPartNum],[ModulePartNum],[ModuleType],[SpecFreq_GHz] ,[TestDuration_s] 
@@ -269,7 +276,10 @@ namespace Prism.Models
                     continue;
                 }
 
-                ModuleTestData.CleanTestData(yieldfamily, "ROUTE_DATA", zerodate);
+                if (iscurrentmonth)
+                {
+                    ModuleTestData.CleanTestData(yieldfamily, "ROUTE_DATA", zerodate);
+                }
 
                 var rawdata = ATETestData.LoadATETestData(familycond, zerodate, zerodate.AddMonths(1), ctrl,yieldfamily);
                 ModuleTestData.StoreData(rawdata);

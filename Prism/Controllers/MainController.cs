@@ -93,6 +93,22 @@ namespace Prism.Controllers
             { }
         }
 
+        private bool YieldDateTimer()
+        {
+            var now = DateTime.Now;
+            var hour = Convert.ToInt32(now.ToString("HH"));
+            if ((hour >= 0 && hour < 2)
+                || (hour >= 3 && hour < 4)
+                || (hour > 6 && hour < 7)
+                || (hour >= 9 && hour < 10)
+                || (hour > 13 && hour < 14)
+                || (hour >= 17 && hour < 18)
+                || (hour > 21 && hour < 22))
+            { return true; }
+
+            return false;
+        }
+
         public ActionResult HeartBeat()
         {
             var filename = "log" + DateTime.Now.ToString("yyyy-MM-dd");
@@ -134,6 +150,11 @@ namespace Prism.Controllers
             }//end only run once
 
             heartbeatlog("Heart Beat Start", filename);
+
+            if (YieldDateTimer())
+            {
+                YieldRawData.LoadData(this);
+            }
 
             return View();
         }
