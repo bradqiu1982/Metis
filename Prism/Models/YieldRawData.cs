@@ -8,7 +8,8 @@ namespace Prism.Models
 {
     public class YIELDACTIONTYPE {
         public static string LOAD = "LOAD";
-        public static string COMPUTER = "COMPUTER";
+        public static string MONTHLYYIELD = "MONTHLYYIELD";
+        public static string MONTHLYMACHINE = "MONTHLYMACHINE";
     }
     
     public class YieldRawData

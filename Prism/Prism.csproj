@@ -205,6 +205,7 @@
     <Compile Include="Models\ExternalDataCollector.cs" />
     <Compile Include="Models\HPUMainData.cs" />
     <Compile Include="Models\IEScrapBuget.cs" />
+    <Compile Include="Models\MachinePreData.cs" />
     <Compile Include="Models\MachineUserMap.cs" />
     <Compile Include="Models\ModuleTestData.cs" />
     <Compile Include="Models\PNPlannerCodeMap.cs" />

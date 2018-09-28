@@ -2,7 +2,7 @@
 
 SHAREFOLDERUSER:::brad.qiu
 SHAREFOLDERDOMIN:::china
-SHAREFOLDERPWD:::wangle@345678
+SHAREFOLDERPWD:::wangle@456789
 
 APPEMAILADRESS:::WXNPI.Trace@finisar.com
 APPEMAILPWD:::abc@12345
@@ -13,7 +13,7 @@ PNPLANNERCODEMAP:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - Item At
 IESCRAPBUGETPATH:::\\wux-fs\Public\WUXI IE\Scrap\Share_Data\Scrap_budget_
 
 COSTCENTERSCRAPWARNING:::Parallel;Telecom TRX;
-COSTCENTERSCRAPWARNINGLIST:::shawn.zhang@finisar.com;windy.ju@finisar.com;brad.qiu@finisar.com;chris.bao@finisar.com;
+COSTCENTERSCRAPWARNINGLIST:::shawn.zhang@finisar.com;windy.ju@finisar.com;Feng.Gao@finisar.com;Jon.Xiang@finisar.com;penny.jin@finisar.com;brad.qiu@finisar.com;chris.bao@finisar.com;garvin.zeng@finisar.com;meg.wang@finisar.com;leon.ren@finisar.com;zhengwei.kong@finisar.com;armon.kong@finisar.com;louis.wang@finisar.com;
 
 HPUSRCFOLDER:::\\wux-fs\PUBLIC\WUXI IE\HPU
 HPUPRODUCTLINE:::Parallel Process HPU;Linecard Process HPU;OSA Process HPU;WSS Process HPU;WDM Process HPU;POU Process HPU;POS Process HPU;PISO Process HPU;LCR Process HPU;FLB Process HPU;FISO Process HPU;EDFA Process HPU;40G transponder Process HPU;Coherent CFP2 Process HPU;T-XFP Process HPU

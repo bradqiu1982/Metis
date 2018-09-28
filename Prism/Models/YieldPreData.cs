@@ -92,7 +92,7 @@ namespace Prism.Models
                     if (string.Compare(zerodate.ToString("yyyy-MM"), nowmonth) == 0)
                     { iscurrentmonth = true; }
 
-                    if (YieldRawData.IsYieldDataActionUpdated(zerodate.ToString("yyyy-MM"), "", pf, YIELDACTIONTYPE.COMPUTER))
+                    if (YieldRawData.IsYieldDataActionUpdated(zerodate.ToString("yyyy-MM"), "", pf, YIELDACTIONTYPE.MONTHLYYIELD))
                     {
                         zerodate = zerodate.AddMonths(1);
                         continue;
@@ -113,7 +113,7 @@ namespace Prism.Models
 
                     if (!iscurrentmonth)
                     {
-                        YieldRawData.UpdateYieldDataAction(zerodate.ToString("yyyy-MM"), "", pf, YIELDACTIONTYPE.COMPUTER);
+                        YieldRawData.UpdateYieldDataAction(zerodate.ToString("yyyy-MM"), "", pf, YIELDACTIONTYPE.MONTHLYYIELD);
                     }
                     break;
                 }
