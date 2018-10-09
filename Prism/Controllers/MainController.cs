@@ -132,11 +132,29 @@ namespace Prism.Controllers
                     }
                 }
                 catch (Exception ex) { }
+
+                if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday
+                    || DateTime.Now.DayOfWeek == DayOfWeek.Wednesday)
+                {
+                    try
+                    {
+                        YieldRawData.LoadData(this);
+                    }
+                    catch (Exception ex) { }
+
+                    try
+                    {
+                        YieldPreData.YieldPreScan(this);
+                        MachinePreData.MachinePreScan(this);
+                    }
+                    catch (Exception ex) { }
+                }
+
             }//end only run once
 
             heartbeatlog("Heart Beat Start", filename);
 
-            YieldRawData.LoadData(this);
+            heartbeatlog("Heart Beat end", filename);
 
             return View();
         }
@@ -167,6 +185,19 @@ namespace Prism.Controllers
                 YieldRawData.LoadData(this);
             }
             catch (Exception ex) { }
+            return View("HeartBeat");
+        }
+
+        public ActionResult ScanYieldRawData()
+        {
+            YieldPreData.YieldPreScan(this);
+            MachinePreData.MachinePreScan(this);
+            return View("HeartBeat");
+        }
+
+        public ActionResult ReviewPallelYield()
+        {
+            YieldVM.RetrieveParallelYield();
             return View("HeartBeat");
         }
 
