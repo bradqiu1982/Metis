@@ -2,9 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace Prism.Models
 {
+    public class ProductYield
+    {
+        public ProductYield()
+        {
+            ProductFamily = "";
+            FirstYieldList = new List<YieldVM>();
+            FinalYieldList = new List<YieldVM>();
+        }
+
+        public string ProductFamily { set; get; }
+        public List<YieldVM> FirstYieldList { set; get; }
+        public List<YieldVM> FinalYieldList { set; get; }
+    }
+
     public class TestYieldVM
     {
         public TestYieldVM()
@@ -131,8 +146,11 @@ namespace Prism.Models
             }
         }
 
-        private static List<YieldVM> _pumpyielddata(string pdfamily,List<string> quarterlist, Dictionary<string, Dictionary<string, Dictionary<string, int>>> firstyielddict)
+        private static List<YieldVM> _pumpyielddata(string pdfamily,List<string> quarterlist
+            , Dictionary<string, Dictionary<string, Dictionary<string, int>>> firstyielddict,double yieldlowbound, Controller ctrl)
         {
+            var linecardignorelist = CfgUtility.LoadLineCardIgnoreConfig(ctrl).Keys.ToList();
+
             var ret = new List<YieldVM>();
             foreach (var q in quarterlist)
             {
@@ -141,6 +159,8 @@ namespace Prism.Models
                 vm.Quarter = q;
                 var wdict = firstyielddict[q];
                 var maxinput = 0;
+
+                //retrieve test yield list of each quarter
                 var temptestyieldlist = new List<TestYieldVM>();
                 foreach (var wkv in wdict)
                 {
@@ -156,11 +176,6 @@ namespace Prism.Models
                         {
                             failed += fkv.Value;
                             testyield.FailureMap.Add(fkv.Key, fkv.Value);
-
-                            if (vm.FailureMap.ContainsKey(fkv.Key))
-                            { vm.FailureMap[fkv.Key] += fkv.Value; }
-                            else
-                            { vm.FailureMap.Add(fkv.Key, fkv.Value); }
                         }
                     }//end foreach
                     testyield.Pass = pass;
@@ -173,20 +188,92 @@ namespace Prism.Models
                     temptestyieldlist.Add(testyield);
                 }//end foreach
 
+                var linecarddict = new Dictionary<string, bool>();
+                var linecardyielddict = new Dictionary<string, TestYieldVM>();
+
                 foreach (var testyield in temptestyieldlist)
                 {
-                    if ((testyield.Pass+testyield.Failed) > (maxinput/10))
+                    if ((testyield.Pass+testyield.Failed) > (maxinput/10)
+                        && testyield.Yield > yieldlowbound)
                     {
-                        vm.TestYieldList.Add(testyield);
+                        //load test yield list into linecardyield dict
+                        if (pdfamily.Contains("LINECARD"))
+                        {
+                            if (testyield.Yield == 100 && linecardyielddict.Count > 0)
+                            { continue; }
+
+                            var ignmatch = false;
+                            var testname = System.Text.RegularExpressions.Regex.Replace(testyield.WhichTest, @"\d", "").Replace("_", "").ToUpper();
+                            foreach (var ign in linecardignorelist)
+                            {
+                                if (testname.Contains(ign))
+                                {
+                                    ignmatch = true;
+                                    break;
+                                }
+                            }
+                            if (ignmatch)
+                            { continue; }
+
+                            var id = System.Text.RegularExpressions.Regex.Replace(testyield.WhichTest, @"\d", "") + "_" + (testyield.Pass + testyield.Failed).ToString();
+                            if (linecarddict.ContainsKey(id))
+                            {
+                                if (testyield.Yield < linecardyielddict[id].Yield)
+                                {
+                                    linecardyielddict.Remove(id);
+                                    linecardyielddict.Add(id, testyield);
+                                }
+                            }
+                            else
+                            {
+                                linecarddict.Add(id, true);
+                                linecardyielddict.Add(id, testyield);
+                            }
+                        }
+                        else
+                        {
+                            //load test yield list into yieldvm
+                            foreach (var fkv in testyield.FailureMap)
+                            {
+                                if (string.Compare(fkv.Key, "pass", true) != 0)
+                                {
+                                    if (vm.FailureMap.ContainsKey(fkv.Key))
+                                    { vm.FailureMap[fkv.Key] += fkv.Value; }
+                                    else
+                                    { vm.FailureMap.Add(fkv.Key, fkv.Value); }
+                                }
+                            }
+                            vm.TestYieldList.Add(testyield);
+                        }
                     }
                 }//end foreach
+
+                //load linecard yield dict into yieldvm
+                if (pdfamily.Contains("LINECARD"))
+                {
+                    var lincardyieldlist = linecardyielddict.Values.ToList();
+                    foreach (var ltestyield in lincardyieldlist)
+                    {
+                        foreach (var fkv in ltestyield.FailureMap)
+                        {
+                            if (string.Compare(fkv.Key, "pass", true) != 0)
+                            {
+                                if (vm.FailureMap.ContainsKey(fkv.Key))
+                                { vm.FailureMap[fkv.Key] += fkv.Value; }
+                                else
+                                { vm.FailureMap.Add(fkv.Key, fkv.Value); }
+                            }
+                        }
+                        vm.TestYieldList.Add(ltestyield);
+                    }
+                }
 
                 ret.Add(vm);
             }//end foreach
             return ret;
         }
 
-        public static List<List<YieldVM>> RetrieveYieldsByDepart(string pdfamily,string familycond)
+        public static List<List<YieldVM>> RetrieveYieldsByProductFamily(string pdfamily,string familycond, Controller ctrl)
         {
             var ret = new List<List<YieldVM>>();
 
@@ -222,16 +309,42 @@ namespace Prism.Models
                 { _loadyielddict(finalyielddict, quarter, whichtest, failure, failurenum); }
             }//end foreach
 
-            ret.Add(_pumpyielddata(pdfamily,qlist,firstyielddict));
-            ret.Add(_pumpyielddata(pdfamily, qlist, finalyielddict));
+            ret.Add(_pumpyielddata(pdfamily,qlist,firstyielddict,10,ctrl));
+            ret.Add(_pumpyielddata(pdfamily, qlist, finalyielddict,10,ctrl));
+            return ret;
+        }
+
+        public static List<ProductYield> RetrieveAllYield(Controller ctrl)
+        {
+            var ret = new List<ProductYield>();
+
+            var yieldcfg = CfgUtility.LoadYieldConfig(ctrl);
+            var yieldfamilys = yieldcfg["YIELDFAMILY"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var yf in yieldfamilys)
+            {
+                var pdfamily = yieldcfg[yf + "_FAMILY"];
+                var sb = new System.Text.StringBuilder(1024 * 50);
+                var pdfms = pdfamily.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var pdf in pdfms)
+                {
+                    sb.Append(" or ProductFamily like '" + pdf + "%' ");
+                }
+                var familycond = sb.ToString().Substring(3);
+                var yieldobj = RetrieveYieldsByProductFamily(yf, familycond,ctrl);
+                var pdyield = new ProductYield();
+                pdyield.ProductFamily = yf;
+                pdyield.FirstYieldList.AddRange(yieldobj[0]);
+                pdyield.FinalYieldList.AddRange(yieldobj[1]);
+                ret.Add(pdyield);
+            }//end foreach
             return ret;
         }
 
         public static void RetrieveParallelYield()
         {
-            var yieldlist = RetrieveYieldsByDepart("Parallel", "ProductFamily like 'Parallel%'");
-            var firstpassyieldlist = yieldlist[0];
-            var finalyieldlist = yieldlist[1];
+            //var yieldlist = RetrieveYieldsByProductFamily("Parallel", "ProductFamily like 'Parallel%'");
+            //var firstpassyieldlist = yieldlist[0];
+            //var finalyieldlist = yieldlist[1];
         }
 
 
@@ -248,7 +361,7 @@ namespace Prism.Models
                 {
                     ret = ret * (item.Yield/100.0);
                 }
-                return ret*100.0;
+                return Math.Round(ret*100.0,2);
             } }
 
     }

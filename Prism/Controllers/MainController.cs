@@ -197,7 +197,8 @@ namespace Prism.Controllers
 
         public ActionResult ReviewPallelYield()
         {
-            YieldVM.RetrieveParallelYield();
+            YieldVM.RetrieveAllYield(this);
+            //YieldVM.RetrieveParallelYield();
             return View("HeartBeat");
         }
 

@@ -783,6 +783,7 @@
     <Content Include="Views\DataAnalyze\ModifyReport.cshtml" />
     <Content Include="Views\Shared\_VideoRecordModal.cshtml" />
     <Content Include="Scripts\YieldData.cfg" />
+    <Content Include="Scripts\LincardIgnoreTest.cfg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
