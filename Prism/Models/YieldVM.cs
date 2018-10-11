@@ -113,6 +113,7 @@ namespace Prism.Models
             Quarter = "";
             TestYieldList = new List<TestYieldVM>();
             FailureMap = new Dictionary<string, int>();
+            MaxInput = 0;
         }
 
         private static void _loadyielddict(Dictionary<string, Dictionary<string, Dictionary<string, int>>> firstyielddict
@@ -149,9 +150,7 @@ namespace Prism.Models
         private static List<YieldVM> _pumpyielddata(string pdfamily,List<string> quarterlist
             , Dictionary<string, Dictionary<string, Dictionary<string, int>>> firstyielddict,double yieldlowbound, Controller ctrl)
         {
-            var linecardignorelist = CfgUtility.LoadLineCardIgnoreConfig(ctrl).Keys.ToList();
-
-            var ret = new List<YieldVM>();
+            var quarteryieldlist = new List<YieldVM>();
             foreach (var q in quarterlist)
             {
                 var vm = new YieldVM();
@@ -188,16 +187,17 @@ namespace Prism.Models
                     temptestyieldlist.Add(testyield);
                 }//end foreach
 
-                var linecarddict = new Dictionary<string, bool>();
-                var linecardyielddict = new Dictionary<string, TestYieldVM>();
-
-                foreach (var testyield in temptestyieldlist)
+                //load test yield list into linecardyield dict
+                if (pdfamily.Contains("LINECARD"))
                 {
-                    if ((testyield.Pass+testyield.Failed) > (maxinput/10)
-                        && testyield.Yield > yieldlowbound)
+                    var linecardignorelist = CfgUtility.LoadLineCardIgnoreConfig(ctrl).Keys.ToList();
+                    var linecarddict = new Dictionary<string, bool>();
+                    var linecardyielddict = new Dictionary<string, TestYieldVM>();
+
+                    foreach (var testyield in temptestyieldlist)
                     {
-                        //load test yield list into linecardyield dict
-                        if (pdfamily.Contains("LINECARD"))
+                        if ((testyield.Pass + testyield.Failed) > (maxinput / 10)
+                            && testyield.Yield > yieldlowbound)
                         {
                             if (testyield.Yield == 100 && linecardyielddict.Count > 0)
                             { continue; }
@@ -229,28 +229,9 @@ namespace Prism.Models
                                 linecarddict.Add(id, true);
                                 linecardyielddict.Add(id, testyield);
                             }
-                        }
-                        else
-                        {
-                            //load test yield list into yieldvm
-                            foreach (var fkv in testyield.FailureMap)
-                            {
-                                if (string.Compare(fkv.Key, "pass", true) != 0)
-                                {
-                                    if (vm.FailureMap.ContainsKey(fkv.Key))
-                                    { vm.FailureMap[fkv.Key] += fkv.Value; }
-                                    else
-                                    { vm.FailureMap.Add(fkv.Key, fkv.Value); }
-                                }
-                            }
-                            vm.TestYieldList.Add(testyield);
-                        }
-                    }
-                }//end foreach
+                        }//end if
+                    }//end foreach
 
-                //load linecard yield dict into yieldvm
-                if (pdfamily.Contains("LINECARD"))
-                {
                     var lincardyieldlist = linecardyielddict.Values.ToList();
                     foreach (var ltestyield in lincardyieldlist)
                     {
@@ -265,12 +246,74 @@ namespace Prism.Models
                             }
                         }
                         vm.TestYieldList.Add(ltestyield);
+                        if ((ltestyield.Failed + ltestyield.Pass) > vm.MaxInput)
+                        { vm.MaxInput = (ltestyield.Failed + ltestyield.Pass); }
                     }
                 }
+                else
+                {
+                    var tunableignorelist = CfgUtility.LoadTunableIgnoreConfig(ctrl).Keys.ToList();
 
-                ret.Add(vm);
+                    foreach (var testyield in temptestyieldlist)
+                    {
+                        if ((testyield.Pass+testyield.Failed) > (maxinput/10)
+                            && testyield.Yield > yieldlowbound)
+                        {
+                            if (pdfamily.Contains("PARALLEL"))
+                            {
+                                //load test yield list into yieldvm
+                                foreach (var fkv in testyield.FailureMap)
+                                {
+                                    if (string.Compare(fkv.Key, "pass", true) != 0)
+                                    {
+                                        if (vm.FailureMap.ContainsKey(fkv.Key))
+                                        { vm.FailureMap[fkv.Key] += fkv.Value; }
+                                        else
+                                        { vm.FailureMap.Add(fkv.Key, fkv.Value); }
+                                    }
+                                }
+                                vm.TestYieldList.Add(testyield);
+                                if ((testyield.Failed + testyield.Pass) > vm.MaxInput)
+                                { vm.MaxInput = (testyield.Failed + testyield.Pass); }
+                            }
+                            else
+                            {
+                                var ignmatch = false;
+                                var testname = System.Text.RegularExpressions.Regex.Replace(testyield.WhichTest, @"\d", "").Replace("_", "")
+                                    .Replace("-", "").Replace("[", "").Replace("]", "").Replace("%", "").ToUpper();
+                                foreach (var ign in tunableignorelist)
+                                {
+                                    if (testname.Contains(ign))
+                                    {
+                                        ignmatch = true;
+                                        break;
+                                    }
+                                }
+                                if (ignmatch)
+                                { continue; }
+
+                                //load test yield list into yieldvm
+                                foreach (var fkv in testyield.FailureMap)
+                                {
+                                    if (string.Compare(fkv.Key, "pass", true) != 0)
+                                    {
+                                        if (vm.FailureMap.ContainsKey(fkv.Key))
+                                        { vm.FailureMap[fkv.Key] += fkv.Value; }
+                                        else
+                                        { vm.FailureMap.Add(fkv.Key, fkv.Value); }
+                                    }
+                                }
+                                vm.TestYieldList.Add(testyield);
+                                if ((testyield.Failed + testyield.Pass) > vm.MaxInput)
+                                { vm.MaxInput = (testyield.Failed + testyield.Pass); }
+                            }
+                       }
+                    }//end foreach
+                }
+
+                quarteryieldlist.Add(vm);
             }//end foreach
-            return ret;
+            return quarteryieldlist;
         }
 
         public static List<List<YieldVM>> RetrieveYieldsByProductFamily(string pdfamily,string familycond, Controller ctrl)
@@ -327,7 +370,7 @@ namespace Prism.Models
                 var pdfms = pdfamily.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var pdf in pdfms)
                 {
-                    sb.Append(" or ProductFamily like '" + pdf + "%' ");
+                    sb.Append(" or ProductFamily like '%" + pdf + "%' ");
                 }
                 var familycond = sb.ToString().Substring(3);
                 var yieldobj = RetrieveYieldsByProductFamily(yf, familycond,ctrl);
@@ -340,18 +383,69 @@ namespace Prism.Models
             return ret;
         }
 
-        public static void RetrieveParallelYield()
+        public static List<ProductYield> RetrieveProductYieldByYF(string yf, Controller ctrl)
         {
-            //var yieldlist = RetrieveYieldsByProductFamily("Parallel", "ProductFamily like 'Parallel%'");
-            //var firstpassyieldlist = yieldlist[0];
-            //var finalyieldlist = yieldlist[1];
+            var ret = new List<ProductYield>();
+
+            var yieldcfg = CfgUtility.LoadYieldConfig(ctrl);
+            var pdfamily = yieldcfg[yf + "_FAMILY"];
+            var sb = new System.Text.StringBuilder(1024 * 50);
+            var pdfms = pdfamily.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var pdf in pdfms)
+            {
+                sb.Append(" or ProductFamily like '%" + pdf + "%' ");
+            }
+            var familycond = sb.ToString().Substring(3);
+
+            var familylist = new List<string>();
+            var familydict = new Dictionary<string, bool>();
+            var sql = "select distinct ProductFamily,YieldMonth from YieldPreData where <familycond> order by YieldMonth desc";
+            sql = sql.Replace("<familycond>", familycond);
+
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var pd = Convert.ToString(line[0]);
+                if (!familydict.ContainsKey(pd))
+                {
+                    familydict.Add(pd, true);
+                    familylist.Add(pd);
+                }
+            }
+
+            foreach (var pd in familylist)
+            {
+                var yieldobj = RetrieveYieldsByProductFamily(pd, " ProductFamily like '" + pd + "' ", ctrl);
+                var pdyield = new ProductYield();
+                pdyield.ProductFamily = pd;
+                pdyield.FirstYieldList.AddRange(yieldobj[0]);
+                pdyield.FinalYieldList.AddRange(yieldobj[1]);
+                ret.Add(pdyield);
+            }
+
+            return ret;
         }
 
+        public static List<ProductYield> RetrieveProductYield(List<string> familylist, Controller ctrl)
+        {
+            var ret = new List<ProductYield>();
+            foreach (var pd in familylist)
+            {
+                var yieldobj = RetrieveYieldsByProductFamily(pd, " ProductFamily like '" + pd + "' ", ctrl);
+                var pdyield = new ProductYield();
+                pdyield.ProductFamily = pd;
+                pdyield.FirstYieldList.AddRange(yieldobj[0]);
+                pdyield.FinalYieldList.AddRange(yieldobj[1]);
+                ret.Add(pdyield);
+            }
+            return ret;
+        }
 
         public string ProductFamily { set; get; }
         public string Quarter { set; get; }
         public List<TestYieldVM> TestYieldList { set; get; }
         public Dictionary<string, int> FailureMap { set; get; }
+        public int MaxInput { set; get; }
 
         public double YieldVal { get {
                 var ret = 1.0;

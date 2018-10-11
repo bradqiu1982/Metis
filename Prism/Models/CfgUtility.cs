@@ -73,7 +73,40 @@ namespace Prism.Models
                         var key = kvpair[0].Trim();
                         key = System.Text.RegularExpressions.Regex.Replace(key, @"\d", "").Replace("_", "").ToUpper();
                         var val = kvpair[1].ToUpper().Trim();
-                        ret.Add(key,val);
+                        if (!ret.ContainsKey(key))
+                        {
+                            ret.Add(key,val);
+                        }
+                    }
+                }//end if
+            }//end foreach
+            return ret;
+        }
+
+        public static Dictionary<string, string> LoadTunableIgnoreConfig(Controller ctrl)
+        {
+            var lines = System.IO.File.ReadAllLines(ctrl.Server.MapPath("~/Scripts/TunableIgnoreTest.cfg"));
+            var ret = new Dictionary<string, string>();
+            foreach (var line in lines)
+            {
+                if (line.Contains("##"))
+                {
+                    continue;
+                }
+
+                if (line.Contains(":::"))
+                {
+                    var kvpair = line.Split(new string[] { ":::" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (!ret.ContainsKey(kvpair[0].Trim()) && kvpair.Length > 1)
+                    {
+                        var key = kvpair[0].Trim();
+                        key = System.Text.RegularExpressions.Regex.Replace(key, @"\d", "").Replace("_", "")
+                            .Replace("-", "").Replace("[", "").Replace("]", "").Replace("%", "").ToUpper();
+                        var val = kvpair[1].ToUpper().Trim();
+                        if (!ret.ContainsKey(key))
+                        {
+                            ret.Add(key, val);
+                        }
                     }
                 }//end if
             }//end foreach
