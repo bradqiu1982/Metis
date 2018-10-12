@@ -647,13 +647,13 @@
     <Content Include="Content\images\videoloading.gif" />
     <Content Include="Content\images\welcome.png" />
     <Content Include="Content\images\Yield.png" />
+    <Content Include="Content\jquery.datatables.min.css" />
     <Content Include="Content\SCRAP-RATE.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Content\Finisar.PNG" />
     <Content Include="Content\images\dataloading.gif" />
     <Content Include="Content\images\FinisarLogo.jpg" />
     <Content Include="Content\jquery-ui.css" />
-    <Content Include="Content\jquery.dataTables.min.css" />
     <Content Include="Content\Layout.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\videorecorder.css" />
@@ -732,7 +732,7 @@
     <Content Include="Scripts\jquery-bootstrap-loading.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
-    <Content Include="Scripts\jquery.dataTables.min.js" />
+    <Content Include="Scripts\jquery.datatables.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />

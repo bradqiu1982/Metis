@@ -41,7 +41,7 @@ namespace Prism.Models
                 if (totle == 0)
                 { return 0.0; }
 
-                return (double)Pass / (double)totle * 100.0;
+                return Math.Round((double)Pass / (double)totle * 100.0,4);
                 }
         }
     }

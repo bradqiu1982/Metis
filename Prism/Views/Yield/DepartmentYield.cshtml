@@ -65,3 +65,30 @@
         <a id="exportLink"></a>
     </div>
 </div>
+
+<div class="modal" id="testyieldmodal" tabindex="-1" role="dialog" aria-labelledby="testyieldmodalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="testyieldmodalLabel">Test Yield Info</h4>
+            </div>
+            <div class="row" style="margin-left:15px!important;margin-right:15px!important;">
+                <table class="table table-hover  table-condensed table-striped" id="testyieldtable" style="margin-top:1%">
+                    <caption class="tb-caption">TEST YIELD TABLE</caption>
+                    <thead>
+                        <tr>
+                            <th>WhichTest</th>
+                            <th>Failed</th>
+                            <th>Pass</th>
+                            <th>Yield</th>
+                        </tr>
+                    </thead>
+                    <tbody id="testyieldcontentid"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
