@@ -191,6 +191,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\DataAnalyzeController.cs" />
+    <Compile Include="Controllers\MachineController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Controllers\YieldController.cs" />
     <Compile Include="Global.asax.cs">
@@ -207,6 +208,7 @@
     <Compile Include="Models\HPUMainData.cs" />
     <Compile Include="Models\IEScrapBuget.cs" />
     <Compile Include="Models\MachinePreData.cs" />
+    <Compile Include="Models\MachineRate.cs" />
     <Compile Include="Models\MachineUserMap.cs" />
     <Compile Include="Models\ModuleTestData.cs" />
     <Compile Include="Models\PNPlannerCodeMap.cs" />
@@ -737,6 +739,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\machine.js" />
     <Content Include="Scripts\MyVideoRecord.js" />
     <Content Include="Scripts\NPI_TestData_Table.txt" />
     <Content Include="Scripts\prism-db-script.txt" />
@@ -792,6 +795,8 @@
     <Content Include="Views\Yield\DepartmentYield.cshtml" />
     <Content Include="Views\Yield\ProductYield.cshtml" />
     <Content Include="Scripts\TunableIgnoreTest.cfg" />
+    <Content Include="Views\Machine\DepartmentMachine.cshtml" />
+    <Content Include="Views\Machine\ProductMachine.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

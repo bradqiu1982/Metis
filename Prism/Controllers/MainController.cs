@@ -146,6 +146,7 @@ namespace Prism.Controllers
                     {
                         YieldPreData.YieldPreScan(this);
                         MachinePreData.MachinePreScan(this);
+                        YieldPreData.LoadProjectKey();
                     }
                     catch (Exception ex) { }
                 }
@@ -190,15 +191,12 @@ namespace Prism.Controllers
 
         public ActionResult ScanYieldRawData()
         {
-            YieldPreData.YieldPreScan(this);
-            MachinePreData.MachinePreScan(this);
+
             return View("HeartBeat");
         }
 
         public ActionResult ReviewPallelYield()
         {
-            //YieldVM.RetrieveAllYield(this);
-            YieldVM.RetrieveProductYieldByYF("TUNABLE",this);
             return View("HeartBeat");
         }
 

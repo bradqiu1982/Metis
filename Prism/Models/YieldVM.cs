@@ -6,47 +6,7 @@ using System.Web.Mvc;
 
 namespace Prism.Models
 {
-    public class ProductYield
-    {
-        public ProductYield()
-        {
-            ProductFamily = "";
-            FirstYieldList = new List<YieldVM>();
-            FinalYieldList = new List<YieldVM>();
-        }
-
-        public string ProductFamily { set; get; }
-        public List<YieldVM> FirstYieldList { set; get; }
-        public List<YieldVM> FinalYieldList { set; get; }
-    }
-
-    public class TestYieldVM
-    {
-        public TestYieldVM()
-        {
-            WhichTest = "";
-            Pass = 0;
-            Failed = 0;
-            FailureMap = new Dictionary<string, int>();
-        }
-
-
-        public string WhichTest { set; get; }
-        public int Pass { set; get; }
-        public int Failed { set; get; }
-        public Dictionary<string, int> FailureMap { set; get; }
-        public double Yield {
-            get {
-                var totle = Pass + Failed;
-                if (totle == 0)
-                { return 0.0; }
-
-                return Math.Round((double)Pass / (double)totle * 100.0,4);
-                }
-        }
-    }
-
-    public class YieldVM
+    public class QuarterCLA
     {
         public static List<DateTime> RetrieveDateFromQuarter(string quarter)
         {
@@ -75,7 +35,7 @@ namespace Prism.Models
             }
             else
             {
-                ret.Add(DateTime.Parse((year-1).ToString() + "-11-01 00:00:00"));
+                ret.Add(DateTime.Parse((year - 1).ToString() + "-11-01 00:00:00"));
                 ret.Add(DateTime.Parse(year.ToString() + "-01-31 23:59:59"));
             }
             return ret;
@@ -107,6 +67,62 @@ namespace Prism.Models
             }
         }
 
+        public static double QuarterSec
+        {
+            get { return 13.0 * 6.5 * 20.0 * 3600.0; }
+        }
+
+        public static double QuarterSecMax
+        {
+            get { return 13.0 * 7.0 * 24.0 * 3600.0; }
+        }
+    }
+
+    public class ProductYield
+    {
+        public ProductYield()
+        {
+            ProductFamily = "";
+            FirstYieldList = new List<YieldVM>();
+            FinalYieldList = new List<YieldVM>();
+            ProjectKey = "";
+        }
+
+        public string ProductFamily { set; get; }
+        public List<YieldVM> FirstYieldList { set; get; }
+        public List<YieldVM> FinalYieldList { set; get; }
+        public string ProjectKey { set; get; }
+    }
+
+    public class TestYieldVM
+    {
+        public TestYieldVM()
+        {
+            WhichTest = "";
+            Pass = 0;
+            Failed = 0;
+            FailureMap = new Dictionary<string, int>();
+        }
+
+
+        public string WhichTest { set; get; }
+        public int Pass { set; get; }
+        public int Failed { set; get; }
+        public Dictionary<string, int> FailureMap { set; get; }
+        public double Yield {
+            get {
+                var totle = Pass + Failed;
+                if (totle == 0)
+                { return 0.0; }
+
+                return Math.Round((double)Pass / (double)totle * 100.0,4);
+                }
+        }
+    }
+
+    public class YieldVM
+    {
+
         public YieldVM()
         {
             ProductFamily = "";
@@ -116,7 +132,7 @@ namespace Prism.Models
             MaxInput = 0;
         }
 
-        private static void _loadyielddict(Dictionary<string, Dictionary<string, Dictionary<string, int>>> firstyielddict
+        private static void _load2yielddict(Dictionary<string, Dictionary<string, Dictionary<string, int>>> firstyielddict
             ,string quarter,string whichtest,string failure,int failurenum)
         {
             if (firstyielddict.ContainsKey(quarter))
@@ -150,6 +166,9 @@ namespace Prism.Models
         private static List<YieldVM> _pumpyielddata(string pdfamily,List<string> quarterlist
             , Dictionary<string, Dictionary<string, Dictionary<string, int>>> firstyielddict,double yieldlowbound, Controller ctrl)
         {
+            var linecardignorelist = CfgUtility.LoadLineCardIgnoreConfig(ctrl).Keys.ToList();
+            var tunableignorelist = CfgUtility.LoadTunableIgnoreConfig(ctrl).Keys.ToList();
+
             var quarteryieldlist = new List<YieldVM>();
             foreach (var q in quarterlist)
             {
@@ -188,9 +207,9 @@ namespace Prism.Models
                 }//end foreach
 
                 //load test yield list into linecardyield dict
-                if (pdfamily.Contains("LINECARD"))
+                if (pdfamily.ToUpper().Contains("LINECARD"))
                 {
-                    var linecardignorelist = CfgUtility.LoadLineCardIgnoreConfig(ctrl).Keys.ToList();
+                    
                     var linecarddict = new Dictionary<string, bool>();
                     var linecardyielddict = new Dictionary<string, TestYieldVM>();
 
@@ -252,14 +271,14 @@ namespace Prism.Models
                 }
                 else
                 {
-                    var tunableignorelist = CfgUtility.LoadTunableIgnoreConfig(ctrl).Keys.ToList();
+                    
 
                     foreach (var testyield in temptestyieldlist)
                     {
                         if ((testyield.Pass+testyield.Failed) > (maxinput/10)
                             && testyield.Yield > yieldlowbound)
                         {
-                            if (pdfamily.Contains("PARALLEL"))
+                            if (pdfamily.ToUpper().Contains("PARALLEL"))
                             {
                                 //load test yield list into yieldvm
                                 foreach (var fkv in testyield.FailureMap)
@@ -333,7 +352,7 @@ namespace Prism.Models
             foreach (var line in dbret)
             {
                 var yieldmonth = Convert.ToDateTime(line[0]);
-                var quarter = RetrieveQuarterFromDate(yieldmonth);
+                var quarter = QuarterCLA.RetrieveQuarterFromDate(yieldmonth);
                 if (!qdict.ContainsKey(quarter))
                 {
                     qdict.Add(quarter, true);
@@ -347,9 +366,9 @@ namespace Prism.Models
                 var yieldtype = Convert.ToString(line[5]);
 
                 if (string.Compare(yieldtype, YIELDTYPE.FIRSTPASSYIELD) == 0)
-                {  _loadyielddict(firstyielddict, quarter, whichtest, failure, failurenum); }
+                {  _load2yielddict(firstyielddict, quarter, whichtest, failure, failurenum); }
                 else
-                { _loadyielddict(finalyielddict, quarter, whichtest, failure, failurenum); }
+                { _load2yielddict(finalyielddict, quarter, whichtest, failure, failurenum); }
             }//end foreach
 
             ret.Add(_pumpyielddata(pdfamily,qlist,firstyielddict,10,ctrl));
@@ -362,12 +381,12 @@ namespace Prism.Models
             var ret = new List<ProductYield>();
 
             var yieldcfg = CfgUtility.LoadYieldConfig(ctrl);
-            var yieldfamilys = yieldcfg["YIELDFAMILY"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+            var yieldfamilys = yieldcfg["YIELDFAMILY"].Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var yf in yieldfamilys)
             {
                 var pdfamily = yieldcfg[yf + "_FAMILY"];
                 var sb = new System.Text.StringBuilder(1024 * 50);
-                var pdfms = pdfamily.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                var pdfms = pdfamily.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var pdf in pdfms)
                 {
                     sb.Append(" or ProductFamily like '%" + pdf + "%' ");
@@ -388,14 +407,28 @@ namespace Prism.Models
             var ret = new List<ProductYield>();
 
             var yieldcfg = CfgUtility.LoadYieldConfig(ctrl);
-            var pdfamily = yieldcfg[yf + "_FAMILY"];
+
             var sb = new System.Text.StringBuilder(1024 * 50);
-            var pdfms = pdfamily.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var pdf in pdfms)
+
+            if (yieldcfg.ContainsKey(yf + "_FAMILY"))
             {
-                sb.Append(" or ProductFamily like '%" + pdf + "%' ");
+                var pdfamily = yieldcfg[yf + "_FAMILY"];
+                var pdfms = pdfamily.Split(new string[] { ",",";" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var pdf in pdfms)
+                {
+                    sb.Append(" or ProductFamily like '%" + pdf + "%' ");
+                }
+            }
+            else
+            {
+                var pdfms = yf.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var pdf in pdfms)
+                {
+                    sb.Append(" or ProductFamily like '" + pdf + "' ");
+                }
             }
             var familycond = sb.ToString().Substring(3);
+
 
             var familylist = new List<string>();
             var familydict = new Dictionary<string, bool>();
@@ -420,10 +453,25 @@ namespace Prism.Models
                 pdyield.ProductFamily = pd;
                 pdyield.FirstYieldList.AddRange(yieldobj[0]);
                 pdyield.FinalYieldList.AddRange(yieldobj[1]);
+                pdyield.ProjectKey = YieldPreData.Prod2PJKey(pd);
                 ret.Add(pdyield);
             }
 
             return ret;
+        }
+
+        public static List<string> RetrieveAllProductList()
+        {
+            var familylist = new List<string>();
+            var sql = "select distinct ProductFamily from YieldPreData  order by ProductFamily";
+
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var pd = Convert.ToString(line[0]);
+                familylist.Add(pd);
+            }
+            return familylist;
         }
 
         public static List<ProductYield> RetrieveProductYield(List<string> familylist, Controller ctrl)

@@ -44,6 +44,9 @@
     cursor:pointer;
 }
 
+.YIELDDATA {
+   cursor:pointer;
+}
 body{
     margin-top: 5% !important;
     padding-top: 10px !important;

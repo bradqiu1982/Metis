@@ -1,9 +1,8 @@
 ﻿
 @{
-    ViewBag.Title = "ProductYield";
+    ViewBag.Title = "ProductMachine";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 
 <link type="text/css" rel="stylesheet" href="~/Scripts/jquery-autocomplete/jquery.auto-complete.css" />
 <link type="text/css" rel="stylesheet" href="~/Content/SCRAP-RATE.css" />
@@ -12,10 +11,10 @@
 <script type="text/javascript" src="~/Scripts/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
 <script type="text/javascript" src="~/Scripts/bootstrap-tagsinput/bootstrap3-typeahead.js"></script>
 <script type="text/javascript" src="~/Scripts/jquery-autocomplete/jquery.auto-complete.min.js"></script>
-<script type="text/javascript" src="~/Scripts/YIELD.js"></script>
+<script type="text/javascript" src="~/Scripts/machine.js"></script>
 <script type="text/javascript">
         $(function(){
-            YIELD.PRODUCTINIT();
+            MACHINE.PRODUCTINIT();
         })
 </script>
 
@@ -27,7 +26,7 @@
     <div class="nav navbar-nav navbar-left">
         <ol class="breadcrumb" style="width:600px">
             <li><a data-toggle="tooltip" title="Goto Main Page" href="/Main/Index">Main</a></li>
-            <li class="active">Product Yield</li>
+            <li class="active">Product Machine Use Rate</li>
         </ol>
     </div>
 </div>
@@ -36,13 +35,13 @@
     <nav class="col-xs-2 nav-sidebar">
         <ul class="nav">
             <li>
-                <a href="/Yield/DepartmentYield">
-                    <span class="item-show">Department Yield</span>
+                <a href="/Machine/DepartmentMachine">
+                    <span class="item-show">Department Machine</span>
                 </a>
             </li>
             <li class="active">
-                <a href="/Yield/ProductYield">
-                    <span class="item-show">Product Yield</span>
+                <a href="/Machine/ProductMachine">
+                    <span class="item-show">Product Machine</span>
                 </a>
             </li>
         </ul>
@@ -53,7 +52,7 @@
                 <div class="row row-margin">
                     <label class="col-xs-2">Product Family</label>
                     <div class="col-xs-8">
-                        <input type="text"  data-provide="typeahead"
+                        <input type="text" data-provide="typeahead"
                                id="yieldproductlist" name="yieldproductlist" autocomplete="off" placeholder="Product Family" value="">
                     </div>
                     <div class="col-xs-1 box-search" style="padding-left:0">
@@ -62,10 +61,10 @@
                 </div>
             </div>
             <div class="v-content">
-               <table class="table table-hover  table-condensed table-striped" id="yieldmaintable" style="margin-top:1%">
-                   <caption class="tb-caption">PRODUCT YIELD TABLE</caption>
-                   <thead id="yieldtabheadid"></thead>
-                   <tbody id="yieldtabcontentid"></tbody>
+                <table class="table table-hover  table-condensed table-striped" id="yieldmaintable" style="margin-top:1%">
+                    <caption class="tb-caption">PRODUCT MACHINE USE RATE</caption>
+                    <thead id="yieldtabheadid"></thead>
+                    <tbody id="yieldtabcontentid"></tbody>
                 </table>
             </div>
         </div>
@@ -76,24 +75,16 @@
     </div>
 </div>
 
-
 <div class="modal" id="testyieldmodal" tabindex="-1" role="dialog" aria-labelledby="testyieldmodalLabel">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title" id="testyieldmodalLabel">Test Yield Info</h4>
+                <h4 class="modal-title" id="testyieldmodalLabel">Machine Info</h4>
             </div>
             <div class="row" style="margin-left:15px!important;margin-right:15px!important;">
                 <table class="table table-hover  table-condensed table-striped" id="testyieldtable" style="margin-top:1%">
-                    <caption class="tb-caption">TEST YIELD TABLE</caption>
-                    <thead>
-                        <tr>
-                            <th>WhichTest</th>
-                            <th>Failed</th>
-                            <th>Pass</th>
-                            <th>Yield</th>
-                        </tr>
-                    </thead>
+                    <caption class="tb-caption">MACHINE TABLE</caption>
+                    <thead id="testyieldheadid"></thead>
                     <tbody id="testyieldcontentid"></tbody>
                 </table>
             </div>
@@ -103,3 +94,4 @@
         </div>
     </div>
 </div>
+

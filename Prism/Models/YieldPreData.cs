@@ -120,6 +120,90 @@ namespace Prism.Models
             }
         }
 
+        public static string Prod2PJKey(string pf)
+        {
+            var sql = "select productfamily,pjkey from Prod2PJKey where productfamily ='<productfamily>'";
+            sql = sql.Replace("<productfamily>", pf);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            if (dbret.Count > 0)
+            {
+                return Convert.ToString(dbret[0][1]);
+            }
+            return string.Empty;
+        }
+
+        private static string RetrieveProjectKey(string pd)
+        {
+            var pndict = new Dictionary<string, bool>();
+            var sql = "select distinct PN from ModuleTestData where ProductFamily = '<ProductFamily>' and PN <> ''";
+            sql = sql.Replace("<ProductFamily>", pd);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var pn = Convert.ToString(line[0]);
+                if (!pndict.ContainsKey(pn))
+                { pndict.Add(pn, true); }
+            }
+
+            if (pndict.Count == 0)
+            { return string.Empty; }
+
+            var pjkeydict = new Dictionary<string, int>();
+            var pncond = "('" + string.Join("','", pndict.Keys.ToList()) + "')";
+            sql = "select distinct ProjectKey,PN from ProjectTestData where PN in <pncond>";
+            sql = sql.Replace("<pncond>", pncond);
+            dbret = DBUtility.ExeNPISqlWithRes(sql);
+            foreach (var line in dbret)
+            {
+                var pjkey = Convert.ToString(line[0]);
+                var pn = Convert.ToString(line[1]);
+                if (pjkeydict.ContainsKey(pjkey))
+                {
+                    pjkeydict[pjkey] += 1;
+                }
+                else
+                {
+                    pjkeydict.Add(pjkey, 1);
+                }
+            }
+
+            if (pjkeydict.Count == 0)
+            { return string.Empty; }
+
+            var matched = 0;
+            var ret = "";
+            foreach (var kv in pjkeydict)
+            {
+                if (kv.Value > matched)
+                {
+                    matched = kv.Value;
+                    ret = kv.Key;
+                }
+            }
+
+            return ret;
+        }
+
+        public static void LoadProjectKey()
+        {
+            var productfamilys = ModuleTestData.RetrieveAllProductFamily();
+            foreach (var pf in productfamilys)
+            {
+                if (string.IsNullOrEmpty(Prod2PJKey(pf)))
+                {
+                    var pjkey = RetrieveProjectKey(pf);
+                    if (!string.IsNullOrEmpty(pjkey))
+                    {
+                        var sql = "insert into Prod2PJKey(productfamily,pjkey) values(@productfamily,@pjkey)";
+                        var dict = new Dictionary<string, string>();
+                        dict.Add("@productfamily",pf);
+                        dict.Add("@pjkey",pjkey);
+                        DBUtility.ExeLocalSqlNoRes(sql, dict);
+                    }
+                }//end if
+            }//end foreach
+        }
+
         public DateTime YieldMonth { set; get; }
         public string ProductFamily { set; get; }
         public string WhichTest { set; get; }

@@ -1,25 +1,25 @@
-﻿using Prism.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Prism.Models;
 
 namespace Prism.Controllers
 {
-    public class YieldController : Controller
+    public class MachineController : Controller
     {
-        public ActionResult DepartmentYield()
+        public ActionResult DepartmentMachine()
         {
             return View();
         }
 
-        private List<string> RetrieveQuarterFromYield(List<ProductYield> pdys)
+        private List<string> RetrieveQuarterFromYield(List<List<MachineRate>> pdms)
         {
             var quarterdict = new Dictionary<string, bool>();
-            foreach (var pdy in pdys)
+            foreach (var pdm in pdms)
             {
-                foreach (var y in pdy.FinalYieldList)
+                foreach (var y in pdm)
                 {
                     if (!quarterdict.ContainsKey(y.Quarter))
                     {
@@ -37,22 +37,27 @@ namespace Prism.Controllers
             return qlist;
         }
 
-        private JsonResult GetYieldTableAndChart(List<ProductYield> pdyieldlist, string title, bool withlink = false)
+        private JsonResult GetMachineTableAndChart(List<List<MachineRate>> pdmachinelist, string title, bool withlink = false)
         {
             var titlelist = new List<object>();
             titlelist.Add(title);
             titlelist.Add("");
 
-            var quarterlist = RetrieveQuarterFromYield(pdyieldlist);
+            var quarterlist = RetrieveQuarterFromYield(pdmachinelist);
             titlelist.AddRange(quarterlist);
 
 
             var chartdatalist = new List<object>();
-            var TestYieldList = new List<object>();
+            var MachineList = new List<object>();
+            var WhichTestList = new List<object>();
+
             var idx = 0;
             var contentlist = new List<object>();
-            foreach (var pdy in pdyieldlist)
+            foreach (var pdm in pdmachinelist)
             {
+                if (pdm.Count == 0)
+                { continue; }
+
                 var chartxlist = new List<object>();
                 var chartseriallist = new List<object>();
                 var chartfpydata = new List<object>();
@@ -61,30 +66,31 @@ namespace Prism.Controllers
                 var linelist = new List<object>();
                 if (withlink)
                 {
-                    linelist.Add("<a href='/Yield/ProductYield?productfaimly="+pdy.ProductFamily.Replace("+", "%2B")+"' target='_blank'>"+ pdy.ProductFamily + "</a>");
+                    linelist.Add("<a href='/Machine/ProductMachine?productfaimly=" + pdm[0].ProductFamily.Replace("+", "%2B") + "' target='_blank'>" + pdm[0].ProductFamily + "</a>");
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(pdy.ProjectKey))
+                    if (string.IsNullOrEmpty(pdm[0].ProjectKey))
                     {
-                        linelist.Add(pdy.ProductFamily);
+                        linelist.Add(pdm[0].ProductFamily);
                     }
                     else
                     {
-                        linelist.Add("<a href='http://wuxinpi.china.ads.finisar.com/Project/ProjectDetail?ProjectKey=" + pdy.ProjectKey + "' target='_blank'>" + pdy.ProductFamily + "</a>");
+                        linelist.Add("<a href='http://wuxinpi.china.ads.finisar.com/Project/ProjectDetail?ProjectKey=" + pdm[0].ProjectKey + "' target='_blank'>" + pdm[0].ProductFamily + "</a>");
                     }
                 }
 
-                linelist.Add("<span class='YINPUT'>INPUT</span><br><span class='YFPY'>FPY</span><br><span class='YFY'>FY</span>");
+                linelist.Add("<span class='YINPUT'>Machines</span><br><span class='YFPY'>Hours</span><br><span class='YFY'>Rate%</span>");
 
-                var testyieldidx = 0;
+
+                var testidx = 0;
                 foreach (var qt in quarterlist)
                 {
                     var matchidx = 0;
                     var matchflag = false;
-                    foreach (var fy in pdy.FinalYieldList)
+                    foreach (var mr in pdm)
                     {
-                        if (string.Compare(qt, fy.Quarter, true) == 0)
+                        if (string.Compare(qt, mr.Quarter, true) == 0)
                         {
                             matchflag = true;
                             break;
@@ -92,34 +98,33 @@ namespace Prism.Controllers
                         matchidx += 1;
                     }
 
-                    if (matchflag && pdy.FirstYieldList[matchidx].MaxInput > 0)
+                    if (matchflag && pdm[matchidx].MachineTimeList.Count > 0)
                     {
-                        var id1 = idx + "-" + testyieldidx + "-0";
-                        var id2 = idx + "-" + testyieldidx + "-1";
-                        testyieldidx += 1;
+                        var id2 = idx + "-" + testidx + "-1";
+                        var id1 = idx + "-" + testidx + "-0";
+                        testidx += 1;
 
-                        linelist.Add("<span class='YINPUT'>" + pdy.FirstYieldList[matchidx].MaxInput+ "</span><br><span class='YFPY YIELDDATA' myid='"+id1+"'>" + pdy.FirstYieldList[matchidx].YieldVal + "</span><br><span class='YFY YIELDDATA' myid='" + id2+"'>" + pdy.FinalYieldList[matchidx].YieldVal+"</span>");
-                        pdy.FirstYieldList[matchidx].TestYieldList.Sort(delegate (TestYieldVM obj1, TestYieldVM obj2) { return obj1.Yield.CompareTo(obj2.Yield); });
-                        TestYieldList.Add(
+                        linelist.Add("<span class='YINPUT YIELDDATA' myid='" + id1 + "'>" + pdm[matchidx].MachineTimeList.Count + "</span><br><span class='YFPY YIELDDATA' myid='" + id1 + "'>" + (int)(pdm[matchidx].SpendTime/3600) + "</span><br><span class='YFY WTESTDATA' myid='" + id2 + "'>" + pdm[matchidx].Rate + "</span>");
+                        pdm[matchidx].MachineTimeList.Sort(delegate (MachineSpendTime obj1, MachineSpendTime obj2) { return obj1.SpendTime.CompareTo(obj2.SpendTime); });
+
+                        MachineList.Add(
                             new
                             {
                                 id = id1,
-                                testlist = pdy.FirstYieldList[matchidx].TestYieldList
+                                mlist = pdm[matchidx].MachineTimeList
                             }
                             );
 
-                        pdy.FinalYieldList[matchidx].TestYieldList.Sort(delegate (TestYieldVM obj1, TestYieldVM obj2) { return obj1.Yield.CompareTo(obj2.Yield); });
-                        TestYieldList.Add(
+                        MachineList.Add(
                             new
                             {
                                 id = id2,
-                                testlist = pdy.FinalYieldList[matchidx].TestYieldList
+                                mlist = MachineRate.GetTestMachineRate(pdm[matchidx].MachineTimeList)
                             }
                             );
 
-                        chartxlist.Add(pdy.FinalYieldList[matchidx].Quarter);
-                        chartfpydata.Add(pdy.FirstYieldList[matchidx].YieldVal);
-                        chartfydata.Add(pdy.FinalYieldList[matchidx].YieldVal);
+                        chartxlist.Add(pdm[matchidx].Quarter);
+                        chartfpydata.Add(pdm[matchidx].Rate);
                     }
                     else
                     {
@@ -131,16 +136,12 @@ namespace Prism.Controllers
 
                 chartseriallist.Add(new
                 {
-                    name = "FPY",
+                    name = "Machine Usage Rate",
                     data = chartfpydata
                 });
-                chartseriallist.Add(new
-                {
-                    name = "FY",
-                    data = chartfydata
-                });
-                var chartid = pdy.ProductFamily.Replace(".", "").Replace(" ", "")
-                    .Replace("(","").Replace(")", "").Replace("#", "").Replace("+", "").ToLower()+"_id";
+
+                var chartid = pdm[0].ProductFamily.Replace(".", "").Replace(" ", "")
+                    .Replace("(", "").Replace(")", "").Replace("#", "").Replace("+", "").ToLower() + "_id";
                 chartdatalist.Add(new
                 {
                     id = chartid,
@@ -157,19 +158,19 @@ namespace Prism.Controllers
                 tabletitle = titlelist,
                 tablecontent = contentlist,
                 chartdatalist = chartdatalist,
-                testyieldlist = TestYieldList
+                machinelist = MachineList
             };
             ret.MaxJsonLength = Int32.MaxValue;
             return ret;
         }
 
-        public JsonResult DepartmentYieldData()
+        public JsonResult DepartmentMachineData()
         {
-            var pdyieldlist = YieldVM.RetrieveAllYield(this);
-            return GetYieldTableAndChart(pdyieldlist, "Department",true);
+            var machinelist = MachineRate.RetrieveAllMachine(this);
+            return GetMachineTableAndChart(machinelist, "Department", true);
         }
 
-        public ActionResult ProductYield(string productfaimly)
+        public ActionResult ProductMachine(string productfaimly)
         {
             ViewBag.productfamily = "";
             if (!string.IsNullOrEmpty(productfaimly))
@@ -178,35 +179,24 @@ namespace Prism.Controllers
             return View();
         }
 
-        public JsonResult GetAllYieldProductList()
-        {
-            var pdlist = YieldVM.RetrieveAllProductList();
-            var ret = new JsonResult();
-            ret.Data = new
-            {
-                pdlist = pdlist
-            };
-            return ret;
-        }
-
-        public JsonResult ProductYieldData()
+        public JsonResult ProductMachineData()
         {
             var pdf = Request.Form["pdf"];
             var yieldcfg = CfgUtility.LoadYieldConfig(this);
             var orderlist = yieldcfg["YIELDORDER"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            var sortedlist = new List<ProductYield>();
+            var sortedlist = new List<List<MachineRate>>();
             var familydict = new Dictionary<string, bool>();
 
-            var pdyieldlist = YieldVM.RetrieveProductYieldByYF(pdf,this);
+            var pdyieldlist = MachineRate.RetrieveProductMachineByYF(pdf, this);
             foreach (var od in orderlist)
             {
                 foreach (var pdy in pdyieldlist)
                 {
-                    if (pdy.ProductFamily.Contains(od))
+                    if (pdy[0].ProductFamily.Contains(od))
                     {
-                        if (!familydict.ContainsKey(pdy.ProductFamily))
+                        if (!familydict.ContainsKey(pdy[0].ProductFamily))
                         {
-                            familydict.Add(pdy.ProductFamily, true);
+                            familydict.Add(pdy[0].ProductFamily, true);
                             sortedlist.Add(pdy);
                         }
                     }//end if
@@ -218,7 +208,7 @@ namespace Prism.Controllers
                 var match = false;
                 foreach (var od in orderlist)
                 {
-                    if (pdy.ProductFamily.Contains(od))
+                    if (pdy[0].ProductFamily.Contains(od))
                     {
                         match = true;
                         break;
@@ -226,17 +216,16 @@ namespace Prism.Controllers
                 }
                 if (!match)
                 {
-                    if (!familydict.ContainsKey(pdy.ProductFamily))
+                    if (!familydict.ContainsKey(pdy[0].ProductFamily))
                     {
-                        familydict.Add(pdy.ProductFamily, true);
+                        familydict.Add(pdy[0].ProductFamily, true);
                         sortedlist.Add(pdy);
                     }
                 }
-           }
+            }
 
-            return GetYieldTableAndChart(sortedlist, "Product");
+            return GetMachineTableAndChart(sortedlist, "Product");
         }
 
-        
     }
 }

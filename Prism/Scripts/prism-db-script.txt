@@ -193,3 +193,8 @@ CREATE TABLE [dbo].[MachinePreData]
 	[Appv_4]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
 );
 
+
+CREATE TABLE [dbo].[Prod2PJKey] (
+	[productfamily]   NVARCHAR (300)   DEFAULT ('')  NOT NULL,
+	[pjkey]    NVARCHAR (200)   DEFAULT ('')  NOT NULL
+);
