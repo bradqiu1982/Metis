@@ -721,25 +721,41 @@ namespace Prism.Controllers
                 var xlist = new List<string>();
                 var generalscrap = new List<double>();
                 var nonchinascrap = new List<double>();
+                var totlescrap = new List<double>();
+
                 var output = new List<double>();
                 var generalscraprate = new List<double>();
                 var nonchinascraprate = new List<double>();
+                var totlescraprate = new List<double>();
+
 
                 foreach (var item in sumscraplist)
                 {
                     xlist.Add(item.key);
                     generalscrap.Add(Math.Round(item.generalscrap, 2));
                     nonchinascrap.Add(Math.Round(item.nonchinascrap, 2));
+                    var totle = Math.Round(item.generalscrap, 2) + Math.Round(item.nonchinascrap, 2);
+                    totlescrap.Add(totle);
+
                     output.Add(Math.Round(item.output, 2));
-                    var grate = Math.Round(item.generalscrap / item.output * 100.0, 2);
+                    var grate = Math.Round(totle / item.output * 100.0, 2);
                     if (grate > maxYrate)
                     { maxYrate = grate + 1.0; }
                     if (item.output > maxYoutput)
                     { maxYoutput = item.output; }
 
-                    generalscraprate.Add(grate);
+                    totlescraprate.Add(grate);
+                    generalscraprate.Add(Math.Round(item.generalscrap / item.output * 100.0, 2));
                     nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
                 }
+                var chartlist = new List<object>();
+                chartlist.Add(new { name = "Non-China Scrap Rate", data = nonchinascraprate, type = "line", yAxis = 0,color= "#90ed7d" });
+                chartlist.Add( new { name = "General Scrap Rate", data = generalscraprate, type =  "line", yAxis = 0, color = "#f7a35c" } );
+                chartlist.Add(new { name = "Totle Scrap Rate", data = totlescraprate, type = "line", yAxis = 0, color = "#8085e9" });
+                chartlist.Add(new { name = "Non-China Scrap", data = nonchinascrap, type = "column", yAxis = 1, color = "#90ed7d" });
+                chartlist.Add(new { name = "General Scrap", data = generalscrap, type = "column", yAxis = 1, color = "#f7a35c" });
+                chartlist.Add(new { name = "Totle Scrap", data = totlescrap, type = "column", yAxis = 1, color = "#8085e9" });
+                chartlist.Add(new { name = "Output", data = output, type = "column", yAxis = 1, color = "#f15c80" });
 
                 var onepjobj = new
                 {
@@ -749,11 +765,7 @@ namespace Prism.Controllers
                     maxYrate = maxYrate,
                     bugetscraprate = new { name = "Max", color = "#C9302C", data = maxYrate*2, style = "solid" },
                     bugetscrapval = new { name = "Max", color = "#C9302C", data = maxYoutput*2, style = "dash" },
-                    generalscraprate = new { name = "General Scrap Rate", data = generalscraprate },
-                    nonchinascraprate = new { name = "Non-China Scrap Rate", data = nonchinascraprate },
-                    generalscrap = new { name = "General Scrap", data = generalscrap },
-                    nonchinascrap = new { name = "Non-China Scrap", data = nonchinascrap },
-                    output = new { name = "Output", data = output },
+                    chartlist = chartlist,
                     url = "/DataAnalyze/CostCenterOfOneDepart?x="
                 };
                 scrapratearray.Add(onepjobj);
@@ -935,9 +947,13 @@ namespace Prism.Controllers
                     var xlist = new List<string>();
                     var generalscrap = new List<double>();
                     var nonchinascrap = new List<double>();
+                    var totlescrap = new List<double>();
+
                     var output = new List<double>();
                     var generalscraprate = new List<double>();
                     var nonchinascraprate = new List<double>();
+                    var totlescraprate = new List<double>();
+
                     var bugetscraprate = new { name = "Max", color = "#C9302C", data = 0.0, style = "solid" };
                     if (bugetrate != 0.0)
                     { bugetscraprate = new { name = "Max", color = "#C9302C", data = bugetrate, style = "solid" }; }
@@ -947,14 +963,18 @@ namespace Prism.Controllers
                         xlist.Add(item.key);
                         generalscrap.Add(Math.Round(item.generalscrap,2));
                         nonchinascrap.Add(Math.Round(item.nonchinascrap,2));
+                        var totle = Math.Round(item.generalscrap, 2) + Math.Round(item.nonchinascrap, 2);
+                        totlescrap.Add(totle);
+
                         output.Add(Math.Round(item.output,2));
-                        var grate = Math.Round(item.generalscrap / item.output * 100.0, 2);
+                        var grate = Math.Round(totle / item.output * 100.0, 2);
                         if (grate > maxYrate)
                         { maxYrate = grate + 1.0; }
                         if (item.output > maxYoutput)
                         { maxYoutput = item.output; }
 
-                        generalscraprate.Add(grate);
+                        totlescraprate.Add(grate);
+                        generalscraprate.Add(Math.Round(item.generalscrap / item.output * 100.0, 2));
                         nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
                     }
 
@@ -968,6 +988,15 @@ namespace Prism.Controllers
                         title = co+" "+copdmap[co] + " " + fyear + " " + fquarter + " SCRAP";
                     }
 
+                    var chartlist = new List<object>();
+                    chartlist.Add(new { name = "Non-China Scrap Rate", data = nonchinascraprate, type = "line", yAxis = 0, color = "#90ed7d" });
+                    chartlist.Add(new { name = "General Scrap Rate", data = generalscraprate, type = "line", yAxis = 0, color = "#f7a35c" });
+                    chartlist.Add(new { name = "Totle Scrap Rate", data = totlescraprate, type = "line", yAxis = 0, color = "#8085e9" });
+                    chartlist.Add(new { name = "Non-China Scrap", data = nonchinascrap, type = "column", yAxis = 1, color = "#90ed7d" });
+                    chartlist.Add(new { name = "General Scrap", data = generalscrap, type = "column", yAxis = 1, color = "#f7a35c" });
+                    chartlist.Add(new { name = "Totle Scrap", data = totlescrap, type = "column", yAxis = 1, color = "#8085e9" });
+                    chartlist.Add(new { name = "Output", data = output, type = "column", yAxis = 1, color = "#f15c80" });
+
                     var onepjobj = new
                     {
                         id = title.Replace(" ", "_") + "_line",
@@ -976,12 +1005,8 @@ namespace Prism.Controllers
                         maxYrate = maxYrate,
                         bugetscraprate = bugetscraprate,
                         bugetscrapval = bugetscrapval,
-                        generalscraprate = new { name = "General Scrap Rate", data = generalscraprate },
-                        nonchinascraprate = new { name = "Non-China Scrap Rate", data = nonchinascraprate },
-                        generalscrap = new { name="General Scrap",data = generalscrap },
-                        nonchinascrap = new { name = "Non-China Scrap", data = nonchinascrap },
-                        output = new { name = "Output", data = output },
-                        url= "/DataAnalyze/ProductScrap?defco="+co+"&x="
+                        chartlist = chartlist,
+                        url = "/DataAnalyze/ProductScrap?defco="+co+"&x="
                     };
 
                     scrapratearray.Add(onepjobj);
@@ -1133,9 +1158,11 @@ namespace Prism.Controllers
                         var xlist = new List<string>();
                         var generalscrap = new List<double>();
                         var nonchinascrap = new List<double>();
+                        var totlescrap = new List<double>();
                         var output = new List<double>();
                         var generalscraprate = new List<double>();
                         var nonchinascraprate = new List<double>();
+                        var totlescraprate = new List<double>();
 
                         var bugetrate = 0.0;
                         var boutput = 0.0;
@@ -1163,14 +1190,18 @@ namespace Prism.Controllers
                             xlist.Add(item.key);
                             generalscrap.Add(Math.Round(item.generalscrap, 2));
                             nonchinascrap.Add(Math.Round(item.nonchinascrap, 2));
+                            var totle = Math.Round(item.generalscrap, 2) + Math.Round(item.nonchinascrap, 2);
+                            totlescrap.Add(totle);
+
                             output.Add(Math.Round(item.output, 2));
-                            var grate = Math.Round(item.generalscrap / item.output * 100.0, 2);
+                            var grate = Math.Round(totle / item.output * 100.0, 2);
                             if (grate > maxYrate)
                             { maxYrate = grate + 1.0; }
                             if (item.output > maxYoutput)
                             { maxYoutput = item.output; }
 
-                            generalscraprate.Add(grate);
+                            totlescraprate.Add(grate);
+                            generalscraprate.Add(Math.Round(item.generalscrap / item.output * 100.0, 2));
                             nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
                         }
 
@@ -1180,6 +1211,15 @@ namespace Prism.Controllers
 
                         var title = pd + " " + fyear + " " + fquarter + " SCRAP";
 
+                        var chartlist = new List<object>();
+                        chartlist.Add(new { name = "Non-China Scrap Rate", data = nonchinascraprate, type = "line", yAxis = 0, color = "#90ed7d" });
+                        chartlist.Add(new { name = "General Scrap Rate", data = generalscraprate, type = "line", yAxis = 0, color = "#f7a35c" });
+                        chartlist.Add(new { name = "Totle Scrap Rate", data = totlescraprate, type = "line", yAxis = 0, color = "#8085e9" });
+                        chartlist.Add(new { name = "Non-China Scrap", data = nonchinascrap, type = "column", yAxis = 1, color = "#90ed7d" });
+                        chartlist.Add(new { name = "General Scrap", data = generalscrap, type = "column", yAxis = 1, color = "#f7a35c" });
+                        chartlist.Add(new { name = "Totle Scrap", data = totlescrap, type = "column", yAxis = 1, color = "#8085e9" });
+                        chartlist.Add(new { name = "Output", data = output, type = "column", yAxis = 1, color = "#f15c80" });
+
                         var onepjobj = new
                         {
                             id = title.Replace(" ", "_") + "_line",
@@ -1188,11 +1228,7 @@ namespace Prism.Controllers
                             maxYrate = maxYrate,
                             bugetscraprate = bugetscraprate,
                             bugetscrapval = bugetscrapval,
-                            generalscraprate = new { name = "General Scrap Rate", data = generalscraprate },
-                            nonchinascraprate = new { name = "Non-China Scrap Rate", data = nonchinascraprate },
-                            generalscrap = new { name = "General Scrap", data = generalscrap },
-                            nonchinascrap = new { name = "Non-China Scrap", data = nonchinascrap },
-                            output = new { name = "Output", data = output },
+                            chartlist = chartlist,
                             url = ""
                         };
 

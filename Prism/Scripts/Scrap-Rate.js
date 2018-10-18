@@ -318,38 +318,7 @@
                     }
                 }
             },
-            series: [
-                {
-                    name: line_data.nonchinascraprate.name,
-                    type: 'line',
-                    data: line_data.nonchinascraprate.data,
-                    yAxis: 0
-                },
-                {
-                    name: line_data.generalscraprate.name,
-                    type: 'line',
-                    data: line_data.generalscraprate.data,
-                    yAxis: 0
-                },
-                {
-                    name: line_data.nonchinascrap.name,
-                    type: 'column',
-                    data: line_data.nonchinascrap.data,
-                    yAxis: 1
-                },
-                {
-                    name: line_data.generalscrap.name,
-                    type: 'column',
-                    data: line_data.generalscrap.data,
-                    yAxis: 1
-                },
-                {
-                    name: line_data.output.name,
-                    type: 'column',
-                    data: line_data.output.data,
-                    yAxis: 1
-                }
-            ],
+            series: line_data.chartlist,
             exporting: {
                 menuItemDefinitions: {
                     fullscreen: {
@@ -368,35 +337,13 @@
                             });
                             outputCSV += "\r\n";
 
-                            outputCSV += line_data.generalscraprate.name + ',';
-                            $(line_data.generalscraprate.data).each(function (i, val) {
-                                outputCSV += val + ",";
+                            $(line_data.chartlist).each(function (i, val) {
+                                outputCSV += val.name + ',';
+                                $(val.data).each(function (i, val1) {
+                                    outputCSV += val1 + ",";
+                                });
+                                outputCSV += "\r\n";
                             });
-                            outputCSV += "\r\n";
-
-                            outputCSV += line_data.nonchinascraprate.name + ',';
-                            $(line_data.nonchinascraprate.data).each(function (i, val) {
-                                outputCSV += val + ",";
-                            });
-                            outputCSV += "\r\n";
-
-                            outputCSV += line_data.nonchinascrap.name + ',';
-                            $(line_data.nonchinascrap.data).each(function (i, val) {
-                                outputCSV += val + ",";
-                            });
-                            outputCSV += "\r\n";
-
-                            outputCSV += line_data.generalscrap.name + ',';
-                            $(line_data.generalscrap.data).each(function (i, val) {
-                                outputCSV += val + ",";
-                            });
-                            outputCSV += "\r\n";
-
-                            outputCSV += line_data.output.name + ',';
-                            $(line_data.output.data).each(function (i, val) {
-                                outputCSV += val + ",";
-                            });
-                            outputCSV += "\r\n";
 
                             var blobby = new Blob([outputCSV], { type: 'text/csv;chartset=utf-8' });
                             $(exportLink).attr({
