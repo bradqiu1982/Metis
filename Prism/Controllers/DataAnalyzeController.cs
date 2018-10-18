@@ -291,7 +291,7 @@ namespace Prism.Controllers
                         foreach (var hpu in yieldhpulist)
                         {
                             if (hpu != 0.0)
-                            { weeklycapacity.Add(Math.Round(24.0 / hpu * 6.5, 2)); }
+                            { weeklycapacity.Add(Math.Round(20.0 / hpu * 6.5, 2)); }
                             else
                             { weeklycapacity.Add(0.0); }
                         }
@@ -476,7 +476,7 @@ namespace Prism.Controllers
                 var hpu = Convert2Double(item.YieldHPU);
                 if (hpu != 0.0)
                 {
-                    item.WeeklyCapacity = Math.Round(24.0 / hpu * 6.5,2);
+                    item.WeeklyCapacity = Math.Round(20.0 / hpu * 6.5,2);
                     item.SeasonCapacity = Math.Round(13.0 * item.WeeklyCapacity,2);
                 }
             }
@@ -586,7 +586,7 @@ namespace Prism.Controllers
                 var hpu = Convert2Double(item.YieldHPU);
                 if (hpu != 0.0)
                 {
-                    item.WeeklyCapacity = Math.Round(24.0 / hpu * 6.5, 2);
+                    item.WeeklyCapacity = Math.Round(20.0 / hpu * 6.5, 2);
                     item.SeasonCapacity = Math.Round(13.0 * item.WeeklyCapacity,2);
                 }
             }
