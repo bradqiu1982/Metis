@@ -374,13 +374,35 @@
                             text: "Quarter"
                         },
                         categories: line_data.xlist,
+                        plotlines: [{
+
+                        }],
                         visible: false
                     },
                     yAxis: {
                         title: {
                             text: "Yield %"
                         },
-                        visible: false
+                        visible: false,
+                        Max:120,
+                        plotLines: [{
+                            value: line_data.fpytg,
+                            color: 'red',
+                            width: 1,
+                            label: {
+                                text: 'FPY Target:' + line_data.fpytg,
+                                align: 'left'
+                            }
+                        },
+                        {
+                            value: line_data.fytg,
+                            color: 'green',
+                            width: 1,
+                            label: {
+                                text: 'FY Target:' + line_data.fytg,
+                                align: 'left'
+                            }
+                        }]
                     },
                     credits: {
                         enabled: false

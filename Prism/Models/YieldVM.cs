@@ -86,12 +86,16 @@ namespace Prism.Models
             FirstYieldList = new List<YieldVM>();
             FinalYieldList = new List<YieldVM>();
             ProjectKey = "";
+            FPYTG = 0.0;
+            FYTG = 0.0;
         }
 
         public string ProductFamily { set; get; }
         public List<YieldVM> FirstYieldList { set; get; }
         public List<YieldVM> FinalYieldList { set; get; }
         public string ProjectKey { set; get; }
+        public double FPYTG { set; get; }
+        public double FYTG { set; get; }
     }
 
     public class TestYieldVM
@@ -454,6 +458,14 @@ namespace Prism.Models
                 pdyield.FirstYieldList.AddRange(yieldobj[0]);
                 pdyield.FinalYieldList.AddRange(yieldobj[1]);
                 pdyield.ProjectKey = YieldPreData.Prod2PJKey(pd);
+
+                pdyield.FPYTG = 135;
+                if (yieldcfg.ContainsKey(pd + "-FPY"))
+                { pdyield.FPYTG = Convert.ToDouble(yieldcfg[pd + "-FPY"]); }
+                pdyield.FYTG = 135;
+                if (yieldcfg.ContainsKey(pd + "-FY"))
+                { pdyield.FYTG = Convert.ToDouble(yieldcfg[pd + "-FY"]); }
+
                 ret.Add(pdyield);
             }
 
@@ -486,6 +498,44 @@ namespace Prism.Models
                 pdyield.FinalYieldList.AddRange(yieldobj[1]);
                 ret.Add(pdyield);
             }
+            return ret;
+        }
+
+        public static Dictionary<string, Dictionary<string, int>> RetrieveBurnInData(string testtype)
+        {
+            var ret = new Dictionary<string, Dictionary<string, int>>();
+
+            var sql = "select StartDate,Failure,Num FROM [NPITrace].[dbo].[VcselMonthData] where VTYPE like <testtype> order by StartDate asc";
+            sql = sql.Replace("<testtype>", testtype);
+            var dbret = DBUtility.ExeNPISqlWithRes(sql);
+            foreach (var line in dbret)
+            {
+                var date = Convert.ToDateTime(line[0]);
+                var q = QuarterCLA.RetrieveQuarterFromDate(date);
+                var failure = Convert.ToString(line[1]);
+                var num = Convert.ToInt32(line[2]);
+
+                if (ret.ContainsKey(q))
+                {
+                    var fdict = ret[q];
+                    if (string.Compare(failure, "pass", true) == 0)
+                    { fdict["PASS"] += num; }
+                    else
+                    { fdict["FAILED"] += num; }
+                }
+                else
+                {
+                    var fdict = new Dictionary<string, int>();
+                    fdict.Add("PASS", 1);
+                    fdict.Add("FAILED", 1);
+                    if (string.Compare(failure, "pass", true) == 0)
+                    { fdict["PASS"] += num; }
+                    else
+                    { fdict["FAILED"] += num; }
+                    ret.Add(q, fdict);
+                }
+            }
+
             return ret;
         }
 

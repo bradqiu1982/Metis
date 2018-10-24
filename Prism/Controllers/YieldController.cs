@@ -37,8 +37,16 @@ namespace Prism.Controllers
             return qlist;
         }
 
-        private JsonResult GetYieldTableAndChart(List<ProductYield> pdyieldlist, string title, bool withlink = false)
+        private JsonResult GetYieldTableAndChart(List<ProductYield> pdyieldlist, string title, bool fordepartment = false)
         {
+            var preburnin = new Dictionary<string, Dictionary<string, int>>();
+            var postburnin = new Dictionary<string, Dictionary<string, int>>();
+            if (fordepartment)
+            {
+                preburnin = YieldVM.RetrieveBurnInData("'Pre Burn In_%'");
+                postburnin = YieldVM.RetrieveBurnInData("'Post Burn In_%'");
+            }
+
             var titlelist = new List<object>();
             titlelist.Add(title);
             titlelist.Add("");
@@ -59,7 +67,7 @@ namespace Prism.Controllers
                 var chartfydata = new List<object>();
 
                 var linelist = new List<object>();
-                if (withlink)
+                if (fordepartment)
                 {
                     linelist.Add("<a href='/Yield/ProductYield?productfaimly="+pdy.ProductFamily.Replace("+", "%2B")+"' target='_blank'>"+ pdy.ProductFamily + "</a>");
                 }
@@ -75,7 +83,15 @@ namespace Prism.Controllers
                     }
                 }
 
-                linelist.Add("<span class='YINPUT'>INPUT</span><br><span class='YFPY'>FPY</span><br><span class='YFY'>FY</span>");
+                if (string.Compare(pdy.ProductFamily, "PARALLEL", true) == 0 && fordepartment)
+                {
+                    linelist.Add("<span class='YINPUT'>INPUT</span><br><span class='YFPY'>FPY</span><br><span class='YFY'>FY</span><br><span class='YINPUT'>Pre Burn-In</span><br><span class='YINPUT'>Post Burn-In</span>");
+                }
+                else
+                {
+                    linelist.Add("<span class='YINPUT'>INPUT</span><br><span class='YFPY'>FPY</span><br><span class='YFY'>FY</span>");
+                }
+
 
                 var testyieldidx = 0;
                 foreach (var qt in quarterlist)
@@ -98,7 +114,32 @@ namespace Prism.Controllers
                         var id2 = idx + "-" + testyieldidx + "-1";
                         testyieldidx += 1;
 
-                        linelist.Add("<span class='YINPUT'>" + pdy.FirstYieldList[matchidx].MaxInput+ "</span><br><span class='YFPY YIELDDATA' myid='"+id1+"'>" + pdy.FirstYieldList[matchidx].YieldVal + "</span><br><span class='YFY YIELDDATA' myid='" + id2+"'>" + pdy.FinalYieldList[matchidx].YieldVal+"</span>");
+                        if (string.Compare(pdy.ProductFamily, "PARALLEL", true) == 0 && fordepartment)
+                        {
+                            var pre = "";
+                            var post = "";
+                            if (preburnin.ContainsKey(qt))
+                            {
+                                var pass = preburnin[qt]["PASS"];
+                                var fail = preburnin[qt]["FAILED"];
+                                pre = Math.Round((double)pass / (double)(pass + fail) * 100.0, 2).ToString();
+                            }
+                            if (postburnin.ContainsKey(qt))
+                            {
+                                var pass = postburnin[qt]["PASS"];
+                                var fail = postburnin[qt]["FAILED"];
+                                post = Math.Round((double)pass / (double)(pass + fail) * 100.0, 2).ToString();
+                            }
+
+                            linelist.Add("<span class='YINPUT'>" + pdy.FirstYieldList[matchidx].MaxInput + "</span><br><span class='YFPY YIELDDATA' myid='" + id1 + "'>" + pdy.FirstYieldList[matchidx].YieldVal 
+                                + "</span><br><span class='YFY YIELDDATA' myid='" + id2 + "'>" + pdy.FinalYieldList[matchidx].YieldVal + "</span><br>"
+                                + "<span class='YINPUT'>" + pre + "</span><br><span class='YINPUT'>"+post+"</span>");
+                        }
+                        else
+                        {
+                            linelist.Add("<span class='YINPUT'>" + pdy.FirstYieldList[matchidx].MaxInput+ "</span><br><span class='YFPY YIELDDATA' myid='"+id1+"'>" + pdy.FirstYieldList[matchidx].YieldVal + "</span><br><span class='YFY YIELDDATA' myid='" + id2+"'>" + pdy.FinalYieldList[matchidx].YieldVal+"</span>");
+                        }
+
                         pdy.FirstYieldList[matchidx].TestYieldList.Sort(delegate (TestYieldVM obj1, TestYieldVM obj2) { return obj1.Yield.CompareTo(obj2.Yield); });
                         TestYieldList.Add(
                             new
@@ -144,6 +185,8 @@ namespace Prism.Controllers
                 chartdatalist.Add(new
                 {
                     id = chartid,
+                    fpytg = pdy.FPYTG,
+                    fytg = pdy.FYTG,
                     xlist = chartxlist,
                     series = chartseriallist
                 });
