@@ -13,10 +13,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/22/2013 08:43:40</publishTime>
     </File>
     <File Include="bin/App_global.asax.compiled">
-      <publishTime>09/30/2018 13:27:08</publishTime>
+      <publishTime>10/18/2018 10:19:23</publishTime>
     </File>
     <File Include="bin/App_global.asax.dll">
-      <publishTime>09/30/2018 13:27:08</publishTime>
+      <publishTime>10/18/2018 10:19:22</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>03/02/2015 09:32:26</publishTime>
@@ -85,7 +85,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/27/2012 13:00:52</publishTime>
     </File>
     <File Include="bin/Prism.dll">
-      <publishTime>09/30/2018 13:26:46</publishTime>
+      <publishTime>10/18/2018 10:18:27</publishTime>
     </File>
     <File Include="bin/RestSharp.dll">
       <publishTime>06/10/2018 15:28:24</publishTime>
@@ -1546,10 +1546,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 10:48:05</publishTime>
     </File>
     <File Include="Content/jquery.dataTables.min.css">
-      <publishTime>06/28/2018 10:32:38</publishTime>
+      <publishTime>10/12/2018 10:14:45</publishTime>
     </File>
     <File Include="Content/Layout.css">
-      <publishTime>06/28/2018 10:56:29</publishTime>
+      <publishTime>10/17/2018 16:39:58</publishTime>
     </File>
     <File Include="Content/SCRAP-RATE.css">
       <publishTime>07/17/2018 11:40:59</publishTime>
@@ -1585,7 +1585,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 10:00:10</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>09/30/2018 13:26:51</publishTime>
+      <publishTime>10/18/2018 10:18:45</publishTime>
     </File>
     <File Include="Scripts/ajaxfileupload.js">
       <publishTime>06/28/2018 10:27:19</publishTime>
@@ -1626,14 +1626,32 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Scripts/bootstrap/npm.js">
       <publishTime>06/28/2018 16:58:24</publishTime>
     </File>
+    <File Include="Scripts/canvg.js">
+      <publishTime>10/09/2018 09:25:34</publishTime>
+    </File>
     <File Include="Scripts/Capacity.js">
-      <publishTime>07/24/2018 15:12:59</publishTime>
+      <publishTime>10/11/2018 11:47:41</publishTime>
+    </File>
+    <File Include="Scripts/copy2clipboard.js">
+      <publishTime>10/09/2018 09:25:35</publishTime>
+    </File>
+    <File Include="Scripts/datatables/buttons.dataTables.min.css">
+      <publishTime>10/11/2018 11:28:25</publishTime>
+    </File>
+    <File Include="Scripts/datatables/buttons.html5.min.js">
+      <publishTime>10/11/2018 11:28:25</publishTime>
+    </File>
+    <File Include="Scripts/datatables/dataTables.buttons.min.js">
+      <publishTime>10/11/2018 11:28:26</publishTime>
+    </File>
+    <File Include="Scripts/datatables/jszip.min.js">
+      <publishTime>10/11/2018 11:28:27</publishTime>
     </File>
     <File Include="Scripts/exporting.js">
       <publishTime>06/28/2018 10:27:19</publishTime>
     </File>
     <File Include="Scripts/highcharts-modal.js">
-      <publishTime>06/28/2018 11:10:33</publishTime>
+      <publishTime>10/12/2018 15:36:03</publishTime>
     </File>
     <File Include="Scripts/highcharts-more.js">
       <publishTime>09/30/2018 08:21:51</publishTime>
@@ -1642,7 +1660,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/30/2018 08:21:51</publishTime>
     </File>
     <File Include="Scripts/HPU.js">
-      <publishTime>07/30/2018 17:16:29</publishTime>
+      <publishTime>10/11/2018 11:47:41</publishTime>
     </File>
     <File Include="Scripts/jquery-1.12.4.min.js">
       <publishTime>06/28/2018 10:24:38</publishTime>
@@ -1666,7 +1684,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 10:27:20</publishTime>
     </File>
     <File Include="Scripts/jquery.dataTables.min.js">
-      <publishTime>06/28/2018 10:27:20</publishTime>
+      <publishTime>10/12/2018 10:15:10</publishTime>
     </File>
     <File Include="Scripts/jquery.validate.js">
       <publishTime>06/28/2018 09:14:31</publishTime>
@@ -1679,6 +1697,12 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="Scripts/jquery.validate.unobtrusive.min.js">
       <publishTime>06/28/2018 09:14:31</publishTime>
+    </File>
+    <File Include="Scripts/LincardIgnoreTest.cfg">
+      <publishTime>10/12/2018 14:29:14</publishTime>
+    </File>
+    <File Include="Scripts/machine.js">
+      <publishTime>10/17/2018 16:20:42</publishTime>
     </File>
     <File Include="Scripts/metis-db-script.txt">
       <publishTime>07/09/2018 11:29:05</publishTime>
@@ -1720,7 +1744,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 10:27:21</publishTime>
     </File>
     <File Include="Scripts/prism-db-script.txt">
-      <publishTime>09/28/2018 15:07:26</publishTime>
+      <publishTime>10/16/2018 13:20:44</publishTime>
     </File>
     <File Include="Scripts/PrismCfg.txt">
       <publishTime>09/28/2018 15:09:37</publishTime>
@@ -1732,7 +1756,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 09:14:31</publishTime>
     </File>
     <File Include="Scripts/Scrap-Rate.js">
-      <publishTime>07/30/2018 16:16:58</publishTime>
+      <publishTime>10/18/2018 08:50:43</publishTime>
+    </File>
+    <File Include="Scripts/TunableIgnoreTest.cfg">
+      <publishTime>10/11/2018 15:46:27</publishTime>
     </File>
     <File Include="Scripts/VideoRecorderJs-master/dist/recorderWorker.js">
       <publishTime>07/30/2018 15:28:20</publishTime>
@@ -1740,11 +1767,14 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Scripts/VideoRecorderJs-master/dist/VideoRecorderJS.min.js">
       <publishTime>07/30/2018 15:28:21</publishTime>
     </File>
+    <File Include="Scripts/YIELD.js">
+      <publishTime>10/17/2018 14:02:03</publishTime>
+    </File>
     <File Include="Scripts/YieldData.cfg">
-      <publishTime>09/27/2018 16:42:16</publishTime>
+      <publishTime>10/17/2018 13:35:40</publishTime>
     </File>
     <File Include="Scripts/_references.js">
-      <publishTime>09/30/2018 08:21:52</publishTime>
+      <publishTime>10/17/2018 10:45:04</publishTime>
     </File>
     <File Include="userfiles/ImageUpload.ashx">
       <publishTime>07/10/2018 16:28:54</publishTime>
@@ -1785,6 +1815,12 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/DataAnalyze/SerialHPU.cshtml">
       <publishTime>07/24/2018 14:25:24</publishTime>
     </File>
+    <File Include="Views/Machine/DepartmentMachine.cshtml">
+      <publishTime>10/17/2018 16:38:15</publishTime>
+    </File>
+    <File Include="Views/Machine/ProductMachine.cshtml">
+      <publishTime>10/17/2018 16:38:15</publishTime>
+    </File>
     <File Include="Views/Main/HeartBeat.cshtml">
       <publishTime>06/28/2018 10:08:17</publishTime>
     </File>
@@ -1801,7 +1837,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 09:14:37</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>07/24/2018 14:08:57</publishTime>
+      <publishTime>10/17/2018 14:35:51</publishTime>
     </File>
     <File Include="Views/Shared/_LoginPartial.cshtml">
       <publishTime>07/10/2018 16:29:19</publishTime>
@@ -1812,11 +1848,17 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/Web.config">
       <publishTime>07/10/2018 16:29:44</publishTime>
     </File>
+    <File Include="Views/Yield/DepartmentYield.cshtml">
+      <publishTime>10/15/2018 11:11:28</publishTime>
+    </File>
+    <File Include="Views/Yield/ProductYield.cshtml">
+      <publishTime>10/15/2018 16:04:06</publishTime>
+    </File>
     <File Include="Views/_ViewStart.cshtml">
       <publishTime>06/28/2018 09:14:13</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>07/10/2018 16:44:16</publishTime>
+      <publishTime>10/18/2018 10:18:32</publishTime>
     </File>
   </ItemGroup>
 </Project>

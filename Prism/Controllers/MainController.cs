@@ -200,5 +200,11 @@ namespace Prism.Controllers
             return View("HeartBeat");
         }
 
+        public ActionResult GetTableData()
+        {
+            var web = new Website2Data("http://wuxinpi.china.ads.finisar.com/CustomerData/ReviewIQEBackupData", @"//table[@id='pndatatable']");
+            web.GetData();
+            return View("HeartBeat");
+        }
     }
 }
