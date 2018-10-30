@@ -197,6 +197,7 @@
     <Compile Include="Controllers\DataAnalyzeController.cs" />
     <Compile Include="Controllers\MachineController.cs" />
     <Compile Include="Controllers\MainController.cs" />
+    <Compile Include="Controllers\ShipmentController.cs" />
     <Compile Include="Controllers\YieldController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -209,6 +210,7 @@
     <Compile Include="Models\EmailUtility.cs" />
     <Compile Include="Models\ExcelReader.cs" />
     <Compile Include="Models\ExternalDataCollector.cs" />
+    <Compile Include="Models\FsrShipData.cs" />
     <Compile Include="Models\HPUMainData.cs" />
     <Compile Include="Models\IEScrapBuget.cs" />
     <Compile Include="Models\MachinePreData.cs" />
@@ -218,6 +220,7 @@
     <Compile Include="Models\PNPlannerCodeMap.cs" />
     <Compile Include="Models\PrismComment.cs" />
     <Compile Include="Models\ScrapData_Base.cs" />
+    <Compile Include="Models\VcselRMAData.cs" />
     <Compile Include="Models\Website2Data.cs" />
     <Compile Include="Models\WebsiteToImage.cs" />
     <Compile Include="Models\YieldPreData.cs" />
@@ -662,6 +665,7 @@
     <Content Include="Content\images\FinisarLogo.jpg" />
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\Layout.css" />
+    <Content Include="Content\shipment.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\videorecorder.css" />
     <Content Include="Content\welcome.css" />
@@ -761,6 +765,15 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\Scrap-Rate.js" />
+    <Content Include="Scripts\shipment.js" />
+    <Content Include="Scripts\tooltipster\css\tooltipster.bundle.css" />
+    <Content Include="Scripts\tooltipster\css\tooltipster.bundle.min.css" />
+    <Content Include="Scripts\tooltipster\css\tooltipster.main.css" />
+    <Content Include="Scripts\tooltipster\css\tooltipster.main.min.css" />
+    <Content Include="Scripts\tooltipster\js\tooltipster.bundle.js" />
+    <Content Include="Scripts\tooltipster\js\tooltipster.bundle.min.js" />
+    <Content Include="Scripts\tooltipster\js\tooltipster.main.js" />
+    <Content Include="Scripts\tooltipster\js\tooltipster.main.min.js" />
     <Content Include="Scripts\VideoRecorderJs-master\dist\recorderWorker.js" />
     <Content Include="Scripts\VideoRecorderJs-master\dist\VideoRecorderJS.min.js" />
     <Content Include="Scripts\YIELD.js" />
@@ -802,6 +815,8 @@
     <Content Include="Scripts\TunableIgnoreTest.cfg" />
     <Content Include="Views\Machine\DepartmentMachine.cshtml" />
     <Content Include="Views\Machine\ProductMachine.cshtml" />
+    <Content Include="Scripts\ShipCustomer.cfg" />
+    <Content Include="Views\Shipment\ShipmentData.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -105,6 +105,20 @@
                                 </ul>
                             </li>
                             <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Shipment<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        @Html.ActionLink("Shipment Distribution", "ShipmentData", "Shipment")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("OTD Trend", "OTDData", "Shipment")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Shipment LBS", "LBSDistribution", "Shipment")
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Scrap<span class="caret"></span></a>
                                 <ul class="dropdown-menu">
                                     <li>

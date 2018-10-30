@@ -72,6 +72,43 @@ namespace Prism.Models
             return ret;
         }
 
+        public static bool IsLxEmployee(string machine, string username, int x)
+        {
+            var sql = "select machine,username,level from machineusermap where machine = '<machine>' ";
+            sql = sql.Replace("<machine>", machine);
+
+            if (!string.IsNullOrEmpty(username))
+            {
+                sql = sql + " or username = '<username>'";
+                sql = sql.Replace("<username>", username.Split(new string[] { "@" }, StringSplitOptions.RemoveEmptyEntries)[0].ToUpper());
+            }
+
+            var dbret = DBUtility.ExeNPISqlWithRes(sql, null);
+            if (dbret.Count == 0)
+            {
+                return true;
+            }
+
+            try
+            {
+                foreach (var line in dbret)
+                {
+                    var level = Convert.ToString(line[2]);
+                    if (!string.IsNullOrEmpty(level) && level.Length > 1)
+                    {
+                        var lv = Convert.ToInt32(level.Substring(1));
+                        if (lv >= x || lv == 0)
+                        {
+                            return true;
+                        }
+                    }//end if
+                }//en foreach
+            }
+            catch (Exception ex) { }
+
+            return false;
+        }
+
         public string machine { set; get; }
         public string username { set; get; }
     }
