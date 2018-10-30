@@ -141,31 +141,31 @@ namespace Prism.Models
             return ret;
         }
 
-        public static Dictionary<string, string> GetShipCustConfig(Controller ctrl, string producttype)
-        {
-            var lines = System.IO.File.ReadAllLines(ctrl.Server.MapPath("~/Scripts/ShipCustomer.cfg"));
-            var ret = new Dictionary<string, string>();
-            foreach (var line in lines)
-            {
-                if (line.Contains("##"))
-                {
-                    continue;
-                }
+        //public static Dictionary<string, string> GetShipCustConfig(Controller ctrl, string producttype)
+        //{
+        //    var lines = System.IO.File.ReadAllLines(ctrl.Server.MapPath("~/Scripts/ShipCustomer.cfg"));
+        //    var ret = new Dictionary<string, string>();
+        //    foreach (var line in lines)
+        //    {
+        //        if (line.Contains("##"))
+        //        {
+        //            continue;
+        //        }
 
-                if (line.Contains(":::"))
-                {
-                    var kvpair = line.Split(new string[] { ":::" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (kvpair[0].Contains(producttype + "_"))
-                    {
-                        var key = kvpair[0].Replace(producttype + "_", "").ToUpper();
-                        var val = kvpair[1].Trim().ToUpper();
-                        if (!ret.ContainsKey(key))
-                        { ret.Add(key, val); }
-                    }
-                }//end if
-            }//end foreach
-            return ret;
-        }
+        //        if (line.Contains(":::"))
+        //        {
+        //            var kvpair = line.Split(new string[] { ":::" }, StringSplitOptions.RemoveEmptyEntries);
+        //            if (kvpair[0].Contains(producttype + "_"))
+        //            {
+        //                var key = kvpair[0].Replace(producttype + "_", "").ToUpper();
+        //                var val = kvpair[1].Trim().ToUpper();
+        //                if (!ret.ContainsKey(key))
+        //                { ret.Add(key, val); }
+        //            }
+        //        }//end if
+        //    }//end foreach
+        //    return ret;
+        //}
 
         public static Dictionary<string, string> GetAllCustConfig(Controller ctrl)
         {

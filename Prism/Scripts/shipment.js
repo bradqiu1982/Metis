@@ -32,13 +32,13 @@
                         drawordercolumn(val);
                     })
 
-                    $.each(output.otdarray, function (i, val) {
-                        appendstr = '<div class="col-xs-12">' +
-                               '<div class="v-box" id="' + val.id + '"></div>' +
-                               '</div>';
-                        $('.v-content').append(appendstr);
-                        drawotdline(val);
-                    })
+                    //$.each(output.otdarray, function (i, val) {
+                    //    appendstr = '<div class="col-xs-12">' +
+                    //           '<div class="v-box" id="' + val.id + '"></div>' +
+                    //           '</div>';
+                    //    $('.v-content').append(appendstr);
+                    //    drawotdline(val);
+                    //})
                 }
             })
         })
@@ -51,6 +51,35 @@
         })
 
     }
+
+    var otddata = function () {
+        $('.date').datepicker({ autoclose: true, viewMode: "months", minViewMode: "months" });
+        $('body').on('click', '#btn-search', function () {
+            var sdate = $.trim($('#sdate').val());
+            var edate = $.trim($('#edate').val());
+
+            $.post('/Shipment/OTDDistribution', {
+                sdate: sdate,
+                edate: edate
+            }, function (output) {
+                if (output.success) {
+                    $('.v-content').empty();
+                    
+                    var appendstr = "";
+
+                    $.each(output.otdarray, function (i, val) {
+                        appendstr = '<div class="col-xs-12">' +
+                               '<div class="v-box" id="' + val.id + '"></div>' +
+                               '</div>';
+                        $('.v-content').append(appendstr);
+                        drawotdline(val);
+                    })
+                }
+            })
+        })
+
+    }
+
 
     var myrmatable = null;
 
@@ -451,8 +480,9 @@
                                     '<td>' + val.ShipDateStr + '</td>' +
                                     '<td>' + val.OTD + '</td>' +
                                     '<td>' + val.OrderQty + '</td>' +
-                                    '<td>' + val.MarketFamily + '</td>'
-                                    + '</tr>';
+                                    '<td>' + val.MarketFamily + '</td>' +
+                                    '<td>' + val.Customer1 + '</td>' +
+                                     '</tr>';
                                 $('#shiprawbody').append(appendstr);
                             });
 
@@ -527,6 +557,9 @@
     return {
         init: function () {
             show();
+        },
+        otdinit: function () {
+            otddata();
         }
     }
 }();

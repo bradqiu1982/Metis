@@ -817,6 +817,7 @@
     <Content Include="Views\Machine\ProductMachine.cshtml" />
     <Content Include="Scripts\ShipCustomer.cfg" />
     <Content Include="Views\Shipment\ShipmentData.cshtml" />
+    <Content Include="Views\Shipment\OTDData.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

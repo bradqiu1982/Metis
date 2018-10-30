@@ -86,12 +86,12 @@ namespace Prism.Models
         public static Dictionary<string, Dictionary<string, double>> RetrieveShipDataByMonth(string rate, string producttype, string sdate, string edate, Controller ctrl)
         {
             var ret = new Dictionary<string, Dictionary<string, double>>();
-            var custdict = CfgUtility.GetShipCustConfig(ctrl, producttype);
+            var custdict = CfgUtility.GetAllCustConfig(ctrl);
             var sql = @"select ShipQty,Customer1,Customer2,ShipDate from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and Configuration = @producttype ";
 
             if (string.Compare(rate, VCSELRATE.r14G, true) == 0)
             { sql = sql + " and ( VcselType = '" + VCSELRATE.r14G + "' or VcselType = '" + VCSELRATE.r10G + "')"; }
-            else
+            else if (string.Compare(rate, VCSELRATE.r25G, true) == 0)
             { sql = sql + " and VcselType = '" + rate + "'"; }
 
             var dict = new Dictionary<string, string>();
@@ -146,15 +146,16 @@ namespace Prism.Models
             return ret;
         }
 
+
         public static Dictionary<string, Dictionary<string, double>> RetrieveOrderDataByMonth(string rate, string producttype, string sdate, string edate, Controller ctrl)
         {
             var ret = new Dictionary<string, Dictionary<string, double>>();
-            var custdict = CfgUtility.GetShipCustConfig(ctrl, producttype);
+            var custdict = CfgUtility.GetAllCustConfig(ctrl);
             var sql = @"select Appv_1,Customer1,Customer2,OrderedDate from FsrShipData where OrderedDate >= @sdate and OrderedDate <= @edate and Configuration = @producttype ";
 
             if (string.Compare(rate, VCSELRATE.r14G, true) == 0)
             { sql = sql + " and ( VcselType = '" + VCSELRATE.r14G + "' or VcselType = '" + VCSELRATE.r10G + "')"; }
-            else
+            else if (string.Compare(rate, VCSELRATE.r25G, true) == 0)
             { sql = sql + " and VcselType = '" + rate + "'"; }
 
             var dict = new Dictionary<string, string>();
@@ -211,8 +212,9 @@ namespace Prism.Models
 
         public static List<FsrShipData> RetrieveOTDByMonth(string rate, string producttype, string sdate, string edate, Controller ctrl)
         {
+            var custdict = CfgUtility.GetAllCustConfig(ctrl);
             var ret = new List<FsrShipData>();
-            var sql = @"select ShipDate,Appv_5,PN,ProdDesc,Appv_1,MarketFamily,ShipID from FsrShipData where Appv_5 >= @sdate and Appv_5 <= @edate and Configuration = @producttype 
+            var sql = @"select ShipDate,Appv_5,PN,ProdDesc,Appv_1,MarketFamily,ShipID,Customer1,Customer2 from FsrShipData where Appv_5 >= @sdate and Appv_5 <= @edate and Configuration = @producttype 
                         and Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' ";
 
             if (string.Compare(rate, VCSELRATE.r14G, true) == 0)
@@ -239,6 +241,10 @@ namespace Prism.Models
                 tempvm.OrderQty = Convert.ToDouble(line[4]);
                 tempvm.MarketFamily = Convert.ToString(line[5]);
                 tempvm.ShipID = Convert.ToString(line[6]);
+                var cust1 = Convert.ToString(line[7]).ToUpper();
+                var cust2 = Convert.ToString(line[8]).ToUpper();
+                var realcust = RetrieveCustome(cust1, cust2, custdict);
+                tempvm.Customer1 = realcust;
                 tempvm.OTD = "NO";
 
                 if (string.Compare(tempvm.OPD.ToString("yyyy-MM"), "1982-05") == 0)
@@ -249,7 +255,6 @@ namespace Prism.Models
 
             return ret;
         }
-
 
 
         public static List<FsrShipData> RetrieveAllShipDataByMonth(string sdate, string edate, Controller ctrl)
