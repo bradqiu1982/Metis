@@ -256,6 +256,28 @@ namespace Prism.Models
             return ret;
         }
 
+        public static List<FsrShipData> RetrieveLBSDataByMonth(string producttype, string sdate, string edate, Controller ctrl)
+        {
+            var custdict = CfgUtility.GetAllCustConfig(ctrl);
+            var ret = new List<FsrShipData>();
+            var sql = @"select ShipQty,DelieveNum from FsrShipData where  ShipDate >= @sdate and ShipDate <= @edate and Configuration = @producttype 
+                        and Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' and  DelieveNum <> ''";
+
+            var dict = new Dictionary<string, string>();
+            dict.Add("@sdate", sdate);
+            dict.Add("@edate", edate);
+            dict.Add("@producttype", producttype);
+            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            foreach (var line in dbret)
+            {
+                var tempvm = new FsrShipData();
+                tempvm.ShipQty = Convert.ToDouble(line[0]);
+                tempvm.DelieveNum = Convert.ToString(line[1]);
+                ret.Add(tempvm);
+            }
+
+            return ret;
+        }
 
         public static List<FsrShipData> RetrieveAllShipDataByMonth(string sdate, string edate, Controller ctrl)
         {

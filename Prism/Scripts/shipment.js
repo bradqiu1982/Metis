@@ -46,6 +46,7 @@
         $('body').on('click', '#btn-download', function () {
             var sdate = $.trim($('#sdate').val());
             var edate = $.trim($('#edate').val());
+
             var myurl = '/Shipment/DownloadShipmentData?sdate=' + sdate + '&edate=' + edate;
             window.open(myurl, '_blank');
         })
@@ -73,6 +74,35 @@
                                '</div>';
                         $('.v-content').append(appendstr);
                         drawotdline(val);
+                    })
+                }
+            })
+        })
+
+    }
+
+
+    var lbsdata = function () {
+        $('.date').datepicker({ autoclose: true, viewMode: "months", minViewMode: "months" });
+        $('body').on('click', '#btn-search', function () {
+            var sdate = $.trim($('#sdate').val());
+            var edate = $.trim($('#edate').val());
+
+            $.post('/Shipment/ShipmentLBSDistribution', {
+                sdate: sdate,
+                edate: edate
+            }, function (output) {
+                if (output.success) {
+                    $('.v-content').empty();
+                    console.log(output.chartarray);
+                    var appendstr = "";
+
+                    $.each(output.chartarray, function (i, val) {
+                        appendstr = '<div class="col-xs-12">' +
+                               '<div class="v-box" id="' + val.id + '" style="height: 500px;width: 800px;margin: 0 auto;"></div>' +
+                               '</div>';
+                        $('.v-content').append(appendstr);
+                        drawlbsdistribution(val);
                     })
                 }
             })
@@ -554,12 +584,81 @@
         };
         Highcharts.chart(col_data.id, options);
     }
+
+    var drawlbsdistribution = function (col_data)
+    {
+        var options = {
+            chart: {
+                map: 'custom/world'
+            },
+
+            title: {
+                text: col_data.title
+            },
+
+            legend: {
+                title: {
+                    text: 'Shipment QTY',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
+                    }
+                }
+            },
+
+            mapNavigation: {
+                enabled: true,
+                buttonOptions: {
+                    verticalAlign: 'bottom'
+                }
+            },
+
+            tooltip: {
+                backgroundColor: 'none',
+                borderWidth: 0,
+                shadow: false,
+                useHTML: true,
+                padding: 0,
+                pointFormat: '<span class="f32"><span class="flag {point.properties.hc-key}">' +
+                    '</span></span> {point.name}<br>' +
+                    '<span style="font-size:30px">{point.value} PCS</span>',
+                positioner: function () {
+                    return { x: 0, y: 250 };
+                }
+            },
+
+            colorAxis: {
+                min: 1,
+                max: 1000,
+                type: 'logarithmic'
+            },
+
+            series: [{
+                data: col_data.data,
+                joinBy: ['iso-a2', 'code'],
+                name: 'Shipment QTY',
+                states: {
+                    hover: {
+                        color: '#a4edba'
+                    }
+                }
+            }]
+        };
+
+        Highcharts.mapChart(col_data.id, options);
+    }
+
+
+
     return {
         init: function () {
             show();
         },
         otdinit: function () {
             otddata();
+        },
+        lbsinit: function () {
+            lbsdata();
         }
+
     }
 }();

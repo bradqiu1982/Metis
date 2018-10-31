@@ -752,5 +752,71 @@ namespace Prism.Controllers
         }
 
 
+        public ActionResult LBSDistribution()
+        {
+            string IP = Request.UserHostName;
+            string compName = DetermineCompName(IP);
+            if (!MachineUserMap.IsLxEmployee(compName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
+            return View();
+        }
+
+        public JsonResult ShipmentLBSDistribution()
+        {
+            var ssdate = Request.Form["sdate"];
+            var sedate = Request.Form["edate"];
+            var startdate = DateTime.Now;
+            var enddate = DateTime.Now;
+
+            if (!string.IsNullOrEmpty(ssdate) && !string.IsNullOrEmpty(sedate))
+            {
+                var sdate = DateTime.Parse(Request.Form["sdate"]);
+                var edate = DateTime.Parse(Request.Form["edate"]);
+                if (sdate < edate)
+                {
+                    startdate = DateTime.Parse(sdate.ToString("yyyy-MM") + "-01 00:00:00");
+                    enddate = DateTime.Parse(edate.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
+                }
+                else
+                {
+                    startdate = DateTime.Parse(edate.ToString("yyyy-MM") + "-01 00:00:00");
+                    enddate = DateTime.Parse(sdate.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
+                }
+            }
+            else
+            {
+                startdate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(-6);
+                enddate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
+            }
+
+            var chartarray = new List<object>();
+            var parallelshiplbsdata = ShipLBSData.LoadShipdataLBS(SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"),this);
+            chartarray.Add(new
+            {
+                id = "ship_para_lbs_id",
+                title = "Parallel Product Shipment Distribution",
+                data = parallelshiplbsdata
+            });
+
+            var tunableshiplbsdata = ShipLBSData.LoadShipdataLBS(SHIPPRODTYPE.OPTIUM, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            chartarray.Add(new
+            {
+                id = "ship_tunable_lbs_id",
+                title = "Tunable Product Shipment Distribution",
+                data = tunableshiplbsdata
+            });
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                success = true,
+                chartarray = chartarray
+            };
+            return ret;
+        }
+
     }
 }
