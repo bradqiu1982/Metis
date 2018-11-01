@@ -629,7 +629,13 @@
             colorAxis: {
                 min: 1,
                 max: col_data.maxval,
-                type: 'logarithmic'
+                type: 'logarithmic',
+                stops: [
+                    [0, '#E0E6F8'],
+                    [0.3, '#6da5ff'],
+                    [0.6, '#ffff00'],
+                    [0.9, '#ff0000']
+                ]
             },
 
             series: [{
