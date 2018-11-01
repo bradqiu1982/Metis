@@ -293,6 +293,9 @@ namespace Prism.Models
                 var tempvm = new FsrShipData();
                 tempvm.ShipQty = Convert.ToDouble(line[0]);
                 tempvm.ShipTo = Convert.ToString(line[1]);
+                if (string.Compare(tempvm.ShipTo, "HK",true) == 0)
+                { tempvm.ShipTo = "CN"; }
+
                 var cust1 = Convert.ToString(line[2]).ToUpper();
                 var cust2 = Convert.ToString(line[3]).ToUpper();
                 var realcust = RetrieveCustome(cust1, cust2, custdict);
