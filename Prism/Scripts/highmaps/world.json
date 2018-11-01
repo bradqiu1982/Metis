@@ -1176,12 +1176,6 @@
     "code": "TV"
   },
   {
-    "code3": "TWN",
-    "name": "Taiwan",
-    "value": 73.4,
-    "code": "TW"
-  },
-  {
     "code3": "TZA",
     "name": "Tanzania",
     "value": 62.74,
@@ -1282,5 +1276,17 @@
     "name": "Zimbabwe",
     "value": 41.75,
     "code": "ZW"
+  },
+  {
+    "code3": "TWN",
+    "name": "Taiwan",
+    "value": 73.4,
+    "code": "TW"
+  },
+  {
+    "code3": "HKG",
+    "name": "HongKong",
+    "value": 73.4,
+    "code": "HK"
   }
 ]

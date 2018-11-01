@@ -99,7 +99,7 @@
 
                     $.each(output.chartarray, function (i, val) {
                         appendstr = '<div class="col-xs-12">' +
-                               '<div class="v-box" id="' + val.id + '" style="height: 500px;width: 800px;margin: 0 auto;"></div>' +
+                               '<div class="v-box" id="' + val.id + '" style="height: 500px;width: 900px;margin: 0 auto;"></div>' +
                                '</div>';
                         $('.v-content').append(appendstr);
                         drawlbsdistribution(val);
@@ -620,7 +620,7 @@
                 padding: 0,
                 pointFormat: '<span class="f32"><span class="flag {point.properties.hc-key}">' +
                     '</span></span> {point.name}<br>' +
-                    '<span style="font-size:30px">{point.value} PCS</span>',
+                    '<span style="font-size:24px">{point.value} PCS</span>',
                 positioner: function () {
                     return { x: 0, y: 250 };
                 }
@@ -628,7 +628,7 @@
 
             colorAxis: {
                 min: 1,
-                max: 1000,
+                max: col_data.maxval,
                 type: 'logarithmic'
             },
 

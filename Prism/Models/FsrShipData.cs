@@ -35,7 +35,27 @@ namespace Prism.Models
     public class FsrShipData
     {
         public FsrShipData()
-        { }
+        {
+            ShipID = string.Empty;
+            ShipQty = 0;
+            PN = string.Empty;
+            ProdDesc = string.Empty;
+            MarketFamily = string.Empty;
+            Configuration = string.Empty;
+            ShipDate = DateTime.Parse("1982-05-06 10:00:00");
+            CustomerNum = string.Empty;
+            Customer1 = string.Empty;
+            Customer2 = string.Empty;
+            OrderedDate = DateTime.Parse("1982-05-06 10:00:00");
+            DelieveNum = string.Empty;
+            VcselType = string.Empty;
+            SN = string.Empty;
+            Wafer = string.Empty;
+            OrderQty = 0;
+            OPD = DateTime.Parse("1982-05-06 10:00:00");
+            OTD = "NO";
+            ShipTo = string.Empty;
+        }
 
         public FsrShipData(string id, int qty, string pn, string pndesc, string family, string cfg
             , DateTime shipdate, string custnum, string cust1, string cust2, DateTime orddate, string delievenum, int orderqty, DateTime opd)
@@ -260,8 +280,8 @@ namespace Prism.Models
         {
             var custdict = CfgUtility.GetAllCustConfig(ctrl);
             var ret = new List<FsrShipData>();
-            var sql = @"select ShipQty,DelieveNum from FsrShipData where  ShipDate >= @sdate and ShipDate <= @edate and Configuration = @producttype 
-                        and Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' and  DelieveNum <> ''";
+            var sql = @"select ShipQty,Appv_2,Customer1,Customer2 from FsrShipData where  ShipDate >= @sdate and ShipDate <= @edate and Configuration = @producttype 
+                        and Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' and  Appv_2 <> ''";
 
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
@@ -272,7 +292,11 @@ namespace Prism.Models
             {
                 var tempvm = new FsrShipData();
                 tempvm.ShipQty = Convert.ToDouble(line[0]);
-                tempvm.DelieveNum = Convert.ToString(line[1]);
+                tempvm.ShipTo = Convert.ToString(line[1]);
+                var cust1 = Convert.ToString(line[2]).ToUpper();
+                var cust2 = Convert.ToString(line[3]).ToUpper();
+                var realcust = RetrieveCustome(cust1, cust2, custdict);
+                tempvm.Customer1 = realcust;
                 ret.Add(tempvm);
             }
 
@@ -328,5 +352,6 @@ namespace Prism.Models
         public DateTime OPD { set; get; }
         public string OPDStr { get { return OPD.ToString("yyyy-MM-dd"); } }
         public string OTD { set; get; }
+        public string ShipTo { set; get; }
     }
 }

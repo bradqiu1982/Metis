@@ -793,19 +793,33 @@ namespace Prism.Controllers
 
             var chartarray = new List<object>();
             var parallelshiplbsdata = ShipLBSData.LoadShipdataLBS(SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"),this);
+            var maxval = 2.0;
+            foreach (var item in parallelshiplbsdata)
+            {
+                if (item.value > maxval)
+                { maxval = item.value; }
+            }
             chartarray.Add(new
             {
                 id = "ship_para_lbs_id",
                 title = "Parallel Product Shipment Distribution",
-                data = parallelshiplbsdata
+                data = parallelshiplbsdata,
+                maxval = maxval
             });
 
             var tunableshiplbsdata = ShipLBSData.LoadShipdataLBS(SHIPPRODTYPE.OPTIUM, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            maxval = 2.0;
+            foreach (var item in tunableshiplbsdata)
+            {
+                if (item.value > maxval)
+                { maxval = item.value; }
+            }
             chartarray.Add(new
             {
                 id = "ship_tunable_lbs_id",
                 title = "Tunable Product Shipment Distribution",
-                data = tunableshiplbsdata
+                data = tunableshiplbsdata,
+                maxval = maxval
             });
 
             var ret = new JsonResult();
