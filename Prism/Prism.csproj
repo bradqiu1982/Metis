@@ -718,7 +718,9 @@
     <None Include="Properties\PublishProfiles\prismpublish.pubxml" />
     <Content Include="Scripts\highmaps\flags32.png" />
     <Content Include="Scripts\highmaps\map.js" />
+    <Content Include="Scripts\highmaps\proj4.js" />
     <Content Include="Scripts\highmaps\world.json" />
+    <Content Include="Scripts\highmaps\capitals.json" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
     <Content Include="Scripts\bootstrap-tagsinput\bootstrap-tagsinput.css" />
     <Content Include="Scripts\bootstrap-tagsinput\bootstrap-tagsinput.js" />

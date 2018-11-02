@@ -1,0 +1,1954 @@
+[
+  {
+    "cyname": "Somaliland",
+    "ctname": "Hargeisa",
+    "lat": 9.55,
+    "lon": 44.050000,
+    "code": "NULL",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "South Georgia and South Sandwich Islands",
+    "ctname": "King Edward Point",
+    "lat": -54.283333,
+    "lon": -36.500000,
+    "code": "GS",
+    "contine": "Antarctica"
+  },
+  {
+    "cyname": "French Southern and Antarctic Lands",
+    "ctname": "Port-aux-Franais",
+    "lat": -49.35,
+    "lon": 70.216667,
+    "code": "TF",
+    "contine": "Antarctica"
+  },
+  {
+    "cyname": "Palestine",
+    "ctname": "Jerusalem",
+    "lat": 31.766666666666666,
+    "lon": 35.233333,
+    "code": "PS",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Aland Islands",
+    "ctname": "Mariehamn",
+    "lat": 60.116667,
+    "lon": 19.900000,
+    "code": "AX",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Nauru",
+    "ctname": "Yaren",
+    "lat": -0.5477,
+    "lon": 166.920867,
+    "code": "NR",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Saint Martin",
+    "ctname": "Marigot",
+    "lat": 18.0731,
+    "lon": -63.082200,
+    "code": "MF",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Tokelau",
+    "ctname": "Atafu",
+    "lat": -9.166667,
+    "lon": -171.833333,
+    "code": "TK",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Western Sahara",
+    "ctname": "El-Aai",
+    "lat": 27.153611,
+    "lon": -13.203333,
+    "code": "EH",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Afghanistan",
+    "ctname": "Kabul",
+    "lat": 34.516666666666666,
+    "lon": 69.183333,
+    "code": "AF",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Albania",
+    "ctname": "Tirana",
+    "lat": 41.31666666666667,
+    "lon": 19.816667,
+    "code": "AL",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Algeria",
+    "ctname": "Algiers",
+    "lat": 36.75,
+    "lon": 3.050000,
+    "code": "DZ",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "American Samoa",
+    "ctname": "Pago Pago",
+    "lat": -14.266666666666667,
+    "lon": -170.700000,
+    "code": "AS",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Andorra",
+    "ctname": "Andorra la Vella",
+    "lat": 42.5,
+    "lon": 1.516667,
+    "code": "AD",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Angola",
+    "ctname": "Luanda",
+    "lat": -8.833333333333334,
+    "lon": 13.216667,
+    "code": "AO",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Anguilla",
+    "ctname": "The Valley",
+    "lat": 18.216666666666665,
+    "lon": -63.050000,
+    "code": "AI",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Antigua and Barbuda",
+    "ctname": "Saint Johns",
+    "lat": 17.116666666666667,
+    "lon": -61.850000,
+    "code": "AG",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Argentina",
+    "ctname": "Buenos Aires",
+    "lat": -34.583333333333336,
+    "lon": -58.666667,
+    "code": "AR",
+    "contine": "South America"
+  },
+  {
+    "cyname": "Armenia",
+    "ctname": "Yerevan",
+    "lat": 40.166666666666664,
+    "lon": 44.500000,
+    "code": "AM",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Aruba",
+    "ctname": "Oranjestad",
+    "lat": 12.516666666666667,
+    "lon": -70.033333,
+    "code": "AW",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Australia",
+    "ctname": "Canberra",
+    "lat": -35.266666666666666,
+    "lon": 149.133333,
+    "code": "AU",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Austria",
+    "ctname": "Vienna",
+    "lat": 48.2,
+    "lon": 16.366667,
+    "code": "AT",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Azerbaijan",
+    "ctname": "Baku",
+    "lat": 40.38333333333333,
+    "lon": 49.866667,
+    "code": "AZ",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Bahamas",
+    "ctname": "Nassau",
+    "lat": 25.083333333333332,
+    "lon": -77.350000,
+    "code": "BS",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Bahrain",
+    "ctname": "Manama",
+    "lat": 26.233333333333334,
+    "lon": 50.566667,
+    "code": "BH",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Bangladesh",
+    "ctname": "Dhaka",
+    "lat": 23.716666666666665,
+    "lon": 90.400000,
+    "code": "BD",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Barbados",
+    "ctname": "Bridgetown",
+    "lat": 13.1,
+    "lon": -59.616667,
+    "code": "BB",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Belarus",
+    "ctname": "Minsk",
+    "lat": 53.9,
+    "lon": 27.566667,
+    "code": "BY",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Belgium",
+    "ctname": "Brussels",
+    "lat": 50.833333333333336,
+    "lon": 4.333333,
+    "code": "BE",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Belize",
+    "ctname": "Belmopan",
+    "lat": 17.25,
+    "lon": -88.766667,
+    "code": "BZ",
+    "contine": "Central America"
+  },
+  {
+    "cyname": "Benin",
+    "ctname": "Porto-Novo",
+    "lat": 6.483333333333333,
+    "lon": 2.616667,
+    "code": "BJ",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Bermuda",
+    "ctname": "Hamilton",
+    "lat": 32.28333333333333,
+    "lon": -64.783333,
+    "code": "BM",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Bhutan",
+    "ctname": "Thimphu",
+    "lat": 27.466666666666665,
+    "lon": 89.633333,
+    "code": "BT",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Bolivia",
+    "ctname": "La Paz",
+    "lat": -16.5,
+    "lon": -68.150000,
+    "code": "BO",
+    "contine": "South America"
+  },
+  {
+    "cyname": "Bosnia and Herzegovina",
+    "ctname": "Sarajevo",
+    "lat": 43.86666666666667,
+    "lon": 18.416667,
+    "code": "BA",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Botswana",
+    "ctname": "Gaborone",
+    "lat": -24.633333333333333,
+    "lon": 25.900000,
+    "code": "BW",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Brazil",
+    "ctname": "Brasilia",
+    "lat": -15.783333333333333,
+    "lon": -47.916667,
+    "code": "BR",
+    "contine": "South America"
+  },
+  {
+    "cyname": "British Virgin Islands",
+    "ctname": "Road Town",
+    "lat": 18.416666666666668,
+    "lon": -64.616667,
+    "code": "VG",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Brunei Darussalam",
+    "ctname": "Bandar Seri Begawan",
+    "lat": 4.883333333333333,
+    "lon": 114.933333,
+    "code": "BN",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Bulgaria",
+    "ctname": "Sofia",
+    "lat": 42.68333333333333,
+    "lon": 23.316667,
+    "code": "BG",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Burkina Faso",
+    "ctname": "Ouagadougou",
+    "lat": 12.366666666666667,
+    "lon": -1.516667,
+    "code": "BF",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Myanmar",
+    "ctname": "Rangoon",
+    "lat": 16.8,
+    "lon": 96.150000,
+    "code": "MM",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Burundi",
+    "ctname": "Bujumbura",
+    "lat": -3.3666666666666667,
+    "lon": 29.350000,
+    "code": "BI",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Cambodia",
+    "ctname": "Phnom Penh",
+    "lat": 11.55,
+    "lon": 104.916667,
+    "code": "KH",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Cameroon",
+    "ctname": "Yaounde",
+    "lat": 3.8666666666666667,
+    "lon": 11.516667,
+    "code": "CM",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Canada",
+    "ctname": "Ottawa",
+    "lat": 45.416666666666664,
+    "lon": -75.700000,
+    "code": "CA",
+    "contine": "Central America"
+  },
+  {
+    "cyname": "Cape Verde",
+    "ctname": "Praia",
+    "lat": 14.916666666666666,
+    "lon": -23.516667,
+    "code": "CV",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Cayman Islands",
+    "ctname": "George Town",
+    "lat": 19.3,
+    "lon": -81.383333,
+    "code": "KY",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Central African Republic",
+    "ctname": "Bangui",
+    "lat": 4.366666666666666,
+    "lon": 18.583333,
+    "code": "CF",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Chad",
+    "ctname": "NDjamena",
+    "lat": 12.1,
+    "lon": 15.033333,
+    "code": "TD",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Chile",
+    "ctname": "Santiago",
+    "lat": -33.45,
+    "lon": -70.666667,
+    "code": "CL",
+    "contine": "South America"
+  },
+  {
+    "cyname": "China",
+    "ctname": "Beijing",
+    "lat": 39.916666666666664,
+    "lon": 116.383333,
+    "code": "CN",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Christmas Island",
+    "ctname": "The Settlement",
+    "lat": -10.416666666666666,
+    "lon": 105.716667,
+    "code": "CX",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Cocos Islands",
+    "ctname": "West Island",
+    "lat": -12.166666666666666,
+    "lon": 96.833333,
+    "code": "CC",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Colombia",
+    "ctname": "Bogota",
+    "lat": 4.6,
+    "lon": -74.083333,
+    "code": "CO",
+    "contine": "South America"
+  },
+  {
+    "cyname": "Comoros",
+    "ctname": "Moroni",
+    "lat": -11.7,
+    "lon": 43.233333,
+    "code": "KM",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Democratic Republic of the Congo",
+    "ctname": "Kinshasa",
+    "lat": -4.316666666666666,
+    "lon": 15.300000,
+    "code": "CD",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Republic of Congo",
+    "ctname": "Brazzaville",
+    "lat": -4.25,
+    "lon": 15.283333,
+    "code": "CG",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Cook Islands",
+    "ctname": "Avarua",
+    "lat": -21.2,
+    "lon": -159.766667,
+    "code": "CK",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Costa Rica",
+    "ctname": "San Jose",
+    "lat": 9.933333333333334,
+    "lon": -84.083333,
+    "code": "CR",
+    "contine": "Central America"
+  },
+  {
+    "cyname": "Cote dIvoire",
+    "ctname": "Yamoussoukro",
+    "lat": 6.816666666666666,
+    "lon": -5.266667,
+    "code": "CI",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Croatia",
+    "ctname": "Zagreb",
+    "lat": 45.8,
+    "lon": 16.000000,
+    "code": "HR",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Cuba",
+    "ctname": "Havana",
+    "lat": 23.116666666666667,
+    "lon": -82.350000,
+    "code": "CU",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Curaao",
+    "ctname": "Willemstad",
+    "lat": 12.1,
+    "lon": -68.916667,
+    "code": "CW",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Cyprus",
+    "ctname": "Nicosia",
+    "lat": 35.166666666666664,
+    "lon": 33.366667,
+    "code": "CY",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Czech Republic",
+    "ctname": "Prague",
+    "lat": 50.083333333333336,
+    "lon": 14.466667,
+    "code": "CZ",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Denmark",
+    "ctname": "Copenhagen",
+    "lat": 55.666666666666664,
+    "lon": 12.583333,
+    "code": "DK",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Djibouti",
+    "ctname": "Djibouti",
+    "lat": 11.583333333333334,
+    "lon": 43.150000,
+    "code": "DJ",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Dominica",
+    "ctname": "Roseau",
+    "lat": 15.3,
+    "lon": -61.400000,
+    "code": "DM",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Dominican Republic",
+    "ctname": "Santo Domingo",
+    "lat": 18.466666666666665,
+    "lon": -69.900000,
+    "code": "DO",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Ecuador",
+    "ctname": "Quito",
+    "lat": -0.21666666666666667,
+    "lon": -78.500000,
+    "code": "EC",
+    "contine": "South America"
+  },
+  {
+    "cyname": "Egypt",
+    "ctname": "Cairo",
+    "lat": 30.05,
+    "lon": 31.250000,
+    "code": "EG",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "El Salvador",
+    "ctname": "San Salvador",
+    "lat": 13.7,
+    "lon": -89.200000,
+    "code": "SV",
+    "contine": "Central America"
+  },
+  {
+    "cyname": "Equatorial Guinea",
+    "ctname": "Malabo",
+    "lat": 3.75,
+    "lon": 8.783333,
+    "code": "GQ",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Eritrea",
+    "ctname": "Asmara",
+    "lat": 15.333333333333334,
+    "lon": 38.933333,
+    "code": "ER",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Estonia",
+    "ctname": "Tallinn",
+    "lat": 59.43333333333333,
+    "lon": 24.716667,
+    "code": "EE",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Ethiopia",
+    "ctname": "Addis Ababa",
+    "lat": 9.033333333333333,
+    "lon": 38.700000,
+    "code": "ET",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Falkland Islands",
+    "ctname": "Stanley",
+    "lat": -51.7,
+    "lon": -57.850000,
+    "code": "FK",
+    "contine": "South America"
+  },
+  {
+    "cyname": "Faroe Islands",
+    "ctname": "Torshavn",
+    "lat": 62,
+    "lon": -6.766667,
+    "code": "FO",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Fiji",
+    "ctname": "Suva",
+    "lat": -18.133333333333333,
+    "lon": 178.416667,
+    "code": "FJ",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Finland",
+    "ctname": "Helsinki",
+    "lat": 60.166666666666664,
+    "lon": 24.933333,
+    "code": "FI",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "France",
+    "ctname": "Paris",
+    "lat": 48.86666666666667,
+    "lon": 2.333333,
+    "code": "FR",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "French Polynesia",
+    "ctname": "Papeete",
+    "lat": -17.533333333333335,
+    "lon": -149.566667,
+    "code": "PF",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Gabon",
+    "ctname": "Libreville",
+    "lat": 0.38333333333333336,
+    "lon": 9.450000,
+    "code": "GA",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "The Gambia",
+    "ctname": "Banjul",
+    "lat": 13.45,
+    "lon": -16.566667,
+    "code": "GM",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Georgia",
+    "ctname": "Tbilisi",
+    "lat": 41.68333333333333,
+    "lon": 44.833333,
+    "code": "GE",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Germany",
+    "ctname": "Berlin",
+    "lat": 52.516666666666666,
+    "lon": 13.400000,
+    "code": "DE",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Ghana",
+    "ctname": "Accra",
+    "lat": 5.55,
+    "lon": -0.216667,
+    "code": "GH",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Gibraltar",
+    "ctname": "Gibraltar",
+    "lat": 36.13333333333333,
+    "lon": -5.350000,
+    "code": "GI",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Greece",
+    "ctname": "Athens",
+    "lat": 37.983333333333334,
+    "lon": 23.733333,
+    "code": "GR",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Greenland",
+    "ctname": "Nuuk",
+    "lat": 64.18333333333334,
+    "lon": -51.750000,
+    "code": "GL",
+    "contine": "Central America"
+  },
+  {
+    "cyname": "Grenada",
+    "ctname": "Saint Georges",
+    "lat": 12.05,
+    "lon": -61.750000,
+    "code": "GD",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Guam",
+    "ctname": "Hagatna",
+    "lat": 13.466666666666667,
+    "lon": 144.733333,
+    "code": "GU",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Guatemala",
+    "ctname": "Guatemala City",
+    "lat": 14.616666666666667,
+    "lon": -90.516667,
+    "code": "GT",
+    "contine": "Central America"
+  },
+  {
+    "cyname": "Guernsey",
+    "ctname": "Saint Peter Port",
+    "lat": 49.45,
+    "lon": -2.533333,
+    "code": "GG",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Guinea",
+    "ctname": "Conakry",
+    "lat": 9.5,
+    "lon": -13.700000,
+    "code": "GN",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Guinea-Bissau",
+    "ctname": "Bissau",
+    "lat": 11.85,
+    "lon": -15.583333,
+    "code": "GW",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Guyana",
+    "ctname": "Georgetown",
+    "lat": 6.8,
+    "lon": -58.150000,
+    "code": "GY",
+    "contine": "South America"
+  },
+  {
+    "cyname": "Haiti",
+    "ctname": "Port-au-Prince",
+    "lat": 18.533333333333335,
+    "lon": -72.333333,
+    "code": "HT",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Vatican City",
+    "ctname": "Vatican City",
+    "lat": 41.9,
+    "lon": 12.450000,
+    "code": "VA",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Honduras",
+    "ctname": "Tegucigalpa",
+    "lat": 14.1,
+    "lon": -87.216667,
+    "code": "HN",
+    "contine": "Central America"
+  },
+  {
+    "cyname": "Hungary",
+    "ctname": "Budapest",
+    "lat": 47.5,
+    "lon": 19.083333,
+    "code": "HU",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Iceland",
+    "ctname": "Reykjavik",
+    "lat": 64.15,
+    "lon": -21.950000,
+    "code": "IS",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "India",
+    "ctname": "New Delhi",
+    "lat": 28.6,
+    "lon": 77.200000,
+    "code": "IN",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Indonesia",
+    "ctname": "Jakarta",
+    "lat": -6.166666666666667,
+    "lon": 106.816667,
+    "code": "ID",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Iran",
+    "ctname": "Tehran",
+    "lat": 35.7,
+    "lon": 51.416667,
+    "code": "IR",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Iraq",
+    "ctname": "Baghdad",
+    "lat": 33.333333333333336,
+    "lon": 44.400000,
+    "code": "IQ",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Ireland",
+    "ctname": "Dublin",
+    "lat": 53.31666666666667,
+    "lon": -6.233333,
+    "code": "IE",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Isle of Man",
+    "ctname": "Douglas",
+    "lat": 54.15,
+    "lon": -4.483333,
+    "code": "IM",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Israel",
+    "ctname": "Jerusalem",
+    "lat": 31.766666666666666,
+    "lon": 35.233333,
+    "code": "IL",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Italy",
+    "ctname": "Rome",
+    "lat": 41.9,
+    "lon": 12.483333,
+    "code": "IT",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Jamaica",
+    "ctname": "Kingston",
+    "lat": 18,
+    "lon": -76.800000,
+    "code": "JM",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Japan",
+    "ctname": "Tokyo",
+    "lat": 35.68333333333333,
+    "lon": 139.750000,
+    "code": "JP",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Jersey",
+    "ctname": "Saint Helier",
+    "lat": 49.18333333333333,
+    "lon": -2.100000,
+    "code": "JE",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Jordan",
+    "ctname": "Amman",
+    "lat": 31.95,
+    "lon": 35.933333,
+    "code": "JO",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Kazakhstan",
+    "ctname": "Astana",
+    "lat": 51.166666666666664,
+    "lon": 71.416667,
+    "code": "KZ",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Kenya",
+    "ctname": "Nairobi",
+    "lat": -1.2833333333333332,
+    "lon": 36.816667,
+    "code": "KE",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Kiribati",
+    "ctname": "Tarawa",
+    "lat": -0.8833333333333333,
+    "lon": 169.533333,
+    "code": "KI",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "North Korea",
+    "ctname": "Pyongyang",
+    "lat": 39.016666666666666,
+    "lon": 125.750000,
+    "code": "KP",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "South Korea",
+    "ctname": "Seoul",
+    "lat": 37.55,
+    "lon": 126.983333,
+    "code": "KR",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Kosovo",
+    "ctname": "Pristina",
+    "lat": 42.666666666666664,
+    "lon": 21.166667,
+    "code": "KO",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Kuwait",
+    "ctname": "Kuwait City",
+    "lat": 29.366666666666667,
+    "lon": 47.966667,
+    "code": "KW",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Kyrgyzstan",
+    "ctname": "Bishkek",
+    "lat": 42.86666666666667,
+    "lon": 74.600000,
+    "code": "KG",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Laos",
+    "ctname": "Vientiane",
+    "lat": 17.966666666666665,
+    "lon": 102.600000,
+    "code": "LA",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Latvia",
+    "ctname": "Riga",
+    "lat": 56.95,
+    "lon": 24.100000,
+    "code": "LV",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Lebanon",
+    "ctname": "Beirut",
+    "lat": 33.86666666666667,
+    "lon": 35.500000,
+    "code": "LB",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Lesotho",
+    "ctname": "Maseru",
+    "lat": -29.316666666666666,
+    "lon": 27.483333,
+    "code": "LS",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Liberia",
+    "ctname": "Monrovia",
+    "lat": 6.3,
+    "lon": -10.800000,
+    "code": "LR",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Libya",
+    "ctname": "Tripoli",
+    "lat": 32.88333333333333,
+    "lon": 13.166667,
+    "code": "LY",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Liechtenstein",
+    "ctname": "Vaduz",
+    "lat": 47.13333333333333,
+    "lon": 9.516667,
+    "code": "LI",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Lithuania",
+    "ctname": "Vilnius",
+    "lat": 54.68333333333333,
+    "lon": 25.316667,
+    "code": "LT",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Luxembourg",
+    "ctname": "Luxembourg",
+    "lat": 49.6,
+    "lon": 6.116667,
+    "code": "LU",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Macedonia",
+    "ctname": "Skopje",
+    "lat": 42,
+    "lon": 21.433333,
+    "code": "MK",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Madagascar",
+    "ctname": "Antananarivo",
+    "lat": -18.916666666666668,
+    "lon": 47.516667,
+    "code": "MG",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Malawi",
+    "ctname": "Lilongwe",
+    "lat": -13.966666666666667,
+    "lon": 33.783333,
+    "code": "MW",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Malaysia",
+    "ctname": "Kuala Lumpur",
+    "lat": 3.1666666666666665,
+    "lon": 101.700000,
+    "code": "MY",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Maldives",
+    "ctname": "Male",
+    "lat": 4.166666666666667,
+    "lon": 73.500000,
+    "code": "MV",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Mali",
+    "ctname": "Bamako",
+    "lat": 12.65,
+    "lon": -8.000000,
+    "code": "ML",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Malta",
+    "ctname": "Valletta",
+    "lat": 35.88333333333333,
+    "lon": 14.500000,
+    "code": "MT",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Marshall Islands",
+    "ctname": "Majuro",
+    "lat": 7.1,
+    "lon": 171.383333,
+    "code": "MH",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Mauritania",
+    "ctname": "Nouakchott",
+    "lat": 18.066666666666666,
+    "lon": -15.966667,
+    "code": "MR",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Mauritius",
+    "ctname": "Port Louis",
+    "lat": -20.15,
+    "lon": 57.483333,
+    "code": "MU",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Mexico",
+    "ctname": "Mexico City",
+    "lat": 19.433333333333334,
+    "lon": -99.133333,
+    "code": "MX",
+    "contine": "Central America"
+  },
+  {
+    "cyname": "Federated States of Micronesia",
+    "ctname": "Palikir",
+    "lat": 6.916666666666667,
+    "lon": 158.150000,
+    "code": "FM",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Moldova",
+    "ctname": "Chisinau",
+    "lat": 47,
+    "lon": 28.850000,
+    "code": "MD",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Monaco",
+    "ctname": "Monaco",
+    "lat": 43.733333333333334,
+    "lon": 7.416667,
+    "code": "MC",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Mongolia",
+    "ctname": "Ulaanbaatar",
+    "lat": 47.916666666666664,
+    "lon": 106.916667,
+    "code": "MN",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Montenegro",
+    "ctname": "Podgorica",
+    "lat": 42.43333333333333,
+    "lon": 19.266667,
+    "code": "ME",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Montserrat",
+    "ctname": "Plymouth",
+    "lat": 16.7,
+    "lon": -62.216667,
+    "code": "MS",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Morocco",
+    "ctname": "Rabat",
+    "lat": 34.016666666666666,
+    "lon": -6.816667,
+    "code": "MA",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Mozambique",
+    "ctname": "Maputo",
+    "lat": -25.95,
+    "lon": 32.583333,
+    "code": "MZ",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Namibia",
+    "ctname": "Windhoek",
+    "lat": -22.566666666666666,
+    "lon": 17.083333,
+    "code": "NA",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Nepal",
+    "ctname": "Kathmandu",
+    "lat": 27.716666666666665,
+    "lon": 85.316667,
+    "code": "NP",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Netherlands",
+    "ctname": "Amsterdam",
+    "lat": 52.35,
+    "lon": 4.916667,
+    "code": "NL",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "New Caledonia",
+    "ctname": "Noumea",
+    "lat": -22.266666666666666,
+    "lon": 166.450000,
+    "code": "NC",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "New Zealand",
+    "ctname": "Wellington",
+    "lat": -41.3,
+    "lon": 174.783333,
+    "code": "NZ",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Nicaragua",
+    "ctname": "Managua",
+    "lat": 12.133333333333333,
+    "lon": -86.250000,
+    "code": "NI",
+    "contine": "Central America"
+  },
+  {
+    "cyname": "Niger",
+    "ctname": "Niamey",
+    "lat": 13.516666666666667,
+    "lon": 2.116667,
+    "code": "NE",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Nigeria",
+    "ctname": "Abuja",
+    "lat": 9.083333333333334,
+    "lon": 7.533333,
+    "code": "NG",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Niue",
+    "ctname": "Alofi",
+    "lat": -19.016666666666666,
+    "lon": -169.916667,
+    "code": "NU",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Norfolk Island",
+    "ctname": "Kingston",
+    "lat": -29.05,
+    "lon": 167.966667,
+    "code": "NF",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Northern Mariana Islands",
+    "ctname": "Saipan",
+    "lat": 15.2,
+    "lon": 145.750000,
+    "code": "MP",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Norway",
+    "ctname": "Oslo",
+    "lat": 59.916666666666664,
+    "lon": 10.750000,
+    "code": "NO",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Oman",
+    "ctname": "Muscat",
+    "lat": 23.616666666666667,
+    "lon": 58.583333,
+    "code": "OM",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Pakistan",
+    "ctname": "Islamabad",
+    "lat": 33.68333333333333,
+    "lon": 73.050000,
+    "code": "PK",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Palau",
+    "ctname": "Melekeok",
+    "lat": 7.483333333333333,
+    "lon": 134.633333,
+    "code": "PW",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Panama",
+    "ctname": "Panama City",
+    "lat": 8.966666666666667,
+    "lon": -79.533333,
+    "code": "PA",
+    "contine": "Central America"
+  },
+  {
+    "cyname": "Papua New Guinea",
+    "ctname": "Port Moresby",
+    "lat": -9.45,
+    "lon": 147.183333,
+    "code": "PG",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Paraguay",
+    "ctname": "Asuncion",
+    "lat": -25.266666666666666,
+    "lon": -57.666667,
+    "code": "PY",
+    "contine": "South America"
+  },
+  {
+    "cyname": "Peru",
+    "ctname": "Lima",
+    "lat": -12.05,
+    "lon": -77.050000,
+    "code": "PE",
+    "contine": "South America"
+  },
+  {
+    "cyname": "Philippines",
+    "ctname": "Manila",
+    "lat": 14.6,
+    "lon": 120.966667,
+    "code": "PH",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Pitcairn Islands",
+    "ctname": "Adamstown",
+    "lat": -25.066666666666666,
+    "lon": -130.083333,
+    "code": "PN",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Poland",
+    "ctname": "Warsaw",
+    "lat": 52.25,
+    "lon": 21.000000,
+    "code": "PL",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Portugal",
+    "ctname": "Lisbon",
+    "lat": 38.71666666666667,
+    "lon": -9.133333,
+    "code": "PT",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Puerto Rico",
+    "ctname": "San Juan",
+    "lat": 18.466666666666665,
+    "lon": -66.116667,
+    "code": "PR",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Qatar",
+    "ctname": "Doha",
+    "lat": 25.283333333333335,
+    "lon": 51.533333,
+    "code": "QA",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Romania",
+    "ctname": "Bucharest",
+    "lat": 44.43333333333333,
+    "lon": 26.100000,
+    "code": "RO",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Russia",
+    "ctname": "Moscow",
+    "lat": 55.75,
+    "lon": 37.600000,
+    "code": "RU",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Rwanda",
+    "ctname": "Kigali",
+    "lat": -1.95,
+    "lon": 30.050000,
+    "code": "RW",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Saint Barthelemy",
+    "ctname": "Gustavia",
+    "lat": 17.883333333333333,
+    "lon": -62.850000,
+    "code": "BL",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Saint Helena",
+    "ctname": "Jamestown",
+    "lat": -15.933333333333334,
+    "lon": -5.716667,
+    "code": "SH",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Saint Kitts and Nevis",
+    "ctname": "Basseterre",
+    "lat": 17.3,
+    "lon": -62.716667,
+    "code": "KN",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Saint Lucia",
+    "ctname": "Castries",
+    "lat": 14,
+    "lon": -61.000000,
+    "code": "LC",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Saint Pierre and Miquelon",
+    "ctname": "Saint-Pierre",
+    "lat": 46.766666666666666,
+    "lon": -56.183333,
+    "code": "PM",
+    "contine": "Central America"
+  },
+  {
+    "cyname": "Saint Vincent and the Grenadines",
+    "ctname": "Kingstown",
+    "lat": 13.133333333333333,
+    "lon": -61.216667,
+    "code": "VC",
+    "contine": "Central America"
+  },
+  {
+    "cyname": "Samoa",
+    "ctname": "Apia",
+    "lat": -13.816666666666666,
+    "lon": -171.766667,
+    "code": "WS",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "San Marino",
+    "ctname": "San Marino",
+    "lat": 43.93333333333333,
+    "lon": 12.416667,
+    "code": "SM",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Sao Tome and Principe",
+    "ctname": "Sao Tome",
+    "lat": 0.3333333333333333,
+    "lon": 6.733333,
+    "code": "ST",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Saudi Arabia",
+    "ctname": "Riyadh",
+    "lat": 24.65,
+    "lon": 46.700000,
+    "code": "SA",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Senegal",
+    "ctname": "Dakar",
+    "lat": 14.733333333333333,
+    "lon": -17.633333,
+    "code": "SN",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Serbia",
+    "ctname": "Belgrade",
+    "lat": 44.833333333333336,
+    "lon": 20.500000,
+    "code": "RS",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Seychelles",
+    "ctname": "Victoria",
+    "lat": -4.616666666666667,
+    "lon": 55.450000,
+    "code": "SC",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Sierra Leone",
+    "ctname": "Freetown",
+    "lat": 8.483333333333333,
+    "lon": -13.233333,
+    "code": "SL",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Singapore",
+    "ctname": "Singapore",
+    "lat": 1.2833333333333332,
+    "lon": 103.850000,
+    "code": "SG",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Sint Maarten",
+    "ctname": "Philipsburg",
+    "lat": 18.016666666666666,
+    "lon": -63.033333,
+    "code": "SX",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Slovakia",
+    "ctname": "Bratislava",
+    "lat": 48.15,
+    "lon": 17.116667,
+    "code": "SK",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Slovenia",
+    "ctname": "Ljubljana",
+    "lat": 46.05,
+    "lon": 14.516667,
+    "code": "SI",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Solomon Islands",
+    "ctname": "Honiara",
+    "lat": -9.433333333333334,
+    "lon": 159.950000,
+    "code": "SB",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Somalia",
+    "ctname": "Mogadishu",
+    "lat": 2.066666666666667,
+    "lon": 45.333333,
+    "code": "SO",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "South Africa",
+    "ctname": "Pretoria",
+    "lat": -25.7,
+    "lon": 28.216667,
+    "code": "ZA",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "South Sudan",
+    "ctname": "Juba",
+    "lat": 4.85,
+    "lon": 31.616667,
+    "code": "SS",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Spain",
+    "ctname": "Madrid",
+    "lat": 40.4,
+    "lon": -3.683333,
+    "code": "ES",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Sri Lanka",
+    "ctname": "Colombo",
+    "lat": 6.916666666666667,
+    "lon": 79.833333,
+    "code": "LK",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Sudan",
+    "ctname": "Khartoum",
+    "lat": 15.6,
+    "lon": 32.533333,
+    "code": "SD",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Suriname",
+    "ctname": "Paramaribo",
+    "lat": 5.833333333333333,
+    "lon": -55.166667,
+    "code": "SR",
+    "contine": "South America"
+  },
+  {
+    "cyname": "Svalbard",
+    "ctname": "Longyearbyen",
+    "lat": 78.21666666666667,
+    "lon": 15.633333,
+    "code": "SJ",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Swaziland",
+    "ctname": "Mbabane",
+    "lat": -26.316666666666666,
+    "lon": 31.133333,
+    "code": "SZ",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Sweden",
+    "ctname": "Stockholm",
+    "lat": 59.333333333333336,
+    "lon": 18.050000,
+    "code": "SE",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Switzerland",
+    "ctname": "Bern",
+    "lat": 46.916666666666664,
+    "lon": 7.466667,
+    "code": "CH",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Syria",
+    "ctname": "Damascus",
+    "lat": 33.5,
+    "lon": 36.300000,
+    "code": "SY",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Taiwan",
+    "ctname": "Taipei",
+    "lat": 25.033333333333335,
+    "lon": 121.516667,
+    "code": "TW",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Tajikistan",
+    "ctname": "Dushanbe",
+    "lat": 38.55,
+    "lon": 68.766667,
+    "code": "TJ",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Tanzania",
+    "ctname": "Dar es Salaam",
+    "lat": -6.8,
+    "lon": 39.283333,
+    "code": "TZ",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Thailand",
+    "ctname": "Bangkok",
+    "lat": 13.75,
+    "lon": 100.516667,
+    "code": "TH",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Timor-Leste",
+    "ctname": "Dili",
+    "lat": -8.583333333333334,
+    "lon": 125.600000,
+    "code": "TL",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Togo",
+    "ctname": "Lome",
+    "lat": 6.116666666666666,
+    "lon": 1.216667,
+    "code": "TG",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Tonga",
+    "ctname": "Nukualofa",
+    "lat": -21.133333333333333,
+    "lon": -175.200000,
+    "code": "TO",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Trinidad and Tobago",
+    "ctname": "Port of Spain",
+    "lat": 10.65,
+    "lon": -61.516667,
+    "code": "TT",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Tunisia",
+    "ctname": "Tunis",
+    "lat": 36.8,
+    "lon": 10.183333,
+    "code": "TN",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Turkey",
+    "ctname": "Ankara",
+    "lat": 39.93333333333333,
+    "lon": 32.866667,
+    "code": "TR",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Turkmenistan",
+    "ctname": "Ashgabat",
+    "lat": 37.95,
+    "lon": 58.383333,
+    "code": "TM",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Turks and Caicos Islands",
+    "ctname": "Grand Turk",
+    "lat": 21.466666666666665,
+    "lon": -71.133333,
+    "code": "TC",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Tuvalu",
+    "ctname": "Funafuti",
+    "lat": -8.516666666666667,
+    "lon": 179.216667,
+    "code": "TV",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Uganda",
+    "ctname": "Kampala",
+    "lat": 0.31666666666666665,
+    "lon": 32.550000,
+    "code": "UG",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Ukraine",
+    "ctname": "Kyiv",
+    "lat": 50.43333333333333,
+    "lon": 30.516667,
+    "code": "UA",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "United Arab Emirates",
+    "ctname": "Abu Dhabi",
+    "lat": 24.466666666666665,
+    "lon": 54.366667,
+    "code": "AE",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "United Kingdom",
+    "ctname": "London",
+    "lat": 51.5,
+    "lon": -0.083333,
+    "code": "GB",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "United States",
+    "ctname": "Washington",
+    "lat": 38.883333,
+    "lon": -77.000000,
+    "code": "US",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Uruguay",
+    "ctname": "Montevideo",
+    "lat": -34.85,
+    "lon": -56.166667,
+    "code": "UY",
+    "contine": "South America"
+  },
+  {
+    "cyname": "Uzbekistan",
+    "ctname": "Tashkent",
+    "lat": 41.31666666666667,
+    "lon": 69.250000,
+    "code": "UZ",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Vanuatu",
+    "ctname": "Port-Vila",
+    "lat": -17.733333333333334,
+    "lon": 168.316667,
+    "code": "VU",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Venezuela",
+    "ctname": "Caracas",
+    "lat": 10.483333333333333,
+    "lon": -66.866667,
+    "code": "VE",
+    "contine": "South America"
+  },
+  {
+    "cyname": "Vietnam",
+    "ctname": "Hanoi",
+    "lat": 21.033333333333335,
+    "lon": 105.850000,
+    "code": "VN",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "US Virgin Islands",
+    "ctname": "Charlotte Amalie",
+    "lat": 18.35,
+    "lon": -64.933333,
+    "code": "VI",
+    "contine": "North America"
+  },
+  {
+    "cyname": "Wallis and Futuna",
+    "ctname": "Mata-Utu",
+    "lat": -13.95,
+    "lon": -171.933333,
+    "code": "WF",
+    "contine": "Australia"
+  },
+  {
+    "cyname": "Yemen",
+    "ctname": "Sanaa",
+    "lat": 15.35,
+    "lon": 44.200000,
+    "code": "YE",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Zambia",
+    "ctname": "Lusaka",
+    "lat": -15.416666666666666,
+    "lon": 28.283333,
+    "code": "ZM",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Zimbabwe",
+    "ctname": "Harare",
+    "lat": -17.816666666666666,
+    "lon": 31.033333,
+    "code": "ZW",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Antarctica",
+    "ctname": "N/A",
+    "lat": 0,
+    "lon": 0.000000,
+    "code": "AQ",
+    "contine": "Antarctica"
+  },
+  {
+    "cyname": "Northern Cyprus",
+    "ctname": "North Nicosia",
+    "lat": 35.183333,
+    "lon": 33.366667,
+    "code": "NULL",
+    "contine": "Europe"
+  },
+  {
+    "cyname": "Hong Kong",
+    "ctname": "N/A",
+    "lat": 0,
+    "lon": 0.000000,
+    "code": "HK",
+    "contine": "Asia"
+  },
+  {
+    "cyname": "Heard Island and McDonald Islands",
+    "ctname": "N/A",
+    "lat": 0,
+    "lon": 0.000000,
+    "code": "HM",
+    "contine": "Antarctica"
+  },
+  {
+    "cyname": "British Indian Ocean Territory",
+    "ctname": "Diego Garcia",
+    "lat": -7.3,
+    "lon": 72.400000,
+    "code": "IO",
+    "contine": "Africa"
+  },
+  {
+    "cyname": "Macau",
+    "ctname": "N/A",
+    "lat": 0,
+    "lon": 0.000000,
+    "code": "MO",
+    "contine": "Asia"
+  }
+]

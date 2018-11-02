@@ -763,6 +763,7 @@ namespace Prism.Controllers
             return View();
         }
 
+
         public JsonResult ShipmentLBSDistribution()
         {
             var ssdate = Request.Form["sdate"];
@@ -791,34 +792,79 @@ namespace Prism.Controllers
                 enddate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
             }
 
+            var capitaldict = CapitalData.LoadCapitialData(this);
+            var WUXI = new CapitalData();
+            WUXI.code = "CN";
+            WUXI.ctname = "wux";
+            WUXI.lat = 31.5653;
+            WUXI.lon = 120.327;
+
             var chartarray = new List<object>();
             var parallelshiplbsdata = ShipLBSData.LoadShipdataLBS(SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"),this);
             var maxval = 2.0;
+            var capitallist = new List<object>();
+
+
             foreach (var item in parallelshiplbsdata)
             {
                 if (item.value > maxval)
                 { maxval = item.value; }
+
+                if (item.value > 1 && capitaldict.ContainsKey(item.code))
+                {
+                    capitallist.Add(new {
+                        id = capitaldict[item.code].ctname,
+                        lat = capitaldict[item.code].lat,
+                        lon = capitaldict[item.code].lon,
+                    });
+
+                }
             }
+            capitallist.Add(new
+            {
+                id = WUXI.ctname,
+                lat = WUXI.lat,
+                lon = WUXI.lon,
+            });
             chartarray.Add(new
             {
                 id = "ship_para_lbs_id",
                 title = "Parallel Product Shipment Distribution",
                 data = parallelshiplbsdata,
+                capitallist = capitallist,
                 maxval = maxval
             });
 
             var tunableshiplbsdata = ShipLBSData.LoadShipdataLBS(SHIPPRODTYPE.OPTIUM, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
             maxval = 2.0;
+            capitallist = new List<object>();
             foreach (var item in tunableshiplbsdata)
             {
                 if (item.value > maxval)
                 { maxval = item.value; }
+                if (item.value > 1 && capitaldict.ContainsKey(item.code))
+                {
+                    capitallist.Add(new
+                    {
+                        id = capitaldict[item.code].ctname,
+                        lat = capitaldict[item.code].lat,
+                        lon = capitaldict[item.code].lon,
+                    });
+
+                }
             }
+            capitallist.Add(new
+            {
+                id = WUXI.ctname,
+                lat = WUXI.lat,
+                lon = WUXI.lon,
+            });
             chartarray.Add(new
             {
                 id = "ship_tunable_lbs_id",
                 title = "Tunable Product Shipment Distribution",
                 data = tunableshiplbsdata,
+                capitallist = capitallist,
                 maxval = maxval
             });
 

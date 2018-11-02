@@ -591,41 +591,38 @@
             chart: {
                 map: 'custom/world'
             },
-
             title: {
                 text: col_data.title
             },
-
-            legend: {
-                title: {
-                    text: 'Shipment QTY',
-                    style: {
-                        color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
-                    }
-                }
-            },
-
             mapNavigation: {
                 enabled: true,
                 buttonOptions: {
                     verticalAlign: 'bottom'
                 }
             },
-
             tooltip: {
                 backgroundColor: 'none',
                 borderWidth: 0,
                 shadow: false,
                 useHTML: true,
                 padding: 0,
-                pointFormat: '<span class="f32"><span class="flag {point.properties.hc-key}">' +
-                    '</span></span> {point.name}<br>' +
-                    '<span style="font-size:24px">{point.value} PCS</span>',
+                formatter: function () {
+                    if (this.series.name == 'Shipment QTY')
+                    {
+                        return '<b>' + this.series.name + '</b><br>' +
+                            '<span class="f32"><span class="flag ' + this.point.properties['hc-key'] + '">' + '</span></span> ' + this.point.name + '<br>' +
+                            '<span style="font-size:24px">'+ this.point.value+' PCS</span>';
+                    }
+                },
                 positioner: function () {
                     return { x: 0, y: 250 };
                 }
             },
-
+            plotOptions: {
+                mapline: {
+                    colorAxis: false
+                }
+            },
             colorAxis: {
                 min: 1,
                 max: col_data.maxval,
@@ -646,11 +643,63 @@
                     hover: {
                         color: '#a4edba'
                     }
+                },
+                legend: {
+                    title: {
+                        text: 'Shipment QTY',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.textColor) || 'black'
+                        }
+                    }
                 }
-            }]
+            },
+            {
+                type: 'mappoint',
+                name: 'Cities',
+                dataLabels: {
+                    format: '{point.id}'
+                },
+                marker: {
+                    enabled:false
+                },
+                states: {
+                    hover: {
+                        enabled:false
+                    }
+                },
+                showInLegend:true,
+                data: col_data.capitallist
+            }
+            ]
         };
+        var chart = Highcharts.mapChart(col_data.id, options);
 
-        Highcharts.mapChart(col_data.id, options);
+        function pointsToPath(from, to) {
+            var arcPointX = (from.x + to.x) / 1.95,
+                arcPointY = (from.y + to.y) / 1.95;
+            return 'M' + from.x + ',' + from.y + 'Q' + arcPointX + ' ' + arcPointY +
+                    ',' + to.x + ' ' + to.y;
+        }
+        var wux = chart.get('wux');
+        var pathdata = new Array();
+
+        $.each(col_data.capitallist, function (i, val) {
+            if (val.id != 'wux')
+            {
+                pathdata.push({
+                    id: 'wux - ' + val.id,
+                    path: pointsToPath(wux, chart.get(val.id))
+                });
+            }
+        });
+
+        chart.addSeries({
+                name: 'ShipPath',
+                type: 'mapline',
+                lineWidth: 1,
+                color: '#f15c80',
+                data: pathdata
+            });
     }
 
 
