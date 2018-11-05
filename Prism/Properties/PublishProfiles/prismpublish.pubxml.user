@@ -13,16 +13,19 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/22/2013 08:43:40</publishTime>
     </File>
     <File Include="bin/App_global.asax.compiled">
-      <publishTime>10/18/2018 10:19:23</publishTime>
+      <publishTime>11/02/2018 13:18:35</publishTime>
     </File>
     <File Include="bin/App_global.asax.dll">
-      <publishTime>10/18/2018 10:19:22</publishTime>
+      <publishTime>11/02/2018 13:18:35</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>03/02/2015 09:32:26</publishTime>
     </File>
     <File Include="bin/EntityFramework.SqlServer.dll">
       <publishTime>03/02/2015 09:32:26</publishTime>
+    </File>
+    <File Include="bin/HtmlAgilityPack.dll">
+      <publishTime>10/01/2018 17:31:40</publishTime>
     </File>
     <File Include="bin/ICSharpCode.SharpZipLib.dll">
       <publishTime>01/03/2011 14:16:38</publishTime>
@@ -85,10 +88,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/27/2012 13:00:52</publishTime>
     </File>
     <File Include="bin/Prism.dll">
-      <publishTime>10/18/2018 10:18:27</publishTime>
+      <publishTime>11/02/2018 13:17:57</publishTime>
     </File>
     <File Include="bin/RestSharp.dll">
-      <publishTime>06/10/2018 15:28:24</publishTime>
+      <publishTime>10/15/2018 17:58:54</publishTime>
     </File>
     <File Include="bin/roslyn/csc.exe">
       <publishTime>06/18/2015 20:19:46</publishTime>
@@ -1554,6 +1557,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Content/SCRAP-RATE.css">
       <publishTime>07/17/2018 11:40:59</publishTime>
     </File>
+    <File Include="Content/shipment.css">
+      <publishTime>10/30/2018 10:58:51</publishTime>
+    </File>
     <File Include="Content/Site.css">
       <publishTime>06/28/2018 10:16:47</publishTime>
     </File>
@@ -1582,10 +1588,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 16:58:51</publishTime>
     </File>
     <File Include="packages.config">
-      <publishTime>06/28/2018 10:00:10</publishTime>
+      <publishTime>10/23/2018 15:04:38</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>10/18/2018 10:18:45</publishTime>
+      <publishTime>11/02/2018 13:18:13</publishTime>
     </File>
     <File Include="Scripts/ajaxfileupload.js">
       <publishTime>06/28/2018 10:27:19</publishTime>
@@ -1658,6 +1664,42 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="Scripts/highcharts.js">
       <publishTime>09/30/2018 08:21:51</publishTime>
+    </File>
+    <File Include="Scripts/highmaps/capitals.json">
+      <publishTime>11/01/2018 16:58:12</publishTime>
+    </File>
+    <File Include="Scripts/highmaps/data.js">
+      <publishTime>10/31/2018 09:09:25</publishTime>
+    </File>
+    <File Include="Scripts/highmaps/exporting.js">
+      <publishTime>10/31/2018 09:09:26</publishTime>
+    </File>
+    <File Include="Scripts/highmaps/flags32.css">
+      <publishTime>10/31/2018 09:09:27</publishTime>
+    </File>
+    <File Include="Scripts/highmaps/flags32.png">
+      <publishTime>10/31/2018 14:05:52</publishTime>
+    </File>
+    <File Include="Scripts/highmaps/highmap.css">
+      <publishTime>10/31/2018 14:07:02</publishTime>
+    </File>
+    <File Include="Scripts/highmaps/jquery-3.1.1.min.js">
+      <publishTime>10/31/2018 09:09:28</publishTime>
+    </File>
+    <File Include="Scripts/highmaps/map.js">
+      <publishTime>10/31/2018 13:53:05</publishTime>
+    </File>
+    <File Include="Scripts/highmaps/offline-exporting.js">
+      <publishTime>10/31/2018 09:09:29</publishTime>
+    </File>
+    <File Include="Scripts/highmaps/proj4.js">
+      <publishTime>11/01/2018 17:19:55</publishTime>
+    </File>
+    <File Include="Scripts/highmaps/world.js">
+      <publishTime>10/31/2018 09:09:31</publishTime>
+    </File>
+    <File Include="Scripts/highmaps/world.json">
+      <publishTime>11/01/2018 10:14:53</publishTime>
     </File>
     <File Include="Scripts/HPU.js">
       <publishTime>10/11/2018 11:47:41</publishTime>
@@ -1758,6 +1800,36 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Scripts/Scrap-Rate.js">
       <publishTime>10/18/2018 08:50:43</publishTime>
     </File>
+    <File Include="Scripts/ShipCustomer.cfg">
+      <publishTime>10/30/2018 10:38:28</publishTime>
+    </File>
+    <File Include="Scripts/shipment.js">
+      <publishTime>11/02/2018 11:22:26</publishTime>
+    </File>
+    <File Include="Scripts/tooltipster/css/tooltipster.bundle.css">
+      <publishTime>10/30/2018 10:11:01</publishTime>
+    </File>
+    <File Include="Scripts/tooltipster/css/tooltipster.bundle.min.css">
+      <publishTime>10/30/2018 10:11:01</publishTime>
+    </File>
+    <File Include="Scripts/tooltipster/css/tooltipster.main.css">
+      <publishTime>10/30/2018 10:11:01</publishTime>
+    </File>
+    <File Include="Scripts/tooltipster/css/tooltipster.main.min.css">
+      <publishTime>10/30/2018 10:11:01</publishTime>
+    </File>
+    <File Include="Scripts/tooltipster/js/tooltipster.bundle.js">
+      <publishTime>10/30/2018 10:10:44</publishTime>
+    </File>
+    <File Include="Scripts/tooltipster/js/tooltipster.bundle.min.js">
+      <publishTime>10/30/2018 10:10:45</publishTime>
+    </File>
+    <File Include="Scripts/tooltipster/js/tooltipster.main.js">
+      <publishTime>10/30/2018 10:10:45</publishTime>
+    </File>
+    <File Include="Scripts/tooltipster/js/tooltipster.main.min.js">
+      <publishTime>10/30/2018 10:10:45</publishTime>
+    </File>
     <File Include="Scripts/TunableIgnoreTest.cfg">
       <publishTime>10/11/2018 15:46:27</publishTime>
     </File>
@@ -1768,13 +1840,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>07/30/2018 15:28:21</publishTime>
     </File>
     <File Include="Scripts/YIELD.js">
-      <publishTime>10/17/2018 14:02:03</publishTime>
+      <publishTime>10/23/2018 10:00:37</publishTime>
     </File>
     <File Include="Scripts/YieldData.cfg">
-      <publishTime>10/17/2018 13:35:40</publishTime>
+      <publishTime>10/23/2018 10:20:26</publishTime>
     </File>
     <File Include="Scripts/_references.js">
-      <publishTime>10/17/2018 10:45:04</publishTime>
+      <publishTime>11/01/2018 17:19:57</publishTime>
     </File>
     <File Include="userfiles/ImageUpload.ashx">
       <publishTime>07/10/2018 16:28:54</publishTime>
@@ -1837,7 +1909,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 09:14:37</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
-      <publishTime>10/17/2018 14:35:51</publishTime>
+      <publishTime>10/30/2018 11:37:43</publishTime>
     </File>
     <File Include="Views/Shared/_LoginPartial.cshtml">
       <publishTime>07/10/2018 16:29:19</publishTime>
@@ -1845,20 +1917,29 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/Shared/_VideoRecordModal.cshtml">
       <publishTime>07/30/2018 15:31:47</publishTime>
     </File>
+    <File Include="Views/Shipment/LBSDistribution.cshtml">
+      <publishTime>11/01/2018 17:20:33</publishTime>
+    </File>
+    <File Include="Views/Shipment/OTDData.cshtml">
+      <publishTime>10/30/2018 16:25:59</publishTime>
+    </File>
+    <File Include="Views/Shipment/ShipmentData.cshtml">
+      <publishTime>10/30/2018 15:57:55</publishTime>
+    </File>
     <File Include="Views/Web.config">
       <publishTime>07/10/2018 16:29:44</publishTime>
     </File>
     <File Include="Views/Yield/DepartmentYield.cshtml">
-      <publishTime>10/15/2018 11:11:28</publishTime>
+      <publishTime>10/24/2018 17:29:45</publishTime>
     </File>
     <File Include="Views/Yield/ProductYield.cshtml">
-      <publishTime>10/15/2018 16:04:06</publishTime>
+      <publishTime>10/24/2018 17:29:59</publishTime>
     </File>
     <File Include="Views/_ViewStart.cshtml">
       <publishTime>06/28/2018 09:14:13</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>10/18/2018 10:18:32</publishTime>
+      <publishTime>11/02/2018 13:18:03</publishTime>
     </File>
   </ItemGroup>
 </Project>

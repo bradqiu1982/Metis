@@ -88,9 +88,9 @@ namespace Prism.Controllers
 
 
             var lastdidx = shipdatelist.Count - 1;
-            var title = shipdatelist[0] + " ~ " + shipdatelist[lastdidx] + " " + producttype + " Shipment Distribution vs DPPM (" + rate + ")";
+            var title = shipdatelist[0] + " ~ " + shipdatelist[lastdidx] + " " + producttype + " Shipment Distribution vs VCSEL DPPM (" + rate + ")";
             if (vcselrmacntdict.Count == 0)
-            { title = shipdatelist[0] + " ~ " + shipdatelist[lastdidx] + " " + producttype + " Shipment Distribution (" + rate + ")"; }
+            { title = shipdatelist[0] + " ~ " + shipdatelist[lastdidx] + " " + producttype + " Shipment Distribution  vs DPPM  (" + rate + ")"; }
 
             var xdata = new List<string>();
             var ydata = new List<object>();
@@ -161,25 +161,210 @@ namespace Prism.Controllers
                 });
             }
 
-            //ddata = new List<double>();
-            //foreach (var x in shipdatelist)
-            //{
-            //    if (allrmacntdict.ContainsKey(x))
-            //    {
-            //        ddata.Add(Math.Round((double)allrmacntdict[x] / datecntdict[x] * 1000000, 0));
-            //    }
-            //    else
-            //    {
-            //        ddata.Add(0.0);
-            //    }
-            //}
-            //ydata.Add(new
-            //{
-            //    name = "ALL RMA DPPM",
-            //    type = "line",
-            //    data = ddata,
-            //    yAxis = 1
-            //});
+            if (allrmacntdict.Count > 0)
+            {
+                var ddata = new List<double>();
+                foreach (var x in shipdatelist)
+                {
+                    if (allrmacntdict.ContainsKey(x))
+                    {
+                        ddata.Add(Math.Round((double)allrmacntdict[x] / datecntdict[x] * 1000000, 0));
+                    }
+                    else
+                    {
+                        ddata.Add(0.0);
+                    }
+                }
+                ydata.Add(new
+                {
+                    name = "ALL RMA DPPM",
+                    type = "line",
+                    data = ddata,
+                    yAxis = 1
+                });
+            }
+
+            return new
+            {
+                id = id,
+                title = title,
+                xAxis = xAxis,
+                yAxis = yAxis,
+                data = ydata,
+                rate = rate,
+                producttype = producttype,
+                customerrate = customerrate
+            };
+        }
+
+
+        private object GetShipmentQuarterChartData(Dictionary<string, Dictionary<string, double>> shipdata, Dictionary<string, int> allrmacntdict,string rate, string producttype)
+        {
+            var id = "qshipdata_" + rate + "_id";
+            var qshipdict = new Dictionary<string, Dictionary<string, double>>();
+            foreach (var mkv in shipdata)
+            {
+                var q = QuarterCLA.RetrieveQuarterFromDate(DateTime.Parse(mkv.Key));
+                if (qshipdict.ContainsKey(q))
+                {
+                    var cdict = qshipdict[q];
+                    foreach (var ckv in mkv.Value)
+                    {
+                        if (cdict.ContainsKey(ckv.Key))
+                        {
+                            cdict[ckv.Key] += ckv.Value;
+                        }
+                        else
+                        {
+                            cdict.Add(ckv.Key, ckv.Value);
+                        }
+                    }
+                }
+                else
+                {
+                    var cdict = new Dictionary<string, double>();
+                    foreach (var ckv in mkv.Value)
+                    {
+                        cdict.Add(ckv.Key, ckv.Value);
+                    }
+                    qshipdict.Add(q, cdict);
+                }
+            }
+
+            var qrmacntdict = new Dictionary<string, int>();
+            foreach (var rkv in allrmacntdict)
+            {
+                var q = QuarterCLA.RetrieveQuarterFromDate(DateTime.Parse(rkv.Key));
+                if (qrmacntdict.ContainsKey(q))
+                {
+                    qrmacntdict[q] += rkv.Value;
+                }
+                else
+                {
+                    qrmacntdict.Add(q, rkv.Value);
+                }
+            }
+
+
+            var shipdatelist = qshipdict.Keys.ToList();
+            shipdatelist.Sort(delegate (string obj1, string obj2)
+            {
+                var d1 = QuarterCLA.RetrieveDateFromQuarter(obj1)[0];
+                var d2 = QuarterCLA.RetrieveDateFromQuarter(obj2)[0];
+                return d1.CompareTo(d2);
+            });
+
+
+            var datecntdict = new Dictionary<string, double>();
+            foreach (var kv in qshipdict)
+            {
+                var totle = 0.0;
+                foreach (var nd in kv.Value)
+                {
+                    totle = totle + nd.Value;
+                }
+                datecntdict.Add(kv.Key, totle);
+            }
+
+            var colorlist = new string[] { "#161525", "#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
+                , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
+                , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
+
+            var namelist = qshipdict[shipdatelist[0]].Keys.ToList();
+
+            var custsumpair = new List<KeyValuePair<string, double>>();
+            foreach (var name in namelist)
+            {
+                var namecnt = new List<double>();
+                foreach (var x in shipdatelist)
+                {
+                    namecnt.Add(qshipdict[x][name]);
+                }
+                custsumpair.Add(new KeyValuePair<string, double>(name, namecnt.Sum()));
+            }
+            custsumpair.Sort(delegate (KeyValuePair<string, double> obj1, KeyValuePair<string, double> obj2)
+            { return obj2.Value.CompareTo(obj1.Value); });
+            var newnamelist = new List<string>();
+            foreach (var item in custsumpair)
+            {
+                newnamelist.Add(item.Key);
+            }
+            if (newnamelist.Contains("OTHERS"))
+            { newnamelist.Remove("OTHERS"); newnamelist.Insert(0, "OTHERS"); }
+
+
+            var lastdidx = shipdatelist.Count - 1;
+            var title = shipdatelist[0] + " ~ " + shipdatelist[lastdidx] + " " + producttype + " Shipment Distribution vs DPPM (" + rate + ")";
+
+            var xdata = new List<string>();
+            var ydata = new List<object>();
+
+            var cussumlist = new List<double>();
+
+            foreach (var f_item in shipdatelist)
+            {
+                xdata.Add(f_item);
+            }
+            var xAxis = new { data = xdata };
+
+            var yAxis = new
+            {
+                title = "Amount"
+            };
+
+            var cidx = 0;
+            foreach (var name in newnamelist)
+            {
+                var namecnt = new List<double>();
+                foreach (var x in shipdatelist)
+                {
+                    namecnt.Add(qshipdict[x][name]);
+                }
+
+                cussumlist.Add(namecnt.Sum());
+
+                ydata.Add(new
+                {
+                    name = name,
+                    data = namecnt,
+                    color = colorlist[cidx]
+                });
+                cidx += 1;
+            }
+
+            var totalship = cussumlist.Sum();
+            var customerrate = new List<string>();
+            cidx = 0;
+            foreach (var cs in cussumlist)
+            {
+                customerrate.Add(newnamelist[cidx] + ":" + Math.Round(cs / totalship * 100.0, 2) + "%");
+                cidx += 1;
+            }
+            customerrate.Add(""); customerrate.Add(""); customerrate.Add("");
+
+
+            if (qrmacntdict.Count > 0)
+            {
+                var ddata = new List<double>();
+                foreach (var x in shipdatelist)
+                {
+                    if (qrmacntdict.ContainsKey(x))
+                    {
+                        ddata.Add(Math.Round((double)qrmacntdict[x] / datecntdict[x] * 1000000, 0));
+                    }
+                    else
+                    {
+                        ddata.Add(0.0);
+                    }
+                }
+                ydata.Add(new
+                {
+                    name = "QUARTER RMA DPPM",
+                    type = "line",
+                    data = ddata,
+                    yAxis = 1
+                });
+            }
 
             return new
             {
@@ -192,6 +377,7 @@ namespace Prism.Controllers
                 customerrate = customerrate
             };
         }
+
 
         private object GetOrderQtyChartData(Dictionary<string, Dictionary<string, double>> shipdata, string rate, string producttype)
         {
@@ -540,45 +726,32 @@ namespace Prism.Controllers
                 var allrmacntdict = new Dictionary<string, int>();
                 shipdataarray.Add(GetShipmentChartData(shipdata14g, vcselrmacntdict, allrmacntdict, "10G_14G", SHIPPRODTYPE.PARALLEL));
             }
+
+            var allparallelship = FsrShipData.RetrieveShipDataByMonth("ALL", SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            if (allparallelship.Count > 0)
+            {
+                var vcselrmacntdict = new Dictionary<string, int>();
+                var allrmacntdict = RMADppmData.RetrieveParallelRMACntByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"));
+                shipdataarray.Add(GetShipmentChartData(allparallelship, vcselrmacntdict, allrmacntdict, "ALL", SHIPPRODTYPE.PARALLEL));
+                shipdataarray.Add(GetShipmentQuarterChartData(allparallelship, allrmacntdict, "ALL", SHIPPRODTYPE.PARALLEL));
+            }
+
             var tunableshipdata = FsrShipData.RetrieveShipDataByMonth("",SHIPPRODTYPE.OPTIUM,startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
             if (tunableshipdata.Count > 0)
             {
                 var vcselrmacntdict = new Dictionary<string, int>();
-                var allrmacntdict = new Dictionary<string, int>();
+                var allrmacntdict = RMADppmData.RetrieveTunableRMACntByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"));
                 shipdataarray.Add(GetShipmentChartData(tunableshipdata, vcselrmacntdict, allrmacntdict, "tunable", SHIPPRODTYPE.OPTIUM));
+                shipdataarray.Add(GetShipmentQuarterChartData(tunableshipdata, allrmacntdict, "tunable", SHIPPRODTYPE.OPTIUM));
             }
 
-
-            var orderdata25g = FsrShipData.RetrieveOrderDataByMonth(VCSELRATE.r25G, SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
-            var orderdata14g = FsrShipData.RetrieveOrderDataByMonth(VCSELRATE.r14G, SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
-            var orderdataarray = new List<object>();
-            if (orderdata25g.Count > 0)
-            {
-                //var vcselrmacntdict = VcselRMAData.RetrieveRMACntByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), VCSELRATE.r25G);
-                //var allrmacntdict = ExternalDataCollector.RetrieveRMACntByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), VCSELRATE.r25G);
-                orderdataarray.Add(GetOrderQtyChartData(orderdata25g, VCSELRATE.r25G, SHIPPRODTYPE.PARALLEL));
-            }
-            if (orderdata14g.Count > 0)
-            {
-                //var vcselrmacntdict = VcselRMAData.RetrieveRMACntByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), VCSELRATE.r14G);
-                //var allrmacntdict = ExternalDataCollector.RetrieveRMACntByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), VCSELRATE.r14G);
-                orderdataarray.Add(GetOrderQtyChartData(orderdata14g, "10G_14G", SHIPPRODTYPE.PARALLEL));
-            }
-            var tunableorderdata = FsrShipData.RetrieveOrderDataByMonth("", SHIPPRODTYPE.OPTIUM, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
-            if (tunableorderdata.Count > 0)
-            {
-                //var vcselrmacntdict = VcselRMAData.RetrieveRMACntByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), VCSELRATE.r14G);
-                //var allrmacntdict = ExternalDataCollector.RetrieveRMACntByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), VCSELRATE.r14G);
-                orderdataarray.Add(GetOrderQtyChartData(tunableorderdata, "tunable", SHIPPRODTYPE.OPTIUM));
-            }
 
             var ret = new JsonResult();
             ret.MaxJsonLength = Int32.MaxValue;
             ret.Data = new
             {
                 success = true,
-                shipdataarray = shipdataarray,
-                orderdataarray = orderdataarray
+                shipdataarray = shipdataarray
             };
             return ret;
         }
@@ -666,6 +839,17 @@ namespace Prism.Controllers
             return ret;
         }
 
+        public JsonResult RetrieveRMARawDataByMonth()
+        {
+            var pdtype = Request.Form["pdtype"];
+            var datestr = Request.Form["datestr"];
+            var sdate = datestr + "-01 00:00:00";
+            var edate = DateTime.Parse(sdate).AddMonths(1).AddSeconds(-1).ToString("yyyy-MM-dd HH:mm:ss");
+            var rmadatalist = RMADppmData.RetrieveRMARawDataByMonth(sdate, edate,pdtype);
+            var ret = new JsonResult();
+            ret.Data = new { rmadatalist = rmadatalist };
+            return ret;
+        }
 
         public ActionResult OTDData()
         {
@@ -877,6 +1061,75 @@ namespace Prism.Controllers
             };
             return ret;
         }
+
+        public ActionResult OrderData()
+        {
+            string IP = Request.UserHostName;
+            string compName = DetermineCompName(IP);
+            if (!MachineUserMap.IsLxEmployee(compName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
+
+            return View();
+        }
+
+        public JsonResult OrderDistribution()
+        {
+            var ssdate = Request.Form["sdate"];
+            var sedate = Request.Form["edate"];
+            var startdate = DateTime.Now;
+            var enddate = DateTime.Now;
+
+            if (!string.IsNullOrEmpty(ssdate) && !string.IsNullOrEmpty(sedate))
+            {
+                var sdate = DateTime.Parse(Request.Form["sdate"]);
+                var edate = DateTime.Parse(Request.Form["edate"]);
+                if (sdate < edate)
+                {
+                    startdate = DateTime.Parse(sdate.ToString("yyyy-MM") + "-01 00:00:00");
+                    enddate = DateTime.Parse(edate.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
+                }
+                else
+                {
+                    startdate = DateTime.Parse(edate.ToString("yyyy-MM") + "-01 00:00:00");
+                    enddate = DateTime.Parse(sdate.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
+                }
+            }
+            else
+            {
+                startdate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(-6);
+                enddate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
+            }
+
+
+            var orderdata25g = FsrShipData.RetrieveOrderDataByMonth(VCSELRATE.r25G, SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            var orderdata14g = FsrShipData.RetrieveOrderDataByMonth(VCSELRATE.r14G, SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            var orderdataarray = new List<object>();
+            if (orderdata25g.Count > 0)
+            {
+                orderdataarray.Add(GetOrderQtyChartData(orderdata25g, VCSELRATE.r25G, SHIPPRODTYPE.PARALLEL));
+            }
+            if (orderdata14g.Count > 0)
+            {
+                orderdataarray.Add(GetOrderQtyChartData(orderdata14g, "10G_14G", SHIPPRODTYPE.PARALLEL));
+            }
+            var tunableorderdata = FsrShipData.RetrieveOrderDataByMonth("", SHIPPRODTYPE.OPTIUM, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            if (tunableorderdata.Count > 0)
+            {
+                orderdataarray.Add(GetOrderQtyChartData(tunableorderdata, "tunable", SHIPPRODTYPE.OPTIUM));
+            }
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                success = true,
+                orderdataarray = orderdataarray
+            };
+            return ret;
+        }
+
 
     }
 }

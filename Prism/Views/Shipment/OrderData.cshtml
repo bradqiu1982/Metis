@@ -1,35 +1,23 @@
 ﻿
 @{
-    ViewBag.Title = "Shipment LBS Distribution";
+    ViewBag.Title = "Order Data";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 
 <link type="text/css" rel="stylesheet" href="~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css" />
 <link type="text/css" rel="stylesheet" href="~/Scripts/jquery-autocomplete/jquery.auto-complete.css" />
 <link type="text/css" rel="stylesheet" href="~/Content/shipment.css" />
 <link type="text/css" rel="stylesheet" href="~/Scripts/tooltipster/css/tooltipster.bundle.min.css" />
 
-<link type="text/css" rel="stylesheet" href="~/Scripts/highmaps/highmap.css" />
-<link type="text/css" rel="stylesheet" href="~/Scripts/highmaps/flags32.css" />
-
 <script type="text/javascript" src="~/Scripts/jquery-autocomplete/jquery.auto-complete.min.js"></script>
 <script type="text/javascript" src="~/Scripts/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
 <script type="text/javascript" src="~/Scripts/tooltipster/js/tooltipster.bundle.min.js"></script>
 
-@*<script type="text/javascript" src="~/Scripts/highmaps/jquery-3.1.1.min.js"></script>*@
-<script type="text/javascript" src="~/Scripts/highmaps/proj4.js"></script>
-<script type="text/javascript" src="~/Scripts/highmaps/map.js"></script>
-<script type="text/javascript" src="~/Scripts/highmaps/data.js"></script>
-<script type="text/javascript" src="~/Scripts/highmaps/exporting.js"></script>
-<script type="text/javascript" src="~/Scripts/highmaps/offline-exporting.js"></script>
-<script type="text/javascript" src="~/Scripts/highmaps/world.js"></script>
-
-
-
 <script type="text/javascript" src="~/Scripts/shipment.js"></script>
 <script type="text/javascript">
         $(function(){
-            Shipment.lbsinit();
+            Shipment.orderinit();
         })
 </script>
 
@@ -40,7 +28,7 @@
     </div>
     <div class="nav navbar-nav navbar-left">
         <ol class="breadcrumb" style="width:600px">
-            <li class="active">Shipment LBS</li>
+            <li class="active">Order Distribution</li>
         </ol>
     </div>
 </div>
@@ -58,12 +46,12 @@
                     <span class="item-show">OTD Trend</span>
                 </a>
             </li>
-            <li class="active">
+            <li>
                 <a href="/Shipment/LBSDistribution">
                     <span class="item-show">Shipment LBS</span>
                 </a>
             </li>
-            <li>
+            <li class="active">
                 <a href="/Shipment/OrderData">
                     <span class="item-show">Order Distribution</span>
                 </a>
@@ -109,3 +97,4 @@
         <a id="exportLink"></a>
     </div>
 </div>
+

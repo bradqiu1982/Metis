@@ -23,22 +23,6 @@
                         drawcolumn(val);
                     })
 
-
-                    $.each(output.orderdataarray, function (i, val) {
-                        appendstr = '<div class="col-xs-12">' +
-                               '<div class="v-box" id="' + val.id + '"></div>' +
-                               '</div>';
-                        $('.v-content').append(appendstr);
-                        drawordercolumn(val);
-                    })
-
-                    //$.each(output.otdarray, function (i, val) {
-                    //    appendstr = '<div class="col-xs-12">' +
-                    //           '<div class="v-box" id="' + val.id + '"></div>' +
-                    //           '</div>';
-                    //    $('.v-content').append(appendstr);
-                    //    drawotdline(val);
-                    //})
                 }
             })
         })
@@ -110,8 +94,166 @@
 
     }
 
+    var orderdata = function () {
+        $('.date').datepicker({ autoclose: true, viewMode: "months", minViewMode: "months" });
+        $('body').on('click', '#btn-search', function () {
+            var sdate = $.trim($('#sdate').val());
+            var edate = $.trim($('#edate').val());
+
+            $.post('/Shipment/OrderDistribution', {
+                sdate: sdate,
+                edate: edate
+            }, function (output) {
+                if (output.success) {
+                    $('.v-content').empty();
+                    $('.v-content').append('<div class="col-xs-12"><span class="mysptooltip" title="This is my span tooltip message!"></span></div>');
+
+                    var appendstr = "";
+
+                    $.each(output.orderdataarray, function (i, val) {
+                        appendstr = '<div class="col-xs-12">' +
+                               '<div class="v-box" id="' + val.id + '"></div>' +
+                               '</div>';
+                        $('.v-content').append(appendstr);
+                        drawordercolumn(val);
+                    })
+
+                }
+            })
+        })
+
+    }
 
     var myrmatable = null;
+
+    var showvcesldata = function (event, col_data)
+    {
+        var datestr = event.point.category;
+        var rate = col_data.rate
+        $('#waferval').html(datestr);
+
+        $.post('/Shipment/RetrieveVcselRMARawDataByMonth',
+            {
+                datestr: datestr,
+                rate: rate
+            },
+            function (outputdata) {
+                if (myrmatable) {
+                    myrmatable.destroy();
+                }
+
+                $('#ramrawhead').empty();
+                $('#ramrawbody').empty();
+
+                var appendstr = '<tr>' +
+                                '<th>&nbsp;</th>' +
+                                '<th>SN</th>' +
+                                '<th>PN</th>' +
+                                '<th>Wafer</th>' +
+                                '<th>VcselType</th>' +
+                                '<th>ProductType</th>' +
+                                '<th>Ship Date</th>' +
+                                '<th>Open Date</th>' +
+                                '<th>Customer</th>' +
+                                '<th>Report</th>' +
+                            '</tr>';
+                $('#ramrawhead').append(appendstr);
+
+                $.each(outputdata.waferdatalist, function (i, val) {
+                    var rmalink = '<td> </td>';
+                    if (val.IssueKey != '') {
+                        rmalink = '<td><a href="http://wuxinpi.china.ads.finisar.com/Issue/UpdateIssue?issuekey=' + val.IssueKey + '" target="_blank" >Report</a></td>'
+                    }
+                    var waferlink = '<td> </td>';
+                    if (val.Wafer != '') {
+                        waferlink = '<td><a href="http://wuxinpi.china.ads.finisar.com/DataAnalyze/WaferDistribution?defaultwafer=' + val.Wafer + '" target="_blank" >' + val.Wafer + '</a></td>'
+                    }
+                    appendstr = '<tr>' +
+                        '<td>' + (i + 1) + '</td>' +
+                        '<td>' + val.SN + '</td>' +
+                        '<td>' + val.PN + '</td>' +
+                        waferlink +
+                        '<td>' + val.VcselType + '</td>' +
+                        '<td>' + val.ProductType + '</td>' +
+                        '<td>' + val.ShipDate + '</td>' +
+                        '<td>' + val.RMAOpenDate + '</td>' +
+                        '<td>' + val.Customer + '</td>' +
+                        rmalink
+                        + '</tr>';
+                    $('#ramrawbody').append(appendstr);
+                });
+
+                myrmatable = $('#myrmatable').DataTable({
+                    'iDisplayLength': 50,
+                    'aLengthMenu': [[20, 50, 100, -1],
+                    [20, 50, 100, "All"]],
+                    "aaSorting": [],
+                    "order": [],
+                    dom: 'lBfrtip',
+                    buttons: ['copyHtml5', 'csv', 'excelHtml5']
+                });
+
+                $('#rmarawdata').modal('show')
+            })
+    }
+
+    var showallrmadata = function (event, col_data) {
+        var datestr = event.point.category;
+        var pdtype = col_data.producttype
+        $('#waferval').html(datestr);
+
+        $.post('/Shipment/RetrieveRMARawDataByMonth',
+            {
+                datestr: datestr,
+                pdtype: pdtype
+            },
+            function (outputdata) {
+                if (myrmatable) {
+                    myrmatable.destroy();
+                }
+
+                $('#ramrawhead').empty();
+                $('#ramrawbody').empty();
+
+                var appendstr = '<tr>' +
+                                '<th>&nbsp;</th>' +
+                                '<th>RMA Num</th>' +
+                                '<th>PN</th>' +
+                                '<th>QTY</th>' +
+                                '<th>Issue Date</th>' +
+                                '<th>SN</th>' +
+                                '<th>RootCause</th>' +
+                                '<th>PN Desc</th>' +
+                            '</tr>';
+                $('#ramrawhead').append(appendstr);
+
+                $.each(outputdata.rmadatalist, function (i, val) {
+                    var appendstr = '<tr>' +
+                        '<td>' + (i + 1) + '</td>' +
+                        '<td>' + val.RMANum + '</td>' +
+                        '<td>' + val.PN + '</td>' +
+                        '<td>' + val.QTY + '</td>' +
+                        '<td>' + val.IssueDateStr + '</td>' +
+                        '<td>' + val.SN + '</td>' +
+                        '<td>' + val.RootCause + '</td>' +
+                        '<td>' + val.PNDesc + '</td>' +
+                        '</tr>';
+                    $('#ramrawbody').append(appendstr);
+                });
+
+                myrmatable = $('#myrmatable').DataTable({
+                    'iDisplayLength': 50,
+                    'aLengthMenu': [[20, 50, 100, -1],
+                    [20, 50, 100, "All"]],
+                    "aaSorting": [],
+                    "order": [],
+                    dom: 'lBfrtip',
+                    buttons: ['copyHtml5', 'csv', 'excelHtml5']
+                });
+
+                $('#rmarawdata').modal('show')
+            })
+    }
 
     var drawcolumn = function (col_data) {
         var options = {
@@ -185,57 +327,13 @@
                     cursor: 'pointer',
                     events: {
                         click: function (event) {
-                            var datestr = event.point.category;
-                            var rate = col_data.rate
-                            $('#waferval').html(datestr);
-                            
-                            $.post('/Shipment/RetrieveVcselRMARawDataByMonth',
-                                {
-                                    datestr: datestr,
-                                    rate: rate
-                                },
-                                function (outputdata) {
-                                    if (myrmatable) {
-                                        myrmatable.destroy();
-                                    }
-                                    $('#ramrawbody').empty();
-                                    $.each(outputdata.waferdatalist, function (i, val) {
-                                        var rmalink = '<td> </td>';
-                                        if (val.IssueKey != '') {
-                                            rmalink = '<td><a href="http://wuxinpi.china.ads.finisar.com/Issue/UpdateIssue?issuekey=' + val.IssueKey + '" target="_blank" >Report</a></td>'
-                                        }
-                                        var waferlink = '<td> </td>';
-                                        if (val.Wafer != '') {
-                                            waferlink = '<td><a href="http://wuxinpi.china.ads.finisar.com/DataAnalyze/WaferDistribution?defaultwafer=' + val.Wafer + '" target="_blank" >' + val.Wafer + '</a></td>'
-                                        }
-                                        var appendstr = '<tr>' +
-                                            '<td>' + (i + 1) + '</td>' +
-                                            '<td>' + val.SN + '</td>' +
-                                            '<td>' + val.PN + '</td>' +
-                                            waferlink +
-                                            '<td>' + val.VcselType + '</td>' +
-                                            '<td>' + val.ProductType + '</td>' +
-                                            '<td>' + val.ShipDate + '</td>' +
-                                            '<td>' + val.RMAOpenDate + '</td>' +
-                                            '<td>' + val.Customer + '</td>' +
-                                            rmalink
-                                            + '</tr>';
-                                        $('#ramrawbody').append(appendstr);
-                                    });
-
-                                    myrmatable = $('#myrmatable').DataTable({
-                                        'iDisplayLength': 50,
-                                        'aLengthMenu': [[20, 50, 100, -1],
-                                        [20, 50, 100, "All"]],
-                                        "aaSorting": [],
-                                        "order": [],
-                                        dom: 'lBfrtip',
-                                        buttons: ['copyHtml5', 'csv', 'excelHtml5']
-                                    });
-
-                                    $('#rmarawdata').modal('show')
-                                })
-
+                            if (event.point.series.name.indexOf('VCSEL RMA DPPM') != -1)
+                            {
+                                showvcesldata(event, col_data);
+                            }
+                            if (event.point.series.name.indexOf('ALL RMA DPPM') != -1) {
+                                showallrmadata(event, col_data);
+                            }
                         }
                     }
                 }
@@ -713,7 +811,9 @@
         },
         lbsinit: function () {
             lbsdata();
+        },
+        orderinit: function () {
+            orderdata();
         }
-
     }
 }();

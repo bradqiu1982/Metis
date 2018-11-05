@@ -195,8 +195,9 @@ namespace Prism.Controllers
             return View("HeartBeat");
         }
 
-        public ActionResult ReviewPallelYield()
+        public ActionResult LoadRMADppmData()
         {
+            RMADppmData.LoadRMADppmData();
             return View("HeartBeat");
         }
 

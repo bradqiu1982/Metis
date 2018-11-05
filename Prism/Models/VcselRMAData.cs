@@ -14,7 +14,7 @@ namespace Prism.Models
 
             if (string.Compare(rate, VCSELRATE.r14G, true) == 0)
             { sql = sql + " and ( VcselType = '" + VCSELRATE.r14G + "' or VcselType = '" + VCSELRATE.r10G + "')"; }
-            else
+            else if (string.Compare(rate, VCSELRATE.r25G, true) == 0)
             { sql = sql + " and VcselType = '" + rate + "'"; }
 
             var dict = new Dictionary<string, string>();

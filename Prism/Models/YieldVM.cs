@@ -63,7 +63,7 @@ namespace Prism.Models
             }
             else
             {
-                return year.ToString() + " " + "Q2";
+                return year.ToString() + " " + "Q3";
             }
         }
 

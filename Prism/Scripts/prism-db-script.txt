@@ -198,3 +198,22 @@ CREATE TABLE [dbo].[Prod2PJKey] (
 	[productfamily]   NVARCHAR (300)   DEFAULT ('')  NOT NULL,
 	[pjkey]    NVARCHAR (200)   DEFAULT ('')  NOT NULL
 );
+
+
+CREATE TABLE [dbo].[RMADppmData]
+(
+	[ID]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[RMANum]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[ProductType]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[PN]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[PNDesc]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[SN]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[QTY]    FLOAT DEFAULT (0) NOT NULL,
+	[IssueOpenDate]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL,
+	[RootCause]    NVARCHAR (MAX)   DEFAULT ('') NOT NULL,
+	[Appv_1]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_2]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_3]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_4]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
+);
+
