@@ -133,6 +133,12 @@ namespace Prism.Controllers
                 }
                 catch (Exception ex) { }
 
+                try
+                {
+                    RMADppmData.LoadRMADppmData();
+                }
+                catch (Exception ex) { }
+
                 if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday
                     || DateTime.Now.DayOfWeek == DayOfWeek.Wednesday)
                 {
