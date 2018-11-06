@@ -280,6 +280,59 @@ namespace Prism.Controllers
             return GetYieldTableAndChart(sortedlist, "Product");
         }
 
-        
+        public ActionResult YieldTrend()
+        {
+            return View();
+        }
+
+        public JsonResult YieldTrendData()
+        {
+            var syscfg = CfgUtility.GetSysConfig(this);
+            var pdf = syscfg["YIELDTRENDPDTYPE"];
+            var yieldcfg = CfgUtility.LoadYieldConfig(this);
+            var orderlist = yieldcfg["YIELDORDER"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var sortedlist = new List<ProductYield>();
+            var familydict = new Dictionary<string, bool>();
+
+            var pdyieldlist = YieldVM.RetrieveProductYieldByYF(pdf, this);
+            foreach (var od in orderlist)
+            {
+                foreach (var pdy in pdyieldlist)
+                {
+                    if (pdy.ProductFamily.Contains(od))
+                    {
+                        if (!familydict.ContainsKey(pdy.ProductFamily))
+                        {
+                            familydict.Add(pdy.ProductFamily, true);
+                            sortedlist.Add(pdy);
+                        }
+                    }//end if
+                }//end foreach
+            }//end foreach
+
+            foreach (var pdy in pdyieldlist)
+            {
+                var match = false;
+                foreach (var od in orderlist)
+                {
+                    if (pdy.ProductFamily.Contains(od))
+                    {
+                        match = true;
+                        break;
+                    }
+                }
+                if (!match)
+                {
+                    if (!familydict.ContainsKey(pdy.ProductFamily))
+                    {
+                        familydict.Add(pdy.ProductFamily, true);
+                        sortedlist.Add(pdy);
+                    }
+                }
+            }
+
+            return GetYieldTableAndChart(sortedlist, "Product");
+        }
+
     }
 }

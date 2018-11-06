@@ -834,6 +834,7 @@
     <Content Include="Views\Shipment\OTDData.cshtml" />
     <Content Include="Views\Shipment\LBSDistribution.cshtml" />
     <Content Include="Views\Shipment\OrderData.cshtml" />
+    <Content Include="Views\Yield\YieldTrend.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
