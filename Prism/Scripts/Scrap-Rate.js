@@ -17,7 +17,7 @@
             }
             $.bootstrapLoading.start(options);
 
-            $.post('/DataAnalyze/DepartmentScrapRateData', {
+            $.post('/Scrap/DepartmentScrapRateData', {
                 fyear: fyear,
                 fquarter: fquarter,
                 department: department
@@ -53,7 +53,7 @@
     var costcentscrap = function () {
         //$('.date').datepicker({ autoclose: true, viewMode: "years", minViewMode: "years" });
 
-        $.post('/DataAnalyze/CostCenterAutoCompelete', {}, function (output) {
+        $.post('/Scrap/CostCenterAutoCompelete', {}, function (output) {
             $('.project-no').tagsinput({
                 freeInput: false,
                 typeahead: {
@@ -96,7 +96,7 @@
             }
             $.bootstrapLoading.start(options);
 
-            $.post('/DataAnalyze/CostCenterScrapRateData', {
+            $.post('/Scrap/CostCenterScrapRateData', {
                 fyear: fyear,
                 fquarter: fquarter,
                 costcenter: pj_no
@@ -145,7 +145,7 @@
 
     var productscrap = function () {
 
-        $.post('/DataAnalyze/CostCenterAutoCompelete', {}, function (output) {
+        $.post('/Scrap/CostCenterAutoCompelete', {}, function (output) {
             $('.project-no').tagsinput({
                 freeInput: false,
                 typeahead: {
@@ -188,7 +188,7 @@
             }
             $.bootstrapLoading.start(options);
 
-            $.post('/DataAnalyze/ProductScrapRateData', {
+            $.post('/Scrap/ProductScrapRateData', {
                 fyear: fyear,
                 fquarter: fquarter,
                 costcenter: pj_no

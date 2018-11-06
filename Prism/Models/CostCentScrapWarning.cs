@@ -153,7 +153,7 @@ namespace Prism.Models
                 routevalue.Add("defqrt", fquarter);
 
                 string scheme = ctrl.Url.RequestContext.HttpContext.Request.Url.Scheme;
-                string url = ctrl.Url.Action("CostCenterOfOneDepart", "DataAnalyze",routevalue, scheme);
+                string url = ctrl.Url.Action("CostCenterOfOneDepart", "Scrap", routevalue, scheme);
                 var netcomputername = EmailUtility.RetrieveCurrentMachineName();
                 url = url.Replace("//localhost", "//" + netcomputername);
 

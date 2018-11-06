@@ -197,6 +197,7 @@
     <Compile Include="Controllers\DataAnalyzeController.cs" />
     <Compile Include="Controllers\MachineController.cs" />
     <Compile Include="Controllers\MainController.cs" />
+    <Compile Include="Controllers\ScrapController.cs" />
     <Compile Include="Controllers\ShipmentController.cs" />
     <Compile Include="Controllers\YieldController.cs" />
     <Compile Include="Global.asax.cs">
@@ -809,9 +810,9 @@
     <Content Include="userfiles\Upload.ashx" />
     <Content Include="Views\Main\HeartBeat.cshtml" />
     <Content Include="Views\Main\Index.cshtml" />
-    <Content Include="Views\DataAnalyze\CostCenterScrap.cshtml" />
-    <Content Include="Views\DataAnalyze\DepartmentScrap.cshtml" />
-    <Content Include="Views\DataAnalyze\ProductScrap.cshtml" />
+    <Content Include="Views\Scrap\CostCenterScrap.cshtml" />
+    <Content Include="Views\Scrap\DepartmentScrap.cshtml" />
+    <Content Include="Views\Scrap\ProductScrap.cshtml" />
     <Content Include="Views\DataAnalyze\DepartmentHPU.cshtml" />
     <Content Include="Views\DataAnalyze\PNHPU.cshtml" />
     <Content Include="Views\DataAnalyze\SerialHPU.cshtml" />
