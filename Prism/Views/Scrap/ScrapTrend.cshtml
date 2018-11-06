@@ -1,8 +1,9 @@
 ﻿
 @{
-    ViewBag.Title = "Department Scrap";
+    ViewBag.Title = "ScrapTrend";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 
 <link type="text/css" rel="stylesheet" href="~/Scripts/jquery-autocomplete/jquery.auto-complete.css" />
 <link type="text/css" rel="stylesheet" href="~/Content/SCRAP-RATE.css" />
@@ -15,7 +16,7 @@
 <script type="text/javascript" src="~/Scripts/Scrap-Rate.js"></script>
 <script type="text/javascript">
         $(function(){
-            SCRAPRATE.DEPARTMENTINIT();
+            SCRAPRATE.TRENDINIT();
         })
 </script>
 
@@ -26,7 +27,7 @@
     <div class="nav navbar-nav navbar-left">
         <ol class="breadcrumb" style="width:600px">
             <li><a data-toggle="tooltip" title="Goto Main Page" href="/Main/Index">Main</a></li>
-            <li class="active">Department Scrap</li>
+            <li class="active">Product Scrap</li>
         </ol>
     </div>
 </div>
@@ -34,12 +35,12 @@
 <div class="row">
     <nav class="col-xs-2 nav-sidebar">
         <ul class="nav">
-            <li>
+            <li class="active">
                 <a href="/Scrap/ScrapTrend">
                     <span class="item-show">Scrap Trend</span>
                 </a>
             </li>
-            <li class="active">
+            <li>
                 <a href="/Scrap/DepartmentScrap">
                     <span class="item-show">Department Scrap</span>
                 </a>
@@ -54,35 +55,15 @@
                     <span class="item-show">Product Scrap</span>
                 </a>
             </li>
-            @*<li>
-        <a href="/Scrap/BRJOScrap">
-            <span class="item-show">BR/JO Scrap</span>
-        </a>
-    </li>*@
         </ul>
     </nav>
     <div class="col-xs-10">
         <div class="v-container">
             <div class="v-filter">
-                <div class="row row-margin">
-                    <label class="col-xs-2">Finance Year</label>
-                    <div class="col-xs-2">
-                        @Html.DropDownList("fyearlist", null, new { @id = "fyearlist", @class = "form-control" })
-                    </div>
-                    <div class="col-xs-1 text-center"></div>
-                    <label class="col-xs-2">Finance Quarter</label>
-                    <div class="col-xs-3">
-                        @Html.DropDownList("fquarterlist", null, new { @id = "fquarterlist", @class = "form-control" })
-                    </div>
-                    <div class="col-xs-1 box-search" style="padding-left:0">
-                        <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
-                    </div>
-                </div>
             </div>
             <div class="v-content">
             </div>
             <span id="loadcomplete" name="loadcomplete" class="hide">FALSE</span>
-            <input class="hide" id="department" name="department" type="text" value="@ViewBag.Department"/>
         </div>
     </div>
     <div class="hidden">
@@ -90,3 +71,40 @@
     </div>
 </div>
 
+<div class="modal fade" id="report-alert" tabindex="-1" role="dialog" style="margin-top:10%">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Report</h4>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="reportid" id="reportid">
+                <div class="row" style="padding:10px;">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title" style="display:inline-block">Report</h3>
+                            <span id="editreport" name="editreport" class="glyphicon glyphicon-edit" style="display:inline-block;float:right;color:#428bca;font-size:22px;cursor:pointer;"></span>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row" id="rc-info" style="padding-left:10px;padding-right:10px;">Report</div>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="row">
+                                <div class="col-xs-3 col-xs-offset-6">
+                                    Reporter: <span id="rc-reporter">System</span>
+                                </div>
+                                <div class="col-xs-3">
+                                    <span id="rc-datetime">@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btn-wf-cancel" name="btn-wf-cancel" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

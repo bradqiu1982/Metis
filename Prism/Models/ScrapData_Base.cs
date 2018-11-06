@@ -143,6 +143,70 @@ namespace Prism.Models
             return ret;
         }
 
+        private static List<ScrapData_Base> RetrieveScrapDataByPD(string pd)
+        {
+            var ret = new List<ScrapData_Base>();
+
+            var sql = @"select Scrap_Or_Output,REASON_NAME,Transaction_Value_Usd_1,Week,ASSEMBLY,CrtYear,CrtQuarter from ScrapData_Base 
+                         where ASSEMBLY in ( SELECT DISTINCT [PN]  FROM [BSSupport].[dbo].[PNPlannerCodeMap] where PJName = '<product>' or PlannerCode = '<product>') and Week <> ''";
+            sql = sql.Replace("<product>", pd);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var tempvm = new ScrapData_Base();
+                tempvm.Scrap_Or_Output = Convert.ToString(line[0]);
+                tempvm.REASON_NAME = Convert.ToString(line[1]);
+                tempvm.Transaction_Value_Usd_1 = Convert.ToString(line[2]);
+                tempvm.Week = Convert.ToString(line[3]);
+                tempvm.ASSEMBLY = Convert.ToString(line[4]);
+                tempvm.CrtYear = Convert.ToString(line[5]);
+                tempvm.CrtQuarter = Convert.ToString(line[6]);
+
+                ret.Add(tempvm);
+            }
+            return ret;
+        }
+
+        public static Dictionary<string, List<ScrapData_Base>> RetrieveProductDataByPD(string pd)
+        {
+            var alldata = RetrieveScrapDataByPD(pd);
+            //filter data by week num only have 4 weeks data in a querter will be use
+            var qdict = new Dictionary<string, Dictionary<string, bool>>();
+            foreach (var item in alldata)
+            {
+                var q = item.CrtYear + "-" + item.CrtQuarter;
+                if (qdict.ContainsKey(q))
+                {
+                    var wdict = qdict[q];
+                    if (!wdict.ContainsKey(item.Week))
+                    {
+                        wdict.Add(item.Week, true);
+                    }
+                }
+                else
+                {
+                    var wdict = new Dictionary<string, bool>();
+                    wdict.Add(item.Week, true);
+                    qdict.Add(q, wdict);
+                }
+            }
+
+
+            var newalldata = new List<ScrapData_Base>();
+            foreach (var item in alldata)
+            {
+                var q = item.CrtYear + "-" + item.CrtQuarter;
+                if (qdict[q].Keys.Count > 3)
+                {
+                    newalldata.Add(item);
+                }
+            }
+
+            var ret = new Dictionary<string, List<ScrapData_Base>>();
+            ret.Add(pd, newalldata);
+            return ret;
+        }
+
         public static List<string> RetrievePJCodeByDepartment(string dp,string fyear, string fquarter)
         {
             var ret = new List<string>();
@@ -399,6 +463,60 @@ namespace Prism.Models
                             { tempvm.spcortscrap = ConvertToDouble(item.Transaction_Value_Usd_1); }
                         }
                         sumdata.Add(item.Week, tempvm);
+                    }
+                }//end if
+            }//end foreach
+
+            return sumdata;
+        }
+
+        public static Dictionary<string, SCRAPSUMData> GetSumDataFromRawDataByQuarter(List<ScrapData_Base> onepjdata)
+        {
+            var sumdata = new Dictionary<string, SCRAPSUMData>();
+
+            foreach (var item in onepjdata)
+            {
+                var q = item.CrtYear + "-" + item.CrtQuarter;
+
+                if (string.Compare(item.Scrap_Or_Output, SCRAPOUTPUTSCRAP.OUTPUT, true) == 0
+                    || string.Compare(item.Scrap_Or_Output, SCRAPOUTPUTSCRAP.SCRAP, true) == 0)
+                {
+                    if (sumdata.ContainsKey(q))
+                    {
+                        var tempvm = sumdata[q];
+
+                        if (string.Compare(item.Scrap_Or_Output, SCRAPOUTPUTSCRAP.OUTPUT, true) == 0)
+                        {
+                            tempvm.output += ConvertToDouble(item.Transaction_Value_Usd_1);
+                        }
+                        else if (string.Compare(item.Scrap_Or_Output, SCRAPOUTPUTSCRAP.SCRAP, true) == 0)
+                        {
+                            if (string.Compare(item.REASON_NAME, SCRAPTYPE.GENERALSCRAP, true) == 0)
+                            { tempvm.generalscrap += ConvertToDouble(item.Transaction_Value_Usd_1); }
+                            if (string.Compare(item.REASON_NAME, SCRAPTYPE.NONCHINASCRAP, true) == 0)
+                            { tempvm.nonchinascrap += ConvertToDouble(item.Transaction_Value_Usd_1); }
+                            if (string.Compare(item.REASON_NAME, SCRAPTYPE.SPCORTSCRAP, true) == 0)
+                            { tempvm.spcortscrap += ConvertToDouble(item.Transaction_Value_Usd_1); }
+                        }
+                    }
+                    else
+                    {
+                        var tempvm = new SCRAPSUMData();
+                        tempvm.key = q;
+                        if (string.Compare(item.Scrap_Or_Output, SCRAPOUTPUTSCRAP.OUTPUT, true) == 0)
+                        {
+                            tempvm.output = ConvertToDouble(item.Transaction_Value_Usd_1);
+                        }
+                        else if (string.Compare(item.Scrap_Or_Output, SCRAPOUTPUTSCRAP.SCRAP, true) == 0)
+                        {
+                            if (string.Compare(item.REASON_NAME, SCRAPTYPE.GENERALSCRAP, true) == 0)
+                            { tempvm.generalscrap = ConvertToDouble(item.Transaction_Value_Usd_1); }
+                            if (string.Compare(item.REASON_NAME, SCRAPTYPE.NONCHINASCRAP, true) == 0)
+                            { tempvm.nonchinascrap = ConvertToDouble(item.Transaction_Value_Usd_1); }
+                            if (string.Compare(item.REASON_NAME, SCRAPTYPE.SPCORTSCRAP, true) == 0)
+                            { tempvm.spcortscrap = ConvertToDouble(item.Transaction_Value_Usd_1); }
+                        }
+                        sumdata.Add(q, tempvm);
                     }
                 }//end if
             }//end foreach

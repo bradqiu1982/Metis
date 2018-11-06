@@ -12,7 +12,7 @@ namespace Prism.Models
         {
             var ret = new List<DateTime>();
 
-            var splitstr = quarter.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            var splitstr = quarter.Split(new string[] { " ","-" }, StringSplitOptions.RemoveEmptyEntries);
             var year = Convert.ToInt32(splitstr[0]);
             var q = splitstr[1];
 

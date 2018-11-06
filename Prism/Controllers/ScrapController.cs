@@ -146,6 +146,7 @@ namespace Prism.Controllers
 
             if (sumscraplist.Count > 0)
             {
+                var minYrate = 0.0;
                 var maxYrate = 0.0;
                 var maxYoutput = 0.0;
 
@@ -169,14 +170,18 @@ namespace Prism.Controllers
                     totlescrap.Add(totle);
 
                     output.Add(Math.Round(item.output, 2));
-                    var grate = Math.Round(totle / item.output * 100.0, 2);
-                    if (grate > maxYrate)
-                    { maxYrate = grate + 1.0; }
+                    var trate = Math.Round(totle / item.output * 100.0, 2);
+                    if (trate > maxYrate)
+                    { maxYrate = trate + 1.0; }
                     if (item.output > maxYoutput)
                     { maxYoutput = item.output; }
 
-                    totlescraprate.Add(grate);
-                    generalscraprate.Add(Math.Round(item.generalscrap / item.output * 100.0, 2));
+                    totlescraprate.Add(trate);
+
+                    var grate = Math.Round(item.generalscrap / item.output * 100.0, 2);
+                    if (minYrate > grate)
+                    { minYrate = grate-1; }
+                    generalscraprate.Add(grate);
                     nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
                 }
                 var chartlist = new List<object>();
@@ -193,6 +198,7 @@ namespace Prism.Controllers
                     id = "department_line",
                     title = "Department " + fyear + " " + fquarter + " SCRAP",
                     xAxis = new { data = xlist },
+                    minYrate = minYrate,
                     maxYrate = maxYrate,
                     bugetscraprate = new { name = "Max", color = "#C9302C", data = maxYrate * 2, style = "solid" },
                     bugetscrapval = new { name = "Max", color = "#C9302C", data = maxYoutput * 2, style = "dash" },
@@ -350,6 +356,7 @@ namespace Prism.Controllers
 
                 if (sumscraplist.Count > 0)
                 {
+                    var minYrate = 0.0;
                     var maxYrate = 0.0;
                     var maxYoutput = 0.0;
 
@@ -398,14 +405,18 @@ namespace Prism.Controllers
                         totlescrap.Add(totle);
 
                         output.Add(Math.Round(item.output, 2));
-                        var grate = Math.Round(totle / item.output * 100.0, 2);
-                        if (grate > maxYrate)
-                        { maxYrate = grate + 1.0; }
+                        var trate = Math.Round(totle / item.output * 100.0, 2);
+                        if (trate > maxYrate)
+                        { maxYrate = trate + 1.0; }
                         if (item.output > maxYoutput)
                         { maxYoutput = item.output; }
 
-                        totlescraprate.Add(grate);
-                        generalscraprate.Add(Math.Round(item.generalscrap / item.output * 100.0, 2));
+                        totlescraprate.Add(trate);
+
+                        var grate = Math.Round(item.generalscrap / item.output * 100.0, 2);
+                        if (minYrate > grate)
+                        { minYrate = grate-1; }
+                        generalscraprate.Add(grate);
                         nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
                     }
 
@@ -433,6 +444,7 @@ namespace Prism.Controllers
                         id = title.Replace(" ", "_") + "_line",
                         title = title,
                         xAxis = new { data = xlist },
+                        minYrate = minYrate,
                         maxYrate = maxYrate,
                         bugetscraprate = bugetscraprate,
                         bugetscrapval = bugetscrapval,
@@ -584,6 +596,7 @@ namespace Prism.Controllers
 
                     if (sumscraplist.Count > 0)
                     {
+                        var minYrate = 0.0;
                         var maxYrate = 0.0;
                         var maxYoutput = 0.0;
 
@@ -626,14 +639,18 @@ namespace Prism.Controllers
                             totlescrap.Add(totle);
 
                             output.Add(Math.Round(item.output, 2));
-                            var grate = Math.Round(totle / item.output * 100.0, 2);
-                            if (grate > maxYrate)
-                            { maxYrate = grate + 1.0; }
+                            var trate = Math.Round(totle / item.output * 100.0, 2);
+                            if (trate > maxYrate)
+                            { maxYrate = trate + 1.0; }
                             if (item.output > maxYoutput)
                             { maxYoutput = item.output; }
 
-                            totlescraprate.Add(grate);
-                            generalscraprate.Add(Math.Round(item.generalscrap / item.output * 100.0, 2));
+                            totlescraprate.Add(trate);
+
+                            var grate = Math.Round(item.generalscrap / item.output * 100.0, 2);
+                            if (minYrate > grate)
+                            { minYrate = grate-1; }
+                            generalscraprate.Add(grate);
                             nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
                         }
 
@@ -657,6 +674,7 @@ namespace Prism.Controllers
                             id = title.Replace(" ", "_") + "_line",
                             title = title,
                             xAxis = new { data = xlist },
+                            minYrate = minYrate,
                             maxYrate = maxYrate,
                             bugetscraprate = bugetscraprate,
                             bugetscrapval = bugetscrapval,
@@ -685,5 +703,129 @@ namespace Prism.Controllers
             ret.Data = new { data = vlist };
             return ret;
         }
+
+
+
+        public ActionResult ScrapTrend()
+        {
+            return View();
+        }
+
+        public JsonResult ScrapTrendData()
+        {
+            var scrapratearray = new List<object>();
+            var syscfg = CfgUtility.GetSysConfig(this);
+            var products = syscfg["SCRAPTRENDPD"];
+
+            var productlist = products.Split(new string[] {";"}, StringSplitOptions.RemoveEmptyEntries).ToList();
+            foreach (var prod in productlist)
+            {
+                //var pnplannermap = PNPlannerCodeMap.RetrieveAllMaps();
+                var productdatadict = ScrapData_Base.RetrieveProductDataByPD(prod);
+                foreach (var kv in productdatadict)
+                {
+                    var pd = kv.Key;
+                    var onepddata = kv.Value;
+                    if (onepddata.Count == 0)
+                    { continue; }
+
+                    var sumdata = SCRAPSUMData.GetSumDataFromRawDataByQuarter(onepddata);
+
+                    var qlist = sumdata.Keys.ToList();
+                    qlist.Sort(delegate (string obj1, string obj2)
+                    {
+                        var i1 = QuarterCLA.RetrieveDateFromQuarter(obj1)[0];
+                        var i2 = QuarterCLA.RetrieveDateFromQuarter(obj2)[0];
+                        return i1.CompareTo(i2);
+                    });
+
+                    //var outputiszero = false;
+                    var sumscraplist = new List<SCRAPSUMData>();
+                    foreach (var q in qlist)
+                    {
+                        sumscraplist.Add(sumdata[q]);
+                    }
+
+
+                    if (sumscraplist.Count > 0)
+                    {
+                        var minYrate = 0.0;
+                        var maxYrate = 0.0;
+                        var maxYoutput = 0.0;
+
+                        var xlist = new List<string>();
+                        var generalscrap = new List<double>();
+                        var nonchinascrap = new List<double>();
+                        var totlescrap = new List<double>();
+                        var output = new List<double>();
+                        var generalscraprate = new List<double>();
+                        var nonchinascraprate = new List<double>();
+                        var totlescraprate = new List<double>();
+
+                        foreach (var item in sumscraplist)
+                        {
+                            xlist.Add(item.key);
+                            generalscrap.Add(Math.Round(item.generalscrap, 2));
+                            nonchinascrap.Add(Math.Round(item.nonchinascrap, 2));
+                            var totle = Math.Round(item.generalscrap, 2) + Math.Round(item.nonchinascrap, 2);
+                            totlescrap.Add(totle);
+
+                            output.Add(Math.Round(item.output, 2));
+                            var trate = Math.Round(totle / item.output * 100.0, 2);
+                            if (trate > maxYrate)
+                            { maxYrate = trate + 1.0; }
+                            if (item.output > maxYoutput)
+                            { maxYoutput = item.output; }
+
+                            totlescraprate.Add(trate);
+
+                            var grate = Math.Round(item.generalscrap / item.output * 100.0, 2);
+                            if (minYrate > grate)
+                            { minYrate = grate-1; }
+                            generalscraprate.Add(grate);
+                            nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
+                        }
+
+                        var bugetscraprate = new { name = "Max", color = "#C9302C", data = maxYrate * 2, style = "solid" };
+                        var bugetscrapval = new { name = "Max", color = "#C9302C", data = maxYoutput * 2, style = "dash" };
+
+                        var title = pd + " SCRAP Trend";
+
+                        var chartlist = new List<object>();
+                        chartlist.Add(new { name = "Non-China Scrap Rate", data = nonchinascraprate, type = "line", yAxis = 0, color = "#90ed7d" });
+                        chartlist.Add(new { name = "General Scrap Rate", data = generalscraprate, type = "line", yAxis = 0, color = "#f7a35c" });
+                        chartlist.Add(new { name = "Totle Scrap Rate", data = totlescraprate, type = "line", yAxis = 0, color = "#8085e9" });
+                        chartlist.Add(new { name = "Non-China Scrap", data = nonchinascrap, type = "column", yAxis = 1, color = "#90ed7d" });
+                        chartlist.Add(new { name = "General Scrap", data = generalscrap, type = "column", yAxis = 1, color = "#f7a35c" });
+                        chartlist.Add(new { name = "Totle Scrap", data = totlescrap, type = "column", yAxis = 1, color = "#8085e9" });
+                        chartlist.Add(new { name = "Output", data = output, type = "column", yAxis = 1, color = "#f15c80" });
+
+                        var onepjobj = new
+                        {
+                            id = title.Replace(" ", "_") + "_line",
+                            title = title,
+                            xAxis = new { data = xlist },
+                            minYrate = minYrate,
+                            maxYrate = maxYrate,
+                            bugetscraprate = bugetscraprate,
+                            bugetscrapval = bugetscrapval,
+                            chartlist = chartlist,
+                            url = ""
+                        };
+
+                        scrapratearray.Add(onepjobj);
+                    }//end if
+                }//end foreach
+            }//end foreach
+
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                success = true,
+                scrapratearray = scrapratearray
+            };
+            return ret;
+        }
+
     }
 }

@@ -236,6 +236,54 @@
 
     }
 
+    var scraptrend = function () {
+
+        function searchdata() {
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
+
+            $.post('/Scrap/ScrapTrendData', {
+            }, function (output) {
+                if (output.success) {
+                    $('.v-content').empty();
+                    var appendstr = "";
+
+                    $.each(output.scrapratearray, function (i, val) {
+                        appendstr = '<div class="col-xs-12">' +
+                               '<div class="v-box" id="' + val.id + '"></div>' +
+                               '</div>';
+                        $('.v-content').append(appendstr);
+                        drawline(val,false);
+                    })
+
+                    $.bootstrapLoading.end();
+
+                    //setTimeout(function () {
+                    //    $('#loadcomplete').html('TRUE');
+                    //}, 10000);
+                }
+            })
+        }
+
+        $(function () {
+            searchdata();
+        });
+
+        $('body').on('click', '#editreport', function () {
+            var reportid = $.trim($('#reportid').val());
+            $('#report-alert').modal('hide');
+            window.open("/DataAnalyze/ModifyReport?" + "reportid=" + reportid);
+        })
+
+    }
+
     var drawline = function (line_data, withreport) {
         var options = {
             chart: {
@@ -249,7 +297,7 @@
                 categories: line_data.xAxis.data
             },
             yAxis: [{
-                min: 0,
+                min: line_data.minYrate,
                 max: line_data.maxYrate,
                 title: {
                     text: 'Scrap Rate (%)'
@@ -682,5 +730,8 @@
         PRODUCTINIT: function () {
             productscrap();
         },
+        TRENDINIT: function () {
+            scraptrend();
+        }
     }
 }();
