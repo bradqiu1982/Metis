@@ -135,7 +135,7 @@ namespace Prism.Controllers
 
                 try
                 {
-                    RMADppmData.LoadRMADppmData();
+                    RMARAWData.LoadRMARawData(this);
                 }
                 catch (Exception ex) { }
 
@@ -201,9 +201,9 @@ namespace Prism.Controllers
             return View("HeartBeat");
         }
 
-        public ActionResult LoadRMADppmData()
+        public ActionResult LoadRMARawData()
         {
-            RMADppmData.LoadRMADppmData();
+            RMARAWData.LoadRMARawData(this);
             return View("HeartBeat");
         }
 
