@@ -1142,6 +1142,218 @@ namespace Prism.Controllers
             return ret;
         }
 
+        private int GetWorkingDays(DateTime d1, DateTime d2)
+        {
+            var days = 1;
+            if (d1.DayOfWeek == DayOfWeek.Saturday
+                || d1.DayOfWeek == DayOfWeek.Sunday)
+            { days = 0; }
+
+            var tempd = d1.AddDays(1);
+            while (tempd < d2)
+            {
+                var m = Convert.ToInt32(tempd.ToString("MM"));
+                var d = Convert.ToInt32(tempd.ToString("dd"));
+
+                if (tempd.DayOfWeek == DayOfWeek.Saturday
+                    || tempd.DayOfWeek == DayOfWeek.Sunday
+                    ||(m == 10 && d < 8))
+                {
+                    tempd = tempd.AddDays(1);
+                    continue;
+                }
+                days += 1;
+                tempd = tempd.AddDays(1);
+            }
+
+            return days;
+        }
+
+        private object GetWorkLoadChart(List<RMADppmData> workloaddata, string mark, string producttype)
+        {
+            var wdict = new Dictionary<string, RMADppmData>();
+            //combine same RMA
+            foreach (var item in workloaddata)
+            {
+                if (string.Compare(item.IssueDateStr, "1982-05-06") == 0 || string.Compare(item.InitFARStr, "1982-05-06") == 0)
+                { continue; }
+                if (item.IssueOpenDate > item.InitFAR)
+                { continue; }
+
+                if (wdict.ContainsKey(item.RMANum))
+                {
+                    if (item.InitFAR > wdict[item.RMANum].InitFAR)
+                    { wdict[item.RMANum].InitFAR = item.InitFAR; }
+                }
+                else
+                {
+                    var d = new RMADppmData();
+                    d.RMANum = item.RMANum;
+                    d.IssueOpenDate = item.IssueOpenDate;
+                    d.InitFAR = item.InitFAR;
+                    wdict.Add(item.RMANum,d);
+                }
+            }
+
+            //collect RMA by Quarter
+            var qdict = new Dictionary<string, List<RMADppmData>>();
+            foreach (var kv in wdict)
+            {
+                var q = QuarterCLA.RetrieveQuarterFromDate(kv.Value.IssueOpenDate);
+                if (qdict.ContainsKey(q))
+                {
+                    qdict[q].Add(kv.Value);
+                }
+                else
+                {
+                    var templist = new List<RMADppmData>();
+                    templist.Add(kv.Value);
+                    qdict.Add(q, templist);
+                }
+            }
+
+            var qlist = qdict.Keys.ToList();
+            qlist.Sort(delegate (string q1,string q2) {
+                var d1 = QuarterCLA.RetrieveDateFromQuarter(q1);
+                var d2 = QuarterCLA.RetrieveDateFromQuarter(q2);
+                return d1[0].CompareTo(d2[0]);
+            });
+
+            //start to get chart data
+            var rmacnt = new List<int>();
+            var avgworkload = new List<double>();
+            foreach (var q in qlist)
+            {
+                var wklist = qdict[q];
+                rmacnt.Add(wklist.Count);
+                var sumdays = 0.0;
+                foreach (var wk in wklist)
+                {
+                    sumdays += GetWorkingDays(wk.IssueOpenDate,wk.InitFAR);
+                }
+                avgworkload.Add(Math.Round(sumdays / wklist.Count,2));
+            }
+
+            var id = "wkload_" + mark.Replace(" ", "_") + "_id";
+            var title = mark + " RMA Quarter WorkLoad";
+
+            var colorlist = new string[] { "#161525","#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
+                , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
+                , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
+
+            var wkloadchart = new
+            {
+                type = "line",
+                name = "Avg Spending Days",
+                data = avgworkload,
+                dataLabels = new
+                {
+                    enabled = true
+                },
+                color = colorlist[0]
+            };
+            var rmacntchart = new
+            {
+                type = "column",
+                name = "RMA Count",
+                data = rmacnt,
+                yAxis = 1,
+                color = colorlist[1]
+            };
+            var chartdata = new List<object>();
+            chartdata.Add(rmacntchart);
+            chartdata.Add(wkloadchart);
+
+            return new
+            {
+                id = id,
+                title = title,
+                xdata = qlist,
+                chartdata = chartdata,
+                producttype = producttype
+            };
+
+        }
+
+        public ActionResult RMAWorkLoad()
+        {
+            return View();
+        }
+
+        public JsonResult RMAWorkLoadData()
+        {
+            var ssdate = Request.Form["sdate"];
+            var sedate = Request.Form["edate"];
+            var startdate = DateTime.Now;
+            var enddate = DateTime.Now;
+
+            if (!string.IsNullOrEmpty(ssdate) && !string.IsNullOrEmpty(sedate))
+            {
+                var sdate = DateTime.Parse(Request.Form["sdate"]);
+                var edate = DateTime.Parse(Request.Form["edate"]);
+                if (sdate < edate)
+                {
+                    startdate = DateTime.Parse(sdate.ToString("yyyy-MM") + "-01 00:00:00");
+                    enddate = DateTime.Parse(edate.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
+                }
+                else
+                {
+                    startdate = DateTime.Parse(edate.ToString("yyyy-MM") + "-01 00:00:00");
+                    enddate = DateTime.Parse(sdate.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
+                }
+            }
+            else
+            {
+                startdate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(-6);
+                enddate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
+            }
+
+            var chartarray = new List<object>();
+            var parallelrmadata = RMADppmData.RetrieveRMAWorkLoadDataByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), SHIPPRODTYPE.PARALLEL);
+            var tunablermadata = RMADppmData.RetrieveRMAWorkLoadDataByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), SHIPPRODTYPE.OPTIUM);
+
+            if (parallelrmadata.Count > 0)
+            {
+                chartarray.Add(GetWorkLoadChart(parallelrmadata, "PARALLEL", SHIPPRODTYPE.PARALLEL));
+            }
+            if (tunablermadata.Count > 0)
+            {
+                chartarray.Add(GetWorkLoadChart(tunablermadata, "TUNABLE", SHIPPRODTYPE.OPTIUM));
+            }
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                success = true,
+                chartarray = chartarray
+            };
+            return ret;
+        }
+
+
+        public JsonResult RetrieveRMAWorkLoadDataByMonth()
+        {
+            var pdtype = Request.Form["pdtype"];
+            var datestr = Request.Form["datestr"];
+            var rmadatalist = new List<RMADppmData>();
+            if (datestr.ToUpper().Contains("Q"))
+            {
+                var datelist = QuarterCLA.RetrieveDateFromQuarter(datestr);
+                rmadatalist = RMADppmData.RetrieveRMAWorkLoadDataByMonth(datelist[0].ToString("yyyy-MM-dd HH:mm:ss"), datelist[1].ToString("yyyy-MM-dd HH:mm:ss"), pdtype);
+            }
+            else
+            {
+                var sdate = datestr + "-01 00:00:00";
+                var edate = DateTime.Parse(sdate).AddMonths(1).AddSeconds(-1).ToString("yyyy-MM-dd HH:mm:ss");
+                rmadatalist = RMADppmData.RetrieveRMAWorkLoadDataByMonth(sdate, edate, pdtype);
+            }
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new { rmadatalist = rmadatalist };
+            return ret;
+        }
 
     }
 }

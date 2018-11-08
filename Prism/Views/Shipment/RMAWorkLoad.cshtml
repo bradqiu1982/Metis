@@ -16,7 +16,7 @@
 <script type="text/javascript" src="~/Scripts/shipment.js"></script>
 <script type="text/javascript">
         $(function(){
-            Shipment.init();
+            Shipment.workloadinit();
         })
 </script>
 
@@ -91,12 +91,6 @@
                     <div class="col-xs-1 box-search">
                         <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
                     </div>
-                    @if (ViewBag.IsL9Employee)
-                    {
-                        <div class="col-xs-1">
-                            <input type="button" class="btn btn-success" name="btn-download" id="btn-download" value="Download">
-                        </div>
-                    }
                 </div>
             </div>
             <div class="v-content">

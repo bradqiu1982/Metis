@@ -124,6 +124,34 @@
 
     }
 
+    var rmaworkloaddata = function () {
+        $('.date').datepicker({ autoclose: true, viewMode: "months", minViewMode: "months" });
+        $('body').on('click', '#btn-search', function () {
+            var sdate = $.trim($('#sdate').val());
+            var edate = $.trim($('#edate').val());
+
+            $.post('/Shipment/RMAWorkLoadData', {
+                sdate: sdate,
+                edate: edate
+            }, function (output) {
+                if (output.success) {
+                    $('.v-content').empty();
+                    console.log(output.chartarray);
+                    var appendstr = "";
+
+                    $.each(output.chartarray, function (i, val) {
+                        appendstr = '<div class="col-xs-12">' +
+                               '<div class="v-box" id="' + val.id + '"></div>' +
+                               '</div>';
+                        $('.v-content').append(appendstr);
+                        drawrmaworkloaddline(val);
+                    })
+                }
+            })
+        })
+
+    }
+
     var myrmatable = null;
 
     var showvcesldata = function (event, col_data)
@@ -237,6 +265,64 @@
                         '<td>' + val.SN + '</td>' +
                         '<td>' + val.RootCause + '</td>' +
                         '<td>' + val.PNDesc + '</td>' +
+                        '</tr>';
+                    $('#ramrawbody').append(appendstr);
+                });
+
+                myrmatable = $('#myrmatable').DataTable({
+                    'iDisplayLength': 50,
+                    'aLengthMenu': [[20, 50, 100, -1],
+                    [20, 50, 100, "All"]],
+                    "aaSorting": [],
+                    "order": [],
+                    dom: 'lBfrtip',
+                    buttons: ['copyHtml5', 'csv', 'excelHtml5']
+                });
+
+                $('#rmarawdata').modal('show')
+            })
+    }
+
+    var showworkloadrmadata = function (event, col_data) {
+        var datestr = event.point.category;
+        var pdtype = col_data.producttype
+        $('#waferval').html(datestr);
+
+        $.post('/Shipment/RetrieveRMAWorkLoadDataByMonth',
+            {
+                datestr: datestr,
+                pdtype: pdtype
+            },
+            function (outputdata) {
+                if (myrmatable) {
+                    myrmatable.destroy();
+                }
+
+                $('#ramrawhead').empty();
+                $('#ramrawbody').empty();
+
+                var appendstr = '<tr>' +
+                                '<th>&nbsp;</th>' +
+                                '<th>RMA Num</th>' +
+                                '<th>PN</th>' +
+                                '<th>QTY</th>' +
+                                '<th>Issue OPen</th>' +
+                                '<th>Init FAR</th>' +
+                                '<th>SN</th>' +
+                                '<th>RootCause</th>' +
+                            '</tr>';
+                $('#ramrawhead').append(appendstr);
+
+                $.each(outputdata.rmadatalist, function (i, val) {
+                    var appendstr = '<tr>' +
+                        '<td>' + (i + 1) + '</td>' +
+                        '<td>' + val.RMANum + '</td>' +
+                        '<td>' + val.PN + '</td>' +
+                        '<td>' + val.QTY + '</td>' +
+                        '<td>' + val.IssueDateStr + '</td>' +
+                        '<td>' + val.InitFARStr + '</td>' +
+                        '<td>' + val.SN + '</td>' +
+                        '<td>' + val.RootCause + '</td>' +
                         '</tr>';
                     $('#ramrawbody').append(appendstr);
                 });
@@ -684,6 +770,102 @@
         Highcharts.chart(col_data.id, options);
     }
 
+    var drawrmaworkloaddline = function (col_data) {
+        var options = {
+            chart: {
+                zoomType: 'xy',
+                type: 'line'
+            },
+            title: {
+                text: col_data.title
+            },
+            xAxis: {
+                title: {
+                    text: 'date'
+                },
+                categories: col_data.xdata
+            },
+            legend: {
+                enabled: true,
+            },
+            yAxis: [{
+                title: {
+                    text: 'Days'
+                }
+            },
+            {
+                opposite: true,
+                title: {
+                    text: 'Amount'
+                }
+            }],
+            tooltip: {
+                pointFormat: '{series.name} : <b>{point.y}</b>'
+            },
+            plotOptions: {
+                series: {
+                    cursor: 'pointer',
+                    events: {
+                        click: function (event) {
+                            showworkloadrmadata(event, col_data);
+                        }
+                    }
+                }
+            },
+            series: col_data.chartdata,
+            exporting: {
+                menuItemDefinitions: {
+                    fullscreen: {
+                        onclick: function () {
+                            $('#' + col_data.id).parent().toggleClass('chart-modal');
+                            $('#' + col_data.id).highcharts().reflow();
+                        },
+                        text: 'Full Screen'
+                    },
+                    datalabel: {
+                        onclick: function () {
+                            var labelflag = !this.series[0].options.dataLabels.enabled;
+                            $.each(this.series, function (idx, val) {
+                                var opt = val.options;
+                                opt.dataLabels.enabled = labelflag;
+                                val.update(opt);
+                            })
+                        },
+                        text: 'Data Label'
+                    },
+                    copycharts: {
+                        onclick: function () {
+                            var svg = this.getSVG({
+                                chart: {
+                                    width: this.chartWidth,
+                                    height: this.chartHeight
+                                }
+                            });
+                            var c = document.createElement('canvas');
+                            c.width = this.chartWidth;
+                            c.height = this.chartHeight;
+                            canvg(c, svg);
+                            var dataURL = c.toDataURL("image/png");
+                            //var imgtag = '<img src="' + dataURL + '"/>';
+
+                            var img = new Image();
+                            img.src = dataURL;
+
+                            copyImgToClipboard(img);
+                        },
+                        text: 'copy 2 clipboard'
+                    }
+                },
+                buttons: {
+                    contextButton: {
+                        menuItems: ['fullscreen', 'datalabel', 'copycharts', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG']
+                    }
+                }
+            }
+        };
+        Highcharts.chart(col_data.id, options);
+    }
+
     var drawlbsdistribution = function (col_data)
     {
         var options = {
@@ -815,6 +997,9 @@
         },
         orderinit: function () {
             orderdata();
+        },
+        workloadinit: function () {
+            rmaworkloaddata();
         }
     }
 }();

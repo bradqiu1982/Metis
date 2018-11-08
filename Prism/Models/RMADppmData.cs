@@ -48,6 +48,10 @@ namespace Prism.Models
             return RMARAWData.RetrieveRMARawDataByMonth(sdate, edate, producttype);
         }
 
+        public static List<RMADppmData> RetrieveRMAWorkLoadDataByMonth(string sdate, string edate, string producttype)
+        {
+            return RMARAWData.RetrieveRMAWorkLoadDataByMonth(sdate, edate, producttype);
+        }
 
         //RMA RAW DATA MAP
         //RMANum AppV_B
@@ -70,6 +74,8 @@ namespace Prism.Models
         public double QTY { set; get; }
         public DateTime IssueOpenDate { set; get; }
         public string IssueDateStr { get { return IssueOpenDate.ToString("yyyy-MM-dd"); } }
+        public DateTime InitFAR { set; get; }
+        public string InitFARStr { get { return InitFAR.ToString("yyyy-MM-dd"); } }
         public string RootCause { set; get; }
 
     }

@@ -173,6 +173,46 @@ namespace Prism.Models
             return new List<RMADppmData>();
         }
 
+        private static List<RMADppmData> RetrieveWorkLoadDataByMonth(string sdate, string edate, string productcond)
+        {
+            var ret = new List<RMADppmData>();
+
+            var sql = "select AppV_B,AppV_F,AppV_G,AppV_H,AppV_I,AppV_J,AppV_P,AppV_Y,AppV_R from RMARAWData where AppV_P >= @sdate and AppV_P <=@edate and (<productcond>) order by AppV_B";
+            sql = sql.Replace("<productcond>", productcond);
+            var dict = new Dictionary<string, string>();
+            dict.Add("@sdate", sdate);
+            dict.Add("@edate", edate);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
+            foreach (var line in dbret)
+            {
+                var rootcause = Convert2Str(line[7]);
+                rootcause = rootcause.Length > 48 ? rootcause.Substring(0, 48) : rootcause;
+                var sn = Convert2Str(line[4]);
+                sn = sn.Length > 24 ? sn.Substring(0, 24) : sn;
+
+                var item = new RMADppmData(Convert2Str(line[0]), Convert2Str(line[1]), Convert2Str(line[2])
+                    , Convert2Str(line[3]), sn, Convert2DB(line[5]), Convert2DT(line[6]), rootcause);
+                item.InitFAR = Convert2DT(line[8]);
+                ret.Add(item);
+
+            }
+            return ret;
+        }
+
+        public static List<RMADppmData> RetrieveRMAWorkLoadDataByMonth(string sdate, string edate, string producttype)
+        {
+            if (string.Compare(producttype, SHIPPRODTYPE.PARALLEL, true) == 0)
+            {
+                var productcond = "AppV_F like 'Parallel'";
+                return RetrieveWorkLoadDataByMonth(sdate, edate, productcond);
+            }
+            else if (string.Compare(producttype, SHIPPRODTYPE.OPTIUM, true) == 0)
+            {
+                var productcond = "AppV_F like 'Coherent Transceiver' or AppV_F like 'COHERENT'  or AppV_F like '10G Tunable' or AppV_F like '10G T-XFP' or AppV_F like 'TXFP' ";
+                return RetrieveWorkLoadDataByMonth(sdate, edate, productcond);
+            }
+            return new List<RMADppmData>();
+        }
 
         private static RMARAWData ParseRMARAWDataValue(List<string> line)
         {
