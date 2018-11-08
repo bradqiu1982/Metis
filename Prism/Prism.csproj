@@ -838,6 +838,7 @@
     <Content Include="Views\Shipment\OrderData.cshtml" />
     <Content Include="Views\Yield\YieldTrend.cshtml" />
     <Content Include="Views\Scrap\ScrapTrend.cshtml" />
+    <Content Include="Views\Shipment\RMAWorkLoad.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
