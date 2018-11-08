@@ -185,7 +185,7 @@ namespace Prism.Models
         {
             var ret = new List<MachineRate>();
 
-            var sql = "select MachineMonth, ProductFamily,Machine, WhichTest,SpendTime  from MachinePreData where  <familycond> and WhichTest <> '' order by MachineMonth asc";
+            var sql = "select MachineMonth, ProductFamily,Machine, WhichTest,SpendTime  from MachinePreData where  (<familycond>) and WhichTest <> '' order by MachineMonth asc";
             sql = sql.Replace("<familycond>", familycond);
 
             var qlist = new List<string>();
@@ -269,7 +269,7 @@ namespace Prism.Models
 
             var familylist = new List<string>();
             var familydict = new Dictionary<string, bool>();
-            var sql = "select distinct ProductFamily,MachineMonth from MachinePreData where <familycond> order by MachineMonth desc";
+            var sql = "select distinct ProductFamily,MachineMonth from MachinePreData where (<familycond>) order by MachineMonth desc";
             sql = sql.Replace("<familycond>", familycond);
 
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);

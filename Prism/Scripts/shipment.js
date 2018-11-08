@@ -331,7 +331,8 @@
                             {
                                 showvcesldata(event, col_data);
                             }
-                            if (event.point.series.name.indexOf('ALL RMA DPPM') != -1) {
+                            if (event.point.series.name.indexOf('ALL RMA DPPM') != -1
+                                || event.point.series.name.indexOf('QUARTER RMA DPPM') != -1) {
                                 showallrmadata(event, col_data);
                             }
                         }

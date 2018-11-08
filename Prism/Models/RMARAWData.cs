@@ -112,7 +112,7 @@ namespace Prism.Models
         private static Dictionary<string, int> RetrieveRMACntByMonth(string sdate, string edate, string productcond)
         {
             var ret = new Dictionary<string, int>();
-            var sql = "select AppV_W,AppV_J from RMARAWData where AppV_W >= @sdate and AppV_W <=@edate and AppV_Y <> 'NTF' and  AppV_Y <> '' and  AppV_X <> 'NTF' and  AppV_X <> '' and  AppV_X <> 'ESD' and  AppV_Z <> 'NTF' and  AppV_Z not like '%custom%' and <productcond> ";
+            var sql = "select AppV_W,AppV_J from RMARAWData where AppV_W >= @sdate and AppV_W <=@edate and AppV_Y <> 'NTF' and  AppV_Y <> '' and  AppV_X <> 'NTF' and  AppV_X <> '' and  AppV_X <> 'ESD' and  AppV_Z <> 'NTF' and  AppV_Z not like '%custom%' and (<productcond>) ";
             sql = sql.Replace("<productcond>", productcond);
 
             var dict = new Dictionary<string, string>();
@@ -139,7 +139,7 @@ namespace Prism.Models
         {
             var ret = new List<RMADppmData>();
 
-            var sql = "select AppV_B,AppV_F,AppV_G,AppV_H,AppV_I,AppV_J,AppV_W,AppV_Y from RMARAWData where AppV_W >= @sdate and AppV_W <=@edate and AppV_Y <> 'NTF' and  AppV_Y <> '' and  AppV_X <> 'NTF' and  AppV_X <> '' and  AppV_X <> 'ESD' and  AppV_Z <> 'NTF' and  AppV_Z not like '%custom%' and <productcond> ";
+            var sql = "select AppV_B,AppV_F,AppV_G,AppV_H,AppV_I,AppV_J,AppV_W,AppV_Y from RMARAWData where AppV_W >= @sdate and AppV_W <=@edate and AppV_Y <> 'NTF' and  AppV_Y <> '' and  AppV_X <> 'NTF' and  AppV_X <> '' and  AppV_X <> 'ESD' and  AppV_Z <> 'NTF' and  AppV_Z not like '%custom%' and (<productcond>) order by AppV_W asc";
             sql = sql.Replace("<productcond>", productcond);
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);

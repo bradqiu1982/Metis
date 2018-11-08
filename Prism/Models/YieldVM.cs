@@ -346,7 +346,7 @@ namespace Prism.Models
             //date,whichtest,failure,int
             var firstyielddict = new Dictionary<string, Dictionary<string, Dictionary<string, int>>>();
             var finalyielddict = new Dictionary<string, Dictionary<string, Dictionary<string, int>>>();
-            var sql = "select YieldMonth,ProductFamily,WhichTest,Failure,FailureNum,YieldType from YieldPreData where  <familycond> and WhichTest <> '' order by YieldMonth asc";
+            var sql = "select YieldMonth,ProductFamily,WhichTest,Failure,FailureNum,YieldType from YieldPreData where  (<familycond>) and WhichTest <> '' order by YieldMonth asc";
             sql = sql.Replace("<familycond>", familycond);
 
             var qlist = new List<string>();
@@ -436,7 +436,7 @@ namespace Prism.Models
 
             var familylist = new List<string>();
             var familydict = new Dictionary<string, bool>();
-            var sql = "select distinct ProductFamily,YieldMonth from YieldPreData where <familycond> order by YieldMonth desc";
+            var sql = "select distinct ProductFamily,YieldMonth from YieldPreData where (<familycond>) order by YieldMonth desc";
             sql = sql.Replace("<familycond>", familycond);
 
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
