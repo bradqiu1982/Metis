@@ -71,6 +71,49 @@ namespace Prism.Models
             }
         }
 
+        public static List<List<string>> Page2Data(string html,string tablexpath)
+        {
+            var tabledata = new List<List<string>>();
+            var doc = new HtmlAgilityPack.HtmlDocument();
+            doc.LoadHtml(html);
+
+            var tables = doc.DocumentNode.SelectNodes(tablexpath);
+            foreach (var table in tables)
+            {
+                var tempdata = table.Descendants("tr")
+                            .Skip(0)
+                            .Select(tr => tr.Descendants("th")
+                                            .Select(td => WebUtility.HtmlDecode(td.InnerText))
+                                            .ToList())
+                            .ToList();
+                foreach (var line in tempdata)
+                {
+                    if (line.Count == 0)
+                    { continue; }
+                    if(line.Count == 1 && string.IsNullOrEmpty(line[0]))
+                    { continue; }
+                    tabledata.Add(line);
+                }
+
+                tempdata = table.Descendants("tr")
+                            .Skip(0)
+                            .Select(tr => tr.Descendants("td")
+                                            .Select(td => WebUtility.HtmlDecode(td.InnerText))
+                                            .ToList())
+                            .ToList();
+
+                foreach (var line in tempdata)
+                {
+                    if (line.Count == 0)
+                    { continue; }
+                    if (line.Count == 1 && string.IsNullOrEmpty(line[0]))
+                    { continue; }
+                    tabledata.Add(line);
+                }
+            }
+            return tabledata;
+        }
+
         public string WebUrl { set; get; }
         public string TableXPath { set; get; }
 

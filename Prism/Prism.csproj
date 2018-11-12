@@ -759,6 +759,7 @@
     <Content Include="Scripts\jquery-bootstrap-loading.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\jquery.base64.js" />
     <Content Include="Scripts\jquery.datatables.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
@@ -782,6 +783,7 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\Scrap-Rate.js" />
     <Content Include="Scripts\shipment.js" />
+    <Content Include="Scripts\tablecatch.js" />
     <Content Include="Scripts\tooltipster\css\tooltipster.bundle.css" />
     <Content Include="Scripts\tooltipster\css\tooltipster.bundle.min.css" />
     <Content Include="Scripts\tooltipster\css\tooltipster.main.css" />
@@ -839,6 +841,7 @@
     <Content Include="Views\Yield\YieldTrend.cshtml" />
     <Content Include="Views\Scrap\ScrapTrend.cshtml" />
     <Content Include="Views\Shipment\RMAWorkLoad.cshtml" />
+    <Content Include="Views\Main\TableCatch.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

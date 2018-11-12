@@ -1,0 +1,55 @@
+﻿
+@{
+    ViewBag.Title = "TableCatch";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" src="~/Scripts/jquery.base64.js"></script>
+<script type="text/javascript" src="~/Scripts/tablecatch.js"></script>
+<script type="text/javascript">
+        $(function(){
+            tablecatch.init();
+        })
+</script>
+
+
+<div class="row">
+    <div class="nav navbar-nav navbar-left">
+        <img src="~/Content/images/Yield.png" style="height:40px; width:40px">
+    </div>
+    <div class="nav navbar-nav navbar-left">
+        <ol class="breadcrumb" style="width:600px">
+            <li class="active">Table Catch</li>
+        </ol>
+    </div>
+</div>
+
+
+<div class='row form-group'>
+    <div class='col-xs-8'><input class='form-control' id='myurl' name='myurl' placeholder="http://wuxinpi.china.ads.finisar.com:8081/" type="text"></div>
+    <div class='col-xs-1'><button class='btn btn-primary' id='browserdata' name="browserdata">browse</button></div>
+    <div class='col-xs-1'><button class='btn btn-primary' id="gettabdata" name="gettabdata">getdata</button></div>
+    <div class='col-xs-2'></div>
+</div>
+
+<div class='row form-group'>
+    <div class='col-xs-12'>
+        <iframe id='myframe' name='myframe' src="https://cn.bing.com/" style='Height:600px;Width:100%'>
+            <p>Your browser does not support iframes.</p>
+        </iframe>
+    </div>
+</div>
+<div class="row">
+    <div class='col-xs-1'></div>
+    <div class='col-xs-10'>
+        <div class="alert alert-success" role="alert" style="padding:4px!important">
+            <p>To use this function,you need to use chrome browser and configure like below:</p>
+            <p>"C:\Program Files (x86)\Google\myie\Application\myie.exe" --disable-web-security --user-data-dir="C:/ChromeDevSession"</p>
+            <p><a href="https://chrome.google.com/webstore/detail/ignore-x-frame-headers/gleekbfjekiniecknbkamfmkohkpodhe" target="_blank">Same Origin Extend Plug-in</a></p>
+        </div>
+    </div>
+    <div class='col-xs-1'></div>
+</div>
+
+
+

@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using Prism.Models;
 using System.Net;
 using System.Web.Routing;
+using System.Text;
+using System.IO;
 
 namespace Prism.Controllers
 {
@@ -166,6 +168,98 @@ namespace Prism.Controllers
             return View();
         }
 
+        public ActionResult TableCatch()
+        {
+            return View();
+        }
+
+        private string DumpTableData(List<List<string>> lines)
+        {
+
+            string datestring = DateTime.Now.ToString("yyyyMMdd");
+            string imgdir = Server.MapPath("~/userfiles") + "\\docs\\" + datestring + "\\";
+            if (!Directory.Exists(imgdir))
+            {
+                Directory.CreateDirectory(imgdir);
+            }
+
+            var fn = "Table_data_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".csv";
+            var filename = imgdir + fn;
+
+             var sb = new StringBuilder(120 * lines.Count);
+            foreach (var line in lines)
+            {
+                var linesb = new StringBuilder(120);
+                foreach (var item in line)
+                {
+                    linesb.Append("\"" + item.Replace("\"", "") + "\",");
+                }
+                linesb.Append("\r\n");
+                sb.Append(linesb.ToString());
+            }
+
+            if (sb.Length > 0)
+            {
+                var fw = System.IO.File.OpenWrite(filename);
+                var CHUNK_STRING_LENGTH = 30000;
+                while (sb.Length > CHUNK_STRING_LENGTH)
+                {
+                    var bt = System.Text.Encoding.UTF8.GetBytes(sb.ToString(0, CHUNK_STRING_LENGTH));
+                    fw.Write(bt, 0, bt.Count());
+                    sb.Remove(0, CHUNK_STRING_LENGTH);
+                }
+
+                var bt1 = System.Text.Encoding.UTF8.GetBytes(sb.ToString());
+                fw.Write(bt1, 0, bt1.Count());
+                fw.Close();
+            }
+
+            return @"http://"+EmailUtility.RetrieveCurrentMachineName()+"/userfiles/docs/" + datestring + "/" + fn;
+        }
+
+        private string Base642Str(string bcontent)
+        {
+            var ret = "";
+            if (!string.IsNullOrEmpty(bcontent))
+            {
+                try
+                {
+                    string dummyData = bcontent.Trim().Replace(" ", "+");
+                    if (dummyData.Length % 4 > 0)
+                        dummyData = dummyData.PadRight(dummyData.Length + 4 - dummyData.Length % 4, '=');
+
+                    var bytes = Convert.FromBase64String(dummyData);
+                    ret = System.Text.Encoding.UTF8.GetString(bytes);
+                }
+                catch (Exception ex) { }
+            }
+            return ret;
+        }
+
+        public JsonResult GetDataFromPage()
+        {
+            var bhtmlcontent = Request.Form["content"];
+            var htmlcontent = Base642Str(bhtmlcontent);
+            var rawdata = Website2Data.Page2Data(htmlcontent, @"//table");
+            if (rawdata.Count == 0)
+            {
+                var ret1 = new JsonResult();
+                ret1.Data = new
+                { success = false };
+                return ret1;
+            }
+
+            var url = DumpTableData(rawdata);
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                success = true,
+                url = url
+            };
+            return ret;
+        }
+
         public ActionResult HeartBeat2()
         {
             var syscfg = CfgUtility.GetSysConfig(this);
@@ -213,5 +307,7 @@ namespace Prism.Controllers
             web.GetData();
             return View("HeartBeat");
         }
+
+        
     }
 }
