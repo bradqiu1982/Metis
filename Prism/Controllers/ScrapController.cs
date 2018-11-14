@@ -11,38 +11,6 @@ namespace Prism.Controllers
 {
     public class ScrapController : Controller
     {
-        private static string DetermineCompName(string IP)
-        {
-            try
-            {
-                IPAddress myIP = IPAddress.Parse(IP);
-                IPHostEntry GetIPHost = Dns.GetHostEntry(myIP);
-                List<string> compName = GetIPHost.HostName.ToString().Split('.').ToList();
-                return compName.First();
-            }
-            catch (Exception ex)
-            { return string.Empty; }
-        }
-
-        private void UserAuth()
-        {
-            string IP = Request.UserHostName;
-            var compName = DetermineCompName(IP);
-            ViewBag.compName = compName.ToUpper();
-            //var glbcfg = CfgUtility.GetSysConfig(this);
-
-            var usermap = MachineUserMap.RetrieveUserMap();
-
-            if (usermap.ContainsKey(ViewBag.compName))
-            {
-                ViewBag.username = usermap[ViewBag.compName].Trim().ToUpper();
-            }
-            else
-            {
-                ViewBag.username = string.Empty;
-            }
-        }
-
         private List<SelectListItem> CreateSelectList(List<string> valist, string defVal)
         {
             bool selected = false;
@@ -70,13 +38,11 @@ namespace Prism.Controllers
 
         public ActionResult DepartmentScrap(string defyear, string defqrt, string defdepartment)
         {
-            UserAuth();
-            if (string.IsNullOrEmpty(ViewBag.username))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
             {
-                var valuedict = new RouteValueDictionary();
-                valuedict.Add("url", "/Scrap/DepartmentScrap");
-                return RedirectToAction("Welcome", "Main", valuedict);
+                return RedirectToAction("Index", "Main");
             }
+
 
             var year = "";
             if (!string.IsNullOrEmpty(defyear))
@@ -220,6 +186,11 @@ namespace Prism.Controllers
 
         public ActionResult CostCenterOfOneDepart(string x, string defyear, string defqrt)
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
+
             if (string.Compare(defqrt, FinanceQuarter.CURRENTQx) == 0)
             {
                 var now = DateTime.Now;
@@ -247,12 +218,9 @@ namespace Prism.Controllers
 
         public ActionResult CostCenterScrap(string defyear, string defqrt, string defpj)
         {
-            UserAuth();
-            if (string.IsNullOrEmpty(ViewBag.username))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
             {
-                var valuedict = new RouteValueDictionary();
-                valuedict.Add("url", "/Scrap/CostCenterScrap");
-                return RedirectToAction("Welcome", "Main", valuedict);
+                return RedirectToAction("Index", "Main");
             }
 
             var year = "";
@@ -468,6 +436,11 @@ namespace Prism.Controllers
 
         public ActionResult ProductScrap(string defyear, string defqrt, string defco)
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
+
             var year = "";
             if (!string.IsNullOrEmpty(defyear))
             { year = defyear; }
@@ -708,6 +681,11 @@ namespace Prism.Controllers
 
         public ActionResult ScrapTrend()
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
+
             return View();
         }
 

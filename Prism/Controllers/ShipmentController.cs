@@ -11,29 +11,16 @@ namespace Prism.Controllers
 {
     public class ShipmentController : Controller
     {
-        public static string DetermineCompName(string IP)
-        {
-            try
-            {
-                IPAddress myIP = IPAddress.Parse(IP);
-                IPHostEntry GetIPHost = Dns.GetHostEntry(myIP);
-                List<string> compName = GetIPHost.HostName.ToString().Split('.').ToList();
-                return compName.First();
-            }
-            catch (Exception ex)
-            { return string.Empty; }
-        }
+
 
         public ActionResult ShipmentData()
         {
-            string IP = Request.UserHostName;
-            string compName = DetermineCompName(IP);
-            if (!MachineUserMap.IsLxEmployee(compName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
             {
                 return RedirectToAction("Index", "Main");
             }
 
-            ViewBag.IsL9Employee = MachineUserMap.IsLxEmployee(compName, null, 10);
+            ViewBag.IsL9Employee = MachineUserMap.IsLxEmployee(Request.UserHostName, null, 10);
             return View();
         }
 
@@ -803,11 +790,9 @@ namespace Prism.Controllers
 
         public ActionResult DownloadShipmentData(string sdate, string edate)
         {
-            string IP = Request.UserHostName;
-            string compName = DetermineCompName(IP);
-            if (!MachineUserMap.IsLxEmployee(compName, null, 10))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
             {
-                return RedirectToAction("UserCenter", "User");
+                return RedirectToAction("Index", "Main");
             }
 
             string datestring = DateTime.Now.ToString("yyyyMMdd");
@@ -865,9 +850,7 @@ namespace Prism.Controllers
 
         public ActionResult OTDData()
         {
-            string IP = Request.UserHostName;
-            string compName = DetermineCompName(IP);
-            if (!MachineUserMap.IsLxEmployee(compName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -950,9 +933,7 @@ namespace Prism.Controllers
 
         public ActionResult LBSDistribution()
         {
-            string IP = Request.UserHostName;
-            string compName = DetermineCompName(IP);
-            if (!MachineUserMap.IsLxEmployee(compName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -1076,9 +1057,7 @@ namespace Prism.Controllers
 
         public ActionResult OrderData()
         {
-            string IP = Request.UserHostName;
-            string compName = DetermineCompName(IP);
-            if (!MachineUserMap.IsLxEmployee(compName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -1277,6 +1256,10 @@ namespace Prism.Controllers
 
         public ActionResult RMAWorkLoad()
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
             return View();
         }
 

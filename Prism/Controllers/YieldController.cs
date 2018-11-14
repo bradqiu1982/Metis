@@ -11,6 +11,10 @@ namespace Prism.Controllers
     {
         public ActionResult DepartmentYield()
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
             return View();
         }
 
@@ -214,6 +218,11 @@ namespace Prism.Controllers
 
         public ActionResult ProductYield(string productfaimly)
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
+
             ViewBag.productfamily = "";
             if (!string.IsNullOrEmpty(productfaimly))
             { ViewBag.productfamily = productfaimly; }
@@ -282,6 +291,10 @@ namespace Prism.Controllers
 
         public ActionResult YieldTrend()
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
             return View();
         }
 

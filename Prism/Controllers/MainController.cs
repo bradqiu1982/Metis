@@ -14,68 +14,26 @@ namespace Prism.Controllers
     public class MainController : Controller
     {
 
-        private static string DetermineCompName(string IP)
-        {
-            try
-            {
-                IPAddress myIP = IPAddress.Parse(IP);
-                IPHostEntry GetIPHost = Dns.GetHostEntry(myIP);
-                List<string> compName = GetIPHost.HostName.ToString().Split('.').ToList();
-                return compName.First();
-            }
-            catch (Exception ex)
-            { return string.Empty; }
-        }
-
-        private void UserAuth()
-        {
-            string IP = Request.UserHostName;
-            var compName = DetermineCompName(IP);
-            ViewBag.compName = compName.ToUpper();
-            //var glbcfg = CfgUtility.GetSysConfig(this);
-
-            var usermap = MachineUserMap.RetrieveUserMap();
-
-            if (usermap.ContainsKey(ViewBag.compName))
-            {
-                ViewBag.username = usermap[ViewBag.compName].Trim().ToUpper();
-            }
-            else
-            {
-                ViewBag.username = string.Empty;
-            }
-        }
-
-
         // GET: Main
         public ActionResult Index()
         {
-            UserAuth();
-            if (string.IsNullOrEmpty(ViewBag.username))
-            {
-                var valuedict = new RouteValueDictionary();
-                valuedict.Add("url", "/Main/Index");
-                return RedirectToAction("Welcome","Main", valuedict);
-            }
-
             return View();
         }
 
-        public ActionResult Welcome(string url)
-        {
-            ViewBag.url = url;
-            return View();
-        }
+        //public ActionResult Welcome(string url)
+        //{
+        //    ViewBag.url = url;
+        //    return View();
+        //}
 
-        public JsonResult UpdateMachineUserName()
-        {
-            UserAuth();
-            var username = Request.Form["username"].ToUpper().Trim();
-            MachineUserMap.AddMachineUserMap(ViewBag.compName, username);
-            var ret = new JsonResult();
-            ret.Data = new { sucess = true };
-            return ret;
-        }
+        //public JsonResult UpdateMachineUserName()
+        //{
+        //    var username = Request.Form["username"].ToUpper().Trim();
+        //    MachineUserMap.AddMachineUserMap(ViewBag.compName, username);
+        //    var ret = new JsonResult();
+        //    ret.Data = new { sucess = true };
+        //    return ret;
+        //}
 
         private void heartbeatlog(string msg,string filename)
         {
@@ -170,6 +128,10 @@ namespace Prism.Controllers
 
         public ActionResult TableCatch()
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
             return View();
         }
 

@@ -12,46 +12,12 @@ namespace Prism.Controllers
 {
     public class DataAnalyzeController : Controller
     {
-        private static string DetermineCompName(string IP)
-        {
-            try
-            {
-                IPAddress myIP = IPAddress.Parse(IP);
-                IPHostEntry GetIPHost = Dns.GetHostEntry(myIP);
-                List<string> compName = GetIPHost.HostName.ToString().Split('.').ToList();
-                return compName.First();
-            }
-            catch (Exception ex)
-            { return string.Empty; }
-        }
-
-        private void UserAuth()
-        {
-            string IP = Request.UserHostName;
-            var compName = DetermineCompName(IP);
-            ViewBag.compName = compName.ToUpper();
-            //var glbcfg = CfgUtility.GetSysConfig(this);
-
-            var usermap = MachineUserMap.RetrieveUserMap();
-
-            if (usermap.ContainsKey(ViewBag.compName))
-            {
-                ViewBag.username = usermap[ViewBag.compName].Trim().ToUpper();
-            }
-            else
-            {
-                ViewBag.username = string.Empty;
-            }
-        }
 
         public ActionResult HPUTrend()
         {
-            UserAuth();
-            if (string.IsNullOrEmpty(ViewBag.username))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
             {
-                var valuedict = new RouteValueDictionary();
-                valuedict.Add("url", "/DataAnalyze/HPUTrend");
-                return RedirectToAction("Welcome", "Main", valuedict);
+                return RedirectToAction("Index", "Main");
             }
 
             ViewBag.defaultserial = "";
@@ -231,14 +197,10 @@ namespace Prism.Controllers
 
         public ActionResult CapacityTrend()
         {
-            UserAuth();
-            if (string.IsNullOrEmpty(ViewBag.username))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
             {
-                var valuedict = new RouteValueDictionary();
-                valuedict.Add("url", "/DataAnalyze/CapacityTrend");
-                return RedirectToAction("Welcome", "Main", valuedict);
+                return RedirectToAction("Index", "Main");
             }
-
 
             ViewBag.defaultserial = "";
             var syscfg = CfgUtility.GetSysConfig(this);
@@ -344,12 +306,9 @@ namespace Prism.Controllers
 
         public ActionResult DepartmentHPU()
         {
-            UserAuth();
-            if (string.IsNullOrEmpty(ViewBag.username))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
             {
-                var valuedict = new RouteValueDictionary();
-                valuedict.Add("url", "/DataAnalyze/DepartmentHPU");
-                return RedirectToAction("Welcome", "Main", valuedict);
+                return RedirectToAction("Index", "Main");
             }
 
             var productlines = HPUMainData.GetAllProductLines();
@@ -387,12 +346,9 @@ namespace Prism.Controllers
 
         public ActionResult DepartmentCapacity()
         {
-            UserAuth();
-            if (string.IsNullOrEmpty(ViewBag.username))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
             {
-                var valuedict = new RouteValueDictionary();
-                valuedict.Add("url", "/DataAnalyze/DepartmentCapacity");
-                return RedirectToAction("Welcome", "Main", valuedict);
+                return RedirectToAction("Index", "Main");
             }
 
             var productlines = HPUMainData.GetAllProductLines();
@@ -493,6 +449,11 @@ namespace Prism.Controllers
 
         public ActionResult SerialHPU(string defaultserial)
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
+
             ViewBag.defaultserial = "";
             if (!string.IsNullOrEmpty(defaultserial))
             {
@@ -527,6 +488,11 @@ namespace Prism.Controllers
 
         public ActionResult SerialCapacity(string defaultserial)
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
+
             ViewBag.defaultserial = "";
             if (!string.IsNullOrEmpty(defaultserial))
             {
@@ -601,6 +567,11 @@ namespace Prism.Controllers
 
         public ActionResult PNHPU(string PNLink)
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
+
             ViewBag.pnlink = "";
             if (!string.IsNullOrEmpty(PNLink))
             { ViewBag.pnlink = PNLink; }
@@ -708,13 +679,7 @@ namespace Prism.Controllers
 
         public ActionResult ModifyReport(string reportid)
         {
-            UserAuth();
-            if (string.IsNullOrEmpty(ViewBag.username))
-            {
-                var valuedict = new RouteValueDictionary();
-                valuedict.Add("url", "/Main/Index");
-                return RedirectToAction("Welcome", "Main", valuedict);
-            }
+            ViewBag.username = MachineUserMap.EmployeeName(Request.UserHostName);
 
             var wreportlist = PrismComment.RetrieveComment(reportid);
             if (wreportlist.Count > 0)
@@ -728,9 +693,8 @@ namespace Prism.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ModifyWaferReportPost()
         {
-            UserAuth();
-
             var reportid = Request.Form["ReportId"];
+            ViewBag.username = MachineUserMap.EmployeeName(Request.UserHostName);
 
             if (!string.IsNullOrEmpty(Request.Form["editor1"]))
             {

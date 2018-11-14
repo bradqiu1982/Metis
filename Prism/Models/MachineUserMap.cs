@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 
 namespace Prism.Models
@@ -72,8 +73,23 @@ namespace Prism.Models
             return ret;
         }
 
-        public static bool IsLxEmployee(string machine, string username, int x)
+        private static string DetermineCompName(string IP)
         {
+            try
+            {
+                IPAddress myIP = IPAddress.Parse(IP);
+                IPHostEntry GetIPHost = Dns.GetHostEntry(myIP);
+                List<string> compName = GetIPHost.HostName.ToString().Split('.').ToList();
+                return compName.First();
+            }
+            catch (Exception ex)
+            { return string.Empty; }
+        }
+
+        public static bool IsLxEmployee(string ip, string username, int x)
+        {
+            string machine = DetermineCompName(ip);
+
             var sql = "select machine,username,level from machineusermap where machine = '<machine>' ";
             sql = sql.Replace("<machine>", machine);
 
@@ -86,7 +102,7 @@ namespace Prism.Models
             var dbret = DBUtility.ExeNPISqlWithRes(sql, null);
             if (dbret.Count == 0)
             {
-                return true;
+                return false;
             }
 
             try
@@ -109,7 +125,24 @@ namespace Prism.Models
             return false;
         }
 
+        public static string EmployeeName(string ip)
+        {
+            string machine = DetermineCompName(ip);
+
+            var sql = "select machine,username,level from machineusermap where machine = '<machine>' ";
+            sql = sql.Replace("<machine>", machine);
+            var dbret = DBUtility.ExeNPISqlWithRes(sql, null);
+            if (dbret.Count == 0)
+            {
+                return "System";
+            }
+            return Convert.ToString(dbret[0][0]);
+        }
+
+
         public string machine { set; get; }
         public string username { set; get; }
     }
+
+
 }

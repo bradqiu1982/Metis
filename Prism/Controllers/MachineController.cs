@@ -11,6 +11,10 @@ namespace Prism.Controllers
     {
         public ActionResult DepartmentMachine()
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
             return View();
         }
 
@@ -172,6 +176,10 @@ namespace Prism.Controllers
 
         public ActionResult ProductMachine(string productfaimly)
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            {
+                return RedirectToAction("Index", "Main");
+            }
             ViewBag.productfamily = "";
             if (!string.IsNullOrEmpty(productfaimly))
             { ViewBag.productfamily = productfaimly; }
