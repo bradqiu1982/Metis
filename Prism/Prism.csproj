@@ -719,6 +719,7 @@
     <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.standalone.min.css.map" />
     <Content Include="Scripts\bootstrap-tagsinput\bootstrap-tagsinput.min.js.map" />
     <None Include="Properties\PublishProfiles\prismpublish.pubxml" />
+    <Content Include="Scripts\bssupport_db.txt" />
     <Content Include="Scripts\highmaps\flags32.png" />
     <Content Include="Scripts\highmaps\map.js" />
     <Content Include="Scripts\highmaps\proj4.js" />
