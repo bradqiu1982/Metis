@@ -194,6 +194,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Controllers\CapacityController.cs" />
     <Compile Include="Controllers\DataAnalyzeController.cs" />
     <Compile Include="Controllers\MachineController.cs" />
     <Compile Include="Controllers\MainController.cs" />
@@ -204,6 +205,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ATETestData.cs" />
+    <Compile Include="Models\CapacityRawData.cs" />
     <Compile Include="Models\CfgUtility.cs" />
     <Compile Include="Models\CookieUtility.cs" />
     <Compile Include="Models\CostCentScrapWarning.cs" />
@@ -821,9 +823,6 @@
     <Content Include="Views\DataAnalyze\PNHPU.cshtml" />
     <Content Include="Views\DataAnalyze\SerialHPU.cshtml" />
     <Content Include="Views\DataAnalyze\HPUTrend.cshtml" />
-    <Content Include="Views\DataAnalyze\DepartmentCapacity.cshtml" />
-    <Content Include="Views\DataAnalyze\SerialCapacity.cshtml" />
-    <Content Include="Views\DataAnalyze\CapacityTrend.cshtml" />
     <Content Include="Views\Main\Welcome.cshtml" />
     <Content Include="Views\DataAnalyze\ModifyReport.cshtml" />
     <Content Include="Views\Shared\_VideoRecordModal.cshtml" />
@@ -843,6 +842,7 @@
     <Content Include="Views\Scrap\ScrapTrend.cshtml" />
     <Content Include="Views\Shipment\RMAWorkLoad.cshtml" />
     <Content Include="Views\Main\TableCatch.cshtml" />
+    <Content Include="Views\Capacity\DepartmentCapacity.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
