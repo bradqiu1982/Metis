@@ -182,7 +182,7 @@ namespace Prism.Controllers
                 fw.Close();
             }
 
-            return @"http://"+EmailUtility.RetrieveCurrentMachineName()+"/userfiles/docs/" + datestring + "/" + fn;
+            return @"http://"+EmailUtility.RetrieveCurrentMachineName()+":8088/userfiles/docs/" + datestring + "/" + fn;
         }
 
         private string Base642Str(string bcontent)
