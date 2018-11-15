@@ -117,6 +117,12 @@ namespace Prism.Controllers
                     catch (Exception ex) { }
                 }
 
+                try
+                {
+                    CapacityRawData.LoadCapacityRawData(this);
+                }
+                catch (Exception ex) { }
+
             }//end only run once
 
             heartbeatlog("Heart Beat Start", filename);
@@ -263,13 +269,12 @@ namespace Prism.Controllers
             return View("HeartBeat");
         }
 
-        public ActionResult GetTableData()
+        public ActionResult LoadCapacityRawData()
         {
-            var web = new Website2Data("http://wuxinpi.china.ads.finisar.com/CustomerData/ReviewIQEBackupData", @"//table[@id='pndatatable']");
-            web.GetData();
+            CapacityRawData.LoadCapacityRawData(this);
             return View("HeartBeat");
         }
 
-        
+
     }
 }
