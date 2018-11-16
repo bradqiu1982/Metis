@@ -27,7 +27,8 @@ namespace Prism.Controllers
         ////<date,<customer,int>>
         private object GetShipmentChartData(Dictionary<string, Dictionary<string, double>> shipdata, Dictionary<string, int> vcselrmacntdict, Dictionary<string, int> allrmacntdict, string rate, string producttype)
         {
-            var id = "shipdata_" + rate + "_id";
+            var id = "shipdata_" + rate.Replace(".", "").Replace(" ", "")
+                    .Replace("(", "").Replace(")", "").Replace("#", "").Replace("+", "").ToLower() + "_id";
             var shipdatelist = shipdata.Keys.ToList();
             shipdatelist.Sort(delegate (string obj1, string obj2)
             {
@@ -187,7 +188,8 @@ namespace Prism.Controllers
 
         private object GetShipmentQuarterChartData(Dictionary<string, Dictionary<string, double>> shipdata, Dictionary<string, int> allrmacntdict,string rate, string producttype)
         {
-            var id = "qshipdata_" + rate + "_id";
+            var id = "qshipdata_" + rate.Replace(".", "").Replace(" ", "")
+                    .Replace("(", "").Replace(")", "").Replace("#", "").Replace("+", "").ToLower() + "_id";
             var qshipdict = new Dictionary<string, Dictionary<string, double>>();
             foreach (var mkv in shipdata)
             {
@@ -369,7 +371,8 @@ namespace Prism.Controllers
 
         private object GetOrderQtyChartData(Dictionary<string, Dictionary<string, double>> shipdata, string rate, string producttype)
         {
-            var id = "orderdata_" + rate + "_id";
+            var id = "orderdata_" + rate.Replace(".", "").Replace(" ", "")
+                    .Replace("(", "").Replace(")", "").Replace("#", "").Replace("+", "").ToLower() + "_id";
             var shipdatelist = shipdata.Keys.ToList();
             shipdatelist.Sort(delegate (string obj1, string obj2)
             {
@@ -474,7 +477,8 @@ namespace Prism.Controllers
 
         private object GetOTDChartData(List<FsrShipData> otddata, string rate, string producttype)
         {
-            var id = "otddata_" + rate + "_id";
+            var id = "otddata_" + rate.Replace(".", "").Replace(" ", "")
+                    .Replace("(", "").Replace(")", "").Replace("#", "").Replace("+", "").ToLower() + "_id";
             var title = producttype + " Monthly OTD Bills Distribution (" + rate + ")";
 
             var ordernumdict = new Dictionary<string, double>();
@@ -1213,7 +1217,8 @@ namespace Prism.Controllers
                 avgworkload.Add(Math.Round(sumdays / wklist.Count,2));
             }
 
-            var id = "wkload_" + mark.Replace(" ", "_") + "_id";
+            var id = "wkload_" + mark.Replace(".", "").Replace(" ", "")
+                    .Replace("(", "").Replace(")", "").Replace("#", "").Replace("+", "").ToLower() + "_id";
             var title = mark + " RMA Quarter WorkLoad";
 
             var colorlist = new string[] { "#161525","#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"

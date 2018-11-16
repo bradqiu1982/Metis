@@ -33,6 +33,12 @@
     background-color:aliceblue;
     border-radius:3px 3px;
 }
+
+.NOBUFF {
+    background-color:orangered;
+    border-radius:3px 3px;
+}
+
 .YFPY {
     background-color:aqua;
     border-radius:3px 3px;

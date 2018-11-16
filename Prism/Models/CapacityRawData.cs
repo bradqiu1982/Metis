@@ -204,6 +204,18 @@ namespace Prism.Models
             return ret;
         }
 
+        public static List<string> GetAllProductList()
+        {
+            var ret = new List<string>();
+            var sql = "select distinct Product from CapacityRawData order by Product";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
+            return ret;
+        }
+
         public CapacityRawData()
         {
             ID = "";

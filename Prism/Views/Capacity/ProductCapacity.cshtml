@@ -1,0 +1,108 @@
+﻿
+@{
+    ViewBag.Title = "ProductCapacity";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<link type="text/css" rel="stylesheet" href="~/Scripts/jquery-autocomplete/jquery.auto-complete.css" />
+<link type="text/css" rel="stylesheet" href="~/Content/SCRAP-RATE.css" />
+<link type="text/css" rel="stylesheet" href="~/Scripts/bootstrap-tagsinput/bootstrap-tagsinput.css" />
+
+<script type="text/javascript" src="~/Scripts/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap-tagsinput/bootstrap3-typeahead.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery-autocomplete/jquery.auto-complete.min.js"></script>
+<script type="text/javascript" src="~/Scripts/Capacity.js"></script>
+<script type="text/javascript">
+        $(function(){
+            CAPACITY.PRODUCTINIT();
+        })
+</script>
+
+<div class="row">
+    <div class="nav navbar-nav navbar-left">
+        <img src="~/Content/images/Yield.png" style="height:40px; width:40px">
+    </div>
+    <div class="nav navbar-nav navbar-left">
+        <ol class="breadcrumb" style="width:600px">
+            <li><a data-toggle="tooltip" title="Goto Main Page" href="/Main/Index">Main</a></li>
+            <li class="active">Product Capacity</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <nav class="col-xs-2 nav-sidebar">
+        <ul class="nav">
+            <li>
+                <a href="/Capacity/DepartmentCapacity">
+                    <span class="item-show">Department Capacity</span>
+                </a>
+            </li>
+            <li class="active">
+                <a href="/Capacity/ProductCapacity">
+                    <span class="item-show">Product Capacity</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="col-xs-10">
+        <div class="v-container">
+            <div class="v-filter">
+                <div class="row row-margin">
+                    <label class="col-xs-2">Product Family</label>
+                    <div class="col-xs-8">
+                        <input type="text" data-provide="typeahead"
+                               id="productlist" name="productlist" autocomplete="off" placeholder="Product" value="">
+                    </div>
+                    <div class="col-xs-1 box-search" style="padding-left:0">
+                        <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
+                    </div>
+                </div>
+            </div>
+            <div class="v-content">
+                <table class="table table-hover  table-condensed table-striped" id="capacitymaintable" style="margin-top:1%">
+                    <caption class="tb-caption">DEPARTMENT CAPACITY TABLE</caption>
+                    <thead id="capacitytabheadid"></thead>
+                    <tbody id="capacitytabcontentid"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="hidden">
+        <a id="exportLink"></a>
+        <input type="text" class="hide" id="producttype" name="producttype" value="@ViewBag.producttype">
+    </div>
+</div>
+
+<div class="modal" id="capacitymodal" tabindex="-1" role="dialog" aria-labelledby="capacitymodalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="capacitymodalLabel">Capacity Info</h4>
+            </div>
+            <div class="row" style="margin-left:15px!important;margin-right:15px!important;">
+                <table class="table table-hover  table-condensed table-striped" id="capacitydatatable" style="margin-top:1%">
+                    <caption class="tb-caption">Capacity Data</caption>
+                    <thead>
+                        <tr>
+                            <th>Quarter</th>
+                            <th>Product</th>
+                            <th>Max Capacity</th>
+                            <th>ForeCast</th>
+                            <th>Consume Rate%</th>
+                            <th>Buffer</th>
+                            <th>PN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="capacitycontentid"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
