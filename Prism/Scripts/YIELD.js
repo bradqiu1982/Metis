@@ -388,7 +388,7 @@
                         plotLines: [{
                             value: line_data.fpytg,
                             color: 'red',
-                            width: 1,
+                            width: 2,
                             label: {
                                 text: 'FPY Target:' + line_data.fpytg,
                                 align: 'left'
@@ -610,7 +610,7 @@
                     plotLines: [{
                         value: line_data.fpytg,
                         color: 'red',
-                        width: 1,
+                        width: 2,
                         label: {
                             text: 'FPY Target:' + line_data.fpytg,
                             align: 'left'

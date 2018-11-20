@@ -28,6 +28,10 @@ WUXIOTSFILE:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - OTS for WUXI
 
 RMASHAREFOLDER:::\\wux-fs\PUBLIC\Quality\10.Quality case summary\Customer Quality Case Summary\13. RMA & Complaint New
 
+INVENTORYTREND:::\\cn-file01.china.ads.finisar.com\Public\Active NPI\Product_Engineering\Brad\Inventory Turns by Project.csv
+INVENTORYDETAIL:::\\cn-file01.china.ads.finisar.com\Public\Active NPI\Product_Engineering\Brad\Inventory Turns by Project and Series.csv
+INVENTORYDEPARTMENTORD:::Parallel;10G Tunable;Coherent Transceiver;Linecard;SFP+WIRE;OSA;WSS
+
 ##SCRAPFOCUSPJ:::
 ###\\wux-fs\PUBLIC\WUXI IE\HPU
 

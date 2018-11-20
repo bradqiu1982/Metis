@@ -1,121 +1,125 @@
-﻿var CAPACITY = function () {
+﻿var INVENTORY = function () {
 
-    var departmentcapacity = function () {
+    var departmentinvent = function () {
 
-        var captable = null;
-        var capdatatable = null;
-        var rawdataobj = {};
+        var inventtable = null;
+        var inventdatatable = null;
 
-        function getallcapacity() {
-                var options = {
-                    loadingTips: "loading data......",
-                    backgroundColor: "#aaa",
-                    borderColor: "#fff",
-                    opacity: 0.8,
-                    borderColor: "#fff",
-                    TipsColor: "#000",
-                }
-                $.bootstrapLoading.start(options);
+        function getallinventory() {
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
 
-                $.post('/Capacity/DepartmentCapacityData',
-                    {},
-                    function (output) {
-                        $.bootstrapLoading.end();
-                        rawdataobj = output.rawdata;
+            $.post('/Inventory/DepartmentInventoryData',
+                {},
+                function (output) {
+                    $.bootstrapLoading.end();
 
-                        if (captable) {
-                            captable.destroy();
-                        }
-                        $("#capacitytabheadid").empty();
-                        $("#capacitytabcontentid").empty();
+                    if (inventtable) {
+                        inventtable.destroy();
+                    }
+                    $("#inventorytabheadid").empty();
+                    $("#inventorytabcontentid").empty();
 
-                        var idx = 0;
-                        var titlelength = output.tabletitle.length;
-                        var appendstr = "";
+                    var idx = 0;
+                    var titlelength = output.tabletitle.length;
+                    var appendstr = "";
+                    appendstr += "<tr>";
+                    for (idx = 0; idx < titlelength; idx++) {
+                        appendstr += "<th>" + output.tabletitle[idx] + "</th>";
+                    }
+                    appendstr += "<th>Chart</th>";
+                    appendstr += "</tr>";
+                    $("#inventorytabheadid").append(appendstr);
+
+                    appendstr = "";
+                    idx = 0;
+                    var contentlength = output.tablecontent.length;
+                    for (idx = 0; idx < contentlength; idx++) {
                         appendstr += "<tr>";
-                        for (idx = 0; idx < titlelength; idx++) {
-                            appendstr += "<th>" + output.tabletitle[idx] + "</th>";
+                        var line = output.tablecontent[idx];
+                        var jdx = 0;
+                        var linelength = line.length;
+                        for (jdx = 0; jdx < linelength; jdx++) {
+                            appendstr += "<td>" + line[jdx] + "</td>";
                         }
-                        appendstr += "<th>Chart</th>";
+                        appendstr += "<td><div id='" + output.chartdatalist[idx].id + "' style='max-width:840px!important'></div></td>";
                         appendstr += "</tr>";
-                        $("#capacitytabheadid").append(appendstr);
+                    }
+                    $("#inventorytabcontentid").append(appendstr);
 
-                        appendstr = "";
-                        idx = 0;
-                        var contentlength = output.tablecontent.length;
-                        for (idx = 0; idx < contentlength; idx++) {
-                            appendstr += "<tr>";
-                            var line = output.tablecontent[idx];
-                            var jdx = 0;
-                            var linelength = line.length;
-                            for (jdx = 0; jdx < linelength; jdx++) {
-                                appendstr += "<td>" + line[jdx] + "</td>";
-                            }
-                            appendstr += "<td><div id='" + output.chartdatalist[idx].id + "' style='max-width:840px!important'></div></td>";
-                             appendstr += "</tr>";
-                        }
-                        $("#capacitytabcontentid").append(appendstr);
+                    for (idx = 0; idx < contentlength; idx++) {
+                        drawline(output.chartdatalist[idx]);
+                    }
 
-                        for (idx = 0; idx < contentlength; idx++) {
-                            drawline(output.chartdatalist[idx]);
-                        }
-
-                        captable = $('#capacitymaintable').DataTable({
-                            'iDisplayLength': 50,
-                            'aLengthMenu': [[20, 50, 100, -1],
-                            [20, 50, 100, "All"]],
-                            "aaSorting": [],
-                            "order": [],
-                            dom: 'lBfrtip',
-                            buttons: ['copyHtml5', 'csv', 'excelHtml5']
-                        });
-
+                    inventtable = $('#inventorymaintable').DataTable({
+                        'iDisplayLength': 50,
+                        'aLengthMenu': [[20, 50, 100, -1],
+                        [20, 50, 100, "All"]],
+                        "aaSorting": [],
+                        "order": [],
+                        dom: 'lBfrtip',
+                        buttons: ['copyHtml5', 'csv', 'excelHtml5']
                     });
+
+                });
         }
 
         $(function () {
-            getallcapacity();
+            getallinventory();
         });
 
 
         $('body').on('click', '.YIELDDATA', function () {
-            showcapacitydata($(this).attr('myid'));
+            showinventdata($(this).attr('qt'), $(this).attr('pd'));
         })
 
-        function showcapacitydata(id) {
-            var capdata = rawdataobj[id];
+        function showinventdata(qt,pd) {
+            $.post('/Inventory/DepartmentDetailData',
+                {
+                    qt: qt,
+                    pd: pd
+                },
+                function (output)
+                {
+                    if (inventdatatable) {
+                        inventdatatable.destroy();
+                    }
+                    $("#inventorycontentid").empty();
 
-            if (capdatatable) {
-                capdatatable.destroy();
-            }
-            $("#capacitycontentid").empty();
+                    var appendstr = "";
 
-            var appendstr = "";
+                    $.each(output.invtdata, function (i, val) {
+                        appendstr += "<tr>";
+                        appendstr += "<td>" + val.Quarter + "</td>";
+                        appendstr += "<td>" + val.Department + "</td>";
+                        appendstr += "<td>" + val.Product + "</td>";
+                        appendstr += "<td>" + val.COGS + "</td>";
+                        appendstr += "<td>" + val.Inventory + "</td>";
+                        appendstr += "<td>" + val.InventoryTurns + "</td>";
+                        appendstr += "</tr>";
+                    })
+                    $("#inventorycontentid").append(appendstr);
 
-            $.each(capdata, function (i, val) {
-                appendstr += "<tr>";
-                appendstr += "<td>" + val.Quarter + "</td>";
-                appendstr += "<td>" + val.Product + "</td>";
-                appendstr += "<td>" + val.MaxCapacity + "</td>";
-                appendstr += "<td>" + val.ForeCast + "</td>";
-                appendstr += "<td>" + val.Usage + "</td>";
-                appendstr += "<td>" + val.GAP + "</td>";
-                appendstr += "<td>" + val.PN + "</td>";
-                appendstr += "</tr>";
-            })
-            $("#capacitycontentid").append(appendstr);
+                    inventdatatable = $('#inventorydatatable').DataTable({
+                        'iDisplayLength': 50,
+                        'aLengthMenu': [[20, 50, 100, -1],
+                        [20, 50, 100, "All"]],
+                        "aaSorting": [],
+                        "order": [],
+                        dom: 'lBfrtip',
+                        buttons: ['copyHtml5', 'csv', 'excelHtml5']
+                    });
 
-            capdatatable = $('#capacitydatatable').DataTable({
-                'iDisplayLength': 50,
-                'aLengthMenu': [[20, 50, 100, -1],
-                [20, 50, 100, "All"]],
-                "aaSorting": [],
-                "order": [],
-                dom: 'lBfrtip',
-                buttons: ['copyHtml5', 'csv', 'excelHtml5']
-            });
-
-            $('#capacitymodal').modal('show');
+                    $('#inventorymodal').modal('show');
+                }
+                );
         }
 
         var drawline = function (line_data) {
@@ -140,22 +144,22 @@
                 },
                 yAxis: [{
                     title: {
-                        text: 'Amount'
+                        text: 'Dollar'
                     },
                     visible: false
                 },
                 {
                     opposite: true,
                     title: {
-                        text: "Consume Rate %"
+                        text: "Turns"
                     },
                     visible: false,
                     plotLines: [{
-                        value: 90,
+                        value: 4.0,
                         color: 'red',
                         width: 2,
                         label: {
-                            text: 'Capacity Warning Line:' + 90+'%',
+                            text: 'Turns Target:' + 4.0,
                             align: 'left'
                         }
                     }]
@@ -186,7 +190,8 @@
                                     $(this)[0].chart.reflow();
                                 }
                                 else {
-                                    showcapacitydata(line_data.pd);
+                                    console.log(event);
+                                    showinventdata(event.point.category, line_data.pd);
                                 }
                             }
                         }
@@ -200,9 +205,9 @@
 
     }
 
-    var productcapacity = function () {
+    var productinvent = function () {
 
-        $.post('/Capacity/GetAllProductList', {}, function (output) {
+        $.post('/Inventory/GetAllProductList', {}, function (output) {
             $('#productlist').tagsinput({
                 freeInput: false,
                 typeahead: {
@@ -219,14 +224,14 @@
                 }
             });
 
-            getproductcapacity();
+            getproductinventory();
         });
 
-        var captable = null;
-        var capdatatable = null;
+        var inventtable = null;
+        var inventdatatable = null;
         var rawdataobj = {};
 
-        function getproductcapacity() {
+        function getproductinventory() {
             var prodtype = $('#producttype').val();
             var prod = $.trim($('#productlist').tagsinput('items'));
             if (prod == '') {
@@ -234,7 +239,7 @@
             }
 
             if (prodtype == '' && prod == '')
-            { return false;}
+            { return false; }
 
             var options = {
                 loadingTips: "loading data......",
@@ -246,20 +251,20 @@
             }
             $.bootstrapLoading.start(options);
 
-            $.post('/Capacity/ProductCapacityData',
+            $.post('/Inventory/ProductInventoryData',
                 {
-                    prodtype:prodtype,
-                    prod:prod
+                    prodtype: prodtype,
+                    prod: prod
                 },
                 function (output) {
                     $.bootstrapLoading.end();
                     rawdataobj = output.rawdata;
 
-                    if (captable) {
-                        captable.destroy();
+                    if (inventtable) {
+                        inventtable.destroy();
                     }
-                    $("#capacitytabheadid").empty();
-                    $("#capacitytabcontentid").empty();
+                    $("#inventorytabheadid").empty();
+                    $("#inventorytabcontentid").empty();
 
                     var idx = 0;
                     var titlelength = output.tabletitle.length;
@@ -270,7 +275,7 @@
                     }
                     appendstr += "<th>Chart</th>";
                     appendstr += "</tr>";
-                    $("#capacitytabheadid").append(appendstr);
+                    $("#inventorytabheadid").append(appendstr);
 
                     appendstr = "";
                     idx = 0;
@@ -286,13 +291,13 @@
                         appendstr += "<td><div id='" + output.chartdatalist[idx].id + "' style='max-width:840px!important'></div></td>";
                         appendstr += "</tr>";
                     }
-                    $("#capacitytabcontentid").append(appendstr);
+                    $("#inventorytabcontentid").append(appendstr);
 
                     for (idx = 0; idx < contentlength; idx++) {
                         drawline(output.chartdatalist[idx]);
                     }
 
-                    captable = $('#capacitymaintable').DataTable({
+                    inventtable = $('#inventorymaintable').DataTable({
                         'iDisplayLength': 50,
                         'aLengthMenu': [[20, 50, 100, -1],
                         [20, 50, 100, "All"]],
@@ -307,21 +312,21 @@
 
 
         $('body').on('click', '#btn-search', function () {
-            getproductcapacity();
+            getproductinventory();
         })
 
 
         $('body').on('click', '.YIELDDATA', function () {
-            showcapacitydata($(this).attr('myid'));
+            showinventdata($(this).attr('myid'));
         })
 
-        function showcapacitydata(id) {
+        function showinventdata(id) {
             var capdata = rawdataobj[id];
 
-            if (capdatatable) {
-                capdatatable.destroy();
+            if (inventdatatable) {
+                inventdatatable.destroy();
             }
-            $("#capacitycontentid").empty();
+            $("#inventorycontentid").empty();
 
             var appendstr = "";
 
@@ -336,9 +341,9 @@
                 appendstr += "<td>" + val.PN + "</td>";
                 appendstr += "</tr>";
             })
-            $("#capacitycontentid").append(appendstr);
+            $("#inventorycontentid").append(appendstr);
 
-            capdatatable = $('#capacitydatatable').DataTable({
+            inventdatatable = $('#inventorydatatable').DataTable({
                 'iDisplayLength': 50,
                 'aLengthMenu': [[20, 50, 100, -1],
                 [20, 50, 100, "All"]],
@@ -348,7 +353,7 @@
                 buttons: ['copyHtml5', 'csv', 'excelHtml5']
             });
 
-            $('#capacitymodal').modal('show');
+            $('#inventorymodal').modal('show');
         }
 
         var drawline = function (line_data) {
@@ -373,22 +378,22 @@
                 },
                 yAxis: [{
                     title: {
-                        text: 'Amount'
+                        text: 'Dollar'
                     },
                     visible: false
                 },
                 {
                     opposite: true,
                     title: {
-                        text: "Consume Rate %"
+                        text: "Turns"
                     },
                     visible: false,
                     plotLines: [{
-                        value: 90,
+                        value: 4.0,
                         color: 'red',
                         width: 2,
                         label: {
-                            text: 'Capacity Warning Line:' + 90 + '%',
+                            text: 'Turns Target:' + 4.0,
                             align: 'left'
                         }
                     }]
@@ -419,7 +424,7 @@
                                     $(this)[0].chart.reflow();
                                 }
                                 else {
-                                    showcapacitydata(line_data.pd);
+                                    showinventdata(line_data.pd);
                                 }
                             }
                         }
@@ -435,10 +440,10 @@
 
     return {
         DEPARTMENTINIT: function () {
-            departmentcapacity();
+            departmentinvent();
         },
         PRODUCTINIT: function () {
-            productcapacity();
+            productinvent();
         }
     }
 }();

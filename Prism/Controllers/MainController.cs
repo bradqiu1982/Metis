@@ -123,6 +123,12 @@ namespace Prism.Controllers
                 }
                 catch (Exception ex) { }
 
+                try
+                {
+                    InventoryData.LoadInventoryTrend(this);
+                    InventoryData.LoadInventoryDetail(this);
+                }
+                catch (Exception ex) { }
             }//end only run once
 
             heartbeatlog("Heart Beat Start", filename);
@@ -275,6 +281,11 @@ namespace Prism.Controllers
             return View("HeartBeat");
         }
 
-
+        public ActionResult LoadInventoryData()
+        {
+            InventoryData.LoadInventoryTrend(this);
+            InventoryData.LoadInventoryDetail(this);
+            return View("HeartBeat");
+        }
     }
 }

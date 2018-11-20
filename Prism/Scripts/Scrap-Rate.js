@@ -306,7 +306,7 @@
                     value: line_data.bugetscraprate.data,
                     color: line_data.bugetscraprate.color,
                     dashStyle: line_data.bugetscraprate.style,
-                    width: 1,
+                    width: 2,
                     label: {
                         text: 'Buget Scrap Rate:' + line_data.bugetscraprate.data,
                         align: 'left'
@@ -321,7 +321,7 @@
                     value: line_data.bugetscrapval.data,
                     color: line_data.bugetscrapval.color,
                     dashStyle: line_data.bugetscrapval.style,
-                    width: 1,
+                    width: 2,
                     label: {
                         text: 'Buget Scrap:' + line_data.bugetscrapval.data,
                         align: 'left'

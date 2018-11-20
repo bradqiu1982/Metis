@@ -256,3 +256,36 @@ CREATE TABLE [dbo].[CapacityRawData]
 	[Appv_3]   NVARCHAR (200) DEFAULT ('') NOT NULL,
 	[Appv_4]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
 );
+
+
+CREATE TABLE [dbo].[InventoryTrend]
+(
+	[ID]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Quarter]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Department]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Product]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[COGS]   FLOAT DEFAULT (0) NOT NULL,
+	[Inventory]   FLOAT DEFAULT (0) NOT NULL,
+	[InventoryTurns]   FLOAT DEFAULT (0) NOT NULL,
+	[Appv_1]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_2]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_3]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_4]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
+);
+
+
+CREATE TABLE [dbo].[InventoryDetail]
+(
+	[ID]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Quarter]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Department]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Product]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[COGS]   FLOAT DEFAULT (0) NOT NULL,
+	[Inventory]   FLOAT DEFAULT (0) NOT NULL,
+	[InventoryTurns]   FLOAT DEFAULT (0) NOT NULL,
+	[Appv_1]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_2]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_3]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_4]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
+);
+

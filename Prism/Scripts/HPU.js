@@ -353,7 +353,7 @@
                     value: line_data.hpuguideline.data,
                     color: line_data.hpuguideline.color,
                     dashStyle: line_data.hpuguideline.style,
-                    width: 1,
+                    width: 2,
                     label: {
                         text: line_data.hpuguideline.name + ':' + line_data.hpuguideline.data,
                         align: 'left'

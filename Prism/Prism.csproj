@@ -196,6 +196,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\CapacityController.cs" />
     <Compile Include="Controllers\DataAnalyzeController.cs" />
+    <Compile Include="Controllers\InventoryController.cs" />
     <Compile Include="Controllers\MachineController.cs" />
     <Compile Include="Controllers\MainController.cs" />
     <Compile Include="Controllers\ScrapController.cs" />
@@ -216,6 +217,7 @@
     <Compile Include="Models\FsrShipData.cs" />
     <Compile Include="Models\HPUMainData.cs" />
     <Compile Include="Models\IEScrapBuget.cs" />
+    <Compile Include="Models\InventoryData.cs" />
     <Compile Include="Models\MachinePreData.cs" />
     <Compile Include="Models\MachineRate.cs" />
     <Compile Include="Models\MachineUserMap.cs" />
@@ -755,6 +757,7 @@
     <Content Include="Scripts\highmaps\offline-exporting.js" />
     <Content Include="Scripts\highmaps\world.js" />
     <Content Include="Scripts\HPU.js" />
+    <Content Include="Scripts\inventory.js" />
     <Content Include="Scripts\jquery-1.12.4.min.js" />
     <Content Include="Scripts\jquery-autocomplete\jquery.auto-complete.css" />
     <Content Include="Scripts\jquery-autocomplete\jquery.auto-complete.js" />
@@ -844,6 +847,7 @@
     <Content Include="Views\Main\TableCatch.cshtml" />
     <Content Include="Views\Capacity\DepartmentCapacity.cshtml" />
     <Content Include="Views\Capacity\ProductCapacity.cshtml" />
+    <Content Include="Views\Inventory\DepartmentInventory.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
