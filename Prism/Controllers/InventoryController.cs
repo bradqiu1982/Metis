@@ -97,7 +97,7 @@ namespace Prism.Controllers
                 var linelist = new List<object>();
                 if (fordepartment)
                 {
-                    linelist.Add("<a href='/Product/ProductInventory?producttype=" + Url.Encode(pd) + "' target='_blank'>" + pd + "</a>");
+                    linelist.Add("<a href='/Inventory/ProductInventory?producttype=" + Url.Encode(pd) + "' target='_blank'>" + pd + "</a>");
                 }
                 else
                 {
@@ -174,7 +174,7 @@ namespace Prism.Controllers
             return GetInventoryDataChart(inventorydata);
         }
 
-        public JsonResult DepartmentDetailData()
+        public JsonResult DepartmentDetailDataDP()
         {
             var pd = Request.Form["pd"];
             var qt = Request.Form["qt"];
@@ -187,6 +187,57 @@ namespace Prism.Controllers
             return ret;
         }
 
+        public JsonResult DepartmentDetailDataPD()
+        {
+            var pd = Request.Form["pd"];
+            var qt = Request.Form["qt"];
+            var invtdata = InventoryData.RetrieveDetailDataByPD(pd, qt);
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                invtdata = invtdata
+            };
+            return ret;
+        }
 
+        public ActionResult ProductInventory(string producttype)
+        {
+            ViewBag.producttype = "";
+            if (!string.IsNullOrEmpty(producttype))
+            { ViewBag.producttype = producttype; }
+            return View();
+        }
+
+        public JsonResult ProductInventoryData()
+        {
+            var prodtype = Request.Form["prodtype"];
+            var prod = Request.Form["prod"];
+
+            var ivtdatalist = new List<InventoryData>();
+
+            if (!string.IsNullOrEmpty(prod))
+            {
+                var pdlist = prod.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                ivtdatalist = InventoryData.RetrieveDetailDataByPD(pdlist);
+            }
+            else
+            {
+                ivtdatalist = InventoryData.RetrieveDetailDataByDP(prodtype,null);
+            }
+            return GetInventoryDataChart(ivtdatalist,false);
+        }
+
+        public JsonResult GetAllProductList()
+        {
+            var pdlist = InventoryData.GetAllProductList();
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                pdlist = pdlist
+            };
+            return ret;
+        }
     }
 }

@@ -114,7 +114,7 @@ namespace Prism.Models
                                 continue;
                             }
                             var pn = line[2];
-                            var product = line[3];
+                            var product = line[3].Replace(",","");
                             var qs = quarterlist[qidx].Split(new string[] { "FY" }, StringSplitOptions.RemoveEmptyEntries);
                             var quarter = "20" + qs[1] + " " + qs[0];
                             var id = pn + "_" + quarter;

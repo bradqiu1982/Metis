@@ -64,8 +64,8 @@ namespace Prism.Models
                                 tempvm.REFERENCE = line[14];
                                 tempvm.JOB_PREFIX = line[15];
                                 tempvm.ORIGINAL_PROJECT_CODE = line[16];
-                                tempvm.PRODUCT_GROUP = line[17];
-                                tempvm.PRODUCT = line[18];
+                                tempvm.PRODUCT_GROUP = line[17].Replace(",","");
+                                tempvm.PRODUCT = line[18].Replace(",", "");
                                 tempvm.JOB_POSTFIX = line[19];
                                 tempvm.PLM = line[20];
                                 tempvm.Scrap_Or_Output = line[21];
@@ -426,12 +426,12 @@ namespace Prism.Models
 
                     var idx = (hpucol["产品线".ToUpper()] == -1) ? hpucol["Line".ToUpper()] : hpucol["产品线".ToUpper()];
                     if (idx != -1)
-                    { tempvm.ProductLine = line[idx]; }
+                    { tempvm.ProductLine = line[idx].Replace(",", ""); }
 
                     var searialidx = (hpucol["产品系列".ToUpper()] == -1) ? hpucol["产品系列1".ToUpper()] : hpucol["产品系列".ToUpper()];
                     searialidx = (searialidx == -1) ? hpucol["Product".ToUpper()] : searialidx;
                     if (searialidx != -1)
-                    { tempvm.Serial = line[searialidx]; }
+                    { tempvm.Serial = line[searialidx].Replace(",", ""); }
 
                     if (hpucol["Customer".ToUpper()] != -1)
                     { tempvm.Customer = line[hpucol["Customer".ToUpper()]]; }

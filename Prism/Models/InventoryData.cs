@@ -71,7 +71,7 @@ namespace Prism.Models
                         {
                             var quarter = line[0].ToUpper().Trim().Replace("FY", "20").Replace("-ACTUAL", "");
                             var department = line[1];
-                            var product = line[2];
+                            var product = line[2].Replace(",","");
                             var id = quarter + "_" + department+"_"  + product;
                             var cogs = Convert.ToDouble(line[3].Replace("$", ""));
                             var inventory = Convert.ToDouble(line[4].Replace("$", ""));
@@ -162,6 +162,46 @@ namespace Prism.Models
                 sql = sql.Replace("<Quarter>", quarter);
             }
             sql = sql.Replace("<Department>",department);
+            sql += " order by InventoryTurns desc";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(new InventoryData(Convert.ToString(line[0]), Convert.ToString(line[1]), Convert.ToString(line[2]), Convert.ToString(line[3])
+                    , Convert.ToDouble(line[4]), Convert.ToDouble(line[5]), Convert.ToDouble(line[6])));
+            }
+
+            return ret;
+        }
+
+        public static List<InventoryData> RetrieveDetailDataByPD(List<string> pdlist)
+        {
+            var pdcond = "('" + string.Join("','", pdlist) + "')";
+
+            var ret = new List<InventoryData>();
+            var sql = "select ID,Quarter,Department,Product,COGS,Inventory,InventoryTurns from InventoryDetail where Product in <pdcond> ";
+            sql = sql.Replace("<pdcond>", pdcond);
+            sql += " order by InventoryTurns desc";
+
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(new InventoryData(Convert.ToString(line[0]), Convert.ToString(line[1]), Convert.ToString(line[2]), Convert.ToString(line[3])
+                    , Convert.ToDouble(line[4]), Convert.ToDouble(line[5]), Convert.ToDouble(line[6])));
+            }
+
+            return ret;
+        }
+
+        public static List<InventoryData> RetrieveDetailDataByPD(string prod, string quarter)
+        {
+            var ret = new List<InventoryData>();
+            var sql = "select ID,Quarter,Department,Product,COGS,Inventory,InventoryTurns from InventoryDetail where Product = '<Product>' ";
+            if (!string.IsNullOrEmpty(quarter))
+            {
+                sql += " and Quarter = '<Quarter>' ";
+                sql = sql.Replace("<Quarter>", quarter);
+            }
+            sql = sql.Replace("<Product>", prod);
             sql += " order by InventoryTurns desc";
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)

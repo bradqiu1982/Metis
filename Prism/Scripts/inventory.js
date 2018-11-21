@@ -81,7 +81,7 @@
         })
 
         function showinventdata(qt,pd) {
-            $.post('/Inventory/DepartmentDetailData',
+            $.post('/Inventory/DepartmentDetailDataDP',
                 {
                     qt: qt,
                     pd: pd
@@ -229,7 +229,6 @@
 
         var inventtable = null;
         var inventdatatable = null;
-        var rawdataobj = {};
 
         function getproductinventory() {
             var prodtype = $('#producttype').val();
@@ -258,7 +257,6 @@
                 },
                 function (output) {
                     $.bootstrapLoading.end();
-                    rawdataobj = output.rawdata;
 
                     if (inventtable) {
                         inventtable.destroy();
@@ -316,45 +314,50 @@
         })
 
 
-        $('body').on('click', '.YIELDDATA', function () {
-            showinventdata($(this).attr('myid'));
-        })
+        //$('body').on('click', '.YIELDDATA', function () {
+        //    showinventdata($(this).attr('qt'), $(this).attr('pd'));
+        //})
 
-        function showinventdata(id) {
-            var capdata = rawdataobj[id];
+        //function showinventdata(qt, pd) {
+        //    $.post('/Inventory/DepartmentDetailDataPD',
+        //        {
+        //            qt: qt,
+        //            pd: pd
+        //        },
+        //        function (output) {
+        //            if (inventdatatable) {
+        //                inventdatatable.destroy();
+        //            }
+        //            $("#inventorycontentid").empty();
 
-            if (inventdatatable) {
-                inventdatatable.destroy();
-            }
-            $("#inventorycontentid").empty();
+        //            var appendstr = "";
 
-            var appendstr = "";
+        //            $.each(output.invtdata, function (i, val) {
+        //                appendstr += "<tr>";
+        //                appendstr += "<td>" + val.Quarter + "</td>";
+        //                appendstr += "<td>" + val.Department + "</td>";
+        //                appendstr += "<td>" + val.Product + "</td>";
+        //                appendstr += "<td>" + val.COGS + "</td>";
+        //                appendstr += "<td>" + val.Inventory + "</td>";
+        //                appendstr += "<td>" + val.InventoryTurns + "</td>";
+        //                appendstr += "</tr>";
+        //            })
+        //            $("#inventorycontentid").append(appendstr);
 
-            $.each(capdata, function (i, val) {
-                appendstr += "<tr>";
-                appendstr += "<td>" + val.Quarter + "</td>";
-                appendstr += "<td>" + val.Product + "</td>";
-                appendstr += "<td>" + val.MaxCapacity + "</td>";
-                appendstr += "<td>" + val.ForeCast + "</td>";
-                appendstr += "<td>" + val.Usage + "</td>";
-                appendstr += "<td>" + val.GAP + "</td>";
-                appendstr += "<td>" + val.PN + "</td>";
-                appendstr += "</tr>";
-            })
-            $("#inventorycontentid").append(appendstr);
+        //            inventdatatable = $('#inventorydatatable').DataTable({
+        //                'iDisplayLength': 50,
+        //                'aLengthMenu': [[20, 50, 100, -1],
+        //                [20, 50, 100, "All"]],
+        //                "aaSorting": [],
+        //                "order": [],
+        //                dom: 'lBfrtip',
+        //                buttons: ['copyHtml5', 'csv', 'excelHtml5']
+        //            });
 
-            inventdatatable = $('#inventorydatatable').DataTable({
-                'iDisplayLength': 50,
-                'aLengthMenu': [[20, 50, 100, -1],
-                [20, 50, 100, "All"]],
-                "aaSorting": [],
-                "order": [],
-                dom: 'lBfrtip',
-                buttons: ['copyHtml5', 'csv', 'excelHtml5']
-            });
-
-            $('#inventorymodal').modal('show');
-        }
+        //            $('#inventorymodal').modal('show');
+        //        }
+        //        );
+        //}
 
         var drawline = function (line_data) {
             var options = {
@@ -424,7 +427,7 @@
                                     $(this)[0].chart.reflow();
                                 }
                                 else {
-                                    showinventdata(line_data.pd);
+                                    //showinventdata(event.point.category, line_data.pd);
                                 }
                             }
                         }
