@@ -107,7 +107,7 @@ namespace Prism.Models
         {
             var ret = new Dictionary<string, Dictionary<string, double>>();
             var custdict = CfgUtility.GetAllCustConfig(ctrl);
-            var sql = @"select ShipQty,Customer1,Customer2,ShipDate from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and Configuration = @producttype ";
+            var sql = @"select ShipQty,Customer1,Customer2,ShipDate from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and ProdDesc not like '%LINECARD%' and Configuration = @producttype ";
 
             if (string.Compare(rate, VCSELRATE.r14G, true) == 0)
             { sql = sql + " and ( VcselType = '" + VCSELRATE.r14G + "' or VcselType = '" + VCSELRATE.r10G + "')"; }
@@ -166,6 +166,63 @@ namespace Prism.Models
             return ret;
         }
 
+        public static Dictionary<string, Dictionary<string, double>> RetrieveLineCardShipDataByMonth(string sdate, string edate, Controller ctrl)
+        {
+            var ret = new Dictionary<string, Dictionary<string, double>>();
+            var custdict = CfgUtility.GetAllCustConfig(ctrl);
+            var sql = @"select ShipQty,Customer1,Customer2,ShipDate from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and ProdDesc like '%LINECARD%' ";
+
+            var dict = new Dictionary<string, string>();
+            dict.Add("@sdate", sdate);
+            dict.Add("@edate", edate);
+
+
+            var realcustdict = new Dictionary<string, bool>();
+            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            foreach (var line in dbret)
+            {
+                var shipdate = Convert.ToDateTime(line[3]).ToString("yyyy-MM");
+                var qty = Convert.ToDouble(line[0]);
+                var cust1 = Convert.ToString(line[1]).ToUpper();
+                var cust2 = Convert.ToString(line[2]).ToUpper();
+                var realcust = RetrieveCustome(cust1, cust2, custdict);
+
+                if (!realcustdict.ContainsKey(realcust))
+                { realcustdict.Add(realcust, true); }
+
+                if (ret.ContainsKey(shipdate))
+                {
+                    var shipdict = ret[shipdate];
+                    if (shipdict.ContainsKey(realcust))
+                    { shipdict[realcust] = shipdict[realcust] + qty; }
+                    else
+                    { shipdict.Add(realcust, qty); }
+                }
+                else
+                {
+                    var custcntdict = new Dictionary<string, double>();
+                    custcntdict.Add(realcust, qty);
+                    ret.Add(shipdate, custcntdict);
+                }
+            }
+
+            var shipdatelist = ret.Keys.ToList();
+            var realcustlist = realcustdict.Keys.ToList();
+
+            foreach (var sd in shipdatelist)
+            {
+                var custcntdict = ret[sd];
+                foreach (var c in realcustlist)
+                {
+                    if (!custcntdict.ContainsKey(c))
+                    {
+                        custcntdict.Add(c, 0.0);
+                    }
+                }
+            }
+
+            return ret;
+        }
 
         public static Dictionary<string, Dictionary<string, double>> RetrieveOrderDataByMonth(string rate, string producttype, string sdate, string edate, Controller ctrl)
         {

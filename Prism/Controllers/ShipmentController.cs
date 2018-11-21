@@ -111,7 +111,7 @@ namespace Prism.Controllers
                 {
                     name = name,
                     data = namecnt,
-                    color = colorlist[cidx]
+                    color = colorlist[cidx % colorlist.Count]
                 });
                 cidx += 1;
             }
@@ -316,7 +316,7 @@ namespace Prism.Controllers
                 {
                     name = name,
                     data = namecnt,
-                    color = colorlist[cidx]
+                    color = colorlist[cidx % colorlist.Count]
                 });
                 cidx += 1;
             }
@@ -447,7 +447,7 @@ namespace Prism.Controllers
                 {
                     name = name,
                     data = namecnt,
-                    color = colorlist[cidx]
+                    color = colorlist[cidx % colorlist.Count]
                 });
                 cidx += 1;
             }
@@ -737,6 +737,21 @@ namespace Prism.Controllers
                 shipdataarray.Add(GetShipmentQuarterChartData(tunableshipdata, allrmacntdict, "tunable", SHIPPRODTYPE.OPTIUM));
             }
 
+            var linecardshipdata = FsrShipData.RetrieveLineCardShipDataByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            if (linecardshipdata.Count > 0)
+            {
+                var vcselrmacntdict = new Dictionary<string, int>();
+                var allrmacntdict = new Dictionary<string, int>();
+                shipdataarray.Add(GetShipmentQuarterChartData(linecardshipdata, allrmacntdict, "linecard", "LINECARD"));
+            }
+
+            var edfashipdata = FsrShipData.RetrieveShipDataByMonth("", SHIPPRODTYPE.RED_C, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            if (edfashipdata.Count > 0)
+            {
+                var vcselrmacntdict = new Dictionary<string, int>();
+                var allrmacntdict = new Dictionary<string, int>();
+                shipdataarray.Add(GetShipmentQuarterChartData(edfashipdata, allrmacntdict, "EDFA", SHIPPRODTYPE.RED_C));
+            }
 
             var ret = new JsonResult();
             ret.MaxJsonLength = Int32.MaxValue;
