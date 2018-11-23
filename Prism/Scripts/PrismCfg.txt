@@ -22,8 +22,6 @@ CAPACITYSRCFOLDER:::\\wux-fs\PUBLIC\WUXI IE\HPU\Capacity
 
 MANUALHPUQUARTER:::2019 Q2
 
-CAPACITYTRENDSERIAL:::Quadwire EDR - QB1C
-
 WUXIOTSFILE:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - OTS for WUXI.csv
 
 RMASHAREFOLDER:::\\wux-fs\PUBLIC\Quality\10.Quality case summary\Customer Quality Case Summary\13. RMA & Complaint New

@@ -1358,5 +1358,91 @@ namespace Prism.Controllers
             return ret;
         }
 
+        public ActionResult ShipOutputTrend()
+        {
+            return View();
+        }
+
+        public JsonResult ShipOutputTrendData()
+        {
+            var colorlist = new string[] { "#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
+                , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
+                , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
+
+            var shipdata = ScrapData_Base.RetrieveAllOutputData();
+            var xlist = shipdata.Keys.ToList();
+            var qdict = new Dictionary<string, bool>();
+            foreach (var skv in shipdata)
+            {
+                foreach (var qkv in skv.Value)
+                {
+                    if (!qdict.ContainsKey(qkv.Key))
+                    { qdict.Add(qkv.Key,true); }
+                }
+            }
+
+            var qlist = qdict.Keys.ToList();
+            qlist.Sort(delegate (string obj1, string obj2)
+            {
+                var d1 = QuarterCLA.RetrieveDateFromQuarter(obj1)[0];
+                var d2 = QuarterCLA.RetrieveDateFromQuarter(obj2)[0];
+                return d1.CompareTo(d2);
+            });
+
+            var cidx = 0;
+            var chartseris = new List<object>();
+            foreach (var q in qlist)
+            {
+                var qdatalist = new List<double>();
+                foreach (var skv in shipdata)
+                {
+                    if (skv.Value.ContainsKey(q))
+                    {
+                        qdatalist.Add(Math.Round(skv.Value[q],0));
+                    }
+                    else
+                    {
+                        qdatalist.Add(0.0);
+                    }
+                }
+                chartseris.Add(new
+                {
+                    name = q,
+                    type = "column",
+                    data = qdatalist,
+                    color = colorlist[cidx%colorlist.Count]
+                });
+                cidx++;
+            }
+
+            var chartdata = new
+            {
+                id = "shipoutput_id",
+                title = "Department Ship Output",
+                xlist = xlist,
+                chartseris = chartseris
+            };
+
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                chartdata = chartdata
+            };
+            return ret;
+
+        }
+
+        public JsonResult ShipoutDetailData(string dp,string qt)
+        {
+            var shipoutlist = ScrapData_Base.RetrieveOutputData(dp, qt);
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                shipoutlist = shipoutlist
+            };
+            return ret;
+        }
+
     }
 }

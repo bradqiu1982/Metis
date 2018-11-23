@@ -849,6 +849,7 @@
     <Content Include="Views\Capacity\ProductCapacity.cshtml" />
     <Content Include="Views\Inventory\DepartmentInventory.cshtml" />
     <Content Include="Views\Inventory\ProductInventory.cshtml" />
+    <Content Include="Views\Shipment\ShipOutputTrend.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

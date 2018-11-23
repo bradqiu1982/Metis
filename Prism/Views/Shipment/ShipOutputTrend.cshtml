@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "Order Data";
+    ViewBag.Title = "ShipOutputTrend";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -17,7 +17,7 @@
 <script type="text/javascript" src="~/Scripts/shipment.js"></script>
 <script type="text/javascript">
         $(function(){
-            Shipment.orderinit();
+            Shipment.outputinit();
         })
 </script>
 
@@ -28,7 +28,7 @@
     </div>
     <div class="nav navbar-nav navbar-left">
         <ol class="breadcrumb" style="width:600px">
-            <li class="active">Order Distribution</li>
+            <li class="active">Ship Output Trend</li>
         </ol>
     </div>
 </div>
@@ -51,12 +51,12 @@
                     <span class="item-show">Shipment LBS</span>
                 </a>
             </li>
-            <li class="active">
+            <li>
                 <a href="/Shipment/OrderData">
                     <span class="item-show">Order Distribution</span>
                 </a>
             </li>
-            <li>
+            <li class="active">
                 <a href="/Shipment/ShipOutputTrend">
                     <span class="item-show">Ship Output Trend</span>
                 </a>
@@ -72,31 +72,6 @@
         <div class="v-container">
             <div class="v-filter">
                 <div class="row row-margin">
-                    <label class="col-xs-1">Date Period</label>
-                    <div class="col-xs-3">
-                        <div class="input-group date" data-date=""
-                             data-date-format="yyyy-mm">
-                            <input type="text" class="form-control"
-                                   id="sdate" name="sdate" value="" readonly>
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-th"></span>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="col-xs-1 text-center">~</div>
-                    <div class="col-xs-3">
-                        <div class="input-group date" data-date=""
-                             data-date-format="yyyy-mm">
-                            <input type="text" class="form-control"
-                                   id="edate" name="edate" value="" readonly>
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-th"></span>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="col-xs-1 box-search">
-                        <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
-                    </div>
                 </div>
             </div>
             <div class="v-content">
@@ -105,6 +80,33 @@
     </div>
     <div class="hidden">
         <a id="exportLink"></a>
+    </div>
+</div>
+
+
+<div class="modal" id="shipoutputmodal" tabindex="-1" role="dialog" aria-labelledby="shipoutputmodalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="shipoutputmodalLabel">Ship Output Info</h4>
+            </div>
+            <div class="row" style="margin-left:15px!important;margin-right:15px!important;">
+                <table class="table table-hover  table-condensed table-striped" id="shipoutdatatable" style="margin-top:1%">
+                    <caption class="tb-caption">Ship Output Data</caption>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>QTY</th>
+                            <th>Output</th>
+                        </tr>
+                    </thead>
+                    <tbody id="shipoutputcontentid"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>
 

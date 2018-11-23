@@ -136,7 +136,6 @@
             }, function (output) {
                 if (output.success) {
                     $('.v-content').empty();
-                    console.log(output.chartarray);
                     var appendstr = "";
 
                     $.each(output.chartarray, function (i, val) {
@@ -150,6 +149,23 @@
             })
         })
 
+    }
+
+    var shipoutput = function ()
+    {
+        $(function () {
+            $.post('/Shipment/ShipOutputTrendData',
+                {},
+                function (output) {
+                    $('.v-content').empty();
+                    var appendstr = "";
+                    appendstr = '<div class="col-xs-12">' +
+                               '<div class="v-box" id="' + output.chartdata.id + '"></div>' +
+                               '</div>';
+                    $('.v-content').append(appendstr);
+                    drawshipcolumn(output.chartdata)
+                });
+        });
     }
 
     var myrmatable = null;
@@ -339,6 +355,44 @@
 
                 $('#rmarawdata').modal('show')
             })
+    }
+
+    var myshipouttable = null;
+    var showshipoutdata = function (event) {
+        var qt = event.point.series.name;
+        var dp = event.point.category;
+        $.post('/Shipment/ShipoutDetailData',
+            {
+                dp: dp,
+                qt: qt
+            },
+            function (outputdata) {
+                if (myshipouttable) {
+                    myshipouttable.destroy();
+                }
+                $('#shipoutputcontentid').empty();
+
+                $.each(outputdata.shipoutlist, function (i, val) {
+                    var appendstr = '<tr>' +
+                        '<td>' + val.PRODUCT + '</td>' +
+                        '<td>' + val.PRIMARY_QUANTITY_1 + '</td>' +
+                        '<td>' + val.Transaction_Value_Usd_1 + '</td>' +
+                        '</tr>';
+                    $('#shipoutputcontentid').append(appendstr);
+                });
+
+                myshipouttable = $('#shipoutdatatable').DataTable({
+                    'iDisplayLength': 50,
+                    'aLengthMenu': [[20, 50, 100, -1],
+                    [20, 50, 100, "All"]],
+                    "aaSorting": [],
+                    "order": [],
+                    dom: 'lBfrtip',
+                    buttons: ['copyHtml5', 'csv', 'excelHtml5']
+                });
+                $('#shipoutputmodalLabel').html(dp + ' ' + qt + ' Ship OutPut Info');
+                $('#shipoutputmodal').modal('show')
+            });
     }
 
     var drawcolumn = function (col_data) {
@@ -983,7 +1037,95 @@
             });
     }
 
+    var drawshipcolumn = function (col_data) {
+        var options = {
+            chart: {
+                zoomType: 'xy',
+                type: 'column'
+            },
+            title: {
+                text: col_data.title
+            },
+            xAxis: {
+                title: {
+                    text: 'Department'
+                },
+                categories: col_data.xlist
+            },
+            legend: {
+                enabled: true,
+            },
+            yAxis: {
+                title: {
+                    text: 'Output'
+                }
+            },
+            tooltip: {
+                pointFormat: '{series.name} : <b>{point.y}</b>'
+            },
+            plotOptions: {
+                series: {
+                    cursor: 'pointer',
+                    events: {
+                        click: function (event) {
+                            showshipoutdata(event);
+                        }
+                    }
+                }
+            },
+            series: col_data.chartseris,
+            exporting: {
+                menuItemDefinitions: {
+                    fullscreen: {
+                        onclick: function () {
+                            $('#' + col_data.id).parent().toggleClass('chart-modal');
+                            $('#' + col_data.id).highcharts().reflow();
+                        },
+                        text: 'Full Screen'
+                    },
+                    datalabel: {
+                        onclick: function () {
+                            var labelflag = !this.series[0].options.dataLabels.enabled;
+                            $.each(this.series, function (idx, val) {
+                                var opt = val.options;
+                                opt.dataLabels.enabled = labelflag;
+                                val.update(opt);
+                            })
+                        },
+                        text: 'Data Label'
+                    },
+                    copycharts: {
+                        onclick: function () {
+                            var svg = this.getSVG({
+                                chart: {
+                                    width: this.chartWidth,
+                                    height: this.chartHeight
+                                }
+                            });
+                            var c = document.createElement('canvas');
+                            c.width = this.chartWidth;
+                            c.height = this.chartHeight;
+                            canvg(c, svg);
+                            var dataURL = c.toDataURL("image/png");
+                            //var imgtag = '<img src="' + dataURL + '"/>';
 
+                            var img = new Image();
+                            img.src = dataURL;
+
+                            copyImgToClipboard(img);
+                        },
+                        text: 'copy 2 clipboard'
+                    }
+                },
+                buttons: {
+                    contextButton: {
+                        menuItems: ['fullscreen', 'datalabel', 'copycharts', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG']
+                    }
+                }
+            }
+        };
+        Highcharts.chart(col_data.id, options);
+    }
 
     return {
         init: function () {
@@ -1000,6 +1142,9 @@
         },
         workloadinit: function () {
             rmaworkloaddata();
+        },
+        outputinit: function () {
+            shipoutput();
         }
     }
 }();

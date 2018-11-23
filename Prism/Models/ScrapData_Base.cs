@@ -249,6 +249,87 @@ namespace Prism.Models
             return ret;
         }
 
+        public static Dictionary<string, Dictionary<string, double>> RetrieveAllOutputData()
+        {
+            var ret = new Dictionary<string, Dictionary<string, double>>();
+            var sql = "select Transaction_Value_Usd_1,PRODUCT_GROUP,CrtYear+' '+CrtQuarter from ScrapData_Base where Scrap_Or_Output= '<output>' order by PRODUCT_GROUP";
+            sql = sql.Replace("<output>", SCRAPOUTPUTSCRAP.OUTPUT);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                try
+                {
+                    var output = Convert.ToDouble(line[0]);
+                    var department = Convert.ToString(line[1]);
+                    var quarter = Convert.ToString(line[2]);
+                    if (ret.ContainsKey(department))
+                    {
+                        var qdict = ret[department];
+                        if (qdict.ContainsKey(quarter))
+                        {
+                            qdict[quarter] += output;
+                        }
+                        else
+                        {
+                            qdict.Add(quarter, output);
+                        }
+                    }
+                    else
+                    {
+                        var qdict = new Dictionary<string, double>();
+                        qdict.Add(quarter, output);
+                        ret.Add(department, qdict);
+                    }
+                }
+                catch (Exception ex) { }
+            }
+            return ret;
+        }
+
+        public static List<ScrapData_Base> RetrieveOutputData(string dp,string qt)
+        {
+            var ret = new Dictionary<string,ScrapData_Base>();
+
+            var sql = "select PRODUCT,PRIMARY_QUANTITY_1,Transaction_Value_Usd_1 from ScrapData_Base  where  Scrap_Or_Output= '<output>' and PRODUCT_GROUP = '<PRODUCT_GROUP>' ";
+            if (!string.IsNullOrEmpty(qt))
+            {
+                sql += "and CrtYear+' '+CrtQuarter = '<quarter>'";
+                sql = sql.Replace("<quarter>", qt);
+            }
+            sql += " order by PRODUCT,TRANSACTION_DATE";
+            sql = sql.Replace("<PRODUCT_GROUP>", dp).Replace("<output>", SCRAPOUTPUTSCRAP.OUTPUT);
+
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                try
+                {
+                    var vm = new ScrapData_Base();
+                    vm.PRODUCT = Convert.ToString(line[0]);
+                    vm.PRIMARY_QUANTITY_1 = Convert.ToString(line[1]);
+                    vm.Transaction_Value_Usd_1 = Convert.ToString(line[2]);
+                    if (ret.ContainsKey(vm.PRODUCT))
+                    {
+                        ret[vm.PRODUCT].PRIMARY_QUANTITY_1 = Math.Round(Convert.ToDouble(ret[vm.PRODUCT].PRIMARY_QUANTITY_1) + Convert.ToDouble(vm.PRIMARY_QUANTITY_1),3).ToString();
+                        ret[vm.PRODUCT].Transaction_Value_Usd_1 = Math.Round(Convert.ToDouble(ret[vm.PRODUCT].Transaction_Value_Usd_1) + Convert.ToDouble(vm.Transaction_Value_Usd_1), 3).ToString();
+                    }
+                    else
+                    {
+                        ret.Add(vm.PRODUCT, vm);
+                    }
+                }
+                catch (Exception ex) { }
+            }
+            var retlist = ret.Values.ToList();
+            retlist.Sort(delegate (ScrapData_Base obj1, ScrapData_Base obj2)
+            {
+                var d1 = Convert.ToDouble(obj1.Transaction_Value_Usd_1);
+                var d2 = Convert.ToDouble(obj2.Transaction_Value_Usd_1);
+                return d2.CompareTo(d1);
+            });
+            return retlist;
+        }
+
         public static List<string> RetrieveWeekListByPJ(string pjcode, string fyear, string fquarter)
         {
             var ret = new List<string>();
