@@ -30,6 +30,8 @@ INVENTORYTREND:::\\cn-file01.china.ads.finisar.com\Public\Active NPI\Product_Eng
 INVENTORYDETAIL:::\\cn-file01.china.ads.finisar.com\Public\Active NPI\Product_Engineering\Brad\Inventory Turns by Project and Series.csv
 INVENTORYDEPARTMENTORD:::Parallel;10G Tunable;Coherent Transceiver;Linecard;SFP+WIRE;OSA;WSS
 
+ITEMCOSTFILE:::\\wux-file01\Public\ERP_Report\WXI\Finance\Finisar - Item Cost Detail Report for WXI.csv
+
 ##SCRAPFOCUSPJ:::
 ###\\wux-fs\PUBLIC\WUXI IE\HPU
 

@@ -218,6 +218,7 @@
     <Compile Include="Models\HPUMainData.cs" />
     <Compile Include="Models\IEScrapBuget.cs" />
     <Compile Include="Models\InventoryData.cs" />
+    <Compile Include="Models\ItemCostData.cs" />
     <Compile Include="Models\MachinePreData.cs" />
     <Compile Include="Models\MachineRate.cs" />
     <Compile Include="Models\MachineUserMap.cs" />
