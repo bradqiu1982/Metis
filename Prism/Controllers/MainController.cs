@@ -275,9 +275,9 @@ namespace Prism.Controllers
             return View("HeartBeat");
         }
 
-        public ActionResult LoadCapacityRawData()
+        public ActionResult LoadCostData()
         {
-            CapacityRawData.LoadCapacityRawData(this);
+            ItemCostData.LoadCostData(this);
             return View("HeartBeat");
         }
 

@@ -1365,11 +1365,29 @@ namespace Prism.Controllers
 
         public JsonResult ShipOutputTrendData()
         {
+            var chartlist = new List<object>();
+            var shipdata = ScrapData_Base.RetrieveAllOutputData();
+            chartlist.Add(ShipOutputChartData(shipdata,"scrapout_id", "Department Output"));
+
+            shipdata = FsrShipData.RetrieveOutputData(this);
+            chartlist.Add(ShipOutputChartData(shipdata,"shipout_id", "Department Ship Output"));
+
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                chartlist = chartlist
+            };
+            return ret;
+        }
+
+
+        public object ShipOutputChartData(Dictionary<string,Dictionary<string,double>> shipdata,string id,string title)
+        {
             var colorlist = new string[] { "#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
                 , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
                 , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
 
-            var shipdata = ScrapData_Base.RetrieveAllOutputData();
+            
             var xlist = shipdata.Keys.ToList();
             var qdict = new Dictionary<string, bool>();
             foreach (var skv in shipdata)
@@ -1417,18 +1435,13 @@ namespace Prism.Controllers
 
             var chartdata = new
             {
-                id = "shipoutput_id",
-                title = "Department Ship Output",
+                id = id,
+                title = title,
                 xlist = xlist,
                 chartseris = chartseris
             };
 
-            var ret = new JsonResult();
-            ret.Data = new
-            {
-                chartdata = chartdata
-            };
-            return ret;
+            return chartdata;
 
         }
 

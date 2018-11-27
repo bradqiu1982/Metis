@@ -395,6 +395,19 @@ namespace Prism.Models
             return ret;
         }
 
+        public static List<string> RetrievePNByPG(string pg)
+        {
+            var ret = new List<string>();
+            var sql = "select distinct ITEM from ScrapData_Base where PRODUCT_GROUP = '<productgroup>'";
+            sql = sql.Replace("<productgroup>", pg);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
+            return ret;
+        }
+
         public ScrapData_Base()
         {
             DataKey = "";

@@ -289,3 +289,20 @@ CREATE TABLE [dbo].[InventoryDetail]
 	[Appv_4]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
 );
 
+
+
+CREATE TABLE [dbo].[ItemCostData]
+(
+	[ID]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[PN]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[FrozenCost]   FLOAT DEFAULT (0) NOT NULL,
+	[FrozenMaterialCost]   FLOAT DEFAULT (0) NOT NULL,
+	[FrozenResourceCost]   FLOAT DEFAULT (0) NOT NULL,
+	[FrozenOverhead]   FLOAT DEFAULT (0) NOT NULL,
+	[PlannerCode]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Quarter]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[Appv_1]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_2]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_3]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_4]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
+);

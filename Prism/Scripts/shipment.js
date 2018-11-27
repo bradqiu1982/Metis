@@ -159,11 +159,14 @@
                 function (output) {
                     $('.v-content').empty();
                     var appendstr = "";
-                    appendstr = '<div class="col-xs-12">' +
-                               '<div class="v-box" id="' + output.chartdata.id + '"></div>' +
+
+                    $.each(output.chartlist, function (i, val) {
+                        appendstr = '<div class="col-xs-12">' +
+                               '<div class="v-box" id="' + val.id + '"></div>' +
                                '</div>';
-                    $('.v-content').append(appendstr);
-                    drawshipcolumn(output.chartdata)
+                        $('.v-content').append(appendstr);
+                        drawshipcolumn(val);
+                    })
                 });
         });
     }
@@ -1061,7 +1064,7 @@
                 }
             },
             tooltip: {
-                pointFormat: '{series.name} : <b>{point.y}</b>'
+                pointFormat: '{series.name} : <b>{point.y} USD</b>'
             },
             plotOptions: {
                 series: {

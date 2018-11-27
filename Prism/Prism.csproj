@@ -851,6 +851,7 @@
     <Content Include="Views\Inventory\DepartmentInventory.cshtml" />
     <Content Include="Views\Inventory\ProductInventory.cshtml" />
     <Content Include="Views\Shipment\ShipOutputTrend.cshtml" />
+    <Content Include="Scripts\USDRate.cfg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

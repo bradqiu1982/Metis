@@ -193,6 +193,35 @@ namespace Prism.Models
             return ret;
         }
 
+        public static Dictionary<string, double> GetUSDRate(Controller ctrl)
+        {
+            var lines = System.IO.File.ReadAllLines(ctrl.Server.MapPath("~/Scripts/USDRate.cfg"));
+            var ret = new Dictionary<string, double>();
+            foreach (var line in lines)
+            {
+                if (line.Contains("##"))
+                {
+                    continue;
+                }
+
+                if (line.Contains(":::"))
+                {
+                    try
+                    {
+                        var kvpair = line.Split(new string[] { ":::" }, StringSplitOptions.RemoveEmptyEntries);
+                        var key = kvpair[0];
+                        var val = Convert.ToDouble(kvpair[1]);
+                        if (!ret.ContainsKey(key))
+                        { ret.Add(key, val); }
+                    }
+                    catch (Exception ex) { }
+
+
+                }//end if
+            }//end foreach
+            return ret;
+        }
+
         //public static Dictionary<string, string> GetNPIMachine(Controller ctrl)
         //{
         //    var lines = System.IO.File.ReadAllLines(ctrl.Server.MapPath("~/Scripts/npidepartmentmachine.cfg"));

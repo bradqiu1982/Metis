@@ -228,7 +228,7 @@ namespace Prism.Models
         {
             var ret = new Dictionary<string, Dictionary<string, double>>();
             var custdict = CfgUtility.GetAllCustConfig(ctrl);
-            var sql = @"select Appv_1,Customer1,Customer2,OrderedDate from FsrShipData where OrderedDate >= @sdate and OrderedDate <= @edate and Configuration = @producttype ";
+            var sql = @"select Appv_1,Customer1,Customer2,OrderedDate from FsrShipData where OrderedDate >= @sdate and OrderedDate <= @edate  and ProdDesc not like '%LINECARD%' and Configuration = @producttype ";
 
             if (string.Compare(rate, VCSELRATE.r14G, true) == 0)
             { sql = sql + " and ( VcselType = '" + VCSELRATE.r14G + "' or VcselType = '" + VCSELRATE.r10G + "')"; }
@@ -387,6 +387,170 @@ namespace Prism.Models
                     , Convert.ToString(line[9]), Convert.ToDateTime(line[10]), Convert.ToString(line[11]), Convert.ToInt32(line[13]), Convert.ToDateTime(line[14]));
                 tempvm.VcselType = Convert.ToString(line[12]);
                 ret.Add(tempvm);
+            }
+
+            return ret;
+        }
+
+        public static Dictionary<string, Dictionary<string, double>> RetrieveOutputData(Controller ctrl,string startdate="2017-05-01 00:00:00",string enddate="2018-11-27 00:00:00")
+        {
+            var syscfg = CfgUtility.GetSysConfig(ctrl);
+            var costdict = ItemCostData.RetrieveStandardCost();
+            var dplist = syscfg["OUTPUTDEPARTMENTS"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            var ret = new Dictionary<string, Dictionary<string, double>>();
+            foreach (var dp in dplist)
+            {
+                if (dp.Contains("COMPONENT")
+                    || dp.Contains("DATACOM LW TRX")
+                    || dp.Contains("LNCD") 
+                    || dp.Contains("SFP+ WIRE"))
+                {
+                    var dpdata = RetrieveOutputDataByMonthWithScrapPN(dp,startdate,enddate , costdict, ctrl);
+                    if (dpdata.Count > 0)
+                    {
+                        ret.Add(dp, dpdata);
+                    }
+                }
+                else if (dp.Contains("WSS")
+                    || dp.Contains("TELECOM TRX")
+                    || dp.Contains("PARALLEL")
+                    || dp.Contains("OSA"))
+                {
+                    var sdate = DateTime.Parse(startdate);
+                    if (sdate < DateTime.Parse("2018-05-01 00:00:00"))
+                    {//more accuracy before 2019 Q1
+                        var tempdp = dp;
+                        if (tempdp.Contains("TELECOM TRX"))
+                        { tempdp = "OPTIUM"; }
+                        var dpdata = RetrieveOutputDataByMonth(tempdp, startdate, enddate, costdict, ctrl);
+                        if (dpdata.Count > 0)
+                        {
+                            ret.Add(dp, dpdata);
+                        }
+                    }
+                    else
+                    {//more accuracy after 2019 Q1
+                        var dpdata = RetrieveOutputDataByMonthWithScrapPN(dp, startdate, enddate, costdict, ctrl);
+                        if (dpdata.Count > 0)
+                        {
+                            ret.Add(dp, dpdata);
+                        }
+                    }
+                }
+                else
+                {
+                    var dpdata = RetrieveOutputDataByMonth(dp, startdate, enddate, costdict, ctrl);
+                    if (dpdata.Count > 0)
+                    {
+                        ret.Add(dp, dpdata);
+                    }
+                }
+
+            }
+            return ret;
+        }
+
+        public static  Dictionary<string, double> RetrieveOutputDataByMonth(string producttype, string sdate, string edate,Dictionary<string,double> costdict, Controller ctrl)
+        {
+            var ret = new  Dictionary<string, double>();
+            var usdrate = CfgUtility.GetUSDRate(ctrl);
+            var custdict = CfgUtility.GetAllCustConfig(ctrl);
+            var sql = @"select ShipQty,Customer1,Customer2,ShipDate,PN from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and ProdDesc not like '%LINECARD%' and Configuration = @producttype ";
+
+            var dict = new Dictionary<string, string>();
+            dict.Add("@sdate", sdate);
+            dict.Add("@edate", edate);
+            dict.Add("@producttype", producttype);
+
+            var realcustdict = new Dictionary<string, bool>();
+            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            foreach (var line in dbret)
+            {
+                var shipdate = Convert.ToDateTime(line[3]);
+                var qty = Convert.ToDouble(line[0]);
+                //var cust1 = Convert.ToString(line[1]).ToUpper();
+                //var cust2 = Convert.ToString(line[2]).ToUpper();
+                //var realcust = RetrieveCustome(cust1, cust2, custdict);
+                var pn = Convert.ToString(line[4]).Trim();
+                var q = QuarterCLA.RetrieveQuarterFromDate(shipdate);
+
+                var m = shipdate.ToString("yyyy-MM");
+                var urate = 7.0;
+                if (usdrate.ContainsKey(m))
+                {
+                    urate = usdrate[m];
+                }
+                else
+                { urate = usdrate["CURRENT"]; }
+
+                if (costdict.ContainsKey(pn))
+                {
+                    if (ret.ContainsKey(q))
+                    {
+                        ret[q] += qty * costdict[pn]/urate;
+                    }
+                    else
+                    {
+                        ret.Add(q, qty * costdict[pn] /urate);
+                    }
+                }
+            }
+
+            return ret;
+        }
+
+        public static Dictionary<string, double> RetrieveOutputDataByMonthWithScrapPN(string producttype, string sdate, string edate, Dictionary<string, double> costdict, Controller ctrl)
+        {
+            var pnlist = ScrapData_Base.RetrievePNByPG(producttype);
+            if (pnlist.Count == 0)
+            {
+                return new Dictionary<string, double>();
+            }
+
+            var pncond = "('" + string.Join("','", pnlist) + "')";
+
+            var ret = new Dictionary<string, double>();
+            var usdrate = CfgUtility.GetUSDRate(ctrl);
+            var custdict = CfgUtility.GetAllCustConfig(ctrl);
+            var sql = @"select ShipQty,Customer1,Customer2,ShipDate,PN from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and PN in <PNCOND>";
+            sql = sql.Replace("<PNCOND>", pncond);
+
+            var dict = new Dictionary<string, string>();
+            dict.Add("@sdate", sdate);
+            dict.Add("@edate", edate);
+            var realcustdict = new Dictionary<string, bool>();
+
+            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            foreach (var line in dbret)
+            {
+                var shipdate = Convert.ToDateTime(line[3]);
+                var qty = Convert.ToDouble(line[0]);
+                //var cust1 = Convert.ToString(line[1]).ToUpper();
+                //var cust2 = Convert.ToString(line[2]).ToUpper();
+                //var realcust = RetrieveCustome(cust1, cust2, custdict);
+                var pn = Convert.ToString(line[4]).Trim();
+                var q = QuarterCLA.RetrieveQuarterFromDate(shipdate);
+
+                var m = shipdate.ToString("yyyy-MM");
+                var urate = 7.0;
+                if (usdrate.ContainsKey(m))
+                {
+                    urate = usdrate[m];
+                }
+                else
+                { urate = usdrate["CURRENT"]; }
+
+                if (costdict.ContainsKey(pn))
+                {
+                    if (ret.ContainsKey(q))
+                    {
+                        ret[q] += qty * costdict[pn] / urate;
+                    }
+                    else
+                    {
+                        ret.Add(q, qty * costdict[pn] / urate);
+                    }
+                }
             }
 
             return ret;
