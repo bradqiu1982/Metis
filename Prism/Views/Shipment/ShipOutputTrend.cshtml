@@ -72,6 +72,31 @@
         <div class="v-container">
             <div class="v-filter">
                 <div class="row row-margin">
+                    <label class="col-xs-1">Date Period</label>
+                    <div class="col-xs-3">
+                        <div class="input-group date" data-date=""
+                             data-date-format="yyyy-mm">
+                            <input type="text" class="form-control"
+                                   id="sdate" name="sdate" value="" readonly>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-1 text-center">~</div>
+                    <div class="col-xs-3">
+                        <div class="input-group date" data-date=""
+                             data-date-format="yyyy-mm">
+                            <input type="text" class="form-control"
+                                   id="edate" name="edate" value="" readonly>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-1 box-search">
+                        <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
+                    </div>
                 </div>
             </div>
             <div class="v-content">
@@ -92,14 +117,7 @@
             </div>
             <div class="row" style="margin-left:15px!important;margin-right:15px!important;">
                 <table class="table table-hover  table-condensed table-striped" id="shipoutdatatable" style="margin-top:1%">
-                    <caption class="tb-caption">Ship Output Data</caption>
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>QTY</th>
-                            <th>Output</th>
-                        </tr>
-                    </thead>
+                    <thead id="shipoutputheadid"></thead>
                     <tbody id="shipoutputcontentid"></tbody>
                 </table>
             </div>

@@ -30,6 +30,8 @@ namespace Prism.Models
                     tempvm.PN = pn;
                     tempvm.PlannerCode = plcode;
                     tempvm.PJName = pjname;
+                    if (string.IsNullOrEmpty(tempvm.PJName))
+                    { tempvm.PJName = tempvm.PlannerCode; }
                     ret.Add(pn, tempvm);
                 }
             }

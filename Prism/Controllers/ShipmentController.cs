@@ -1365,11 +1365,31 @@ namespace Prism.Controllers
 
         public JsonResult ShipOutputTrendData()
         {
+            var ssdate = Request.Form["sdate"];
+            var sedate = Request.Form["edate"];
+            if (string.IsNullOrEmpty(ssdate) || string.IsNullOrEmpty(sedate))
+            {
+                ssdate = "2018-05-01 00:00:00";
+                sedate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            }
+            else
+            {
+                var sdate = DateTime.Parse(Request.Form["sdate"]);
+                var edate = DateTime.Parse(Request.Form["edate"]);
+                var startdate = DateTime.Parse(sdate.ToString("yyyy-MM") + "-01 00:00:00");
+                var enddate = DateTime.Parse(edate.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
+                var sq = QuarterCLA.RetrieveQuarterFromDate(startdate);
+                var eq = QuarterCLA.RetrieveQuarterFromDate(enddate);
+                ssdate = QuarterCLA.RetrieveDateFromQuarter(sq)[0].ToString("yyyy-MM-dd HH:mm:ss");
+                sedate = QuarterCLA.RetrieveDateFromQuarter(eq)[1].ToString("yyyy-MM-dd HH:mm:ss");
+            }
+
+
             var chartlist = new List<object>();
             var shipdata = ScrapData_Base.RetrieveAllOutputData();
             chartlist.Add(ShipOutputChartData(shipdata,"scrapout_id", "Department Output"));
 
-            shipdata = FsrShipData.RetrieveOutputData(this);
+            shipdata = FsrShipData.RetrieveOutputData(this,ssdate,sedate);
             chartlist.Add(ShipOutputChartData(shipdata,"shipout_id", "Department Ship Output"));
 
             var ret = new JsonResult();
@@ -1381,7 +1401,7 @@ namespace Prism.Controllers
         }
 
 
-        public object ShipOutputChartData(Dictionary<string,Dictionary<string,double>> shipdata,string id,string title)
+        private object ShipOutputChartData(Dictionary<string,Dictionary<string,double>> shipdata,string id,string title)
         {
             var colorlist = new string[] { "#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
                 , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
@@ -1445,9 +1465,23 @@ namespace Prism.Controllers
 
         }
 
-        public JsonResult ShipoutDetailData(string dp,string qt)
+        public JsonResult AllOutputDetailData(string dp,string qt)
         {
             var shipoutlist = ScrapData_Base.RetrieveOutputData(dp, qt);
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                shipoutlist = shipoutlist
+            };
+            return ret;
+        }
+        
+        public JsonResult ShipOutputDetailData(string dp, string qt)
+        {
+            var startdate = QuarterCLA.RetrieveDateFromQuarter(qt)[0].ToString("yyyy-MM-dd HH:mm:ss");
+            var enddate = QuarterCLA.RetrieveDateFromQuarter(qt)[1].ToString("yyyy-MM-dd HH:mm:ss");
+            var shipoutlist = FsrShipData.RetrieveOutputDetailData(this, dp, startdate, enddate);
             var ret = new JsonResult();
             ret.MaxJsonLength = Int32.MaxValue;
             ret.Data = new

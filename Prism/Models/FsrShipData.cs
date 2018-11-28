@@ -55,6 +55,8 @@ namespace Prism.Models
             OPD = DateTime.Parse("1982-05-06 10:00:00");
             OTD = "NO";
             ShipTo = string.Empty;
+            Cost = 0;
+            Output = 0;
         }
 
         public FsrShipData(string id, int qty, string pn, string pndesc, string family, string cfg
@@ -392,7 +394,7 @@ namespace Prism.Models
             return ret;
         }
 
-        public static Dictionary<string, Dictionary<string, double>> RetrieveOutputData(Controller ctrl,string startdate="2017-05-01 00:00:00",string enddate="2018-11-27 00:00:00")
+        public static Dictionary<string, Dictionary<string, double>> RetrieveOutputData(Controller ctrl,string startdate,string enddate)
         {
             var syscfg = CfgUtility.GetSysConfig(ctrl);
             var costdict = ItemCostData.RetrieveStandardCost();
@@ -450,12 +452,11 @@ namespace Prism.Models
             return ret;
         }
 
-        public static  Dictionary<string, double> RetrieveOutputDataByMonth(string producttype, string sdate, string edate,Dictionary<string,double> costdict, Controller ctrl)
+        private static  Dictionary<string, double> RetrieveOutputDataByMonth(string producttype, string sdate, string edate,Dictionary<string,double> costdict, Controller ctrl)
         {
             var ret = new  Dictionary<string, double>();
             var usdrate = CfgUtility.GetUSDRate(ctrl);
-            var custdict = CfgUtility.GetAllCustConfig(ctrl);
-            var sql = @"select ShipQty,Customer1,Customer2,ShipDate,PN from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and ProdDesc not like '%LINECARD%' and Configuration = @producttype ";
+            var sql = @"select ShipQty,ShipDate,PN from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and ProdDesc not like '%LINECARD%' and Configuration = @producttype ";
 
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
@@ -466,12 +467,10 @@ namespace Prism.Models
             var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
             foreach (var line in dbret)
             {
-                var shipdate = Convert.ToDateTime(line[3]);
+                
                 var qty = Convert.ToDouble(line[0]);
-                //var cust1 = Convert.ToString(line[1]).ToUpper();
-                //var cust2 = Convert.ToString(line[2]).ToUpper();
-                //var realcust = RetrieveCustome(cust1, cust2, custdict);
-                var pn = Convert.ToString(line[4]).Trim();
+                var shipdate = Convert.ToDateTime(line[1]);
+                var pn = Convert.ToString(line[2]).Trim();
                 var q = QuarterCLA.RetrieveQuarterFromDate(shipdate);
 
                 var m = shipdate.ToString("yyyy-MM");
@@ -499,7 +498,7 @@ namespace Prism.Models
             return ret;
         }
 
-        public static Dictionary<string, double> RetrieveOutputDataByMonthWithScrapPN(string producttype, string sdate, string edate, Dictionary<string, double> costdict, Controller ctrl)
+        private static Dictionary<string, double> RetrieveOutputDataByMonthWithScrapPN(string producttype, string sdate, string edate, Dictionary<string, double> costdict, Controller ctrl)
         {
             var pnlist = ScrapData_Base.RetrievePNByPG(producttype);
             if (pnlist.Count == 0)
@@ -511,8 +510,8 @@ namespace Prism.Models
 
             var ret = new Dictionary<string, double>();
             var usdrate = CfgUtility.GetUSDRate(ctrl);
-            var custdict = CfgUtility.GetAllCustConfig(ctrl);
-            var sql = @"select ShipQty,Customer1,Customer2,ShipDate,PN from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and PN in <PNCOND>";
+
+            var sql = @"select ShipQty,ShipDate,PN from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and PN in <PNCOND>";
             sql = sql.Replace("<PNCOND>", pncond);
 
             var dict = new Dictionary<string, string>();
@@ -523,12 +522,10 @@ namespace Prism.Models
             var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
             foreach (var line in dbret)
             {
-                var shipdate = Convert.ToDateTime(line[3]);
+                
                 var qty = Convert.ToDouble(line[0]);
-                //var cust1 = Convert.ToString(line[1]).ToUpper();
-                //var cust2 = Convert.ToString(line[2]).ToUpper();
-                //var realcust = RetrieveCustome(cust1, cust2, custdict);
-                var pn = Convert.ToString(line[4]).Trim();
+                var shipdate = Convert.ToDateTime(line[1]);
+                var pn = Convert.ToString(line[2]).Trim();
                 var q = QuarterCLA.RetrieveQuarterFromDate(shipdate);
 
                 var m = shipdate.ToString("yyyy-MM");
@@ -556,6 +553,207 @@ namespace Prism.Models
             return ret;
         }
 
+        public static List<FsrShipData> RetrieveOutputDetailData(Controller ctrl,string dp, string startdate, string enddate)
+        {
+            var syscfg = CfgUtility.GetSysConfig(ctrl);
+            var costdict = ItemCostData.RetrieveStandardCost();
+            var ret = new List<FsrShipData>();
+
+                if (dp.Contains("COMPONENT")
+                    || dp.Contains("DATACOM LW TRX")
+                    || dp.Contains("LNCD")
+                    || dp.Contains("SFP+ WIRE"))
+                {
+                    return RetrieveOutputDetailDataWithScrapPN(dp, startdate, enddate, costdict, ctrl);
+                }
+                else if (dp.Contains("WSS")
+                    || dp.Contains("TELECOM TRX")
+                    || dp.Contains("PARALLEL")
+                    || dp.Contains("OSA"))
+                {
+                    var sdate = DateTime.Parse(startdate);
+                    if (sdate < DateTime.Parse("2018-05-01 00:00:00"))
+                    {//more accuracy before 2019 Q1
+                        var tempdp = dp;
+                        if (tempdp.Contains("TELECOM TRX"))
+                        { tempdp = "OPTIUM"; }
+                        return RetrieveOutputDetailData(tempdp, startdate, enddate, costdict, ctrl);
+                    }
+                    else
+                    {//more accuracy after 2019 Q1
+                        return RetrieveOutputDetailDataWithScrapPN(dp, startdate, enddate, costdict, ctrl);
+                    }
+                }
+                else
+                {
+                    return RetrieveOutputDetailData(dp, startdate, enddate, costdict, ctrl);
+                }
+        }
+
+        private static List<FsrShipData> RetrieveOutputDetailData(string producttype, string sdate, string edate, Dictionary<string, double> costdict, Controller ctrl)
+        {
+            var retdata = new Dictionary<string, FsrShipData>();
+            var usdrate = CfgUtility.GetUSDRate(ctrl);
+            var pnpjmap = PNPlannerCodeMap.RetrieveAllMaps();
+
+            var sql = @"select ShipQty,ShipDate,PN,MarketFamily from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and ProdDesc not like '%LINECARD%' and Configuration = @producttype ";
+
+            var dict = new Dictionary<string, string>();
+            dict.Add("@sdate", sdate);
+            dict.Add("@edate", edate);
+            dict.Add("@producttype", producttype);
+
+            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            foreach (var line in dbret)
+            {
+                
+                var qty = Convert.ToDouble(line[0]);
+                var shipdate = Convert.ToDateTime(line[1]);
+                var pn = Convert.ToString(line[2]).Trim();
+                var mf = Convert.ToString(line[3]);
+
+                var pj = "";
+                if (pnpjmap.ContainsKey(pn))
+                {
+                    pj = pnpjmap[pn].PJName;
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(mf))
+                    { pj = mf; }
+                    else
+                    { pj = pn; }
+                }
+
+
+                var m = shipdate.ToString("yyyy-MM");
+                var urate = 7.0;
+                if (usdrate.ContainsKey(m))
+                {
+                    urate = usdrate[m];
+                }
+                else
+                { urate = usdrate["CURRENT"]; }
+
+                if (costdict.ContainsKey(pn))
+                {
+                    var output = qty * costdict[pn] / urate;
+                    if (retdata.ContainsKey(pj))
+                    {
+                        retdata[pj].ShipQty += qty;
+                        retdata[pj].Output += output;
+                    }
+                    else
+                    {
+                        var vm = new FsrShipData();
+                        vm.MarketFamily = pj;
+                        vm.ShipQty = qty;
+                        vm.PN = pn;
+                        vm.Cost = costdict[pn]/urate;
+                        vm.Output = output;
+                        retdata.Add(pj, vm);
+                    }
+                }
+            }
+
+            var ret = retdata.Values.ToList();
+            ret.Sort(delegate (FsrShipData obj1, FsrShipData obj2)
+            {
+                return obj2.Output.CompareTo(obj1.Output);
+            });
+            foreach (var item in ret)
+            {
+                item.Output = Math.Round(item.Output, 3);
+            }
+            return ret;
+        }
+
+        private static List<FsrShipData> RetrieveOutputDetailDataWithScrapPN(string producttype, string sdate, string edate, Dictionary<string, double> costdict, Controller ctrl)
+        {
+            var pnlist = ScrapData_Base.RetrievePNByPG(producttype);
+            if (pnlist.Count == 0)
+            {
+                return new List<FsrShipData>();
+            }
+
+            var pncond = "('" + string.Join("','", pnlist) + "')";
+
+            var retdata = new Dictionary<string, FsrShipData>();
+            var usdrate = CfgUtility.GetUSDRate(ctrl);
+            var pnpjmap = PNPlannerCodeMap.RetrieveAllMaps();
+
+            var sql = @"select ShipQty,ShipDate,PN,MarketFamily from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and PN in <PNCOND>";
+            sql = sql.Replace("<PNCOND>", pncond);
+
+            var dict = new Dictionary<string, string>();
+            dict.Add("@sdate", sdate);
+            dict.Add("@edate", edate);
+
+            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            foreach (var line in dbret)
+            {
+                
+                var qty = Convert.ToDouble(line[0]);
+                var shipdate = Convert.ToDateTime(line[1]);
+                var pn = Convert.ToString(line[2]).Trim();
+                var mf = Convert.ToString(line[3]);
+
+                var pj = "";
+                if (pnpjmap.ContainsKey(pn))
+                {
+                    pj = pnpjmap[pn].PJName;
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(mf))
+                    { pj = mf; }
+                    else
+                    { pj = pn; }
+                }
+
+
+                var m = shipdate.ToString("yyyy-MM");
+                var urate = 7.0;
+                if (usdrate.ContainsKey(m))
+                {
+                    urate = usdrate[m];
+                }
+                else
+                { urate = usdrate["CURRENT"]; }
+
+                if (costdict.ContainsKey(pn))
+                {
+                    var output = qty * costdict[pn] / urate;
+                    if (retdata.ContainsKey(pj))
+                    {
+                        retdata[pj].ShipQty += qty;
+                        retdata[pj].Output += output;
+                    }
+                    else
+                    {
+                        var vm = new FsrShipData();
+                        vm.MarketFamily = pj;
+                        vm.ShipQty = qty;
+                        vm.PN = pn;
+                        vm.Cost = costdict[pn] / urate;
+                        vm.Output = output;
+                        retdata.Add(pj, vm);
+                    }
+                }
+            }
+
+            var ret = retdata.Values.ToList();
+            ret.Sort(delegate (FsrShipData obj1, FsrShipData obj2)
+            {
+                return obj2.Output.CompareTo(obj1.Output);
+            });
+            foreach (var item in ret)
+            {
+                item.Output = Math.Round(item.Output, 3);
+            }
+            return ret;
+        }
+
         public string ShipID { set; get; }
         public double ShipQty { set; get; }
         public string PN { set; get; }
@@ -577,5 +775,7 @@ namespace Prism.Models
         public string OPDStr { get { return OPD.ToString("yyyy-MM-dd"); } }
         public string OTD { set; get; }
         public string ShipTo { set; get; }
+        public double Cost { set; get; }
+        public double Output { set; get; }
     }
 }

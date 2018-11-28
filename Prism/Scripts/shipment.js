@@ -153,9 +153,17 @@
 
     var shipoutput = function ()
     {
-        $(function () {
+        $('.date').datepicker({ autoclose: true, viewMode: "months", minViewMode: "months" });
+
+        function getshipoutdata()
+        {
+            var sdate = $.trim($('#sdate').val());
+            var edate = $.trim($('#edate').val());
             $.post('/Shipment/ShipOutputTrendData',
-                {},
+                {
+                    sdate: sdate,
+                    edate: edate
+                },
                 function (output) {
                     $('.v-content').empty();
                     var appendstr = "";
@@ -165,10 +173,19 @@
                                '<div class="v-box" id="' + val.id + '"></div>' +
                                '</div>';
                         $('.v-content').append(appendstr);
-                        drawshipcolumn(val);
+                        drawoutputcolumn(val);
                     })
                 });
+        }
+
+        $(function () {
+            getshipoutdata();
         });
+
+        $('body').on('click', '#btn-search', function () {
+            getshipoutdata();
+        });
+
     }
 
     var myrmatable = null;
@@ -361,10 +378,10 @@
     }
 
     var myshipouttable = null;
-    var showshipoutdata = function (event) {
+    var showalloutdata = function (event) {
         var qt = event.point.series.name;
         var dp = event.point.category;
-        $.post('/Shipment/ShipoutDetailData',
+        $.post('/Shipment/AllOutputDetailData',
             {
                 dp: dp,
                 qt: qt
@@ -373,7 +390,15 @@
                 if (myshipouttable) {
                     myshipouttable.destroy();
                 }
+                $('#shipoutputheadid').empty();
                 $('#shipoutputcontentid').empty();
+
+                var appendstr0 = '<tr>' +
+                        '<th>Product</th>' +
+                        '<th>QTY</th>' +
+                        '<th>Output</th>' +
+                        '</tr>';
+                $('#shipoutputheadid').append(appendstr0);
 
                 $.each(outputdata.shipoutlist, function (i, val) {
                     var appendstr = '<tr>' +
@@ -393,10 +418,55 @@
                     dom: 'lBfrtip',
                     buttons: ['copyHtml5', 'csv', 'excelHtml5']
                 });
-                $('#shipoutputmodalLabel').html(dp + ' ' + qt + ' Ship OutPut Info');
+                $('#shipoutputmodalLabel').html(dp + ' ' + qt + ' Output Info');
                 $('#shipoutputmodal').modal('show')
             });
     }
+    var showshipoutdata = function (event) {
+        var qt = event.point.series.name;
+        var dp = event.point.category;
+        $.post('/Shipment/ShipOutputDetailData',
+            {
+                dp: dp,
+                qt: qt
+            },
+            function (outputdata) {
+                if (myshipouttable) {
+                    myshipouttable.destroy();
+                }
+                $('#shipoutputheadid').empty();
+                $('#shipoutputcontentid').empty();
+
+                var appendstr0 = '<tr>' +
+                        '<th>Product</th>' +
+                        '<th>QTY</th>' +
+                        '<th>Output</th>' +
+                        '</tr>';
+                $('#shipoutputheadid').append(appendstr0);
+
+                $.each(outputdata.shipoutlist, function (i, val) {
+                    var appendstr = '<tr>' +
+                        '<td>' + val.MarketFamily + '</td>' +
+                        '<td>' + val.ShipQty + '</td>' +
+                        '<td>' + val.Output + '</td>' +
+                        '</tr>';
+                    $('#shipoutputcontentid').append(appendstr);
+                });
+
+                myshipouttable = $('#shipoutdatatable').DataTable({
+                    'iDisplayLength': 50,
+                    'aLengthMenu': [[20, 50, 100, -1],
+                    [20, 50, 100, "All"]],
+                    "aaSorting": [],
+                    "order": [],
+                    dom: 'lBfrtip',
+                    buttons: ['copyHtml5', 'csv', 'excelHtml5']
+                });
+                $('#shipoutputmodalLabel').html(dp + ' ' + qt + ' Ship Output Info');
+                $('#shipoutputmodal').modal('show')
+            });
+    }
+
 
     var drawcolumn = function (col_data) {
         var options = {
@@ -1040,7 +1110,7 @@
             });
     }
 
-    var drawshipcolumn = function (col_data) {
+    var drawoutputcolumn = function (col_data) {
         var options = {
             chart: {
                 zoomType: 'xy',
@@ -1071,7 +1141,11 @@
                     cursor: 'pointer',
                     events: {
                         click: function (event) {
-                            showshipoutdata(event);
+                            if (col_data.id.indexOf('shipout_id') != -1) {
+                                showshipoutdata(event);
+                            }
+                            else { showalloutdata(event); }
+                            
                         }
                     }
                 }
