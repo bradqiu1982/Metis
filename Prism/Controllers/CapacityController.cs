@@ -135,7 +135,7 @@ namespace Prism.Controllers
                     if (qtdata.ContainsKey(q))
                     {
                         var BUFFTAG = "YINPUT";
-                        if (qtdata[q].Usage > 100)
+                        if (qtdata[q].Usage > 90)
                         {
                             BUFFTAG = "NOBUFF";
                         }
