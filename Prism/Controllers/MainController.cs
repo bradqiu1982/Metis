@@ -129,6 +129,12 @@ namespace Prism.Controllers
                     InventoryData.LoadInventoryDetail(this);
                 }
                 catch (Exception ex) { }
+
+                try
+                {
+                    ItemCostData.LoadCostData(this);
+                }
+                catch (Exception ex) { }
             }//end only run once
 
             heartbeatlog("Heart Beat Start", filename);
@@ -272,6 +278,12 @@ namespace Prism.Controllers
         public ActionResult LoadRMARawData()
         {
             RMARAWData.LoadRMARawData(this);
+            return View("HeartBeat");
+        }
+
+        public ActionResult LoadCapacityRawData()
+        {
+            CapacityRawData.LoadCapacityRawData(this);
             return View("HeartBeat");
         }
 

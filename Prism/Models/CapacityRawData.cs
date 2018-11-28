@@ -37,8 +37,7 @@ namespace Prism.Models
                 var idx = 0;
                 foreach (var item in line)
                 {
-                    if (item.ToUpper().Contains("MAX")
-                        && item.ToUpper().Contains("CAPACITY"))
+                    if (item.ToUpper().Contains("CAPACITY") && !item.ToUpper().Contains("USAGE"))
                     {
                         ret.Add(idx);
                     }
@@ -74,6 +73,11 @@ namespace Prism.Models
                 {
                     var data = ExcelReader.RetrieveDataFromExcel(localrmaf, null);
                     var quarterlist = GetQuarterList(data);
+                    if (quarterlist.Count == 0)
+                    {
+                        data = ExcelReader.RetrieveDataFromExcel(localrmaf, "Project");
+                        quarterlist = GetQuarterList(data);
+                    }
                     var capacityidxlist = GetMaxCapacityList(data);
                     if (quarterlist.Count != capacityidxlist.Count)
                     { continue; }
@@ -104,23 +108,50 @@ namespace Prism.Models
                             var forecast = 0;
                             try
                             {
-                                mcapacity = Convert.ToInt32(capstr);
-                                forecast = Convert.ToInt32(line[cidx + 1]);
+                                mcapacity = Convert.ToInt32(Convert.ToDouble(capstr));
+                                forecast = Convert.ToInt32(Convert.ToDouble(line[cidx + 1]));
                             }
-                            catch (Exception) { }
+                            catch (Exception ex) { }
                             if (mcapacity == 0)
                             {
                                 qidx++;
                                 continue;
                             }
-                            var pn = line[2];
+
                             var product = line[3].Replace(",","");
+                            if (product.ToUpper().Contains("TOTAL"))
+                            {
+                                qidx++;
+                                continue;
+                            }
+
+                            var prodtype = "";
+                            var pn = line[2];
+                            if (pn.ToUpper().Contains("T-XFP"))
+                            {
+                                pn = product;
+                                prodtype = "Tunable";
+                            }
+
+                            if (pn.ToUpper().Contains("OSA"))
+                            {
+                                pn = product;
+                                prodtype = "OSA";
+                            }
+
+                            if (product.ToUpper().Contains("SFP+WIRE"))
+                            { prodtype = "SFP+ WIRE"; }
+
                             var qs = quarterlist[qidx].Split(new string[] { "FY" }, StringSplitOptions.RemoveEmptyEntries);
                             var quarter = "20" + qs[1] + " " + qs[0];
+
                             var id = pn + "_" + quarter;
                             var tempvm = new CapacityRawData(id, quarter, pn, product, mcapacity, forecast);
-                            if (product.ToUpper().Contains("SFP+WIRE"))
-                            { tempvm.ProductType = "SFP+ WIRE"; }
+                            if (!string.IsNullOrEmpty(prodtype))
+                            {
+                                tempvm.ProductType = prodtype;
+                            }
+
                             capdata.Add(tempvm);
                             capidlist.Add(id);
                             qidx++;
