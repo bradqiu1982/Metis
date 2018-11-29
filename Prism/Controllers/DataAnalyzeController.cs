@@ -15,7 +15,7 @@ namespace Prism.Controllers
 
         public ActionResult HPUTrend()
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 7))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -197,7 +197,7 @@ namespace Prism.Controllers
 
         public ActionResult DepartmentHPU()
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 7))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -250,7 +250,7 @@ namespace Prism.Controllers
 
         public ActionResult SerialHPU(string defaultserial)
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 7))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -289,7 +289,7 @@ namespace Prism.Controllers
 
         public ActionResult PNHPU(string PNLink)
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 7))
             {
                 return RedirectToAction("Index", "Main");
             }
