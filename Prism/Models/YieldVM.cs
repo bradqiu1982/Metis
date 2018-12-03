@@ -207,7 +207,11 @@ namespace Prism.Models
                     if (input > maxinput)
                     { maxinput = input; }
 
-                    temptestyieldlist.Add(testyield);
+                    if (input > 50)
+                    {
+                        temptestyieldlist.Add(testyield);
+                    }
+
                 }//end foreach
 
                 //load test yield list into linecardyield dict
@@ -219,7 +223,7 @@ namespace Prism.Models
 
                     foreach (var testyield in temptestyieldlist)
                     {
-                        if ((testyield.Pass + testyield.Failed) > (maxinput / 10)
+                        if ((testyield.Pass + testyield.Failed) > (maxinput / 5)
                             && testyield.Yield > yieldlowbound)
                         {
                             if (testyield.Yield == 100 && linecardyielddict.Count > 0)
@@ -279,7 +283,7 @@ namespace Prism.Models
 
                     foreach (var testyield in temptestyieldlist)
                     {
-                        if ((testyield.Pass+testyield.Failed) > (maxinput/10)
+                        if ((testyield.Pass+testyield.Failed) > (maxinput / 5)
                             && testyield.Yield > yieldlowbound)
                         {
                             if (pdfamily.ToUpper().Contains("PARALLEL"))
