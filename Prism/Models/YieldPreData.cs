@@ -106,18 +106,35 @@ namespace Prism.Models
                     var testdatalist = ModuleTestData.RetrieveTestDate(pf, zerodate, zerodate.AddMonths(1));
                     if (testdatalist.Count > 0)
                     {
-                        SolveTestData(testdatalist, zerodate, pf, YIELDTYPE.FINALYIELD);
-                        testdatalist.Reverse();
-                        SolveTestData(testdatalist, zerodate, pf, YIELDTYPE.FIRSTPASSYIELD);
+                        try
+                        {
+                            SolveTestData(testdatalist, zerodate, pf, YIELDTYPE.FINALYIELD);
+                            testdatalist.Reverse();
+                            SolveTestData(testdatalist, zerodate, pf, YIELDTYPE.FIRSTPASSYIELD);
+                        }
+                        catch (Exception ex) { }
                     }
 
                     if (!iscurrentmonth)
                     {
                         YieldRawData.UpdateYieldDataAction(zerodate.ToString("yyyy-MM"), "", pf, YIELDACTIONTYPE.MONTHLYYIELD);
                     }
-                    break;
+
+                    zerodate = zerodate.AddMonths(1);
                 }
             }
+        }
+
+        public static List<string> RetrieveYieldPDFamilyList()
+        {
+            var ret = new List<string>();
+            var sql = "select distinct ProductFamily FROM YieldPreData order by ProductFamily where ProductFamily <> ''";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
+            return ret;
         }
 
         public static string Prod2PJKey(string pf)

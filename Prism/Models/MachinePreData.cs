@@ -109,7 +109,7 @@ namespace Prism.Models
                     {
                         YieldRawData.UpdateYieldDataAction(zerodate.ToString("yyyy-MM"), "", pf, YIELDACTIONTYPE.MONTHLYMACHINE);
                     }
-                    break;
+                    zerodate = zerodate.AddMonths(1);
                 }
             }
         }
