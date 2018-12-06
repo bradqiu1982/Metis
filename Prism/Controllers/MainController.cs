@@ -60,6 +60,14 @@ namespace Prism.Controllers
             var wholefilename = Server.MapPath("~/userfiles") + "\\" + filename;
             if (!System.IO.File.Exists(wholefilename))
             {
+                heartbeatlog("Heart Beat one day Start", filename);
+
+                try
+                {
+                    PNProuctFamilyCache.LoadData();
+                }
+                catch (Exception ex) { }
+
                 try
                 {
                     ExternalDataCollector.LoadPNPlannerData(this);
@@ -240,6 +248,89 @@ namespace Prism.Controllers
             return ret;
         }
 
+
+        public ActionResult BoringSearch()
+        {
+            var searchfield = SearchVM.SearchFields();
+            searchfield.Insert(0, "Query Fields");
+
+            var searchlist1 = CreateSelectList(searchfield, "");
+            searchlist1[0].Disabled = true;
+            ViewBag.SearchFieldList1 = searchlist1;
+
+            var searchlist2 = CreateSelectList(searchfield, "");
+            searchlist2[0].Disabled = true;
+            ViewBag.SearchFieldList2 = searchlist2;
+            return View();
+        }
+
+        public JsonResult BoringSearchRange()
+        {
+            var searchfield = Request.Form["searchfield"];
+            var srange = SearchVM.SearchRange(searchfield, this);
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                srange = srange
+            };
+            return ret;
+        }
+       
+        private List<SelectListItem> CreateSelectList(List<string> valist, string defVal)
+        {
+            bool selected = false;
+            var pslist = new List<SelectListItem>();
+            foreach (var p in valist)
+            {
+                var pitem = new SelectListItem();
+                pitem.Text = p;
+                pitem.Value = p;
+                if (!string.IsNullOrEmpty(defVal) && string.Compare(defVal, p, true) == 0)
+                {
+                    pitem.Selected = true;
+                    selected = true;
+                }
+                pslist.Add(pitem);
+            }
+
+            if (!selected && pslist.Count > 0)
+            {
+                pslist[0].Selected = true;
+            }
+
+            return pslist;
+        }
+
+        public JsonResult BoringSearchData()
+        {
+            var field1 = Request.Form["field1"];
+            var range1 = Request.Form["range1"];
+            var field2 = Request.Form["field2"];
+            var range2 = Request.Form["range2"];
+
+            object obj1 = null;
+            object obj2 = null;
+
+            if (!string.IsNullOrEmpty(field1) && !string.IsNullOrEmpty(range1))
+            {
+                obj1 = SearchVM.SearchData(field1, range1, this);
+            }
+
+            if (!string.IsNullOrEmpty(field2) && !string.IsNullOrEmpty(range2))
+            {
+                obj2 = SearchVM.SearchData(field2, range2, this,false);
+            }
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                obj1 = obj1,
+                obj2 = obj2
+            };
+            return ret;
+        }
+
         public ActionResult HeartBeat2()
         {
             var syscfg = CfgUtility.GetSysConfig(this);
@@ -299,5 +390,18 @@ namespace Prism.Controllers
             InventoryData.LoadInventoryDetail(this);
             return View("HeartBeat");
         }
+
+        public ActionResult LoadPNPFCache()
+        {
+            PNProuctFamilyCache.LoadData();
+            return View("HeartBeat");
+        }
+
+        public ActionResult LoadScrapData()
+        {
+            ScrapData_Base.UpdateProduct();
+            return View("HeartBeat");
+        }
+
     }
 }

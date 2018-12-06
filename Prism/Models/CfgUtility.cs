@@ -222,6 +222,52 @@ namespace Prism.Models
             return ret;
         }
 
+        public static Dictionary<string, string> LoadSearchConfig(Controller ctrl)
+        {
+            var lines = System.IO.File.ReadAllLines(ctrl.Server.MapPath("~/Scripts/SearchData.cfg"));
+            var ret = new Dictionary<string, string>();
+            foreach (var line in lines)
+            {
+                if (line.Contains("##"))
+                {
+                    continue;
+                }
+
+                if (line.Contains(":::"))
+                {
+                    var kvpair = line.Split(new string[] { ":::" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (!ret.ContainsKey(kvpair[0].Trim()) && kvpair.Length > 1)
+                    {
+                        ret.Add(kvpair[0].Trim(), kvpair[1].ToUpper().Trim());
+                    }
+                }//end if
+            }//end foreach
+            return ret;
+        }
+
+        public static Dictionary<string, string> LoadNamePNConfig(Controller ctrl)
+        {
+            var lines = System.IO.File.ReadAllLines(ctrl.Server.MapPath("~/Scripts/NamePNMap.cfg"));
+            var ret = new Dictionary<string, string>();
+            foreach (var line in lines)
+            {
+                if (line.Contains("##"))
+                {
+                    continue;
+                }
+
+                if (line.Contains(":::"))
+                {
+                    var kvpair = line.Split(new string[] { ":::" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (!ret.ContainsKey(kvpair[0].Trim()) && kvpair.Length > 1)
+                    {
+                        ret.Add(kvpair[0].Trim(), kvpair[1].ToUpper().Trim());
+                    }
+                }//end if
+            }//end foreach
+            return ret;
+        }
+
         //public static Dictionary<string, string> GetNPIMachine(Controller ctrl)
         //{
         //    var lines = System.IO.File.ReadAllLines(ctrl.Server.MapPath("~/Scripts/npidepartmentmachine.cfg"));

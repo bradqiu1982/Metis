@@ -166,6 +166,51 @@ namespace Prism.Models
             }
             foreach (var data in capdata)
             { data.StoreData(); }
+
+            UpdatePN(ctrl);
+            UpdatePF();
+        }
+
+        public static void UpdatePN(Controller ctrl)
+        {
+            var namepnmap = CfgUtility.LoadNamePNConfig(ctrl);
+            foreach (var kv in namepnmap)
+            {
+                var sql = "update CapacityRawData set PN=@PN where PN=@NAME";
+                var dict = new Dictionary<string, string>();
+                dict.Add("@PN",kv.Value);
+                dict.Add("@NAME",kv.Key);
+                DBUtility.ExeLocalSqlNoRes(sql, dict);
+            }
+        }
+
+        private static List<string> GetAllPNList()
+        {
+            var ret = new List<string>();
+            var sql = "select distinct PN from CapacityRawData";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
+            return ret;
+        }
+
+        public static void UpdatePF()
+        {
+            var pndict = PNProuctFamilyCache.PNPFDict();
+            var pnlist = GetAllPNList();
+            foreach (var pn in pnlist)
+            {
+                if (pndict.ContainsKey(pn))
+                {
+                    var sql = "update CapacityRawData set Product=@Product where PN=@PN";
+                    var dict = new Dictionary<string, string>();
+                    dict.Add("@PN",pn);
+                    dict.Add("@Product", pndict[pn]);
+                    DBUtility.ExeLocalSqlNoRes(sql, dict);
+                }
+            }
         }
 
         private static void CleanData(List<string> ids)

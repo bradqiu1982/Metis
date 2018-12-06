@@ -595,6 +595,7 @@ namespace Prism.Models
             var retdata = new Dictionary<string, FsrShipData>();
             var usdrate = CfgUtility.GetUSDRate(ctrl);
             var pnpjmap = PNPlannerCodeMap.RetrieveAllMaps();
+            var pnpdmap = PNProuctFamilyCache.PNPFDict();
 
             var sql = @"select ShipQty,ShipDate,PN,MarketFamily from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and ProdDesc not like '%LINECARD%' and Configuration = @producttype ";
 
@@ -613,7 +614,11 @@ namespace Prism.Models
                 var mf = Convert.ToString(line[3]);
 
                 var pj = "";
-                if (pnpjmap.ContainsKey(pn))
+                if (pnpdmap.ContainsKey(pn))
+                {
+                    pj = pnpdmap[pn];
+                }
+                else if (pnpjmap.ContainsKey(pn))
                 {
                     pj = pnpjmap[pn].PJName;
                 }
@@ -680,7 +685,9 @@ namespace Prism.Models
 
             var retdata = new Dictionary<string, FsrShipData>();
             var usdrate = CfgUtility.GetUSDRate(ctrl);
+
             var pnpjmap = PNPlannerCodeMap.RetrieveAllMaps();
+            var pnpdmap = PNProuctFamilyCache.PNPFDict();
 
             var sql = @"select ShipQty,ShipDate,PN,MarketFamily from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and PN in <PNCOND>";
             sql = sql.Replace("<PNCOND>", pncond);
@@ -699,7 +706,11 @@ namespace Prism.Models
                 var mf = Convert.ToString(line[3]);
 
                 var pj = "";
-                if (pnpjmap.ContainsKey(pn))
+                if (pnpdmap.ContainsKey(pn))
+                {
+                    pj = pnpdmap[pn];
+                }
+                else if (pnpjmap.ContainsKey(pn))
                 {
                     pj = pnpjmap[pn].PJName;
                 }
@@ -710,7 +721,6 @@ namespace Prism.Models
                     else
                     { pj = pn; }
                 }
-
 
                 var m = shipdate.ToString("yyyy-MM");
                 var urate = 7.0;

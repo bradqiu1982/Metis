@@ -384,27 +384,33 @@ namespace Prism.Models
             return ret;
         }
 
+        public static ProductYield RetrievePDFamilyYield(string yf, Dictionary<string, string> yieldcfg, Controller ctrl)
+        {
+            var pdfamily = yieldcfg[yf + "_FAMILY"];
+            var sb = new System.Text.StringBuilder(1024 * 50);
+            var pdfms = pdfamily.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var pdf in pdfms)
+            {
+                sb.Append(" or ProductFamily like '%" + pdf + "%' ");
+            }
+            var familycond = sb.ToString().Substring(3);
+            var yieldobj = RetrieveYieldsByProductFamily(yf, familycond, ctrl);
+            var pdyield = new ProductYield();
+            pdyield.ProductFamily = yf;
+            pdyield.FirstYieldList.AddRange(yieldobj[0]);
+            pdyield.FinalYieldList.AddRange(yieldobj[1]);
+            return pdyield;
+        }
+
         public static List<ProductYield> RetrieveAllYield(Controller ctrl)
         {
             var ret = new List<ProductYield>();
-
             var yieldcfg = CfgUtility.LoadYieldConfig(ctrl);
+
             var yieldfamilys = yieldcfg["YIELDFAMILY"].Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
             foreach (var yf in yieldfamilys)
             {
-                var pdfamily = yieldcfg[yf + "_FAMILY"];
-                var sb = new System.Text.StringBuilder(1024 * 50);
-                var pdfms = pdfamily.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var pdf in pdfms)
-                {
-                    sb.Append(" or ProductFamily like '%" + pdf + "%' ");
-                }
-                var familycond = sb.ToString().Substring(3);
-                var yieldobj = RetrieveYieldsByProductFamily(yf, familycond,ctrl);
-                var pdyield = new ProductYield();
-                pdyield.ProductFamily = yf;
-                pdyield.FirstYieldList.AddRange(yieldobj[0]);
-                pdyield.FinalYieldList.AddRange(yieldobj[1]);
+                var pdyield = RetrievePDFamilyYield(yf, yieldcfg, ctrl);
                 ret.Add(pdyield);
             }//end foreach
             return ret;
@@ -542,6 +548,125 @@ namespace Prism.Models
 
             return ret;
         }
+
+        private static List<string> RetrieveQuarterFromYield(List<ProductYield> pdys)
+        {
+            var quarterdict = new Dictionary<string, bool>();
+            foreach (var pdy in pdys)
+            {
+                foreach (var y in pdy.FinalYieldList)
+                {
+                    if (!quarterdict.ContainsKey(y.Quarter))
+                    {
+                        quarterdict.Add(y.Quarter, true);
+                    }
+                }
+            }
+            var qlist = quarterdict.Keys.ToList();
+            qlist.Sort(delegate (string q1, string q2)
+            {
+                var qd1 = QuarterCLA.RetrieveDateFromQuarter(q1);
+                var qd2 = QuarterCLA.RetrieveDateFromQuarter(q2);
+                return qd1[0].CompareTo(qd2[0]);
+            });
+            return qlist;
+        }
+
+        public static object GetYieldTableAndChart(List<ProductYield> pdyieldlist, string tabtitle,string charttitle, bool fordepartment,string chartid)
+        {
+            var titlelist = new List<object>();
+            titlelist.Add(tabtitle);
+            titlelist.Add("");
+
+            var quarterlist = RetrieveQuarterFromYield(pdyieldlist);
+            titlelist.AddRange(quarterlist);
+
+
+            var pdy = pdyieldlist[0];
+
+                var chartxlist = new List<object>();
+                var chartseriallist = new List<object>();
+                var chartfpydata = new List<object>();
+                var chartfydata = new List<object>();
+                var linelist = new List<object>();
+
+                if (fordepartment)
+                {
+                    linelist.Add("<a href='/Yield/ProductYield?productfaimly=" + pdy.ProductFamily.Replace("+", "%2B") + "' target='_blank'>" + pdy.ProductFamily + "</a>");
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(pdy.ProjectKey))
+                    {
+                        linelist.Add(pdy.ProductFamily);
+                    }
+                    else
+                    {
+                        linelist.Add("<a href='http://wuxinpi.china.ads.finisar.com/Project/ProjectDetail?ProjectKey=" + pdy.ProjectKey + "' target='_blank'>" + pdy.ProductFamily + "</a>");
+                    }
+                }
+
+                linelist.Add("<span class='YINPUT'>INPUT</span><br><span class='YFPY'>FPY</span><br><span class='YFY'>FY</span>");
+
+                foreach (var qt in quarterlist)
+                {
+                    var matchidx = 0;
+                    var matchflag = false;
+                    foreach (var fy in pdy.FinalYieldList)
+                    {
+                        if (string.Compare(qt, fy.Quarter, true) == 0)
+                        {
+                            matchflag = true;
+                            break;
+                        }
+                        matchidx += 1;
+                    }
+
+                    if (matchflag && pdy.FirstYieldList[matchidx].MaxInput > 0)
+                    {
+                        
+                        linelist.Add("<span class='YINPUT'>" + pdy.FirstYieldList[matchidx].MaxInput + "</span><br><span class='YFPY YIELDDATA'>" + pdy.FirstYieldList[matchidx].YieldVal + "</span><br><span class='YFY YIELDDATA'>" + pdy.FinalYieldList[matchidx].YieldVal + "</span>");
+
+                        chartxlist.Add(pdy.FinalYieldList[matchidx].Quarter);
+                        chartfpydata.Add(pdy.FirstYieldList[matchidx].YieldVal);
+                        chartfydata.Add(pdy.FinalYieldList[matchidx].YieldVal);
+                    }
+                    else
+                    {
+                        linelist.Add(" ");
+                    }
+                }//end foreach
+
+                chartseriallist.Add(new
+                {
+                    type = "Line",
+                    name = "FPY",
+                    data = chartfpydata
+                });
+                chartseriallist.Add(new
+                {
+                    type = "Line",
+                    name = "FY",
+                    data = chartfydata
+                });
+
+                var chartdata = new
+                {
+                    id = chartid,
+                    title = charttitle,
+                    xlist = chartxlist,
+                    series = chartseriallist,
+                    yaxisnum = 1
+                };
+
+                return new
+                {
+                    tabletitle = titlelist,
+                    tablecontent = linelist,
+                    chartdata = chartdata
+                };
+        }
+
 
         public string ProductFamily { set; get; }
         public string Quarter { set; get; }

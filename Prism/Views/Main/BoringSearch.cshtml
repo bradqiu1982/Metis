@@ -1,0 +1,59 @@
+﻿
+@{
+    ViewBag.Title = "Boring Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script type="text/javascript" src="~/Scripts/boringsearch.js"></script>
+<script type="text/javascript">
+        $(function(){
+            BORINGSEARCH.INIT();
+        })
+</script>
+
+<div class="row">
+    <div class="nav navbar-nav navbar-left">
+        <img src="~/Content/images/Yield.png" style="height:40px; width:40px">
+    </div>
+    <div class="nav navbar-nav navbar-left">
+        <ol class="breadcrumb" style="width:600px">
+            <li><a data-toggle="tooltip" title="Goto Main Page" href="/Main/Index">Main</a></li>
+            <li class="active">Boring Search</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+        <div class="v-container">
+            <div class="v-filter">
+                <div class="row row-margin">
+                    <div class="col-xs-4">@Html.DropDownList("SearchFieldList1", null, new { @id = "SearchFieldList1",@name= "SearchFieldList1", @class = "form-control" })</div>
+                    <div class="col-xs-4"><input class="form-control" type="text" id="SearchRange1" name="SearchRange1" placeholder="Department or Product" readonly="readonly"/></div>
+                    <div class="col-xs-2"><button class="btn btn-primary" type="button" id="searchbtn" name="searchbtn">Search</button></div>
+                    <div class="col-xs-2"></div>
+                </div>
+                <div class="row row-margin">
+                    <div class="col-xs-4">@Html.DropDownList("SearchFieldList2", null, new { @id = "SearchFieldList2", @name = "SearchFieldList2", @class = "form-control" })</div>
+                    <div class="col-xs-4"><input class="form-control" type="text" id="SearchRange2" name="SearchRange2" placeholder="Department or Product"  readonly="readonly"/></div>
+                    <div class="col-xs-4"></div>
+                </div>
+            </div>
+            <div class="v-content">
+                <table class="table table-hover  table-condensed table-striped" id="tableid1" style="margin-top:1%">
+                    <caption class="tabcaption1"></caption>
+                    <thead id="tabheadid1"></thead>
+                    <tbody id="tabcontentid1"></tbody>
+                </table>
+                <table class="table table-hover  table-condensed table-striped" id="tableid2" style="margin-top:1%">
+                    <caption class="tabcaption2"></caption>
+                    <thead id="tabheadid2"></thead>
+                    <tbody id="tabcontentid2"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-1"></div>
+</div>
+

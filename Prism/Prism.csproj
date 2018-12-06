@@ -224,10 +224,12 @@
     <Compile Include="Models\MachineUserMap.cs" />
     <Compile Include="Models\ModuleTestData.cs" />
     <Compile Include="Models\PNPlannerCodeMap.cs" />
+    <Compile Include="Models\PNProuctFamilyCache.cs" />
     <Compile Include="Models\PrismComment.cs" />
     <Compile Include="Models\RMADppmData.cs" />
     <Compile Include="Models\RMARAWData.cs" />
     <Compile Include="Models\ScrapData_Base.cs" />
+    <Compile Include="Models\SearchVM.cs" />
     <Compile Include="Models\ShipLBSData.cs" />
     <Compile Include="Models\VcselRMAData.cs" />
     <Compile Include="Models\Website2Data.cs" />
@@ -724,6 +726,7 @@
     <Content Include="Content\bootstrap-datepicker\bootstrap-datepicker3.standalone.min.css.map" />
     <Content Include="Scripts\bootstrap-tagsinput\bootstrap-tagsinput.min.js.map" />
     <None Include="Properties\PublishProfiles\prismpublish.pubxml" />
+    <Content Include="Scripts\boringsearch.js" />
     <Content Include="Scripts\bssupport_db.txt" />
     <Content Include="Scripts\highmaps\flags32.png" />
     <Content Include="Scripts\highmaps\map.js" />
@@ -852,6 +855,9 @@
     <Content Include="Views\Inventory\ProductInventory.cshtml" />
     <Content Include="Views\Shipment\ShipOutputTrend.cshtml" />
     <Content Include="Scripts\USDRate.cfg" />
+    <Content Include="Scripts\SearchData.cfg" />
+    <Content Include="Views\Main\BoringSearch.cshtml" />
+    <Content Include="Scripts\NamePNMap.cfg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

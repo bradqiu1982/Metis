@@ -90,6 +90,8 @@ namespace Prism.Models
                     {
                         item.StoreData();
                     }
+
+                    ScrapData_Base.UpdateProduct();
                 }//end if
 
                 try { File.Delete(desfile); } catch (Exception ex) { }

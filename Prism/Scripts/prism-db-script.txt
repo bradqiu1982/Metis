@@ -306,3 +306,9 @@ CREATE TABLE [dbo].[ItemCostData]
 	[Appv_3]   NVARCHAR (200) DEFAULT ('') NOT NULL,
 	[Appv_4]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
 );
+
+CREATE TABLE [dbo].[PNProuctFamilyCache]
+(
+	[PN]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
+	[ProductFamily]    NVARCHAR (300)   DEFAULT ('') NOT NULL
+);
