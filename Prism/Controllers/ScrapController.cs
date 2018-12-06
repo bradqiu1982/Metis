@@ -631,7 +631,7 @@ namespace Prism.Controllers
                         if (bscrap != 0.0)
                         { bugetscrapval = new { name = "Max", color = "#C9302C", data = Math.Round(bscrap, 2), style = "dash" }; }
 
-                        var title = pd + " " + fyear + " " + fquarter + " SCRAP";
+                        var title = pd.Replace(".","") + " " + fyear + " " + fquarter + " SCRAP";
 
                         var chartlist = new List<object>();
                         chartlist.Add(new { name = "Non-China Scrap Rate", data = nonchinascraprate, type = "line", yAxis = 0, color = "#90ed7d" });

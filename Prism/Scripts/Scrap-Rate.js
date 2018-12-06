@@ -359,7 +359,7 @@
                                     {
                                         var fyear = $.trim($('#fyearlist').val());
                                         var fquarter = $.trim($('#fquarterlist').val());
-                                        window.open(line_data.url + event.point.category + '&defyear=' + fyear + '&defqrt=' + fquarter);
+                                        window.open(line_data.url + encodeURIComponent(event.point.category) + '&defyear=' + fyear + '&defqrt=' + fquarter);
                                     }
                             }
                          }

@@ -380,17 +380,20 @@ namespace Prism.Models
         public static Dictionary<string, string> CostCentProductMap()
         {
             var ret = new Dictionary<string, string>();
-            var sql = "SELECT distinct ORIGINAL_PROJECT_CODE+':::'+PRODUCT from ScrapData_Base where ORIGINAL_PROJECT_CODE <> '' and PRODUCT <> ''";
+            var sql = "SELECT distinct ORIGINAL_PROJECT_CODE from ScrapData_Base where ORIGINAL_PROJECT_CODE <> '' and PRODUCT <> ''";
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            var colist = new List<string>();
             foreach (var line in dbret)
             {
-                var tempval = Convert.ToString(line[0]);
-                var co = tempval.Split(new string[] { ":::" }, StringSplitOptions.RemoveEmptyEntries)[0];
-                var pd = tempval.Split(new string[] { ":::" }, StringSplitOptions.RemoveEmptyEntries)[1];
-                if (!ret.ContainsKey(co))
-                {
-                    ret.Add(co, pd);
-                }
+                colist.Add(Convert.ToString(line[0]));
+            }
+
+            foreach (var co in colist)
+            {
+                sql = "select top 1 PRODUCT,COUNT(PRODUCT) num from [BSSupport].[dbo].[ScrapData_Base] where ORIGINAL_PROJECT_CODE = '<pjcode>' group by PRODUCT order by num  desc";
+                sql = sql.Replace("<pjcode>", co);
+                dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+                ret.Add(co, Convert.ToString(dbret[0][0]));
             }
             return ret;
         }
@@ -398,7 +401,7 @@ namespace Prism.Models
         public static List<string> RetrievePNByPG(string pg)
         {
             var ret = new List<string>();
-            var sql = "select distinct ITEM from ScrapData_Base where PRODUCT_GROUP = '<productgroup>'";
+            var sql = "select distinct ASSEMBLY from ScrapData_Base where PRODUCT_GROUP = '<productgroup>'";
             sql = sql.Replace("<productgroup>", pg);
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
@@ -406,6 +409,48 @@ namespace Prism.Models
                 ret.Add(Convert.ToString(line[0]));
             }
             return ret;
+        }
+
+        private static List<string> GetAllPNList()
+        {
+            var ret = new List<string>();
+            var sql = "select distinct ASSEMBLY from ScrapData_Base";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
+            return ret;
+        }
+
+        public static List<string> GetAllProductList()
+        {
+            var ret = new List<string>();
+            var sql = "select distinct PRODUCT from ScrapData_Base";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
+            return ret;
+        }
+
+        public static void UpdateProduct()
+        {
+            var pndict = PNProuctFamilyCache.PNPFDict();
+            var pnlist = GetAllPNList();
+            foreach (var pn in pnlist)
+            {
+                if (pndict.ContainsKey(pn))
+                {
+                    var sql = "update ScrapData_Base set PRODUCT=@PRODUCT where ASSEMBLY=@ASSEMBLY";
+                    var dict = new Dictionary<string, string>();
+                    dict.Add("@ASSEMBLY", pn);
+                    dict.Add("@Product", pndict[pn]);
+                    DBUtility.ExeLocalSqlNoRes(sql, dict);
+                }
+            }
+
         }
 
         public ScrapData_Base()
