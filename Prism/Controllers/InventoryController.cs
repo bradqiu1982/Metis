@@ -187,19 +187,6 @@ namespace Prism.Controllers
             return ret;
         }
 
-        public JsonResult DepartmentDetailDataPD()
-        {
-            var pd = Request.Form["pd"];
-            var qt = Request.Form["qt"];
-            var invtdata = InventoryData.RetrieveDetailDataByPD(pd, qt);
-            var ret = new JsonResult();
-            ret.MaxJsonLength = Int32.MaxValue;
-            ret.Data = new
-            {
-                invtdata = invtdata
-            };
-            return ret;
-        }
 
         public ActionResult ProductInventory(string producttype)
         {
@@ -216,10 +203,29 @@ namespace Prism.Controllers
 
             var ivtdatalist = new List<InventoryData>();
 
+            var standardpd = false;
+            var standardpdlist = InventoryData.RetrieveAllPF();
+            foreach (var stdpd in standardpdlist)
+            {
+                if (string.Compare(prodtype, stdpd) == 0)
+                {
+                    standardpd = true;
+                    prod = prodtype;
+                }
+            }
+
             if (!string.IsNullOrEmpty(prod))
             {
-                var pdlist = prod.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
-                ivtdatalist = InventoryData.RetrieveDetailDataByPD(pdlist);
+                if (standardpd)
+                {
+                    var pdlist = prod.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    ivtdatalist = InventoryData.RetrieveDetailDataByStandardPD(pdlist);
+                }
+                else
+                {
+                    var pdlist = prod.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                    ivtdatalist = InventoryData.RetrieveDetailDataByPD(pdlist);
+                }
             }
             else
             {

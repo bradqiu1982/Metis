@@ -292,6 +292,102 @@ namespace Prism.Models
             return ret;
         }
 
+        public static object GetCapacityTable(List<CapacityRawData> capdatalist, bool fordepartment = true)
+        {
+            var quarterdict = new Dictionary<string, bool>();
+            var pddict = new Dictionary<string, Dictionary<string, CapacityRawData>>();
+            foreach (var cd in capdatalist)
+            {
+                if (!quarterdict.ContainsKey(cd.Quarter))
+                { quarterdict.Add(cd.Quarter, true); }
+
+                var pd = cd.ProductType;
+                if (!fordepartment)
+                { pd = cd.Product; }
+
+
+                if (pddict.ContainsKey(pd))
+                {
+                    var qdict = pddict[pd];
+                    if (qdict.ContainsKey(cd.Quarter))
+                    {
+                        qdict[cd.Quarter].MaxCapacity += cd.MaxCapacity;
+                        qdict[cd.Quarter].ForeCast += cd.ForeCast;
+                    }
+                    else
+                    {
+                        var tempvm = new CapacityRawData();
+                        tempvm.MaxCapacity = cd.MaxCapacity;
+                        tempvm.ForeCast = cd.ForeCast;
+                        qdict.Add(cd.Quarter, tempvm);
+                    }
+                }
+                else
+                {
+                    var tempvm = new CapacityRawData();
+                    tempvm.MaxCapacity = cd.MaxCapacity;
+                    tempvm.ForeCast = cd.ForeCast;
+                    var qdict = new Dictionary<string, CapacityRawData>();
+                    qdict.Add(cd.Quarter, tempvm);
+                    pddict.Add(pd, qdict);
+                }
+            }
+
+            var qlist = quarterdict.Keys.ToList();
+            qlist.Sort(delegate (string q1, string q2)
+            {
+                var qd1 = QuarterCLA.RetrieveDateFromQuarter(q1);
+                var qd2 = QuarterCLA.RetrieveDateFromQuarter(q2);
+                return qd1[0].CompareTo(qd2[0]);
+            });
+
+            var titlelist = new List<object>();
+            titlelist.Add("Capacity");
+            titlelist.Add("");
+            titlelist.AddRange(qlist);
+
+            var linelist = new List<object>();
+            var pdlist = pddict.Keys.ToList();
+
+            foreach (var pd in pdlist)
+            {
+                linelist = new List<object>();
+                if (fordepartment)
+                {
+                    linelist.Add("<a href='/Capacity/DepartmentCapacity' target='_blank'>" + pd + "</a>");
+                }
+                else
+                {
+                    linelist.Add("<a href='/Capacity/ProductCapacity?producttype=" + HttpUtility.UrlEncode(pd) + "' target='_blank'>" + pd + "</a>");
+                }
+
+                linelist.Add("<span class='YFPY'>Max Capacity</span><br><span class='YFY'>Forecast</span><br><span class='YINPUT'>Cusume Rate %</span><br><span class='YINPUT'>Buffer</span>");
+
+                var qtdata = pddict[pd];
+                foreach (var q in qlist)
+                {
+                    if (qtdata.ContainsKey(q))
+                    {
+                        var BUFFTAG = "YINPUT";
+                        if (qtdata[q].Usage > 90)
+                        {
+                            BUFFTAG = "NOBUFF";
+                        }
+
+                        linelist.Add("<span class='YFPY'>" + qtdata[q].MaxCapacity + "</span><br><span class='YFY'>" + qtdata[q].ForeCast + "</span><br><span class='" + BUFFTAG + "'>" + qtdata[q].Usage + "</span><br><span class='" + BUFFTAG + "'>" + qtdata[q].GAP + "</span>");
+                    }
+                    else
+                    { linelist.Add(" "); }
+                }
+            }
+
+            return new
+            {
+                tabletitle = titlelist,
+                tablecontent = linelist,
+            };
+        }
+
         public CapacityRawData()
         {
             ID = "";

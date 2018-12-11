@@ -88,6 +88,11 @@ namespace Prism.Models
 
         public static bool IsLxEmployee(string ip, string username, int x)
         {
+            #if DEBUG
+            if (string.Compare(ip, "127.0.0.1") == 0)
+            { return true; }
+            #endif
+
             string machine = DetermineCompName(ip);
 
             var sql = "select machine,username,level from machineusermap where machine = '<machine>' ";

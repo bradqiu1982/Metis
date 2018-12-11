@@ -1,10 +1,14 @@
 ﻿var BORINGSEARCH = function () {
     var SEARCHINIT = function () {
 
-        $('body').on('change', '#SearchFieldList1', function () {
+        var tablearray = new Array();
+
+        var fillsearchrange = function()
+        {
             if ($('#SearchRange1').data('autocomplete') || $('#SearchRange1').data('uiAutocomplete')) {
-                $('#SearchRange1').autoComplete("destroy");
+                $('#SearchRange1').autoComplete('destroy');
             }
+
             $('#SearchRange1').val('');
             $('#SearchRange1').attr('readonly', true);
 
@@ -25,32 +29,14 @@
                 });
                 $('#SearchRange1').attr('readonly', false);
             });
+        }
+
+        $('body').on('change', '#SearchFieldList1', function () {
+            fillsearchrange();
         });
 
-        $('body').on('change', '#SearchFieldList2', function () {
-            if ($('#SearchRange2').data('autocomplete') || $('#SearchRange2').data('uiAutocomplete')) {
-                $('#SearchRange2').autoComplete("destroy");
-            }
-            $('#SearchRange2').val('');
-            $('#SearchRange2').attr('readonly', true);
-
-            var searchfield = $('#SearchFieldList2').val();
-            $.post('/Main/BoringSearchRange', {
-                searchfield: searchfield
-            }, function (output) {
-                $('#SearchRange2').autoComplete({
-                    minChars: 0,
-                    source: function (term, suggest) {
-                        term = term.toLowerCase();
-                        var choices = output.srange;
-                        var suggestions = [];
-                        for (i = 0; i < choices.length; i++)
-                            if (~choices[i].toLowerCase().indexOf(term)) suggestions.push(choices[i]);
-                        suggest(suggestions);
-                    }
-                });
-                $('#SearchRange2').attr('readonly', false);
-            });
+        $(function () {
+            fillsearchrange();
         });
 
         var searchdata = function ()
@@ -60,16 +46,41 @@
             if (range1 == '')
             { return false; }
 
-            var field2 = $('#SearchFieldList2').val();
-            var range2 = $('#SearchRange2').val();
-                
             $.post('/Main/BoringSearchData', {
                 field1: field1,
                 range1: range1,
-                field2: field2,
-                range2: range2
             }, function (output) {
+                $.each(tablearray, function (idx, val) {
+                    val.destroy();
+                });
+                tablearray = [];
+                $('.v-content').empty();
 
+                $.each(output.obj1, function (idx,val) {
+                    var appendstr = '<table class="table table-hover  table-condensed table-striped" id="tab_' + idx + '" style="margin-top:1%">';
+                    appendstr += '<thead>';
+                    $.each(val.tabletitle, function (i, h) {
+                        appendstr+= '<th>'+h+'</th>';
+                    })
+                    appendstr += '</thead>';
+                    appendstr += '<tbody>';
+                    $.each(val.tablecontent, function (i, d) {
+                        appendstr += '<td>' + d + '</td>';
+                    })
+                    appendstr += '</tbody>';
+                    appendstr += '</table>';
+                    appendstr += '<hr/>';
+                    $('.v-content').append(appendstr);
+
+                    var tableobj = $('#tab_' + idx).DataTable({
+                        "bInfo": false,
+                        "aaSorting": [],
+                        "order": [],
+                        dom: 'Bfrti',
+                        buttons: ['copyHtml5', 'csv', 'excelHtml5']
+                    });
+                    tablearray.push(tableobj)
+                });
             });
         }
 

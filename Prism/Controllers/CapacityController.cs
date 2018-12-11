@@ -14,26 +14,6 @@ namespace Prism.Controllers
             return View();
         }
 
-        private List<string> RetrieveQuarterFromYield(List<CapacityRawData> cdatas)
-        {
-            var quarterdict = new Dictionary<string, bool>();
-            foreach (var cd in cdatas)
-            {
-                if (!quarterdict.ContainsKey(cd.Quarter))
-                {
-                    quarterdict.Add(cd.Quarter, true);
-                }
-            }
-            var qlist = quarterdict.Keys.ToList();
-            qlist.Sort(delegate (string q1, string q2)
-            {
-                var qd1 = QuarterCLA.RetrieveDateFromQuarter(q1);
-                var qd2 = QuarterCLA.RetrieveDateFromQuarter(q2);
-                return qd1[0].CompareTo(qd2[0]);
-            });
-            return qlist;
-        }
-
         private JsonResult GetCapacityDataChart(List<CapacityRawData> capdatalist, bool fordepartment = true)
         {
             var colorlist = new string[] { "#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
@@ -238,6 +218,14 @@ namespace Prism.Controllers
             var prod = Request.Form["prod"];
 
             var capdatalist = new List<CapacityRawData>();
+            var allproduct = CapacityRawData.GetAllProductList();
+            foreach (var pd in allproduct)
+            {
+                if (string.Compare(pd, prodtype) == 0)
+                {
+                    prod = prodtype;
+                }
+            }
 
             if (!string.IsNullOrEmpty(prod))
             {

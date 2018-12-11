@@ -4,6 +4,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<style type="text/css">
+.dataTables_wrapper{
+    margin-top:20px;
+    margin-bottom:10px;
+}
+</style>
+
 <script type="text/javascript" src="~/Scripts/boringsearch.js"></script>
 <script type="text/javascript">
         $(function(){
@@ -34,23 +41,8 @@
                     <div class="col-xs-2"><button class="btn btn-primary" type="button" id="searchbtn" name="searchbtn">Search</button></div>
                     <div class="col-xs-2"></div>
                 </div>
-                <div class="row row-margin">
-                    <div class="col-xs-4">@Html.DropDownList("SearchFieldList2", null, new { @id = "SearchFieldList2", @name = "SearchFieldList2", @class = "form-control" })</div>
-                    <div class="col-xs-4"><input class="form-control" type="text" id="SearchRange2" name="SearchRange2" placeholder="Department or Product"  readonly="readonly"/></div>
-                    <div class="col-xs-4"></div>
-                </div>
             </div>
             <div class="v-content">
-                <table class="table table-hover  table-condensed table-striped" id="tableid1" style="margin-top:1%">
-                    <caption class="tabcaption1"></caption>
-                    <thead id="tabheadid1"></thead>
-                    <tbody id="tabcontentid1"></tbody>
-                </table>
-                <table class="table table-hover  table-condensed table-striped" id="tableid2" style="margin-top:1%">
-                    <caption class="tabcaption2"></caption>
-                    <thead id="tabheadid2"></thead>
-                    <tbody id="tabcontentid2"></tbody>
-                </table>
             </div>
         </div>
     </div>

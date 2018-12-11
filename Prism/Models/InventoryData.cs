@@ -93,6 +93,8 @@ namespace Prism.Models
                     {
                         item.StoreDetailData();
                     }
+
+                    UpdateDetailPF(ctrl);
                 }
             }
         }
@@ -116,6 +118,31 @@ namespace Prism.Models
             dict.Add("@Inventory",Inventory.ToString());
             dict.Add("@InventoryTurns",InventoryTurns.ToString());
             DBUtility.ExeLocalSqlNoRes(sql, dict);
+        }
+
+        public static List<string> RetrieveAllPF()
+        {
+            var ret = new List<string>();
+            var sql = "select distinct Appv_1 from InventoryDetail where Appv_1 <> ''";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
+            return ret;
+        }
+
+        public static void UpdateDetailPF(Controller ctrl)
+        {
+            var pfmap = CfgUtility.LoadNamePFConfig(ctrl);
+            foreach (var kv in pfmap)
+            {
+                var sql = "update InventoryDetail set Appv_1 = @Appv_1 where Product = @Product";
+                var dict = new Dictionary<string, string>();
+                dict.Add("@Appv_1", kv.Value);
+                dict.Add("@Product", kv.Key);
+                DBUtility.ExeLocalSqlNoRes(sql, dict);
+            }
         }
 
         private static void CleanTrendTable(string idcond)
@@ -143,6 +170,23 @@ namespace Prism.Models
             var ret = new List<InventoryData>();
             var sql = "select ID,Quarter,Department,Product,COGS,Inventory,InventoryTurns from InventoryTrend order by Department";
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(new InventoryData(Convert.ToString(line[0]), Convert.ToString(line[1]), Convert.ToString(line[2]), Convert.ToString(line[3])
+                    , Convert.ToDouble(line[4]), Convert.ToDouble(line[5]), Convert.ToDouble(line[6])));
+            }
+
+            return ret;
+        }
+
+        public static List<InventoryData> RetrieveAllTrendDataByDP(string department)
+        {
+            var ret = new List<InventoryData>();
+            var sql = "select ID,Quarter,Department,Product,COGS,Inventory,InventoryTurns from InventoryTrend where Department = @Department order by Department";
+            var dict = new Dictionary<string, string>();
+            dict.Add("@Department", department);
+
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null,dict);
             foreach (var line in dbret)
             {
                 ret.Add(new InventoryData(Convert.ToString(line[0]), Convert.ToString(line[1]), Convert.ToString(line[2]), Convert.ToString(line[3])
@@ -192,17 +236,15 @@ namespace Prism.Models
             return ret;
         }
 
-        public static List<InventoryData> RetrieveDetailDataByPD(string prod, string quarter)
+        public static List<InventoryData> RetrieveDetailDataByStandardPD(List<string> pdlist)
         {
+            var pdcond = "('" + string.Join("','", pdlist) + "')";
+
             var ret = new List<InventoryData>();
-            var sql = "select ID,Quarter,Department,Product,COGS,Inventory,InventoryTurns from InventoryDetail where Product = '<Product>' ";
-            if (!string.IsNullOrEmpty(quarter))
-            {
-                sql += " and Quarter = '<Quarter>' ";
-                sql = sql.Replace("<Quarter>", quarter);
-            }
-            sql = sql.Replace("<Product>", prod);
+            var sql = "select ID,Quarter,Department,Appv_1,COGS,Inventory,InventoryTurns from InventoryDetail where Appv_1 in <pdcond> ";
+            sql = sql.Replace("<pdcond>", pdcond);
             sql += " order by InventoryTurns desc";
+
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
@@ -223,6 +265,88 @@ namespace Prism.Models
                 ret.Add(Convert.ToString(line[0]));
             }
             return ret;
+        }
+
+        public static object GetInventoryDataTable(List<InventoryData> inventorydata, bool fordepartment = true)
+        {
+            var quarterdict = new Dictionary<string, bool>();
+            var pddict = new Dictionary<string, Dictionary<string, InventoryData>>();
+            foreach (var cd in inventorydata)
+            {
+                if (!quarterdict.ContainsKey(cd.Quarter))
+                { quarterdict.Add(cd.Quarter, true); }
+
+                var pd = cd.Department;
+                if (!fordepartment)
+                { pd = cd.Product; }
+
+                if (pddict.ContainsKey(pd))
+                {
+                    var qdict = pddict[pd];
+                    if (qdict.ContainsKey(cd.Quarter))
+                    {
+                    }
+                    else
+                    {
+                        qdict.Add(cd.Quarter, cd);
+                    }
+                }
+                else
+                {
+                    var qdict = new Dictionary<string, InventoryData>();
+                    qdict.Add(cd.Quarter, cd);
+                    pddict.Add(pd, qdict);
+                }
+            }
+
+            var qlist = quarterdict.Keys.ToList();
+            qlist.Sort(delegate (string q1, string q2)
+            {
+                var qd1 = QuarterCLA.RetrieveDateFromQuarter(q1);
+                var qd2 = QuarterCLA.RetrieveDateFromQuarter(q2);
+                return qd1[0].CompareTo(qd2[0]);
+            });
+
+            var titlelist = new List<object>();
+            titlelist.Add("Inventory Turns");
+            titlelist.Add("");
+            titlelist.AddRange(qlist);
+
+            var pdlist = pddict.Keys.ToList();
+            var linelist = new List<object>();
+
+            foreach (var pd in pdlist)
+            {
+
+                linelist = new List<object>();
+                if (fordepartment)
+                {
+                    linelist.Add("<a href='/Inventory/DepartmentInventory' target='_blank'>" + pd + "</a>");
+                }
+                else
+                {
+                    linelist.Add("<a href='/Inventory/ProductInventory?producttype=" + HttpUtility.UrlEncode(pd) + "' target='_blank'>" + pd + "</a>");
+                }
+
+                linelist.Add("<span class='YFPY'>COSG</span><br><span class='YFY'>Inventory</span><br><span class='YINPUT'>Inventory Turns</span>");
+
+                var qtdata = pddict[pd];
+                foreach (var q in qlist)
+                {
+                    if (qtdata.ContainsKey(q))
+                    {
+                        linelist.Add("<span class='YFPY'>" + qtdata[q].COGS + "</span><br><span class='YFY'>" + qtdata[q].Inventory + "</span><br><span class='YINPUT'>" + qtdata[q].InventoryTurns + "</span>");
+                    }
+                    else
+                    { linelist.Add(" "); }
+                }
+            }
+
+            return new
+            {
+                tabletitle = titlelist,
+                tablecontent = linelist
+            };
         }
 
         public InventoryData(string id, string qt, string dp, string pd,double co, double iv, double ivt)

@@ -619,7 +619,7 @@
                     {
                         value: line_data.fytg,
                         color: 'green',
-                        width: 1,
+                        width: 2,
                         label: {
                             text: 'FY Target:' + line_data.fytg,
                             align: 'left'

@@ -252,15 +252,11 @@ namespace Prism.Controllers
         public ActionResult BoringSearch()
         {
             var searchfield = SearchVM.SearchFields();
-            searchfield.Insert(0, "Query Fields");
+            searchfield.Insert(0, SEARCHFIELD.ALLFIELDS);
 
             var searchlist1 = CreateSelectList(searchfield, "");
-            searchlist1[0].Disabled = true;
             ViewBag.SearchFieldList1 = searchlist1;
 
-            var searchlist2 = CreateSelectList(searchfield, "");
-            searchlist2[0].Disabled = true;
-            ViewBag.SearchFieldList2 = searchlist2;
             return View();
         }
 
@@ -305,28 +301,14 @@ namespace Prism.Controllers
         {
             var field1 = Request.Form["field1"];
             var range1 = Request.Form["range1"];
-            var field2 = Request.Form["field2"];
-            var range2 = Request.Form["range2"];
 
-            object obj1 = null;
-            object obj2 = null;
-
-            if (!string.IsNullOrEmpty(field1) && !string.IsNullOrEmpty(range1))
-            {
-                obj1 = SearchVM.SearchData(field1, range1, this);
-            }
-
-            if (!string.IsNullOrEmpty(field2) && !string.IsNullOrEmpty(range2))
-            {
-                obj2 = SearchVM.SearchData(field2, range2, this,false);
-            }
+            object obj1 = SearchVM.SearchData(field1, range1, this);
 
             var ret = new JsonResult();
             ret.MaxJsonLength = Int32.MaxValue;
             ret.Data = new
             {
-                obj1 = obj1,
-                obj2 = obj2
+                obj1 = obj1
             };
             return ret;
         }
@@ -386,8 +368,9 @@ namespace Prism.Controllers
 
         public ActionResult LoadInventoryData()
         {
-            InventoryData.LoadInventoryTrend(this);
-            InventoryData.LoadInventoryDetail(this);
+            //InventoryData.LoadInventoryTrend(this);
+            //InventoryData.LoadInventoryDetail(this);
+            InventoryData.UpdateDetailPF(this);
             return View("HeartBeat");
         }
 

@@ -128,7 +128,7 @@ namespace Prism.Models
         public static List<string> RetrieveYieldPDFamilyList()
         {
             var ret = new List<string>();
-            var sql = "select distinct ProductFamily FROM YieldPreData order by ProductFamily where ProductFamily <> ''";
+            var sql = "select distinct ProductFamily FROM YieldPreData where ProductFamily <> '' order by ProductFamily";
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {

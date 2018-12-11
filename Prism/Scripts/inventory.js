@@ -314,51 +314,6 @@
         })
 
 
-        //$('body').on('click', '.YIELDDATA', function () {
-        //    showinventdata($(this).attr('qt'), $(this).attr('pd'));
-        //})
-
-        //function showinventdata(qt, pd) {
-        //    $.post('/Inventory/DepartmentDetailDataPD',
-        //        {
-        //            qt: qt,
-        //            pd: pd
-        //        },
-        //        function (output) {
-        //            if (inventdatatable) {
-        //                inventdatatable.destroy();
-        //            }
-        //            $("#inventorycontentid").empty();
-
-        //            var appendstr = "";
-
-        //            $.each(output.invtdata, function (i, val) {
-        //                appendstr += "<tr>";
-        //                appendstr += "<td>" + val.Quarter + "</td>";
-        //                appendstr += "<td>" + val.Department + "</td>";
-        //                appendstr += "<td>" + val.Product + "</td>";
-        //                appendstr += "<td>" + val.COGS + "</td>";
-        //                appendstr += "<td>" + val.Inventory + "</td>";
-        //                appendstr += "<td>" + val.InventoryTurns + "</td>";
-        //                appendstr += "</tr>";
-        //            })
-        //            $("#inventorycontentid").append(appendstr);
-
-        //            inventdatatable = $('#inventorydatatable').DataTable({
-        //                'iDisplayLength': 50,
-        //                'aLengthMenu': [[20, 50, 100, -1],
-        //                [20, 50, 100, "All"]],
-        //                "aaSorting": [],
-        //                "order": [],
-        //                dom: 'lBfrtip',
-        //                buttons: ['copyHtml5', 'csv', 'excelHtml5']
-        //            });
-
-        //            $('#inventorymodal').modal('show');
-        //        }
-        //        );
-        //}
-
         var drawline = function (line_data) {
             var options = {
                 chart: {
@@ -427,7 +382,7 @@
                                     $(this)[0].chart.reflow();
                                 }
                                 else {
-                                    //showinventdata(event.point.category, line_data.pd);
+                                    
                                 }
                             }
                         }

@@ -240,6 +240,29 @@ namespace Prism.Models
             return ret;
         }
 
+        public static List<List<MachineRate>> RetrieveAllMachineByYF(string yf,Controller ctrl)
+        {
+            var ret = new List<List<MachineRate>>();
+
+            var yieldcfg = CfgUtility.LoadYieldConfig(ctrl);
+
+                var pdfamily = yieldcfg[yf + "_FAMILY"];
+                var sb = new System.Text.StringBuilder(1024 * 50);
+                var pdfms = pdfamily.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var pdf in pdfms)
+                {
+                    sb.Append(" or ProductFamily like '%" + pdf + "%' ");
+                }
+                var familycond = sb.ToString().Substring(3);
+                var machineratelist = RetrievePdMachine(yf, familycond, ctrl);
+                if (machineratelist.Count > 0)
+                {
+                    ret.Add(machineratelist);
+                }
+
+            return ret;
+        }
+
         public static List<List<MachineRate>> RetrieveProductMachineByYF(string yf, Controller ctrl)
         {
             var ret = new List<List<MachineRate>>();
@@ -330,6 +353,95 @@ namespace Prism.Models
 
             ret.Sort(delegate (TestMachineRate obj1, TestMachineRate obj2) { return obj1.Rate.CompareTo(obj2.Rate); });
             return ret;
+        }
+
+        private static List<string> RetrieveQuarterFromYield(List<List<MachineRate>> pdms)
+        {
+            var quarterdict = new Dictionary<string, bool>();
+            foreach (var pdm in pdms)
+            {
+                foreach (var y in pdm)
+                {
+                    if (!quarterdict.ContainsKey(y.Quarter))
+                    {
+                        quarterdict.Add(y.Quarter, true);
+                    }
+                }
+            }
+            var qlist = quarterdict.Keys.ToList();
+            qlist.Sort(delegate (string q1, string q2)
+            {
+                var qd1 = QuarterCLA.RetrieveDateFromQuarter(q1);
+                var qd2 = QuarterCLA.RetrieveDateFromQuarter(q2);
+                return qd1[0].CompareTo(qd2[0]);
+            });
+            return qlist;
+        }
+
+        public static  object GetMachineTable(List<List<MachineRate>> pdmachinelist, string title, bool withlink = false)
+        {
+            var titlelist = new List<object>();
+            titlelist.Add(title);
+            titlelist.Add("");
+
+            var quarterlist = RetrieveQuarterFromYield(pdmachinelist);
+            titlelist.AddRange(quarterlist);
+
+
+            var idx = 0;
+            var linelist = new List<object>();
+            foreach (var pdm in pdmachinelist)
+            {
+                if (pdm.Count == 0)
+                { continue; }
+
+                linelist = new List<object>();
+                if (withlink)
+                {
+                    linelist.Add("<a href='/Machine/DepartmentMachine' target='_blank'>" + pdm[0].ProductFamily + "</a>");
+                }
+                else
+                {
+                    linelist.Add("<a href='/Machine/ProductMachine?productfaimly=" + HttpUtility.UrlEncode(pdm[0].ProductFamily) + "' target='_blank'>" + pdm[0].ProductFamily + "</a>");
+                }
+
+                linelist.Add("<span class='YINPUT'>Machines</span><br><span class='YFPY'>Hours</span><br><span class='YFY'>Rate%</span>");
+
+
+                foreach (var qt in quarterlist)
+                {
+                    var matchidx = 0;
+                    var matchflag = false;
+                    foreach (var mr in pdm)
+                    {
+                        if (string.Compare(qt, mr.Quarter, true) == 0)
+                        {
+                            matchflag = true;
+                            break;
+                        }
+                        matchidx += 1;
+                    }
+
+                    if (matchflag && pdm[matchidx].MachineTimeList.Count > 0)
+                    {
+
+                        linelist.Add("<span class='YINPUT'>" + pdm[matchidx].MachineTimeList.Count + "</span><br><span class='YFPY'>" + (int)(pdm[matchidx].SpendTime / 3600) + "</span><br><span class='YFY'>" + pdm[matchidx].Rate + "</span>");
+                        pdm[matchidx].MachineTimeList.Sort(delegate (MachineSpendTime obj1, MachineSpendTime obj2) { return obj1.SpendTime.CompareTo(obj2.SpendTime); });
+                    }
+                    else
+                    {
+                        linelist.Add(" ");
+                    }
+                }//end foreach
+
+                 idx += 1;
+            }
+
+            return  new
+            {
+                tabletitle = titlelist,
+                tablecontent = linelist
+            };
         }
 
         public MachineRate()

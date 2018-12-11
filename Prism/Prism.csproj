@@ -858,6 +858,7 @@
     <Content Include="Scripts\SearchData.cfg" />
     <Content Include="Views\Main\BoringSearch.cshtml" />
     <Content Include="Scripts\NamePNMap.cfg" />
+    <Content Include="Scripts\NamePFMap.cfg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
