@@ -185,7 +185,7 @@ namespace Prism.Models
             }
             else if (string.Compare(searchfield, SEARCHFIELD.SCRAP) == 0)
             {
-                
+                tables.Add(SearchScrap(searchrange, ctrl));
             }
             else if (string.Compare(searchfield, SEARCHFIELD.CAPACITY) == 0)
             {
@@ -270,6 +270,27 @@ namespace Prism.Models
                 return InventoryData.GetInventoryDataTable(inventdata,false);
             }
        }
+
+        private static object SearchScrap(string searchrange, Controller ctrl)
+        {
+            if (string.Compare(searchrange, "LINECARD") == 0)
+            { searchrange = "LNCD"; }
+            if (string.Compare(searchrange, "TUNABLE") == 0)
+            { searchrange = "Telecom TRX"; }
+
+            var searchcfg = CfgUtility.LoadSearchConfig(ctrl);
+            if (searchcfg["SCRAPFAMILY"].ToUpper().Contains(searchrange.ToUpper()))
+            {
+                var scrapdata = ScrapData_Base.RetrieveScrapDataByPG(searchrange);
+                return ScrapData_Base.GetScrapTable(scrapdata, searchrange, true);
+            }
+            else
+            {
+                var scrapdata = ScrapData_Base.RetrieveScrapDataByStandardPD(searchrange);
+                return ScrapData_Base.GetScrapTable(scrapdata, searchrange, false);
+            }
+        }
+
 
 
     }

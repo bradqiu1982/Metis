@@ -249,7 +249,10 @@
             }
             $.bootstrapLoading.start(options);
 
-            $.post('/Scrap/ScrapTrendData', {
+            var defpd = $('#defpd').val();
+            $.post('/Scrap/ScrapTrendData',
+                {
+                    defpd:defpd
             }, function (output) {
                 if (output.success) {
                     $('.v-content').empty();

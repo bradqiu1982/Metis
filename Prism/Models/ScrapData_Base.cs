@@ -207,6 +207,58 @@ namespace Prism.Models
             return ret;
         }
 
+
+        public static List<ScrapData_Base> RetrieveScrapDataByStandardPD(string pd)
+        {
+            var ret = new List<ScrapData_Base>();
+
+            var sql = @"select Scrap_Or_Output,REASON_NAME,Transaction_Value_Usd_1,Week,ASSEMBLY,CrtYear,CrtQuarter from ScrapData_Base 
+                         where PRODUCT = @PRODUCT";
+            var dict = new Dictionary<string, string>();
+            dict.Add("@PRODUCT",pd);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null,dict);
+            foreach (var line in dbret)
+            {
+                var tempvm = new ScrapData_Base();
+                tempvm.Scrap_Or_Output = Convert.ToString(line[0]);
+                tempvm.REASON_NAME = Convert.ToString(line[1]);
+                tempvm.Transaction_Value_Usd_1 = Convert.ToString(line[2]);
+                tempvm.Week = Convert.ToString(line[3]);
+                tempvm.ASSEMBLY = Convert.ToString(line[4]);
+                tempvm.CrtYear = Convert.ToString(line[5]);
+                tempvm.CrtQuarter = Convert.ToString(line[6]);
+
+                ret.Add(tempvm);
+            }
+            return ret;
+        }
+
+        public static List<ScrapData_Base> RetrieveScrapDataByPG(string pg)
+        {
+            var ret = new List<ScrapData_Base>();
+
+            var sql = @"select Scrap_Or_Output,REASON_NAME,Transaction_Value_Usd_1,Week,ASSEMBLY,CrtYear,CrtQuarter from ScrapData_Base 
+                         where PRODUCT_GROUP = @PRODUCT_GROUP";
+            var dict = new Dictionary<string, string>();
+            dict.Add("@PRODUCT_GROUP", pg);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
+            foreach (var line in dbret)
+            {
+                var tempvm = new ScrapData_Base();
+                tempvm.Scrap_Or_Output = Convert.ToString(line[0]);
+                tempvm.REASON_NAME = Convert.ToString(line[1]);
+                tempvm.Transaction_Value_Usd_1 = Convert.ToString(line[2]);
+                tempvm.Week = Convert.ToString(line[3]);
+                tempvm.ASSEMBLY = Convert.ToString(line[4]);
+                tempvm.CrtYear = Convert.ToString(line[5]);
+                tempvm.CrtQuarter = Convert.ToString(line[6]);
+
+                ret.Add(tempvm);
+            }
+            return ret;
+        }
+
+
         public static List<string> RetrievePJCodeByDepartment(string dp,string fyear, string fquarter)
         {
             var ret = new List<string>();
@@ -452,6 +504,84 @@ namespace Prism.Models
             }
 
         }
+
+        public static object GetScrapTable(List<ScrapData_Base> onepddata, string pd, bool fordepartment)
+        {
+            var sumdata = SCRAPSUMData.GetSumDataFromRawDataByQuarter(onepddata);
+
+            var qlist = sumdata.Keys.ToList();
+            qlist.Sort(delegate (string obj1, string obj2)
+            {
+                var i1 = QuarterCLA.RetrieveDateFromQuarter(obj1)[0];
+                var i2 = QuarterCLA.RetrieveDateFromQuarter(obj2)[0];
+                return i1.CompareTo(i2);
+            });
+
+            var titlelist = new List<object>();
+            titlelist.Add("Scrap");
+            titlelist.Add("");
+            foreach (var q in qlist)
+            {
+                titlelist.Add(q.Replace("-", " "));
+            }
+
+
+            var linelist = new List<object>();
+            if (fordepartment)
+            {
+                linelist.Add("<a href='/Scrap/DepartmentScrap' target='_blank'>" + pd + "</a>");
+            }
+            else
+            {
+                linelist.Add("<a href='/Scrap/ScrapTrend?product=" + HttpUtility.UrlEncode(pd) + "' target='_blank'>" + pd + "</a>");
+            }
+
+            linelist.Add("<span class='YFPY'>General Scrap</span><br><span class='YFY'>Nonchina Scrap</span><br><span class='YINPUT'>Total Scrap</span><br><span class='YINPUT'>Output"
+                +"</span><br><span class='YFPY'>General Scrap Rate</span><br><span class='YFY'>Nonchina Scrap Rate</span><br><span class='YINPUT'>Total Scrap Rate</span>");
+
+            //var outputiszero = false;
+            var sumscraplist = new List<SCRAPSUMData>();
+            foreach (var q in qlist)
+            {
+                sumscraplist.Add(sumdata[q]);
+            }
+
+
+            if (sumscraplist.Count > 0)
+            {
+
+                var generalscrap = new List<double>();
+                var nonchinascrap = new List<double>();
+                var totlescrap = new List<double>();
+
+                var generalscraprate = new List<double>();
+                var nonchinascraprate = new List<double>();
+                var totlescraprate = new List<double>();
+
+                foreach (var item in sumscraplist)
+                {
+                    var gs = Math.Round(item.generalscrap, 2);
+                    var ncs = Math.Round(item.nonchinascrap, 2);
+                    var ts = gs + ncs;
+                    var output = Math.Round(item.output, 2);
+                    var gsr = Math.Round(item.generalscrap / item.output * 100.0, 2);
+                    var ncsr = Math.Round(item.nonchinascrap / item.output * 100.0, 2);
+                    var tsr = Math.Round(ts / item.output * 100.0, 2);
+
+                    linelist.Add("<span class='YFPY'>"+gs+"</span><br><span class='YFY'>"+ncs+"</span><br><span class='YINPUT'>"+ts+"</span><br><span class='YINPUT'>"+output
+                        +"</span><br><span class='YFPY'>"+gsr+" %</span><br><span class='YFY'>"+ncsr+" %</span><br><span class='YINPUT'>"+tsr+" %</span>");
+                }
+            }
+
+            return new
+            {
+                tabletitle = titlelist,
+                tablecontent = linelist
+            };
+
+        }
+
+
 
         public ScrapData_Base()
         {
