@@ -368,9 +368,8 @@ namespace Prism.Controllers
 
         public ActionResult LoadInventoryData()
         {
-            //InventoryData.LoadInventoryTrend(this);
-            //InventoryData.LoadInventoryDetail(this);
-            InventoryData.UpdateDetailPF(this);
+            InventoryData.LoadInventoryTrend(this);
+            InventoryData.LoadInventoryDetail(this);
             return View("HeartBeat");
         }
 

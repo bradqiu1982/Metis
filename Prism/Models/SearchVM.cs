@@ -12,9 +12,7 @@ namespace Prism.Models
         public static string YIELD = "YIELD";
         public static string MACHINERATE = "MACHINE RATE";
         public static string SHIPQTY = "SHIP QTY";
-        public static string SHIPOUTPUT = "SHIP OUTPUT";
         public static string OTDQTY = "OTD QTY";
-        public static string OTDOUTPUT = "OTD OUTPUT";
         public static string SCRAP = "SCRAP";
         public static string CAPACITY = "CAPACITY";
         public static string INVENTORY = "INVENTORY";
@@ -28,9 +26,7 @@ namespace Prism.Models
             ret.Add(SEARCHFIELD.YIELD);
             ret.Add(SEARCHFIELD.MACHINERATE);
             ret.Add(SEARCHFIELD.SHIPQTY);
-            ret.Add(SEARCHFIELD.SHIPOUTPUT);
             ret.Add(SEARCHFIELD.OTDQTY);
-            ret.Add(SEARCHFIELD.OTDOUTPUT);
             ret.Add(SEARCHFIELD.SCRAP);
             ret.Add(SEARCHFIELD.CAPACITY);
             ret.Add(SEARCHFIELD.INVENTORY);
@@ -47,6 +43,7 @@ namespace Prism.Models
             var pflist = pfdict.Keys.ToList();
             pflist.Sort();
             ret.AddRange(pflist);
+            ret.Add("SFP+ TUNABLE");
             return ret;
         }
 
@@ -123,9 +120,7 @@ namespace Prism.Models
                 return YieldSearchRange(ctrl);
             }
             else if (string.Compare(searchfield, SEARCHFIELD.SHIPQTY) == 0
-                || string.Compare(searchfield, SEARCHFIELD.SHIPOUTPUT) == 0
-                || string.Compare(searchfield, SEARCHFIELD.OTDQTY) == 0
-                || string.Compare(searchfield, SEARCHFIELD.OTDOUTPUT) == 0)
+                || string.Compare(searchfield, SEARCHFIELD.OTDQTY) == 0)
             {
                 return ShipSearchRange(ctrl);
             }
@@ -150,106 +145,109 @@ namespace Prism.Models
             var tables = new List<object>();
             if (string.Compare(searchfield, SEARCHFIELD.ALLFIELDS) == 0)
             {
-                tables.Add(SearchYield(searchrange, ctrl));
-                tables.Add(SearchMachineRate(searchrange, ctrl));
-                tables.Add(SearchCapacity(searchrange, ctrl));
-                tables.Add(SearchInventory(searchrange, ctrl));
+                SearchYield(searchrange, tables, ctrl);
+                SearchMachineRate(searchrange, tables, ctrl);
+                SearchCapacity(searchrange, tables, ctrl);
+                SearchScrap(searchrange, tables, ctrl);
+                SearchInventory(searchrange, tables, ctrl);
+                SearchShipQty(searchrange, tables, ctrl);
+                SearchOTDQty(searchrange, tables, ctrl);
             }
             else if (string.Compare(searchfield, SEARCHFIELD.YIELD) == 0)
             {
-                tables.Add(SearchYield(searchrange,ctrl));
+                SearchYield(searchrange, tables, ctrl);
             }
             else if (string.Compare(searchfield, SEARCHFIELD.MACHINERATE) == 0)
             {
-                tables.Add(SearchMachineRate(searchrange,ctrl));
+                SearchMachineRate(searchrange, tables, ctrl);
             }
             else if (string.Compare(searchfield, SEARCHFIELD.SHIPQTY) == 0)
             {
-                if (string.Compare(searchrange, "LINECARD") == 0)
-                { searchrange = "LNCD"; }
-            }
-            else if (string.Compare(searchfield, SEARCHFIELD.SHIPOUTPUT) == 0)
-            {
-                if (string.Compare(searchrange, "LINECARD") == 0)
-                { searchrange = "LNCD"; }
+                SearchShipQty(searchrange, tables, ctrl);
             }
             else if (string.Compare(searchfield, SEARCHFIELD.OTDQTY) == 0)
             {
-                if (string.Compare(searchrange, "LINECARD") == 0)
-                { searchrange = "LNCD"; }
-            }
-            else if (string.Compare(searchfield, SEARCHFIELD.OTDOUTPUT) == 0)
-            {
-                if (string.Compare(searchrange, "LINECARD") == 0)
-                { searchrange = "LNCD"; }
+                SearchOTDQty(searchrange, tables, ctrl);
             }
             else if (string.Compare(searchfield, SEARCHFIELD.SCRAP) == 0)
             {
-                tables.Add(SearchScrap(searchrange, ctrl));
+                SearchScrap(searchrange, tables, ctrl);
             }
             else if (string.Compare(searchfield, SEARCHFIELD.CAPACITY) == 0)
             {
-                tables.Add(SearchCapacity(searchrange, ctrl));
+                SearchCapacity(searchrange, tables, ctrl);
             }
             else if (string.Compare(searchfield, SEARCHFIELD.INVENTORY) == 0)
             {
-                tables.Add(SearchInventory(searchrange, ctrl));
+                SearchInventory(searchrange, tables, ctrl);
             }
 
             return tables;
         }
 
-        private static object SearchYield(string searchrange, Controller ctrl)
+        private static void SearchYield(string searchrange, List<object> tables, Controller ctrl)
         {
+            if (string.Compare(searchrange, "SFP+ WIRE") == 0)
+            { searchrange = "PARALLEL.SFPWIRE"; }
+            if (string.Compare(searchrange, "10G Tunable BIDI") == 0)
+            { searchrange = "BIDI P2P"; }
+            if (string.Compare(searchrange, "T-XFP") == 0)
+            { searchrange = "XFP TUNABLE"; }
+
             var searchcfg = CfgUtility.LoadSearchConfig(ctrl);
-            
             if (searchcfg["YIELDFAMILY"].ToUpper().Contains(searchrange.ToUpper()))
             {
                 var yieldcfg = CfgUtility.LoadYieldConfig(ctrl);
                 var yieldlist = new List<ProductYield>();
                 yieldlist.Add(YieldVM.RetrievePDFamilyYield(searchrange,yieldcfg,ctrl));
-                return YieldVM.GetYieldTable(yieldlist, "Yield", true);
+                if (yieldlist.Count == 0 || yieldlist[0].FirstYieldList.Count == 0) { return; }
+                tables.Add(YieldVM.GetYieldTable(yieldlist, "Yield", true));
             }
             else
             {
                 var yieldlist = YieldVM.RetrieveProductYieldByYF(searchrange, ctrl);
-                return YieldVM.GetYieldTable(yieldlist, "Yield", false);
+                if (yieldlist.Count == 0 || yieldlist[0].FirstYieldList.Count == 0) { return; }
+                tables.Add(YieldVM.GetYieldTable(yieldlist, "Yield", false));
             }
         }
 
-        private static object SearchMachineRate(string searchrange, Controller ctrl)
+        private static void SearchMachineRate(string searchrange, List<object> tables, Controller ctrl)
         {
             var searchcfg = CfgUtility.LoadSearchConfig(ctrl);
             if (searchcfg["YIELDFAMILY"].ToUpper().Contains(searchrange.ToUpper()))
             {
                 var machinerate = MachineRate.RetrieveAllMachineByYF(searchrange, ctrl);
-                return MachineRate.GetMachineTable(machinerate, "Machine Rate", true);
+                if (machinerate.Count == 0 || machinerate[0][0].MachineTimeList.Count == 0) { return; }
+                tables.Add(MachineRate.GetMachineTable(machinerate, "Machine Rate", true));
             }
             else
             {
                 var machinerate = MachineRate.RetrieveProductMachineByYF(searchrange, ctrl);
-                return MachineRate.GetMachineTable(machinerate, "Machine Rate", false);
+                if (machinerate.Count == 0 || machinerate[0][0].MachineTimeList.Count == 0) { return; }
+                tables.Add(MachineRate.GetMachineTable(machinerate, "Machine Rate", false));
             }
         }
 
-        private static object SearchCapacity(string searchrange, Controller ctrl)
+        private static void SearchCapacity(string searchrange, List<object> tables, Controller ctrl)
         {
             var searchcfg = CfgUtility.LoadSearchConfig(ctrl);
             if (searchcfg["CAPACITYFAMILY"].ToUpper().Contains(searchrange.ToUpper()))
             {
                 var capdatalist = CapacityRawData.RetrieveDataByProductType(searchrange);
-                return CapacityRawData.GetCapacityTable(capdatalist, true);
+                if (capdatalist.Count == 0) { return; }
+                tables.Add(CapacityRawData.GetCapacityTable(capdatalist, true));
             }
             else
             {
                 var pdlist = new List<string>();
                 pdlist.Add(searchrange);
                 var capdatalist = CapacityRawData.RetrieveDataByProd(pdlist);
-                return CapacityRawData.GetCapacityTable(capdatalist, false);
+                if (capdatalist.Count == 0) { return; }
+                tables.Add(CapacityRawData.GetCapacityTable(capdatalist, false));
             }
         }
 
-        private static object SearchInventory(string searchrange, Controller ctrl)
+        private static void SearchInventory(string searchrange, List<object> tables, Controller ctrl)
         {
             if (string.Compare(searchrange, "TUNABLE") == 0)
             { searchrange = "10G Tunable"; }
@@ -260,18 +258,20 @@ namespace Prism.Models
             if (searchcfg["INVENTORYFAMILY"].ToUpper().Contains(searchrange.ToUpper()))
             {
                 var inventdata = InventoryData.RetrieveAllTrendDataByDP(searchrange);
-                return InventoryData.GetInventoryDataTable(inventdata,true);
+                if (inventdata.Count == 0) { return; }
+                tables.Add(InventoryData.GetInventoryDataTable(inventdata,true));
             }
             else
             {
                 var pdlist = new List<string>();
                 pdlist.Add(searchrange);
                 var inventdata = InventoryData.RetrieveDetailDataByStandardPD(pdlist);
-                return InventoryData.GetInventoryDataTable(inventdata,false);
+                if (inventdata.Count == 0) { return; }
+                tables.Add(InventoryData.GetInventoryDataTable(inventdata,false));
             }
        }
 
-        private static object SearchScrap(string searchrange, Controller ctrl)
+        private static void SearchScrap(string searchrange, List<object> tables, Controller ctrl)
         {
             if (string.Compare(searchrange, "LINECARD") == 0)
             { searchrange = "LNCD"; }
@@ -282,16 +282,46 @@ namespace Prism.Models
             if (searchcfg["SCRAPFAMILY"].ToUpper().Contains(searchrange.ToUpper()))
             {
                 var scrapdata = ScrapData_Base.RetrieveScrapDataByPG(searchrange);
-                return ScrapData_Base.GetScrapTable(scrapdata, searchrange, true);
+                if (scrapdata.Count == 0) { return; }
+                tables.Add(ScrapData_Base.GetScrapTable(scrapdata, searchrange, true));
             }
             else
             {
                 var scrapdata = ScrapData_Base.RetrieveScrapDataByStandardPD(searchrange);
-                return ScrapData_Base.GetScrapTable(scrapdata, searchrange, false);
+                if (scrapdata.Count == 0) { return; }
+                tables.Add(ScrapData_Base.GetScrapTable(scrapdata, searchrange, false));
             }
         }
 
+        private static void SearchShipQty(string searchrange, List<object> tables, Controller ctrl)
+        {
+            if (string.Compare(searchrange, "SFP+ WIRE") == 0)
+            { searchrange = "PARALLEL.SFPWIRE"; }
 
+            var shipdata = FsrShipData.RetrieveOutputDataByQuarter(searchrange, ctrl);
+            if (shipdata.Count == 0 || shipdata[0].Count == 0) { return; }
+
+            var searchcfg = CfgUtility.LoadSearchConfig(ctrl);
+            if (searchcfg["SHIPFAMILY"].ToUpper().Contains(searchrange.ToUpper()))
+            { tables.Add(FsrShipData.GetShipoutTable(shipdata, searchrange, true)); }
+            else
+            { tables.Add(FsrShipData.GetShipoutTable(shipdata, searchrange, false)); }
+        }
+
+        private static void SearchOTDQty(string searchrange, List<object> tables, Controller ctrl)
+        {
+            if (string.Compare(searchrange, "SFP+ WIRE") == 0)
+            { searchrange = "PARALLEL.SFPWIRE"; }
+
+            var shipdata = FsrShipData.RetrieveOTDDataByQuarter(searchrange, ctrl);
+            if (shipdata.Count == 0 || shipdata[0].Count == 0) { return; }
+
+            var searchcfg = CfgUtility.LoadSearchConfig(ctrl);
+            if (searchcfg["SHIPFAMILY"].ToUpper().Contains(searchrange.ToUpper()))
+            { tables.Add(FsrShipData.GetOTDTable(shipdata, searchrange, true)); }
+            else
+            { tables.Add(FsrShipData.GetOTDTable(shipdata, searchrange, false)); }
+        }
 
     }
 }

@@ -425,7 +425,7 @@ namespace Prism.Models
                     if (matchflag && pdm[matchidx].MachineTimeList.Count > 0)
                     {
 
-                        linelist.Add("<span class='YINPUT'>" + pdm[matchidx].MachineTimeList.Count + "</span><br><span class='YFPY'>" + (int)(pdm[matchidx].SpendTime / 3600) + "</span><br><span class='YFY'>" + pdm[matchidx].Rate + "</span>");
+                        linelist.Add("<span class='YINPUT'>" + pdm[matchidx].MachineTimeList.Count + "</span><br><span class='YFPY'>" + String.Format("{0:n0}", (int)(pdm[matchidx].SpendTime / 3600)) + "</span><br><span class='YFY'>" + pdm[matchidx].Rate + "%</span>");
                         pdm[matchidx].MachineTimeList.Sort(delegate (MachineSpendTime obj1, MachineSpendTime obj2) { return obj1.SpendTime.CompareTo(obj2.SpendTime); });
                     }
                     else

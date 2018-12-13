@@ -536,7 +536,7 @@ namespace Prism.Models
                 linelist.Add("<a href='/Scrap/ScrapTrend?product=" + HttpUtility.UrlEncode(pd) + "' target='_blank'>" + pd + "</a>");
             }
 
-            linelist.Add("<span class='YFPY'>General Scrap</span><br><span class='YFY'>Nonchina Scrap</span><br><span class='YINPUT'>Total Scrap</span><br><span class='YINPUT'>Output"
+            linelist.Add("<span class='YFPY'>General Scrap</span><br><span class='YFY'>Nonchina Scrap</span><br><span class='YINPUT'>Total Scrap</span><br><span class='YINPUT'>OUTPUT"
                 +"</span><br><span class='YFPY'>General Scrap Rate</span><br><span class='YFY'>Nonchina Scrap Rate</span><br><span class='YINPUT'>Total Scrap Rate</span>");
 
             //var outputiszero = false;
@@ -568,8 +568,8 @@ namespace Prism.Models
                     var ncsr = Math.Round(item.nonchinascrap / item.output * 100.0, 2);
                     var tsr = Math.Round(ts / item.output * 100.0, 2);
 
-                    linelist.Add("<span class='YFPY'>"+gs+"</span><br><span class='YFY'>"+ncs+"</span><br><span class='YINPUT'>"+ts+"</span><br><span class='YINPUT'>"+output
-                        +"</span><br><span class='YFPY'>"+gsr+" %</span><br><span class='YFY'>"+ncsr+" %</span><br><span class='YINPUT'>"+tsr+" %</span>");
+                    linelist.Add("<span class='YFPY'>"+ String.Format("{0:n0}", gs) +"</span><br><span class='YFY'>"+ String.Format("{0:n0}", ncs) +"</span><br><span class='YINPUT'>"+ String.Format("{0:n0}", ts) +"</span><br><span class='YINPUT'>"+ String.Format("{0:n0}", output)
+                        +"</span><br><span class='YFPY'>"+gsr+"%</span><br><span class='YFY'>"+ncsr+"%</span><br><span class='YINPUT'>"+tsr+"%</span>");
                 }
             }
 

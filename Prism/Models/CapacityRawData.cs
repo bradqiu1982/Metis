@@ -361,7 +361,7 @@ namespace Prism.Models
                     linelist.Add("<a href='/Capacity/ProductCapacity?producttype=" + HttpUtility.UrlEncode(pd) + "' target='_blank'>" + pd + "</a>");
                 }
 
-                linelist.Add("<span class='YFPY'>Max Capacity</span><br><span class='YFY'>Forecast</span><br><span class='YINPUT'>Cusume Rate %</span><br><span class='YINPUT'>Buffer</span>");
+                linelist.Add("<span class='YFPY'>Max Capacity</span><br><span class='YFY'>Forecast</span><br><span class='YINPUT'>Cusume Rate%</span><br><span class='YINPUT'>Buffer</span>");
 
                 var qtdata = pddict[pd];
                 foreach (var q in qlist)
@@ -374,7 +374,7 @@ namespace Prism.Models
                             BUFFTAG = "NOBUFF";
                         }
 
-                        linelist.Add("<span class='YFPY'>" + qtdata[q].MaxCapacity + "</span><br><span class='YFY'>" + qtdata[q].ForeCast + "</span><br><span class='" + BUFFTAG + "'>" + qtdata[q].Usage + "</span><br><span class='" + BUFFTAG + "'>" + qtdata[q].GAP + "</span>");
+                        linelist.Add("<span class='YFPY'>" + String.Format("{0:n0}", qtdata[q].MaxCapacity) + "</span><br><span class='YFY'>" + String.Format("{0:n0}", qtdata[q].ForeCast) + "</span><br><span class='" + BUFFTAG + "'>" + qtdata[q].Usage + "%</span><br><span class='" + BUFFTAG + "'>" + String.Format("{0:n0}", qtdata[q].GAP) + "</span>");
                     }
                     else
                     { linelist.Add(" "); }

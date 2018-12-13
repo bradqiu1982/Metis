@@ -764,6 +764,283 @@ namespace Prism.Models
             return ret;
         }
 
+
+        public static List<Dictionary<string, double>> RetrieveOutputDataByQuarter(string producttype, Controller ctrl)
+        {
+            var ret = new List<Dictionary<string, double>>();
+
+            var searchcfg = CfgUtility.LoadSearchConfig(ctrl);
+            var costdict = ItemCostData.RetrieveStandardCost();
+            var usdrate = CfgUtility.GetUSDRate(ctrl);
+
+            var startdate = searchcfg["SHIP_STARTDATE"];
+            var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
+            var pncond = "('" + string.Join("','", pnlist) + "')";
+
+            var outputdict = new Dictionary<string, double>();
+            var qtydict = new Dictionary<string, double>();
+
+            var sql = @"select ShipQty,ShipDate,PN from FsrShipData where ShipDate >= @sdate 
+                        and PN in <pncond> order by ShipDate";
+
+            var dict = new Dictionary<string, string>();
+            dict.Add("@sdate", startdate);
+
+            sql = sql.Replace("<pncond>", pncond);
+
+            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            foreach (var line in dbret)
+            {
+                var qty = Convert.ToDouble(line[0]);
+                var shipdate = Convert.ToDateTime(line[1]);
+                var pn = Convert.ToString(line[2]).Trim();
+                var q = QuarterCLA.RetrieveQuarterFromDate(shipdate);
+
+                var m = shipdate.ToString("yyyy-MM");
+                var urate = 7.0;
+                if (usdrate.ContainsKey(m))
+                {
+                    urate = usdrate[m];
+                }
+                else
+                { urate = usdrate["CURRENT"]; }
+
+                if (costdict.ContainsKey(pn))
+                {
+                    if (outputdict.ContainsKey(q))
+                    {
+                        outputdict[q] += qty * costdict[pn] / urate;
+                        qtydict[q] += qty;
+                    }
+                    else
+                    {
+                        outputdict.Add(q, qty * costdict[pn] / urate);
+                        qtydict.Add(q, qty);
+                    }
+                }
+            }
+
+            ret.Add(qtydict);
+            ret.Add(outputdict);
+            return ret;
+        }
+
+        public static object GetShipoutTable(List<Dictionary<string, double>> outputdata, string pd, bool fordepartment)
+        {
+            var qtydict = outputdata[0];
+            var outputdict = outputdata[1];
+
+            var qlist = qtydict.Keys.ToList();
+            qlist.Sort(delegate (string obj1, string obj2)
+            {
+                var i1 = QuarterCLA.RetrieveDateFromQuarter(obj1)[0];
+                var i2 = QuarterCLA.RetrieveDateFromQuarter(obj2)[0];
+                return i1.CompareTo(i2);
+            });
+
+            var titlelist = new List<object>();
+            titlelist.Add("Shipment");
+            titlelist.Add("");
+            titlelist.AddRange(qlist);
+
+            var linelist = new List<object>();
+            if (fordepartment)
+            {
+                linelist.Add("<a href='/Shipment/ShipOutputTrend' target='_blank'>" + pd + "</a>");
+            }
+            else
+            {
+                linelist.Add(pd);
+            }
+
+            linelist.Add("<span class='YFPY'>Ship_Qty</span><br><span class='YFY'>Ship_Output_$</span>");
+
+            //var outputiszero = false;
+            var sumscraplist = new List<SCRAPSUMData>();
+            foreach (var q in qlist)
+            {
+                linelist.Add("<span class='YFPY'>"+ String.Format("{0:n0}", Math.Round(qtydict[q],0))+"</span><br><span class='YFY'>"+ String.Format("{0:n0}", Math.Round(outputdict[q],0))+"</span>");
+            }
+
+            return new
+            {
+                tabletitle = titlelist,
+                tablecontent = linelist
+            };
+
+        }
+
+
+        public static List<Dictionary<string, double>> RetrieveOTDDataByQuarter(string producttype, Controller ctrl)
+        {
+            var ret = new List<Dictionary<string, double>>();
+
+            var searchcfg = CfgUtility.LoadSearchConfig(ctrl);
+            var costdict = ItemCostData.RetrieveStandardCost();
+            var usdrate = CfgUtility.GetUSDRate(ctrl);
+
+            var otdqtydict = new Dictionary<string, double>();
+            var totalqtydict = new Dictionary<string, double>();
+            var otdoutputdict = new Dictionary<string, double>();
+            var totaloutputdict = new Dictionary<string, double>();
+
+            var startdate = searchcfg["SHIP_STARTDATE"];
+            var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
+            var pncond = "('" + string.Join("','", pnlist) + "')";
+
+            var sql = @"select ShipDate,Appv_5,PN,Appv_1 from FsrShipData where Appv_5 >= @sdate and Appv_5 <= @edate and PN in <pncond>  
+                        and Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' ";
+            var dict = new Dictionary<string, string>();
+            dict.Add("@sdate", startdate);
+            dict.Add("@edate", DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+
+            sql = sql.Replace("<pncond>", pncond);
+
+            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+
+            foreach (var line in dbret)
+            {
+                var ShipDate = Convert.ToDateTime(line[0]);
+                var OPD = Convert.ToDateTime(line[1]);
+                var PN = Convert.ToString(line[2]);
+                var OrderQty = Convert.ToDouble(line[3]);
+                var q = QuarterCLA.RetrieveQuarterFromDate(OPD);
+
+                if (string.Compare(OPD.ToString("yyyy-MM"), "1982-05") == 0)
+                { continue; }
+
+                if (ShipDate <= OPD)
+                {
+                    if (totalqtydict.ContainsKey(q))
+                    { totalqtydict[q] += OrderQty; }
+                    else
+                    { totalqtydict.Add(q, OrderQty); }
+
+                    if (otdqtydict.ContainsKey(q))
+                    { otdqtydict[q] += OrderQty; }
+                    else
+                    { otdqtydict.Add(q, OrderQty); }
+                }
+                else
+                {
+                    if (totalqtydict.ContainsKey(q))
+                    { totalqtydict[q] += OrderQty; }
+                    else
+                    { totalqtydict.Add(q, OrderQty); }
+
+                    if (!otdqtydict.ContainsKey(q))
+                    { otdqtydict.Add(q, 0); }
+                }
+
+
+                var m = OPD.ToString("yyyy-MM");
+                var urate = 7.0;
+                if (usdrate.ContainsKey(m))
+                {
+                    urate = usdrate[m];
+                }
+                else
+                { urate = usdrate["CURRENT"]; }
+
+
+                if (costdict.ContainsKey(PN))
+                {
+
+                    if (ShipDate <= OPD)
+                    {
+                        if (totaloutputdict.ContainsKey(q))
+                        { totaloutputdict[q] += OrderQty * costdict[PN] / urate; }
+                        else
+                        { totaloutputdict.Add(q, OrderQty * costdict[PN] / urate); }
+
+                        if (otdoutputdict.ContainsKey(q))
+                        { otdoutputdict[q] += OrderQty * costdict[PN] / urate; }
+                        else
+                        { otdoutputdict.Add(q, OrderQty * costdict[PN] / urate); }
+                    }
+                    else
+                    {
+                        if (totaloutputdict.ContainsKey(q))
+                        { totaloutputdict[q] += OrderQty * costdict[PN] / urate; }
+                        else
+                        { totaloutputdict.Add(q, OrderQty * costdict[PN] / urate); }
+
+                        if (!otdoutputdict.ContainsKey(q))
+                        { otdoutputdict.Add(q, 0); }
+                    }
+                }
+            }
+
+            ret.Add(otdqtydict);
+            ret.Add(totalqtydict);
+
+            ret.Add(otdoutputdict);
+            ret.Add(totaloutputdict);
+
+            return ret;
+        }
+
+        public static object GetOTDTable(List<Dictionary<string, double>> otddata, string pd, bool fordepartment)
+        {
+            var otdqtydict = otddata[0];
+            var totalqtydict = otddata[1];
+
+            var otdoutputdict = otddata[2];
+            var totaloutputdict = otddata[3];
+
+            var qlist = totalqtydict.Keys.ToList();
+            qlist.Sort(delegate (string obj1, string obj2)
+            {
+                var i1 = QuarterCLA.RetrieveDateFromQuarter(obj1)[0];
+                var i2 = QuarterCLA.RetrieveDateFromQuarter(obj2)[0];
+                return i1.CompareTo(i2);
+            });
+
+            var titlelist = new List<object>();
+            titlelist.Add("OTD-Data");
+            titlelist.Add("");
+            titlelist.AddRange(qlist);
+
+            var linelist = new List<object>();
+            if (fordepartment)
+            {
+                linelist.Add("<a href='/Shipment/OTDData' target='_blank'>" + pd + "</a>");
+            }
+            else
+            {
+                linelist.Add(pd);
+            }
+
+            linelist.Add("<span class='YFPY'>QTY_OTD_RATE</span><br><span class='YFPY'>ORDER_QTY</span><br><span class='YFY'>$_OTD_RATE</span><br><span class='YFY'>ORDER_$</span>");
+
+            foreach (var q in qlist)
+            {
+                var otdqty = otdqtydict[q];
+                var totalqty = totalqtydict[q];
+                var qtyrate = Math.Round(otdqty / totalqty * 100.0, 2);
+
+                var outputrate = "";
+                var totaloutput = "";
+                if (otdoutputdict.ContainsKey(q))
+                {
+                    var output = otdoutputdict[q];
+                    var toutput = totaloutputdict[q];
+                    outputrate = Math.Round(output / toutput * 100.0, 2).ToString();
+                    totaloutput =String.Format("{0:n0}",  Math.Round(toutput, 2));
+                }
+
+                linelist.Add("<span class='YFPY'>"+ qtyrate + "%</span><br><span class='YFPY'>"+ String.Format("{0:n0}", totalqty) + "</span><br><span class='YFY'>"+outputrate+"%</span><br><span class='YFY'>"+ totaloutput + "</span>");
+            }
+
+            return new
+            {
+                tabletitle = titlelist,
+                tablecontent = linelist
+            };
+
+        }
+
+
         public string ShipID { set; get; }
         public double ShipQty { set; get; }
         public string PN { set; get; }

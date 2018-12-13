@@ -335,7 +335,7 @@ namespace Prism.Models
                 {
                     if (qtdata.ContainsKey(q))
                     {
-                        linelist.Add("<span class='YFPY'>" + qtdata[q].COGS + "</span><br><span class='YFY'>" + qtdata[q].Inventory + "</span><br><span class='YINPUT'>" + qtdata[q].InventoryTurns + "</span>");
+                        linelist.Add("<span class='YFPY'>" + String.Format("{0:n0}", qtdata[q].COGS) + "</span><br><span class='YFY'>" + String.Format("{0:n0}", qtdata[q].Inventory) + "</span><br><span class='YINPUT'>" + qtdata[q].InventoryTurns + "</span>");
                     }
                     else
                     { linelist.Add(" "); }

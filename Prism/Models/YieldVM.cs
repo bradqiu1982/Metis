@@ -394,6 +394,12 @@ namespace Prism.Models
                 sb.Append(" or ProductFamily like '%" + pdf + "%' ");
             }
             var familycond = sb.ToString().Substring(3);
+
+            if (string.Compare(yf, "parallel", true) == 0)
+            {
+                familycond = " ProductFamily like 'PARALLEL%' and ProductFamily not like 'PARALLEL.SFPWIRE%' ";
+            }
+
             var yieldobj = RetrieveYieldsByProductFamily(yf, familycond, ctrl);
             var pdyield = new ProductYield();
             pdyield.ProductFamily = yf;
@@ -438,7 +444,7 @@ namespace Prism.Models
                 var pdfms = yf.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var pdf in pdfms)
                 {
-                    sb.Append(" or ProductFamily like '" + pdf + "' ");
+                    sb.Append(" or ProductFamily like '%" + pdf + "%' ");
                 }
             }
             var familycond = sb.ToString().Substring(3);
@@ -613,7 +619,7 @@ namespace Prism.Models
 
                     if (matchflag && pdy.FirstYieldList[matchidx].MaxInput > 0)
                     {
-                        linelist.Add("<span class='YINPUT'>" + pdy.FirstYieldList[matchidx].MaxInput + "</span><br><span class='YFPY'>" + pdy.FirstYieldList[matchidx].YieldVal + "</span><br><span class='YFY'>" + pdy.FinalYieldList[matchidx].YieldVal + "</span>");
+                        linelist.Add("<span class='YINPUT'>" + String.Format("{0:n0}", pdy.FirstYieldList[matchidx].MaxInput) + "</span><br><span class='YFPY'>" + pdy.FirstYieldList[matchidx].YieldVal + "%</span><br><span class='YFY'>" + pdy.FinalYieldList[matchidx].YieldVal + "%</span>");
                     }
                     else
                     {
