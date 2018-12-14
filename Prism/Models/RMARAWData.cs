@@ -165,7 +165,7 @@ namespace Prism.Models
                 var productcond = "AppV_F like 'Parallel'";
                 return RetrieveRMADataByMonth(sdate, edate, productcond);
             }
-            else if (string.Compare(producttype, SHIPPRODTYPE.OPTIUM, true) == 0)
+            else if (string.Compare(producttype, SHIPPRODTYPE.TUNABLE, true) == 0)
             {
                 var productcond = "AppV_F like 'Coherent Transceiver' or AppV_F like 'COHERENT'  or AppV_F like '10G Tunable' or AppV_F like '10G T-XFP' or AppV_F like 'TXFP' ";
                 return RetrieveRMADataByMonth(sdate, edate, productcond);
@@ -206,7 +206,7 @@ namespace Prism.Models
                 var productcond = "AppV_F like 'Parallel'";
                 return RetrieveWorkLoadDataByMonth(sdate, edate, productcond);
             }
-            else if (string.Compare(producttype, SHIPPRODTYPE.OPTIUM, true) == 0)
+            else if (string.Compare(producttype, SHIPPRODTYPE.TUNABLE, true) == 0)
             {
                 var productcond = "AppV_F like 'Coherent Transceiver' or AppV_F like 'COHERENT'  or AppV_F like '10G Tunable' or AppV_F like '10G T-XFP' or AppV_F like 'TXFP' ";
                 return RetrieveWorkLoadDataByMonth(sdate, edate, productcond);

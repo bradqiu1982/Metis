@@ -728,13 +728,22 @@ namespace Prism.Controllers
                 shipdataarray.Add(GetShipmentQuarterChartData(allparallelship, allrmacntdict, "ALL", SHIPPRODTYPE.PARALLEL));
             }
 
-            var tunableshipdata = FsrShipData.RetrieveShipDataByMonth("",SHIPPRODTYPE.OPTIUM,startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            var tunableshipdata = FsrShipData.RetrieveShipDataByMonth("", SHIPPRODTYPE.TUNABLE,startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
             if (tunableshipdata.Count > 0)
             {
                 var vcselrmacntdict = new Dictionary<string, int>();
                 var allrmacntdict = RMADppmData.RetrieveTunableRMACntByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"));
-                shipdataarray.Add(GetShipmentChartData(tunableshipdata, vcselrmacntdict, allrmacntdict, "tunable", SHIPPRODTYPE.OPTIUM));
-                shipdataarray.Add(GetShipmentQuarterChartData(tunableshipdata, allrmacntdict, "tunable", SHIPPRODTYPE.OPTIUM));
+                shipdataarray.Add(GetShipmentChartData(tunableshipdata, vcselrmacntdict, allrmacntdict, "tunable", SHIPPRODTYPE.TUNABLE));
+                shipdataarray.Add(GetShipmentQuarterChartData(tunableshipdata, allrmacntdict, "tunable", SHIPPRODTYPE.TUNABLE));
+            }
+
+            var sfpwireshipdata = FsrShipData.RetrieveShipDataByMonth("", SHIPPRODTYPE.SFPWIRE, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            if (sfpwireshipdata.Count > 0)
+            {
+                var vcselrmacntdict = new Dictionary<string, int>();
+                var allrmacntdict = new Dictionary<string, int>();
+                shipdataarray.Add(GetShipmentChartData(sfpwireshipdata, vcselrmacntdict, allrmacntdict, SHIPPRODTYPE.SFPWIRE, SHIPPRODTYPE.SFPWIRE));
+                shipdataarray.Add(GetShipmentQuarterChartData(sfpwireshipdata, allrmacntdict, SHIPPRODTYPE.SFPWIRE, SHIPPRODTYPE.SFPWIRE));
             }
 
             var linecardshipdata = FsrShipData.RetrieveLineCardShipDataByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
@@ -915,7 +924,7 @@ namespace Prism.Controllers
             //{
             //    otdarray.Add(GetOTDChartData(otd14g, "10G_14G", SHIPPRODTYPE.PARALLEL));
             //}
-            var parallelorderdata = FsrShipData.RetrieveOTDByMonth("", SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            var parallelorderdata = FsrShipData.RetrieveOTDByMonth( SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
             if (parallelorderdata.Count > 0)
             {
                 otdarray.Add(GetOTDChartData(parallelorderdata, "parallel", SHIPPRODTYPE.PARALLEL));
@@ -926,15 +935,15 @@ namespace Prism.Controllers
                 otdarray.Add(GetOTDChartDataByQTY(parallelorderdata, "parallel", SHIPPRODTYPE.PARALLEL));
             }
 
-            var tunableorderdata = FsrShipData.RetrieveOTDByMonth("", SHIPPRODTYPE.OPTIUM, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            var tunableorderdata = FsrShipData.RetrieveOTDByMonth( SHIPPRODTYPE.TUNABLE, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
             if (tunableorderdata.Count > 0)
             {
-                otdarray.Add(GetOTDChartData(tunableorderdata, "tunable", SHIPPRODTYPE.OPTIUM));
+                otdarray.Add(GetOTDChartData(tunableorderdata, "tunable", SHIPPRODTYPE.TUNABLE));
             }
 
             if (tunableorderdata.Count > 0)
             {
-                otdarray.Add(GetOTDChartDataByQTY(tunableorderdata, "tunable", SHIPPRODTYPE.OPTIUM));
+                otdarray.Add(GetOTDChartDataByQTY(tunableorderdata, "tunable", SHIPPRODTYPE.TUNABLE));
             }
 
 
@@ -1031,7 +1040,7 @@ namespace Prism.Controllers
                 maxval = maxval
             });
 
-            var tunableshiplbsdata = ShipLBSData.LoadShipdataLBS(SHIPPRODTYPE.OPTIUM, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            var tunableshiplbsdata = ShipLBSData.LoadShipdataLBS(SHIPPRODTYPE.TUNABLE, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
             maxval = 2.0;
             capitallist = new List<object>();
             foreach (var item in tunableshiplbsdata)
@@ -1063,6 +1072,41 @@ namespace Prism.Controllers
                 capitallist = capitallist,
                 maxval = maxval
             });
+
+
+            var sfpwireshiplbsdata = ShipLBSData.LoadShipdataLBS(SHIPPRODTYPE.SFPWIRE, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            maxval = 2.0;
+            capitallist = new List<object>();
+            foreach (var item in sfpwireshiplbsdata)
+            {
+                if (item.value > maxval)
+                { maxval = item.value; }
+                if (item.value > 1 && capitaldict.ContainsKey(item.code))
+                {
+                    capitallist.Add(new
+                    {
+                        id = capitaldict[item.code].ctname,
+                        lat = capitaldict[item.code].lat,
+                        lon = capitaldict[item.code].lon,
+                    });
+
+                }
+            }
+            capitallist.Add(new
+            {
+                id = WUXI.ctname,
+                lat = WUXI.lat,
+                lon = WUXI.lon,
+            });
+            chartarray.Add(new
+            {
+                id = "ship_sfpwire_lbs_id",
+                title = "SFP+ Wire Product Shipment Distribution",
+                data = sfpwireshiplbsdata,
+                capitallist = capitallist,
+                maxval = maxval
+            });
+
 
             var ret = new JsonResult();
             ret.MaxJsonLength = Int32.MaxValue;
@@ -1124,10 +1168,10 @@ namespace Prism.Controllers
             {
                 orderdataarray.Add(GetOrderQtyChartData(orderdata14g, "10G_14G", SHIPPRODTYPE.PARALLEL));
             }
-            var tunableorderdata = FsrShipData.RetrieveOrderDataByMonth("", SHIPPRODTYPE.OPTIUM, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            var tunableorderdata = FsrShipData.RetrieveOrderDataByMonth("", SHIPPRODTYPE.TUNABLE, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
             if (tunableorderdata.Count > 0)
             {
-                orderdataarray.Add(GetOrderQtyChartData(tunableorderdata, "tunable", SHIPPRODTYPE.OPTIUM));
+                orderdataarray.Add(GetOrderQtyChartData(tunableorderdata, "tunable", SHIPPRODTYPE.TUNABLE));
             }
 
             var ret = new JsonResult();
@@ -1313,7 +1357,7 @@ namespace Prism.Controllers
 
             var chartarray = new List<object>();
             var parallelrmadata = RMADppmData.RetrieveRMAWorkLoadDataByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), SHIPPRODTYPE.PARALLEL);
-            var tunablermadata = RMADppmData.RetrieveRMAWorkLoadDataByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), SHIPPRODTYPE.OPTIUM);
+            var tunablermadata = RMADppmData.RetrieveRMAWorkLoadDataByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), SHIPPRODTYPE.TUNABLE);
 
             if (parallelrmadata.Count > 0)
             {
@@ -1321,7 +1365,7 @@ namespace Prism.Controllers
             }
             if (tunablermadata.Count > 0)
             {
-                chartarray.Add(GetWorkLoadChart(tunablermadata, "TUNABLE", SHIPPRODTYPE.OPTIUM));
+                chartarray.Add(GetWorkLoadChart(tunablermadata, "TUNABLE", SHIPPRODTYPE.TUNABLE));
             }
 
             var ret = new JsonResult();

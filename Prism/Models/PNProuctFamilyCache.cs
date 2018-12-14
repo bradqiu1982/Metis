@@ -139,7 +139,8 @@ namespace Prism.Models
             }
             else if (string.Compare(pf, "10G Tunable", true) == 0
                 || string.Compare(pf, "TUNABLE", true) == 0
-                || string.Compare(pf, "Telecom TRX", true) == 0)
+                || string.Compare(pf, "Telecom TRX", true) == 0
+                || string.Compare(pf, "OPTIUM", true) == 0)
             {
                 cond = " ProductFamily like '10G Tunable BIDI%' or ProductFamily like 'T-XFP%' or ProductFamily like 'COHERENT%' ";
             }
@@ -147,6 +148,11 @@ namespace Prism.Models
                 || string.Compare(pf, "LNCD", true) == 0)
             {
                 cond = " ProductFamily like 'Linecard%' ";
+            }
+            else if (string.Compare(pf, "EDFA", true) == 0
+                || string.Compare(pf, "RED-C", true) == 0)
+            {
+                cond = " ProductFamily like 'Linecard.EDFA%' ";
             }
             else
             {

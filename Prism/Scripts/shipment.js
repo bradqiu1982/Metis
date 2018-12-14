@@ -39,7 +39,9 @@
 
     var otddata = function () {
         $('.date').datepicker({ autoclose: true, viewMode: "months", minViewMode: "months" });
-        $('body').on('click', '#btn-search', function () {
+
+        function searchotddata()
+        {
             var sdate = $.trim($('#sdate').val());
             var edate = $.trim($('#edate').val());
 
@@ -61,14 +63,24 @@
                     })
                 }
             })
+        }
+
+        $('body').on('click', '#btn-search', function () {
+            searchotddata();
         })
+
+        $(function () {
+            searchotddata();
+        });
 
     }
 
 
     var lbsdata = function () {
         $('.date').datepicker({ autoclose: true, viewMode: "months", minViewMode: "months" });
-        $('body').on('click', '#btn-search', function () {
+        
+        function searchlbsdata()
+        {
             var sdate = $.trim($('#sdate').val());
             var edate = $.trim($('#edate').val());
 
@@ -90,8 +102,15 @@
                     })
                 }
             })
+        }
+
+        $('body').on('click', '#btn-search', function () {
+            searchlbsdata();
         })
 
+        $(function(){
+            searchlbsdata();
+        });
     }
 
     var orderdata = function () {

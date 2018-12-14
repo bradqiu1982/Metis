@@ -30,6 +30,8 @@ namespace Prism.Models
         public static string OTHER = "OTHER";
         public static string I32X = "I32X";
         public static string SMART_LDPA = "SMART LDPA";
+        public static string TUNABLE = "TUNABLE";
+        public static string SFPWIRE = "SFP+ WIRE";
     }
 
     public class FsrShipData
@@ -107,9 +109,17 @@ namespace Prism.Models
         //<date,<customer,int>>
         public static Dictionary<string, Dictionary<string, double>> RetrieveShipDataByMonth(string rate, string producttype, string sdate, string edate, Controller ctrl)
         {
+            var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
+            if (pnlist.Count == 0)
+            {
+                return new Dictionary<string, Dictionary<string, double>>();
+            }
+
+            var pncond = "('" + string.Join("','", pnlist) + "')";
+
             var ret = new Dictionary<string, Dictionary<string, double>>();
             var custdict = CfgUtility.GetAllCustConfig(ctrl);
-            var sql = @"select ShipQty,Customer1,Customer2,ShipDate from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and ProdDesc not like '%LINECARD%' and Configuration = @producttype ";
+            var sql = @"select ShipQty,Customer1,Customer2,ShipDate from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate  and PN in <pncond>  ";
 
             if (string.Compare(rate, VCSELRATE.r14G, true) == 0)
             { sql = sql + " and ( VcselType = '" + VCSELRATE.r14G + "' or VcselType = '" + VCSELRATE.r10G + "')"; }
@@ -119,7 +129,7 @@ namespace Prism.Models
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
             dict.Add("@edate", edate);
-            dict.Add("@producttype", producttype);
+            sql = sql.Replace("<pncond>", pncond);
 
             var realcustdict = new Dictionary<string, bool>();
             var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
@@ -228,9 +238,19 @@ namespace Prism.Models
 
         public static Dictionary<string, Dictionary<string, double>> RetrieveOrderDataByMonth(string rate, string producttype, string sdate, string edate, Controller ctrl)
         {
+
+            var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
+            if (pnlist.Count == 0)
+            {
+                return new Dictionary<string, Dictionary<string, double>>();
+            }
+
+            var pncond = "('" + string.Join("','", pnlist) + "')";
+
+
             var ret = new Dictionary<string, Dictionary<string, double>>();
             var custdict = CfgUtility.GetAllCustConfig(ctrl);
-            var sql = @"select Appv_1,Customer1,Customer2,OrderedDate from FsrShipData where OrderedDate >= @sdate and OrderedDate <= @edate  and ProdDesc not like '%LINECARD%' and Configuration = @producttype ";
+            var sql = @"select Appv_1,Customer1,Customer2,OrderedDate from FsrShipData where OrderedDate >= @sdate and OrderedDate <= @edate and PN in <pncond>  ";
 
             if (string.Compare(rate, VCSELRATE.r14G, true) == 0)
             { sql = sql + " and ( VcselType = '" + VCSELRATE.r14G + "' or VcselType = '" + VCSELRATE.r10G + "')"; }
@@ -240,7 +260,7 @@ namespace Prism.Models
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
             dict.Add("@edate", edate);
-            dict.Add("@producttype", producttype);
+            sql = sql.Replace("<pncond>", pncond);
 
             var realcustdict = new Dictionary<string, bool>();
             var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
@@ -289,26 +309,27 @@ namespace Prism.Models
             return ret;
         }
 
-        public static List<FsrShipData> RetrieveOTDByMonth(string rate, string producttype, string sdate, string edate, Controller ctrl)
+        public static List<FsrShipData> RetrieveOTDByMonth( string producttype, string sdate, string edate, Controller ctrl)
         {
             var custdict = CfgUtility.GetAllCustConfig(ctrl);
-            var ret = new List<FsrShipData>();
-            var sql = @"select ShipDate,Appv_5,PN,ProdDesc,Appv_1,MarketFamily,ShipID,Customer1,Customer2 from FsrShipData where Appv_5 >= @sdate and Appv_5 <= @edate and Configuration = @producttype 
-                        and Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' ";
+            var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
+            if (pnlist.Count == 0)
+            {
+                return new List<FsrShipData>();
+            }
 
-            if (string.Compare(rate, VCSELRATE.r14G, true) == 0)
-            {
-                sql = sql + " and ( VcselType = '" + VCSELRATE.r14G + "' or VcselType = '" + VCSELRATE.r10G + "')";
-            }
-            else if (string.Compare(rate, VCSELRATE.r25G, true) == 0)
-            {
-                sql = sql + " and VcselType = '" + rate + "'";
-            }
+            var pncond = "('" + string.Join("','", pnlist) + "')";
+
+            var ret = new List<FsrShipData>();
+            var sql = @"select ShipDate,Appv_5,PN,ProdDesc,Appv_1,MarketFamily,ShipID,Customer1,Customer2 from FsrShipData where Appv_5 >= @sdate and Appv_5 <= @edate and PN in <pncond>   
+                        and Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' ";
 
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
             dict.Add("@edate", edate);
-            dict.Add("@producttype", producttype);
+
+            sql = sql.Replace("<pncond>", pncond);
+
             var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
             foreach (var line in dbret)
             {
@@ -338,14 +359,24 @@ namespace Prism.Models
         public static List<FsrShipData> RetrieveLBSDataByMonth(string producttype, string sdate, string edate, Controller ctrl)
         {
             var custdict = CfgUtility.GetAllCustConfig(ctrl);
+            var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
+            if (pnlist.Count == 0)
+            {
+                return new List<FsrShipData>();
+            }
+
+            var pncond = "('" + string.Join("','", pnlist) + "')";
+
             var ret = new List<FsrShipData>();
-            var sql = @"select ShipQty,Appv_2,Customer1,Customer2 from FsrShipData where  ShipDate >= @sdate and ShipDate <= @edate and Configuration = @producttype 
+            var sql = @"select ShipQty,Appv_2,Customer1,Customer2 from FsrShipData where  ShipDate >= @sdate and ShipDate <= @edate and PN in <pncond>  
                         and Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' and  Appv_2 <> ''";
 
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
             dict.Add("@edate", edate);
-            dict.Add("@producttype", producttype);
+
+            sql = sql.Replace("<pncond>", pncond);
+
             var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
             foreach (var line in dbret)
             {
@@ -403,9 +434,7 @@ namespace Prism.Models
             foreach (var dp in dplist)
             {
                 if (dp.Contains("COMPONENT")
-                    || dp.Contains("DATACOM LW TRX")
-                    || dp.Contains("LNCD") 
-                    || dp.Contains("SFP+ WIRE"))
+                    || dp.Contains("DATACOM LW TRX"))
                 {
                     var dpdata = RetrieveOutputDataByMonthWithScrapPN(dp,startdate,enddate , costdict, ctrl);
                     if (dpdata.Count > 0)
@@ -416,28 +445,28 @@ namespace Prism.Models
                 else if (dp.Contains("WSS")
                     || dp.Contains("TELECOM TRX")
                     || dp.Contains("PARALLEL")
-                    || dp.Contains("OSA"))
+                    || dp.Contains("OSA")
+                    || dp.Contains("LNCD") 
+                    || dp.Contains("SFP+ WIRE"))
                 {
-                    var sdate = DateTime.Parse(startdate);
-                    if (sdate < DateTime.Parse("2018-05-01 00:00:00"))
-                    {//more accuracy before 2019 Q1
-                        var tempdp = dp;
-                        if (tempdp.Contains("TELECOM TRX"))
-                        { tempdp = "OPTIUM"; }
-                        var dpdata = RetrieveOutputDataByMonth(tempdp, startdate, enddate, costdict, ctrl);
+                    //var sdate = DateTime.Parse(startdate);
+                    //if (sdate < DateTime.Parse("2018-05-01 00:00:00"))
+                    //{//more accuracy before 2019 Q1
+
+                        var dpdata = RetrieveOutputDataByMonth(dp, startdate, enddate, costdict, ctrl);
                         if (dpdata.Count > 0)
                         {
                             ret.Add(dp, dpdata);
                         }
-                    }
-                    else
-                    {//more accuracy after 2019 Q1
-                        var dpdata = RetrieveOutputDataByMonthWithScrapPN(dp, startdate, enddate, costdict, ctrl);
-                        if (dpdata.Count > 0)
-                        {
-                            ret.Add(dp, dpdata);
-                        }
-                    }
+                    //}
+                    //else
+                    //{//more accuracy after 2019 Q1
+                    //    var dpdata = RetrieveOutputDataByMonthWithScrapPN(dp, startdate, enddate, costdict, ctrl);
+                    //    if (dpdata.Count > 0)
+                    //    {
+                    //        ret.Add(dp, dpdata);
+                    //    }
+                    //}
                 }
                 else
                 {
@@ -454,14 +483,22 @@ namespace Prism.Models
 
         private static  Dictionary<string, double> RetrieveOutputDataByMonth(string producttype, string sdate, string edate,Dictionary<string,double> costdict, Controller ctrl)
         {
+            var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
+            if (pnlist.Count == 0)
+            {
+                return new Dictionary<string, double>();
+            }
+
+            var pncond = "('" + string.Join("','", pnlist) + "')";
+
             var ret = new  Dictionary<string, double>();
             var usdrate = CfgUtility.GetUSDRate(ctrl);
-            var sql = @"select ShipQty,ShipDate,PN from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and ProdDesc not like '%LINECARD%' and Configuration = @producttype ";
+            var sql = @"select ShipQty,ShipDate,PN from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and PN in <pncond> ";
 
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
             dict.Add("@edate", edate);
-            dict.Add("@producttype", producttype);
+            sql = sql.Replace("<pncond>", pncond);
 
             var realcustdict = new Dictionary<string, bool>();
             var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
@@ -561,28 +598,27 @@ namespace Prism.Models
 
                 if (dp.Contains("COMPONENT")
                     || dp.Contains("DATACOM LW TRX")
-                    || dp.Contains("LNCD")
-                    || dp.Contains("SFP+ WIRE"))
+                    )
                 {
                     return RetrieveOutputDetailDataWithScrapPN(dp, startdate, enddate, costdict, ctrl);
                 }
                 else if (dp.Contains("WSS")
                     || dp.Contains("TELECOM TRX")
                     || dp.Contains("PARALLEL")
-                    || dp.Contains("OSA"))
+                    || dp.Contains("OSA")
+                    || dp.Contains("LNCD")
+                    || dp.Contains("SFP+ WIRE"))
                 {
-                    var sdate = DateTime.Parse(startdate);
-                    if (sdate < DateTime.Parse("2018-05-01 00:00:00"))
-                    {//more accuracy before 2019 Q1
-                        var tempdp = dp;
-                        if (tempdp.Contains("TELECOM TRX"))
-                        { tempdp = "OPTIUM"; }
-                        return RetrieveOutputDetailData(tempdp, startdate, enddate, costdict, ctrl);
-                    }
-                    else
-                    {//more accuracy after 2019 Q1
-                        return RetrieveOutputDetailDataWithScrapPN(dp, startdate, enddate, costdict, ctrl);
-                    }
+                    //var sdate = DateTime.Parse(startdate);
+                    //if (sdate < DateTime.Parse("2018-05-01 00:00:00"))
+                    //{//more accuracy before 2019 Q1
+
+                        return RetrieveOutputDetailData(dp, startdate, enddate, costdict, ctrl);
+                    //}
+                    //else
+                    //{//more accuracy after 2019 Q1
+                    //    return RetrieveOutputDetailDataWithScrapPN(dp, startdate, enddate, costdict, ctrl);
+                    //}
                 }
                 else
                 {
@@ -592,17 +628,24 @@ namespace Prism.Models
 
         private static List<FsrShipData> RetrieveOutputDetailData(string producttype, string sdate, string edate, Dictionary<string, double> costdict, Controller ctrl)
         {
+            var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
+            if (pnlist.Count == 0)
+            {
+                return new List<FsrShipData>();
+            }
+            var pncond = "('" + string.Join("','", pnlist) + "')";
+
             var retdata = new Dictionary<string, FsrShipData>();
             var usdrate = CfgUtility.GetUSDRate(ctrl);
             var pnpjmap = PNPlannerCodeMap.RetrieveAllMaps();
             var pnpdmap = PNProuctFamilyCache.PNPFDict();
 
-            var sql = @"select ShipQty,ShipDate,PN,MarketFamily from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and ProdDesc not like '%LINECARD%' and Configuration = @producttype ";
+            var sql = @"select ShipQty,ShipDate,PN,MarketFamily from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and PN in <pncond> ";
 
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
             dict.Add("@edate", edate);
-            dict.Add("@producttype", producttype);
+            sql = sql.Replace("<pncond>", pncond);
 
             var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
             foreach (var line in dbret)
