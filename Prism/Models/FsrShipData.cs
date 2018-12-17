@@ -135,7 +135,7 @@ namespace Prism.Models
             sql = sql.Replace("<pncond>", pncond);
 
             var realcustdict = new Dictionary<string, bool>();
-            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql,null, dict);
             foreach (var line in dbret)
             {
                 var shipdate = Convert.ToDateTime(line[3]).ToString("yyyy-MM");
@@ -193,7 +193,7 @@ namespace Prism.Models
 
 
             var realcustdict = new Dictionary<string, bool>();
-            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
             {
                 var shipdate = Convert.ToDateTime(line[3]).ToString("yyyy-MM");
@@ -266,7 +266,7 @@ namespace Prism.Models
             sql = sql.Replace("<pncond>", pncond);
 
             var realcustdict = new Dictionary<string, bool>();
-            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
             {
                 var shipdate = Convert.ToDateTime(line[3]).ToString("yyyy-MM");
@@ -333,7 +333,7 @@ namespace Prism.Models
 
             sql = sql.Replace("<pncond>", pncond);
 
-            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
             {
                 var tempvm = new FsrShipData();
@@ -380,7 +380,7 @@ namespace Prism.Models
 
             sql = sql.Replace("<pncond>", pncond);
 
-            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
             {
                 var tempvm = new FsrShipData();
@@ -411,7 +411,7 @@ namespace Prism.Models
             dict.Add("@edate", edate);
 
             var realcustdict = new Dictionary<string, bool>();
-            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
             {
                 var cust1 = Convert.ToString(line[8]).ToUpper();
@@ -504,7 +504,7 @@ namespace Prism.Models
             sql = sql.Replace("<pncond>", pncond);
 
             var realcustdict = new Dictionary<string, bool>();
-            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
             {
                 
@@ -559,7 +559,7 @@ namespace Prism.Models
             dict.Add("@edate", edate);
             var realcustdict = new Dictionary<string, bool>();
 
-            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
             {
                 
@@ -650,7 +650,7 @@ namespace Prism.Models
             dict.Add("@edate", edate);
             sql = sql.Replace("<pncond>", pncond);
 
-            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
             {
                 
@@ -742,7 +742,7 @@ namespace Prism.Models
             dict.Add("@sdate", sdate);
             dict.Add("@edate", edate);
 
-            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
             {
                 
@@ -834,7 +834,7 @@ namespace Prism.Models
 
             sql = sql.Replace("<pncond>", pncond);
 
-            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
             {
                 var qty = Convert.ToDouble(line[0]);
@@ -942,7 +942,7 @@ namespace Prism.Models
 
             sql = sql.Replace("<pncond>", pncond);
 
-            var dbret = DBUtility.ExeNPISqlWithRes(sql, dict);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
 
             foreach (var line in dbret)
             {
