@@ -46,10 +46,22 @@
             if (range1 == '')
             { return false; }
 
+            var options = {
+            loadingTips: "loading data......",
+            backgroundColor: "#aaa",
+            borderColor: "#fff",
+            opacity: 0.8,
+            borderColor: "#fff",
+            TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
+
             $.post('/Main/BoringSearchData', {
                 field1: field1,
                 range1: range1,
             }, function (output) {
+                $.bootstrapLoading.end();
+
                 $.each(tablearray, function (idx, val) {
                     val.destroy();
                 });
