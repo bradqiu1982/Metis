@@ -754,12 +754,12 @@ namespace Prism.Controllers
                 shipdataarray.Add(GetShipmentQuarterChartData(linecardshipdata, allrmacntdict, "linecard", "LINECARD"));
             }
 
-            var edfashipdata = FsrShipData.RetrieveShipDataByMonth("", SHIPPRODTYPE.RED_C, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            var edfashipdata = FsrShipData.RetrieveShipDataByMonth("", SHIPPRODTYPE.EDFA, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
             if (edfashipdata.Count > 0)
             {
                 var vcselrmacntdict = new Dictionary<string, int>();
                 var allrmacntdict = new Dictionary<string, int>();
-                shipdataarray.Add(GetShipmentQuarterChartData(edfashipdata, allrmacntdict, "EDFA", SHIPPRODTYPE.RED_C));
+                shipdataarray.Add(GetShipmentQuarterChartData(edfashipdata, allrmacntdict, "EDFA", SHIPPRODTYPE.EDFA));
             }
 
             var ret = new JsonResult();

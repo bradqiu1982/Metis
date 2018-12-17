@@ -94,6 +94,18 @@ namespace Prism.Controllers
 
                 try
                 {
+                    ItemCostData.LoadCostData(this);
+                }
+                catch (Exception ex) { }
+
+                try
+                {
+                    FsrShipData.RefreshShipData(this);
+                }
+                catch (Exception ex) { }
+
+                try
+                {
                     if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday)
                     {
                         CostCentScrapWarning.Waring(this);
@@ -138,11 +150,7 @@ namespace Prism.Controllers
                 }
                 catch (Exception ex) { }
 
-                try
-                {
-                    ItemCostData.LoadCostData(this);
-                }
-                catch (Exception ex) { }
+
             }//end only run once
 
             heartbeatlog("Heart Beat Start", filename);
@@ -382,6 +390,12 @@ namespace Prism.Controllers
         public ActionResult LoadScrapData()
         {
             ScrapData_Base.UpdateProduct();
+            return View("HeartBeat");
+        }
+
+        public ActionResult RefreshShipData()
+        {
+            FsrShipData.RefreshShipData(this);
             return View("HeartBeat");
         }
 

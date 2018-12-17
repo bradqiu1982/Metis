@@ -816,7 +816,7 @@ namespace Prism.Models
             }
         }
 
-        private static List<List<string>> RetrieveDataFromExcelWithAuth(Controller ctrl, string filename, string sheetname = null, int columns = 101, bool getlink=false)
+        public static List<List<string>> RetrieveDataFromExcelWithAuth(Controller ctrl, string filename, string sheetname = null, int columns = 101, bool getlink=false)
         {
             try
             {

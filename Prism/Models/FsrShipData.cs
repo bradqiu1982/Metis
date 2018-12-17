@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 
@@ -32,6 +33,7 @@ namespace Prism.Models
         public static string SMART_LDPA = "SMART LDPA";
         public static string TUNABLE = "TUNABLE";
         public static string SFPWIRE = "SFP+ WIRE";
+        public static string EDFA = "EDFA";
     }
 
     public class FsrShipData
@@ -83,6 +85,7 @@ namespace Prism.Models
             OPD = opd;
             OTD = "NO";
         }
+
 
 
         private static string RetrieveCustome(string cust1, string cust2, Dictionary<string, string> custdict)
@@ -1082,6 +1085,378 @@ namespace Prism.Models
             };
 
         }
+
+        #region LOAD_SHIP_DATA
+
+        public static void RefreshShipData(Controller ctrl)
+        {
+            var syscfg = CfgUtility.GetSysConfig(ctrl);
+            var shipsrcfile = syscfg["FINISARSHIPDATA"];
+            var shipdesfile = ExternalDataCollector.DownloadShareFile(shipsrcfile, ctrl);
+
+            var parallelpndict = PNProuctFamilyCache.GetPNDictByPF("Parallel");
+            var linecardpndict = PNProuctFamilyCache.GetPNDictByPF("Linecard");
+            var osapndict = PNProuctFamilyCache.GetPNDictByPF("OSA");
+            var wsspndict = PNProuctFamilyCache.GetPNDictByPF("WSS");
+            var componentpndict = PNProuctFamilyCache.GetPNDictByPF("passive");
+            var tunabledict = PNProuctFamilyCache.GetPNDictByPF("TUNABLE");
+            var sfpwiredict = PNProuctFamilyCache.GetPNDictByPF("SFP+ WIRE");
+
+            if (!string.IsNullOrEmpty(shipdesfile))
+            {
+                var shipiddict = FsrShipData.RetrieveAllShipID();
+                var data = ExternalDataCollector.RetrieveDataFromExcelWithAuth(ctrl, shipdesfile);
+                var shipdatalist = new List<FsrShipData>();
+                var pnsndict = new Dictionary<string, string>();
+
+                var opddict = new Dictionary<string, string>();
+
+                foreach (var line in data)
+                {
+                    try
+                    {
+                        var shipid = Convert2Str(line[8]) + "-" + Convert2Str(line[9]) + "-" + Convert2Str(line[14]);
+                        if (!shipiddict.ContainsKey(shipid))
+                        {
+                            var cpo = Convert2Str(line[5]).ToUpper();
+                            var makebuy = Convert2Str(line[27]).ToUpper();
+                            var family = Convert2Str(line[30]);
+                            var orderqty = Convert.ToInt32(line[13]);
+                            var shipqty = Convert.ToInt32(line[14]);
+                            var pn = Convert2Str(line[10]);
+
+                            if (!cpo.Contains("RMA") && !cpo.Contains("STOCK")
+                                && makebuy.Contains("MAKE")
+                                && shipqty > 0 && !string.IsNullOrEmpty(pn))
+                            {
+                                var cfg = Convert2Str(line[32]);
+
+                                {
+                                    if (parallelpndict.ContainsKey(pn))
+                                    { cfg = "PARALLEL"; }
+                                    else if (osapndict.ContainsKey(pn))
+                                    { cfg = "OSA"; }
+                                    else if (wsspndict.ContainsKey(pn))
+                                    { cfg = "WSS"; }
+                                    else if (componentpndict.ContainsKey(pn))
+                                    { cfg = "COMPONENT"; }
+                                    else if (linecardpndict.ContainsKey(pn))
+                                    {
+                                        if (!cfg.ToUpper().Contains(SHIPPRODTYPE.RED_C))
+                                        { cfg = "LINECARD"; }
+                                        else
+                                        { cfg = "EDFA"; }
+                                    }
+                                    else if (tunabledict.ContainsKey(pn))
+                                    { cfg = "TUNABLE"; }
+                                    else if (sfpwiredict.ContainsKey(pn))
+                                    { cfg = "SFP+ WIRE"; }
+
+                                    if (string.IsNullOrEmpty(cfg))
+                                    { continue; }
+                                }
+
+                                var ordereddate = Convert.ToDateTime(line[2]);
+                                var customernum = Convert2Str(line[3]);
+                                var customer1 = Convert2Str(line[4]);
+                                var customer2 = Convert2Str(line[6]);
+                                var pndesc = Convert2Str(line[12]);
+
+                                var opd = Convert.ToDateTime(line[17]);
+                                var shipdate = Convert.ToDateTime(line[19]);
+
+
+                                var delievenum = Convert2Str(line[24]);
+                                var shipto = Convert2Str(line[33]);
+
+                                if (!pnsndict.ContainsKey(pn))
+                                {
+                                    pnsndict.Add(pn, string.Empty);
+                                }
+
+                                shipdatalist.Add(new FsrShipData(shipid, shipqty, pn, pndesc, family, cfg
+                                    , shipdate, customernum, customer1, customer2, ordereddate, delievenum, orderqty, opd, shipto));
+
+                            }//end if
+                        }//end if
+
+                    }
+                    catch (Exception ex) { }
+                }//end foreach
+
+                var pn_mpn_dict = PN2MPn(pnsndict);
+                var pn_vtype_dict = RetrieveVcselPNInfo();
+                var pnratedict = new Dictionary<string, string>();
+                foreach (var pnmpnkv in pn_mpn_dict)
+                {
+                    var rate = "";
+                    foreach (var mpn in pnmpnkv.Value)
+                    {
+                        if (pn_vtype_dict.ContainsKey(mpn))
+                        {
+                            rate = pn_vtype_dict[mpn];
+                            break;
+                        }
+                    }
+                    if (!string.IsNullOrEmpty(rate))
+                    { pnratedict.Add(pnmpnkv.Key,rate); }
+                }
+
+                foreach (var item in shipdatalist)
+                {
+                    if (pnratedict.ContainsKey(item.PN))
+                    {
+                        item.VcselType = pnratedict[item.PN];
+                    }
+                }
+
+                var storedid = new Dictionary<string, bool>();
+                foreach (var item in shipdatalist)
+                {
+                    if (storedid.ContainsKey(item.ShipID))
+                    { continue; }
+
+                    storedid.Add(item.ShipID, true);
+                    if (string.IsNullOrEmpty(item.VcselType))
+                    {
+                        item.VcselType = RetrieveRateFromDesc(item.ProdDesc.ToUpper());
+                    }
+                    item.StoreShipData();
+                }
+
+            }//end if
+        }
+
+        private static string Convert2Str(object obj)
+        {
+            try
+            {
+                return Convert.ToString(obj);
+            }
+            catch (Exception ex) { return string.Empty; }
+        }
+        private static Dictionary<string, bool> RetrieveAllShipID()
+        {
+            var ret = new Dictionary<string, bool>();
+            var sql = "select distinct ShipID from FsrShipData";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            { ret.Add(Convert.ToString(line[0]), true); }
+            return ret;
+        }
+
+        private void StoreShipData()
+        {
+            var sql = @"insert into FsrShipData(ShipID,ShipQty,PN,ProdDesc,MarketFamily,Configuration,VcselType,ShipDate,CustomerNum,Customer1,Customer2,OrderedDate,DelieveNum,SN,Wafer,Appv_1,Appv_5,Appv_2) values(
+                        @ShipID,@ShipQty,@PN,@ProdDesc,@MarketFamily,@Configuration,@VcselType,@ShipDate,@CustomerNum,@Customer1,@Customer2,@OrderedDate,@DelieveNum,@SN,@Wafer,@OrderQty,@OPD,@ShipTo)";
+            var dict = new Dictionary<string, string>();
+            dict.Add("@ShipID", ShipID);
+            dict.Add("@ShipQty", ShipQty.ToString());
+            dict.Add("@PN", PN);
+            dict.Add("@ProdDesc", ProdDesc);
+            dict.Add("@MarketFamily", MarketFamily);
+            dict.Add("@Configuration", Configuration);
+            dict.Add("@VcselType", VcselType);
+            dict.Add("@ShipDate", ShipDate.ToString("yyyy-MM-dd HH:mm:ss"));
+            dict.Add("@CustomerNum", CustomerNum);
+            dict.Add("@Customer1", Customer1);
+            dict.Add("@Customer2", Customer2);
+            dict.Add("@OrderedDate", OrderedDate.ToString("yyyy-MM-dd HH:mm:ss"));
+            dict.Add("@DelieveNum", DelieveNum);
+            dict.Add("@SN", SN);
+            dict.Add("@Wafer", Wafer);
+            dict.Add("@OrderQty", OrderQty.ToString());
+            dict.Add("@OPD", OPD.ToString("yyyy-MM-dd HH:mm:ss"));
+            dict.Add("@ShipTo", ShipTo);
+            DBUtility.ExeLocalSqlNoRes(sql, dict);
+        }
+
+        private static string RetrieveRateFromDesc(string desc)
+        {
+            if (desc.Contains("GBPS,"))
+            {
+                try
+                {
+                    var splitstr = desc.Split(new string[] { "GBPS," }, StringSplitOptions.RemoveEmptyEntries);
+                    var xsplitstr = splitstr[0].Split(new string[] { "X" }, StringSplitOptions.RemoveEmptyEntries);
+                    var rate = Convert.ToDouble(xsplitstr[xsplitstr.Length - 1]);
+                    if (rate < 12.0)
+                    { return VCSELRATE.r10G; }
+                    if (rate >= 12.0 && rate < 20.0)
+                    { return VCSELRATE.r14G; }
+                    if (rate >= 20.0 && rate < 30.0)
+                    { return VCSELRATE.r25G; }
+                    if (rate >= 30.0)
+                    { return VCSELRATE.r48G; }
+                }
+                catch (Exception ex) { }
+            }
+            return string.Empty;
+        }
+
+        private FsrShipData(string id, int qty, string pn, string pndesc, string family, string cfg
+            , DateTime shipdate, string custnum, string cust1, string cust2, DateTime orddate, string delievenum, int orderqty, DateTime opd, string shipto)
+        {
+            ShipID = id;
+            ShipQty = qty;
+            PN = pn;
+            ProdDesc = pndesc;
+            MarketFamily = family;
+            Configuration = cfg;
+            ShipDate = shipdate;
+            CustomerNum = custnum;
+            Customer1 = cust1;
+            Customer2 = cust2;
+            OrderedDate = orddate;
+            DelieveNum = delievenum;
+            VcselType = string.Empty;
+            SN = string.Empty;
+            Wafer = string.Empty;
+            OrderQty = orderqty;
+            OPD = opd;
+            OTD = "NO";
+            ShipTo = shipto;
+        }
+
+        public static Dictionary<string, List<string>> PN2MPn(Dictionary<string, string> pnsndict)
+        {
+            var sb = new StringBuilder();
+            sb.Append("('");
+            foreach (var kv in pnsndict)
+            {
+                sb.Append(kv.Key + "','");
+            }
+
+            if (sb.ToString().Length != 2)
+            {
+                var pncond = sb.ToString(0, sb.Length - 2) + ")";
+
+                var sql = @" select max(c.ContainerName),pb.productname from InsiteDB.insite.container  c (nolock) 
+	                         left join InsiteDB.insite.product p on c.productId = p.productId 
+	                         left join InsiteDB.insite.productbase pb on pb.productbaseid = p.productbaseid 
+	                         where pb.productname in <pncond> and len(c.ContainerName) = 7 group by pb.productname";
+                sql = sql.Replace("<pncond>", pncond);
+                var dbret = DBUtility.ExeMESSqlWithRes(sql);
+                foreach (var line in dbret)
+                {
+                    var sn = Convert.ToString(line[0]);
+                    var pn = Convert.ToString(line[1]);
+                    if (pnsndict.ContainsKey(pn))
+                    {
+                        pnsndict[pn] = sn;
+                    }
+                }//end foreach
+            }
+
+            var newpnsndict = CableSN2RealSN(pnsndict);
+            sb = new StringBuilder();
+            sb.Append("('");
+            foreach (var kv in newpnsndict)
+            {
+                if (!string.IsNullOrEmpty(kv.Value))
+                {
+                    sb.Append(kv.Value + "','");
+                }
+            }
+            var sncond = sb.ToString(0, sb.Length - 2) + ")";
+
+            var snmpndict = new Dictionary<string, List<string>>();
+            var csql = "select distinct  [ToContainer],[FromProductName] FROM [PDMS].[dbo].[ComponentIssueSummary] where [ToContainer] in <sncond>";
+            csql = csql.Replace("<sncond>", sncond);
+            var cdbret = DBUtility.ExeMESReportSqlWithRes(csql);
+            foreach (var line in cdbret)
+            {
+                var sn = Convert.ToString(line[0]);
+                var mpn = Convert.ToString(line[1]);
+                if (snmpndict.ContainsKey(sn))
+                {
+                    snmpndict[sn].Add(mpn);
+                }
+                else
+                {
+                    var templist = new List<string>();
+                    templist.Add(mpn);
+                    snmpndict.Add(sn, templist);
+                }
+            }
+
+            var pnmpndict = new Dictionary<string, List<string>>();
+            foreach (var pnsnkv in newpnsndict)
+            {
+                if (snmpndict.ContainsKey(pnsnkv.Value))
+                {
+                    pnmpndict.Add(pnsnkv.Key, snmpndict[pnsnkv.Value]);
+                }
+            }
+            return pnmpndict;
+        }
+
+        private static Dictionary<string, string> CableSN2RealSN(Dictionary<string, string> pnsndict)
+        {
+            var newpnsndict = new Dictionary<string, string>();
+
+            var sndict = new Dictionary<string, string>();
+
+            var sb = new StringBuilder();
+            sb.Append("('");
+            foreach (var kv in pnsndict)
+            {
+                if (!string.IsNullOrEmpty(kv.Value))
+                {
+                    sb.Append(kv.Value + "','");
+                }
+            }
+            if (sb.ToString().Length == 2)
+            { return newpnsndict; }
+
+            var sncond = sb.ToString(0, sb.Length - 2) + ")";
+
+            var sql = @"SELECT  max([FromContainer]),ToContainer
+                        FROM [PDMS].[dbo].[ComponentIssueSummary] where ToContainer in <sncond> and len([FromContainer]) = 7 group by ToContainer";
+            sql = sql.Replace("<sncond>", sncond);
+            var dbret = DBUtility.ExeMESReportSqlWithRes(sql);
+            foreach (var line in dbret)
+            {
+                var tosn = Convert.ToString(line[1]);
+                var fromsn = Convert.ToString(line[0]);
+                if (!sndict.ContainsKey(tosn))
+                {
+                    sndict.Add(tosn, fromsn);
+                }
+            }
+
+            foreach (var kv in pnsndict)
+            {
+                if (sndict.ContainsKey(kv.Value))
+                {
+                    newpnsndict.Add(kv.Key, sndict[kv.Value]);
+                }
+                else
+                {
+                    newpnsndict.Add(kv.Key, kv.Value);
+                }
+            }
+            return newpnsndict;
+        }
+
+        public static Dictionary<string, string> RetrieveVcselPNInfo()
+        {
+            var ret = new Dictionary<string, string>();
+            var sql = "select PN,Rate from VcselPNData";
+            var dbret = DBUtility.ExeNPISqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var PN = Convert.ToString(line[0]);
+                var Rate = Convert.ToString(line[1]);
+                if (!ret.ContainsKey(PN))
+                {
+                    ret.Add(PN, Rate);
+                }
+            }
+            return ret;
+        }
+
+        #endregion
 
 
         public string ShipID { set; get; }

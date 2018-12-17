@@ -171,6 +171,18 @@ namespace Prism.Models
             return ret;
         }
 
+        public static Dictionary<string, bool> GetPNDictByPF(string pf)
+        {
+            var ret = new Dictionary<string, bool>();
+            var pnlist = GetPNListByPF(pf);
+            foreach (var p in pnlist)
+            {
+                if (!ret.ContainsKey(p))
+                { ret.Add(p, true); }
+            }
+            return ret;
+        }
+
         public string PN { set; get; }
         public string ProductFamily { set; get; }
     }
