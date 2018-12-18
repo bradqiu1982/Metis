@@ -60,6 +60,9 @@ namespace Prism.Models
                 {
                     item.StoreData();
                 }
+
+                RMARAWData.UpdatePNRate();
+                RMARAWData.UpdateProduct();
             }//end if
 
         }
@@ -212,6 +215,53 @@ namespace Prism.Models
                 return RetrieveWorkLoadDataByMonth(sdate, edate, productcond);
             }
             return new List<RMADppmData>();
+        }
+
+        public static void UpdatePNRate()
+        {
+            var sql = @"select distinct AppV_G from RMARAWData where AppV_AI='' and AppV_G <> '' and AppV_F like 'Parallel'";
+            var pnlist = new List<string>();
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                pnlist.Add(Convert.ToString(line[0]));
+            }
+            var pnratemap = PNRateMap.RetrievePNRateMap(pnlist);
+            foreach (var kv in pnratemap)
+            {
+                sql = "update RMARAWData set AppV_AI = @AppV_AI where AppV_G=@AppV_G";
+                var dict = new Dictionary<string, string>();
+                dict.Add("@AppV_G", kv.Key);
+                dict.Add("@AppV_AI", kv.Value);
+                DBUtility.ExeLocalSqlNoRes(sql, dict);
+            }
+        }
+
+        public static void UpdateProduct()
+        {
+            var sql = @"select distinct AppV_G from RMARAWData where AppV_AJ='' and AppV_G <> ''";
+            var pnlist = new List<string>();
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                pnlist.Add(Convert.ToString(line[0]));
+            }
+            var pnpfmap = PNProuctFamilyCache.PNPFDict();
+            var pnpfdict = new Dictionary<string, string>();
+            foreach (var p in pnlist)
+            {
+                if (pnpfmap.ContainsKey(p))
+                { pnpfdict.Add(p, pnpfmap[p]); }
+            }
+
+            foreach (var kv in pnpfdict)
+            {
+                sql = "update RMARAWData set AppV_AJ = @AppV_AJ where AppV_G=@AppV_G";
+                var dict = new Dictionary<string, string>();
+                dict.Add("@AppV_G", kv.Key);
+                dict.Add("@AppV_AJ", kv.Value);
+                DBUtility.ExeLocalSqlNoRes(sql, dict);
+            }
         }
 
         private static RMARAWData ParseRMARAWDataValue(List<string> line)

@@ -18,6 +18,8 @@ namespace Prism.Models
             PNDesc = string.Empty;
             SN = string.Empty;
             RootCause = string.Empty;
+            Rate = string.Empty;
+            Product = string.Empty;
         }
 
         public RMADppmData( string rmanum, string producttype, string pn, string pndesc, string sn, double qty, DateTime issuedate, string rootcause)
@@ -31,6 +33,8 @@ namespace Prism.Models
             QTY = qty;
             IssueOpenDate = issuedate;
             RootCause = rootcause;
+            Rate = string.Empty;
+            Product = string.Empty;
         }
 
         public static Dictionary<string, int> RetrieveParallelRMACntByMonth(string sdate, string edate)
@@ -64,6 +68,8 @@ namespace Prism.Models
         //RootCause AppV_Y
         //FVResult AppV_X
         //CaseType AppV_Z
+        //Rate AppV_AI
+        //Product AppV_AJ
 
         public string ID { set; get; }
         public string RMANum { set; get; }
@@ -77,6 +83,7 @@ namespace Prism.Models
         public DateTime InitFAR { set; get; }
         public string InitFARStr { get { return InitFAR.ToString("yyyy-MM-dd"); } }
         public string RootCause { set; get; }
-
+        public string Rate { set; get; }
+        public string Product { set; get; }
     }
 }

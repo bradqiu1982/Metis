@@ -225,6 +225,7 @@
     <Compile Include="Models\ModuleTestData.cs" />
     <Compile Include="Models\PNPlannerCodeMap.cs" />
     <Compile Include="Models\PNProuctFamilyCache.cs" />
+    <Compile Include="Models\PNRateMap.cs" />
     <Compile Include="Models\PrismComment.cs" />
     <Compile Include="Models\RMADppmData.cs" />
     <Compile Include="Models\RMARAWData.cs" />

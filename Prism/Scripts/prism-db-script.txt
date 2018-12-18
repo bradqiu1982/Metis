@@ -405,3 +405,32 @@ GO
 ALTER TABLE [dbo].[FsrShipData] ADD  DEFAULT ('1982-05-06 10:00:00') FOR [Appv_5]
 GO
 
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [VcselPNData](
+	[PN] [nvarchar](200) NOT NULL,
+	[Rate] [nvarchar](200) NOT NULL,
+	[Channel] [nvarchar](200) NOT NULL,
+	[UpdateTime] [datetime] NOT NULL
+) ON [PRIMARY]
+
+GO
+
+ALTER TABLE [dbo].[VcselPNData] ADD  DEFAULT ('') FOR [PN]
+GO
+
+ALTER TABLE [dbo].[VcselPNData] ADD  DEFAULT ('') FOR [Rate]
+GO
+
+ALTER TABLE [dbo].[VcselPNData] ADD  DEFAULT ('') FOR [Channel]
+GO
+
+ALTER TABLE [dbo].[VcselPNData] ADD  DEFAULT ('1982-05-06 10:00:00') FOR [UpdateTime]
+GO
+

@@ -1443,7 +1443,7 @@ namespace Prism.Models
         {
             var ret = new Dictionary<string, string>();
             var sql = "select PN,Rate from VcselPNData";
-            var dbret = DBUtility.ExeNPISqlWithRes(sql, null);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
                 var PN = Convert.ToString(line[0]);
