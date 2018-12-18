@@ -37,14 +37,9 @@ namespace Prism.Models
             Product = string.Empty;
         }
 
-        public static Dictionary<string, int> RetrieveParallelRMACntByMonth(string sdate, string edate)
+        public static List<object> RetrieveRMACntByMonth(string sdate, string edate, string producttype)
         {
-            return RMARAWData.RetrieveParallelRMACntByMonth(sdate, edate);
-        }
-
-        public static Dictionary<string, int> RetrieveTunableRMACntByMonth(string sdate, string edate)
-        {
-            return RMARAWData.RetrieveTunableRMACntByMonth(sdate, edate);
+            return RMARAWData.RetrieveRMACntByMonth(sdate, edate, producttype);
         }
 
         public static List<RMADppmData> RetrieveRMARawDataByMonth(string sdate, string edate,string producttype)

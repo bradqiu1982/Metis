@@ -1,14 +1,27 @@
 ﻿var Shipment = function () {
     var show = function () {
         $('.date').datepicker({ autoclose: true, viewMode: "months", minViewMode: "months" });
-        $('body').on('click', '#btn-search', function () {
+
+        function searchdata()
+        {
             var sdate = $.trim($('#sdate').val());
             var edate = $.trim($('#edate').val());
+
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
 
             $.post('/Shipment/ShipmentDistribution', {
                 sdate: sdate,
                 edate: edate
             }, function (output) {
+                $.bootstrapLoading.end();
                 if (output.success) {
                     $('.v-content').empty();
                     $('.v-content').append('<div class="col-xs-12"><span class="mysptooltip" title="This is my span tooltip message!"></span></div>');
@@ -24,8 +37,16 @@
                     })
 
                 }
-            })
+            })        
+        }
+
+        $('body').on('click', '#btn-search', function () {
+            searchdata();
         })
+
+        $(function () {
+            searchdata();
+        });
 
         $('body').on('click', '#btn-download', function () {
             var sdate = $.trim($('#sdate').val());
@@ -307,6 +328,7 @@
                                 '<th>SN</th>' +
                                 '<th>RootCause</th>' +
                                 '<th>PN Desc</th>' +
+                                '<th>Rate</th>' +
                             '</tr>';
                 $('#ramrawhead').append(appendstr);
 
@@ -320,6 +342,7 @@
                         '<td>' + val.SN + '</td>' +
                         '<td>' + val.RootCause + '</td>' +
                         '<td>' + val.PNDesc + '</td>' +
+                        '<td>' + val.Rate + '</td>' +
                         '</tr>';
                     $('#ramrawbody').append(appendstr);
                 });

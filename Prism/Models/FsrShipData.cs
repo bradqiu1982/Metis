@@ -134,7 +134,8 @@ namespace Prism.Models
             dict.Add("@edate", edate);
             sql = sql.Replace("<pncond>", pncond);
 
-            var realcustdict = new Dictionary<string, bool>();
+            var sumqty = 0.0;
+            var realcustdict = new Dictionary<string, double>();
             var dbret = DBUtility.ExeLocalSqlWithRes(sql,null, dict);
             foreach (var line in dbret)
             {
@@ -145,7 +146,10 @@ namespace Prism.Models
                 var realcust = RetrieveCustome(cust1, cust2, custdict);
 
                 if (!realcustdict.ContainsKey(realcust))
-                { realcustdict.Add(realcust, true); }
+                { realcustdict.Add(realcust, qty); }
+                else
+                { realcustdict[realcust] += qty; }
+                sumqty += qty;
 
                 if (ret.ContainsKey(shipdate))
                 {
@@ -163,9 +167,50 @@ namespace Prism.Models
                 }
             }
 
+            //find the small customer, < 1%
+            var removecustdict = new Dictionary<string, bool>();
+            foreach (var kv in realcustdict)
+            {
+                if (kv.Value / sumqty < 0.01)
+                {
+                    removecustdict.Add(kv.Key, true);
+                }
+            }
+
+
             var shipdatelist = ret.Keys.ToList();
             var realcustlist = realcustdict.Keys.ToList();
+            foreach (var sd in shipdatelist)
+            {
+                var custcntdict = ret[sd];
+                var movetoothersqty = 0.0; 
+                foreach (var c in removecustdict)
+                {
+                    if (custcntdict.ContainsKey(c.Key))
+                    {
+                        movetoothersqty += custcntdict[c.Key];
+                        //clean customer
+                        custcntdict.Remove(c.Key);
+                    }
+                }
 
+                if (custcntdict.ContainsKey("OTHERS"))
+                { custcntdict["OTHERS"] += movetoothersqty; }
+                else
+                { custcntdict.Add("OTHERS",movetoothersqty); }
+            }
+
+            //clean small customer from total customer list
+            foreach (var ckv in removecustdict)
+            {
+                if (realcustdict.ContainsKey(ckv.Key))
+                {
+                    realcustdict.Remove(ckv.Key);
+                }
+            }
+
+            realcustlist = realcustdict.Keys.ToList();
+            //complete the big customer with 0,if it does not buy module at that month
             foreach (var sd in shipdatelist)
             {
                 var custcntdict = ret[sd];
@@ -1161,6 +1206,8 @@ namespace Prism.Models
                                 var customer1 = Convert2Str(line[4]);
                                 var customer2 = Convert2Str(line[6]);
                                 var pndesc = Convert2Str(line[12]);
+                                if (pndesc.Contains("ASY,DIE,") && customer1.Contains("FINISAR"))
+                                { continue; }
 
                                 var opd = Convert.ToDateTime(line[17]);
                                 var shipdate = Convert.ToDateTime(line[19]);
@@ -1184,23 +1231,25 @@ namespace Prism.Models
                     catch (Exception ex) { }
                 }//end foreach
 
-                var pn_mpn_dict = PN2MPn(pnsndict);
-                var pn_vtype_dict = RetrieveVcselPNInfo();
-                var pnratedict = new Dictionary<string, string>();
-                foreach (var pnmpnkv in pn_mpn_dict)
-                {
-                    var rate = "";
-                    foreach (var mpn in pnmpnkv.Value)
-                    {
-                        if (pn_vtype_dict.ContainsKey(mpn))
-                        {
-                            rate = pn_vtype_dict[mpn];
-                            break;
-                        }
-                    }
-                    if (!string.IsNullOrEmpty(rate))
-                    { pnratedict.Add(pnmpnkv.Key,rate); }
-                }
+                //var pn_mpn_dict = PN2MPn(pnsndict);
+                //var pn_vtype_dict = RetrieveVcselPNInfo();
+                //var pnratedict = new Dictionary<string, string>();
+                //foreach (var pnmpnkv in pn_mpn_dict)
+                //{
+                //    var rate = "";
+                //    foreach (var mpn in pnmpnkv.Value)
+                //    {
+                //        if (pn_vtype_dict.ContainsKey(mpn))
+                //        {
+                //            rate = pn_vtype_dict[mpn];
+                //            break;
+                //        }
+                //    }
+                //    if (!string.IsNullOrEmpty(rate))
+                //    { pnratedict.Add(pnmpnkv.Key,rate); }
+                //}
+
+                var pnratedict = PNRateMap.RetrievePNRateMap(pnsndict.Keys.ToList());
 
                 foreach (var item in shipdatalist)
                 {
@@ -1225,6 +1274,26 @@ namespace Prism.Models
                 }
 
             }//end if
+        }
+
+        public static void UpdateShipDataRate()
+        {
+            var sql = "select distinct PN from FsrShipData where Configuration = 'PARALLEL' and VcselType = '' and PN <> ''";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            var pnlist = new List<string>();
+            foreach (var line in dbret)
+            {
+                pnlist.Add(Convert.ToString(line[0]));
+            }
+            var pnratedict = PNRateMap.RetrievePNRateMap(pnlist);
+            foreach (var kv in pnratedict)
+            {
+                sql = "update FsrShipData set VcselType = @VcselType where PN = @PN";
+                var dict = new Dictionary<string, string>();
+                dict.Add("@PN", kv.Key);
+                dict.Add("@VcselType", kv.Value);
+                DBUtility.ExeLocalSqlNoRes(sql, dict);
+            }
         }
 
         private static string Convert2Str(object obj)

@@ -21,10 +21,19 @@ namespace Prism.Models
             }
             var retobj = PN2MPn(pnsndict);
             var pn_mpn_dict = (Dictionary<string, List<string>>)retobj[0];
+            var mpnratedict = (Dictionary<string, string>)retobj[1];
 
             var pndesdict = pnpndesmap(pnlist);
 
             var pn_vtype_dict = RetrieveVcselPNInfo();
+            foreach (var mpnkv in mpnratedict)
+            {
+                if (!pn_vtype_dict.ContainsKey(mpnkv.Key))
+                {
+                    UpdateVcselPNInfo(mpnkv.Key, mpnkv.Value);
+                    pn_vtype_dict.Add(mpnkv.Key, mpnkv.Value);
+                }
+            }
 
             var pnratedict = new Dictionary<string, string>();
             foreach (var pnmpnkv in pn_mpn_dict)
@@ -38,6 +47,7 @@ namespace Prism.Models
                         break;
                     }
                 }
+
                 if (!string.IsNullOrEmpty(rate))
                 { pnratedict.Add(pnmpnkv.Key, rate); }
                 else
@@ -104,6 +114,8 @@ namespace Prism.Models
                 }//end foreach
             }
 
+            var mpnratedict = new Dictionary<string, string>();
+
             var newpnsndict = CableSN2RealSN(pnsndict);
             sb = new StringBuilder();
             sb.Append("('");
@@ -117,13 +129,15 @@ namespace Prism.Models
             var sncond = sb.ToString(0, sb.Length - 2) + ")";
 
             var snmpndict = new Dictionary<string, List<string>>();
-            var csql = "select distinct  [ToContainer],[FromProductName] FROM [PDMS].[dbo].[ComponentIssueSummary] where [ToContainer] in <sncond>";
+            var csql = "select distinct  [ToContainer],[FromProductName],FromPNDescription FROM [PDMS].[dbo].[ComponentIssueSummary] where [ToContainer] in <sncond>";
             csql = csql.Replace("<sncond>", sncond);
             var cdbret = DBUtility.ExeMESReportSqlWithRes(csql);
             foreach (var line in cdbret)
             {
                 var sn = Convert.ToString(line[0]);
                 var mpn = Convert.ToString(line[1]);
+                var mpndesc = Convert.ToString(line[2]);
+
                 if (snmpndict.ContainsKey(sn))
                 {
                     snmpndict[sn].Add(mpn);
@@ -133,6 +147,30 @@ namespace Prism.Models
                     var templist = new List<string>();
                     templist.Add(mpn);
                     snmpndict.Add(sn, templist);
+                }
+
+                if (mpndesc.Contains(",VCSEL,") && mpndesc.Contains("850"))
+                {
+                    if (!mpnratedict.ContainsKey(mpn))
+                    {
+                        var rate = "";
+                        if (mpndesc.Contains(",25G") || mpndesc.Contains(",28G"))
+                        {
+                            rate = "25G";
+
+                        }
+                        else if(mpndesc.Contains(",10G"))
+                        {
+                            rate = "10G";
+                        }
+                        else if (mpndesc.Contains(",14G"))
+                        {
+                            rate = "14G";
+                        }
+
+                        if (!string.IsNullOrEmpty(rate))
+                        { mpnratedict.Add(mpn, rate); }
+                    }
                 }
             }
 
@@ -147,6 +185,7 @@ namespace Prism.Models
 
             var retobj = new List<object>();
             retobj.Add(pnmpndict);
+            retobj.Add(mpnratedict);
             return retobj;
         }
 
@@ -213,6 +252,16 @@ namespace Prism.Models
                 }
             }
             return ret;
+        }
+
+        private static void UpdateVcselPNInfo(string mpn,string rate)
+        {
+            var ret = new Dictionary<string, string>();
+            var sql = "insert into VcselPNData(PN,Rate) values(@PN,@Rate)";
+            var dict = new Dictionary<string, string>();
+            dict.Add("@PN", mpn);
+            dict.Add("@Rate", rate);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null,dict);
         }
 
         private static string RetrieveRateFromDesc(string desc)

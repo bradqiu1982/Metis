@@ -100,23 +100,18 @@ namespace Prism.Models
             DBUtility.ExeLocalSqlNoRes(sql);
         }
 
-        public static Dictionary<string, int> RetrieveParallelRMACntByMonth(string sdate, string edate)
+        public static List<object> RetrieveRMACntByMonth(string sdate, string edate, string producttype)
         {
-            var productcond = "AppV_F like 'Parallel'";
-            return RetrieveRMACntByMonth(sdate, edate, productcond);
-        }
+            var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
+            var pncond = "('" + string.Join("','", pnlist) + "')";
 
-        public static Dictionary<string, int> RetrieveTunableRMACntByMonth(string sdate, string edate)
-        {
-            var productcond = "AppV_F like 'Coherent Transceiver' or AppV_F like 'COHERENT'  or AppV_F like '10G Tunable' or AppV_F like '10G T-XFP' or AppV_F like 'TXFP' ";
-            return RetrieveRMACntByMonth(sdate, edate, productcond);
-        }
+            var retobj = new List<object>();
+            var allratedict = new Dictionary<string, int>();
+            var rate25dict = new Dictionary<string, int>();
+            var rate10dict = new Dictionary<string, int>();
 
-        private static Dictionary<string, int> RetrieveRMACntByMonth(string sdate, string edate, string productcond)
-        {
-            var ret = new Dictionary<string, int>();
-            var sql = "select AppV_W,AppV_J from RMARAWData where AppV_W >= @sdate and AppV_W <=@edate and AppV_Y <> 'NTF' and  AppV_Y <> '' and  AppV_X <> 'NTF' and  AppV_X <> '' and  AppV_X <> 'ESD' and  AppV_Z <> 'NTF' and  AppV_Z not like '%custom%' and (<productcond>) ";
-            sql = sql.Replace("<productcond>", productcond);
+            var sql = "select AppV_W,AppV_J,AppV_AI from RMARAWData where AppV_W >= @sdate and AppV_W <=@edate and AppV_Y <> 'NTF' and  AppV_Y <> '' and  AppV_X <> 'NTF' and  AppV_X <> '' and  AppV_X <> 'ESD' and  AppV_Z <> 'NTF' and  AppV_Z not like '%custom%' and AppV_G in <pncond> ";
+            sql = sql.Replace("<pncond>", pncond);
 
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
@@ -126,24 +121,43 @@ namespace Prism.Models
             {
                 var m = Convert.ToDateTime(line[0]).ToString("yyyy-MM");
                 var qty = Convert.ToInt32(Convert2DB(line[1]));
-                if (ret.ContainsKey(m))
-                {
-                    ret[m] = ret[m] + qty;
-                }
+                var rate = Convert.ToString(line[2]);
+
+                if (allratedict.ContainsKey(m))
+                { allratedict[m] = allratedict[m] + qty; }
                 else
+                { allratedict.Add(m, qty); }
+
+                if (string.Compare(rate, "25G") == 0)
                 {
-                    ret.Add(m, qty);
+                    if (rate25dict.ContainsKey(m))
+                    { rate25dict[m] = rate25dict[m] + qty; }
+                    else
+                    { rate25dict.Add(m, qty); }
+                }
+                if (string.Compare(rate, "10G") == 0 || string.Compare(rate, "14G") == 0)
+                {
+                    if (rate10dict.ContainsKey(m))
+                    { rate10dict[m] = rate10dict[m] + qty; }
+                    else
+                    { rate10dict.Add(m, qty); }
                 }
             }
-            return ret;
+            retobj.Add(allratedict);
+            retobj.Add(rate25dict);
+            retobj.Add(rate10dict);
+            return retobj;
         }
 
-        private static List<RMADppmData> RetrieveRMADataByMonth(string sdate, string edate, string productcond)
+
+        public static List<RMADppmData> RetrieveRMARawDataByMonth(string sdate, string edate, string producttype)
         {
             var ret = new List<RMADppmData>();
+            var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
+            var pncond = "('" + string.Join("','", pnlist) + "')";
 
-            var sql = "select AppV_B,AppV_F,AppV_G,AppV_H,AppV_I,AppV_J,AppV_W,AppV_Y from RMARAWData where AppV_W >= @sdate and AppV_W <=@edate and AppV_Y <> 'NTF' and  AppV_Y <> '' and  AppV_X <> 'NTF' and  AppV_X <> '' and  AppV_X <> 'ESD' and  AppV_Z <> 'NTF' and  AppV_Z not like '%custom%' and (<productcond>) order by AppV_W asc";
-            sql = sql.Replace("<productcond>", productcond);
+            var sql = "select AppV_B,AppV_F,AppV_G,AppV_H,AppV_I,AppV_J,AppV_W,AppV_Y,AppV_AI from RMARAWData where AppV_W >= @sdate and AppV_W <=@edate and AppV_Y <> 'NTF' and  AppV_Y <> '' and  AppV_X <> 'NTF' and  AppV_X <> '' and  AppV_X <> 'ESD' and  AppV_Z <> 'NTF' and  AppV_Z not like '%custom%' and AppV_G in <pncond>  order by AppV_W asc";
+            sql = sql.Replace("<pncond>", pncond);
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
             dict.Add("@edate", edate);
@@ -154,34 +168,22 @@ namespace Prism.Models
                 rootcause = rootcause.Length > 48 ? rootcause.Substring(0, 48) : rootcause;
                 var sn = Convert2Str(line[4]);
                 sn = sn.Length > 24 ? sn.Substring(0, 24) : sn;
-
-                ret.Add(new RMADppmData(Convert2Str(line[0]), Convert2Str(line[1]), Convert2Str(line[2])
-                    , Convert2Str(line[3]), sn, Convert2DB(line[5]), Convert2DT(line[6]), rootcause));
+                var tempvm = new RMADppmData(Convert2Str(line[0]), Convert2Str(line[1]), Convert2Str(line[2])
+                    , Convert2Str(line[3]), sn, Convert2DB(line[5]), Convert2DT(line[6]), rootcause);
+                tempvm.Rate = Convert.ToString(line[8]);
+                ret.Add(tempvm);
             }
             return ret;
         }
 
-        public static List<RMADppmData> RetrieveRMARawDataByMonth(string sdate, string edate, string producttype)
-        {
-            if (string.Compare(producttype, SHIPPRODTYPE.PARALLEL, true) == 0)
-            {
-                var productcond = "AppV_F like 'Parallel'";
-                return RetrieveRMADataByMonth(sdate, edate, productcond);
-            }
-            else if (string.Compare(producttype, SHIPPRODTYPE.TUNABLE, true) == 0)
-            {
-                var productcond = "AppV_F like 'Coherent Transceiver' or AppV_F like 'COHERENT'  or AppV_F like '10G Tunable' or AppV_F like '10G T-XFP' or AppV_F like 'TXFP' ";
-                return RetrieveRMADataByMonth(sdate, edate, productcond);
-            }
-            return new List<RMADppmData>();
-        }
-
-        private static List<RMADppmData> RetrieveWorkLoadDataByMonth(string sdate, string edate, string productcond)
+        public static List<RMADppmData> RetrieveRMAWorkLoadDataByMonth(string sdate, string edate, string producttype)
         {
             var ret = new List<RMADppmData>();
+            var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
+            var pncond = "('" + string.Join("','", pnlist) + "')";
 
-            var sql = "select AppV_B,AppV_F,AppV_G,AppV_H,AppV_I,AppV_J,AppV_P,AppV_Y,AppV_R from RMARAWData where AppV_P >= @sdate and AppV_P <=@edate and (<productcond>) order by AppV_B";
-            sql = sql.Replace("<productcond>", productcond);
+            var sql = "select AppV_B,AppV_F,AppV_G,AppV_H,AppV_I,AppV_J,AppV_P,AppV_Y,AppV_R from RMARAWData where AppV_P >= @sdate and AppV_P <=@edate and AppV_G in <pncond> order by AppV_B";
+            sql = sql.Replace("<pncond>", pncond);
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
             dict.Add("@edate", edate);
@@ -202,20 +204,146 @@ namespace Prism.Models
             return ret;
         }
 
-        public static List<RMADppmData> RetrieveRMAWorkLoadDataByMonth(string sdate, string edate, string producttype)
-        {
-            if (string.Compare(producttype, SHIPPRODTYPE.PARALLEL, true) == 0)
-            {
-                var productcond = "AppV_F like 'Parallel'";
-                return RetrieveWorkLoadDataByMonth(sdate, edate, productcond);
-            }
-            else if (string.Compare(producttype, SHIPPRODTYPE.TUNABLE, true) == 0)
-            {
-                var productcond = "AppV_F like 'Coherent Transceiver' or AppV_F like 'COHERENT'  or AppV_F like '10G Tunable' or AppV_F like '10G T-XFP' or AppV_F like 'TXFP' ";
-                return RetrieveWorkLoadDataByMonth(sdate, edate, productcond);
-            }
-            return new List<RMADppmData>();
-        }
+        //public static List<object> RetrieveRMACntByMonth(string sdate, string edate,string producttype)
+        //{
+        //    if (string.Compare(producttype, SHIPPRODTYPE.PARALLEL, true) == 0)
+        //    {
+        //        var productcond = "AppV_F like 'Parallel'";
+        //        return _RetrieveRMACntByMonth(sdate, edate, productcond);
+        //    }
+        //    else if (string.Compare(producttype, SHIPPRODTYPE.TUNABLE, true) == 0)
+        //    {
+        //        var productcond = "AppV_F like 'Coherent Transceiver' or AppV_F like 'COHERENT'  or AppV_F like '10G Tunable' or AppV_F like '10G T-XFP' or AppV_F like 'TXFP' ";
+        //        return _RetrieveRMACntByMonth(sdate, edate, productcond);
+        //    }
+        //    return new List<object>();
+        //}
+
+        //private static List<object> _RetrieveRMACntByMonth(string sdate, string edate, string productcond)
+        //{
+        //    var retobj = new List<object>();
+
+        //    var allratedict = new Dictionary<string, int>();
+        //    var rate25dict = new Dictionary<string, int>();
+        //    var rate10dict = new Dictionary<string, int>();
+
+        //    var sql = "select AppV_W,AppV_J,AppV_AI from RMARAWData where AppV_W >= @sdate and AppV_W <=@edate and AppV_Y <> 'NTF' and  AppV_Y <> '' and  AppV_X <> 'NTF' and  AppV_X <> '' and  AppV_X <> 'ESD' and  AppV_Z <> 'NTF' and  AppV_Z not like '%custom%' and (<productcond>) ";
+        //    sql = sql.Replace("<productcond>", productcond);
+
+        //    var dict = new Dictionary<string, string>();
+        //    dict.Add("@sdate", sdate);
+        //    dict.Add("@edate", edate);
+        //    var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
+        //    foreach (var line in dbret)
+        //    {
+        //        var m = Convert.ToDateTime(line[0]).ToString("yyyy-MM");
+        //        var qty = Convert.ToInt32(Convert2DB(line[1]));
+        //        var rate = Convert.ToString(line[2]);
+
+        //        if (allratedict.ContainsKey(m))
+        //        { allratedict[m] = allratedict[m] + qty;}
+        //        else
+        //        {  allratedict.Add(m, qty); }
+
+        //        if (string.Compare(rate, "25G") == 0)
+        //        {
+        //            if (rate25dict.ContainsKey(m))
+        //            { rate25dict[m] = rate25dict[m] + qty; }
+        //            else
+        //            { rate25dict.Add(m, qty); }
+        //        }
+        //        if (string.Compare(rate, "10G") == 0 || string.Compare(rate, "14G") == 0)
+        //        {
+        //            if (rate10dict.ContainsKey(m))
+        //            { rate10dict[m] = rate10dict[m] + qty; }
+        //            else
+        //            { rate10dict.Add(m, qty); }
+        //        }
+        //    }
+        //    retobj.Add(allratedict);
+        //    retobj.Add(rate25dict);
+        //    retobj.Add(rate10dict);
+        //    return retobj;
+        //}
+
+        //private static List<RMADppmData> RetrieveRMADataByMonth(string sdate, string edate, string productcond)
+        //{
+        //    var ret = new List<RMADppmData>();
+
+        //    var sql = "select AppV_B,AppV_F,AppV_G,AppV_H,AppV_I,AppV_J,AppV_W,AppV_Y from RMARAWData where AppV_W >= @sdate and AppV_W <=@edate and AppV_Y <> 'NTF' and  AppV_Y <> '' and  AppV_X <> 'NTF' and  AppV_X <> '' and  AppV_X <> 'ESD' and  AppV_Z <> 'NTF' and  AppV_Z not like '%custom%' and (<productcond>) order by AppV_W asc";
+        //    sql = sql.Replace("<productcond>", productcond);
+        //    var dict = new Dictionary<string, string>();
+        //    dict.Add("@sdate", sdate);
+        //    dict.Add("@edate", edate);
+        //    var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
+        //    foreach (var line in dbret)
+        //    {
+        //        var rootcause = Convert2Str(line[7]);
+        //        rootcause = rootcause.Length > 48 ? rootcause.Substring(0, 48) : rootcause;
+        //        var sn = Convert2Str(line[4]);
+        //        sn = sn.Length > 24 ? sn.Substring(0, 24) : sn;
+
+        //        ret.Add(new RMADppmData(Convert2Str(line[0]), Convert2Str(line[1]), Convert2Str(line[2])
+        //            , Convert2Str(line[3]), sn, Convert2DB(line[5]), Convert2DT(line[6]), rootcause));
+        //    }
+        //    return ret;
+        //}
+
+        //public static List<RMADppmData> RetrieveRMARawDataByMonth(string sdate, string edate, string producttype)
+        //{
+        //    if (string.Compare(producttype, SHIPPRODTYPE.PARALLEL, true) == 0)
+        //    {
+        //        var productcond = "AppV_F like 'Parallel'";
+        //        return RetrieveRMADataByMonth(sdate, edate, productcond);
+        //    }
+        //    else if (string.Compare(producttype, SHIPPRODTYPE.TUNABLE, true) == 0)
+        //    {
+        //        var productcond = "AppV_F like 'Coherent Transceiver' or AppV_F like 'COHERENT'  or AppV_F like '10G Tunable' or AppV_F like '10G T-XFP' or AppV_F like 'TXFP' ";
+        //        return RetrieveRMADataByMonth(sdate, edate, productcond);
+        //    }
+        //    return new List<RMADppmData>();
+        //}
+
+        //private static List<RMADppmData> RetrieveWorkLoadDataByMonth(string sdate, string edate, string productcond)
+        //{
+        //    var ret = new List<RMADppmData>();
+
+        //    var sql = "select AppV_B,AppV_F,AppV_G,AppV_H,AppV_I,AppV_J,AppV_P,AppV_Y,AppV_R from RMARAWData where AppV_P >= @sdate and AppV_P <=@edate and (<productcond>) order by AppV_B";
+        //    sql = sql.Replace("<productcond>", productcond);
+        //    var dict = new Dictionary<string, string>();
+        //    dict.Add("@sdate", sdate);
+        //    dict.Add("@edate", edate);
+        //    var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
+        //    foreach (var line in dbret)
+        //    {
+        //        var rootcause = Convert2Str(line[7]);
+        //        rootcause = rootcause.Length > 48 ? rootcause.Substring(0, 48) : rootcause;
+        //        var sn = Convert2Str(line[4]);
+        //        sn = sn.Length > 24 ? sn.Substring(0, 24) : sn;
+
+        //        var item = new RMADppmData(Convert2Str(line[0]), Convert2Str(line[1]), Convert2Str(line[2])
+        //            , Convert2Str(line[3]), sn, Convert2DB(line[5]), Convert2DT(line[6]), rootcause);
+        //        item.InitFAR = Convert2DT(line[8]);
+        //        ret.Add(item);
+
+        //    }
+        //    return ret;
+        //}
+
+        //public static List<RMADppmData> RetrieveRMAWorkLoadDataByMonth(string sdate, string edate, string producttype)
+        //{
+        //    if (string.Compare(producttype, SHIPPRODTYPE.PARALLEL, true) == 0)
+        //    {
+        //        var productcond = "AppV_F like 'Parallel'";
+        //        return RetrieveWorkLoadDataByMonth(sdate, edate, productcond);
+        //    }
+        //    else if (string.Compare(producttype, SHIPPRODTYPE.TUNABLE, true) == 0)
+        //    {
+        //        var productcond = "AppV_F like 'Coherent Transceiver' or AppV_F like 'COHERENT'  or AppV_F like '10G Tunable' or AppV_F like '10G T-XFP' or AppV_F like 'TXFP' ";
+        //        return RetrieveWorkLoadDataByMonth(sdate, edate, productcond);
+        //    }
+        //    return new List<RMADppmData>();
+        //}
 
         public static void UpdatePNRate()
         {

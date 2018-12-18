@@ -359,8 +359,6 @@ namespace Prism.Controllers
         public ActionResult LoadRMARawData()
         {
             RMARAWData.LoadRMARawData(this);
-            RMARAWData.UpdatePNRate();
-            RMARAWData.UpdateProduct();
             return View("HeartBeat");
         }
 
