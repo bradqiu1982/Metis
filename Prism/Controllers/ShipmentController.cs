@@ -15,7 +15,7 @@ namespace Prism.Controllers
 
         public ActionResult ShipmentData()
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "ShipmentData"))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -949,7 +949,7 @@ namespace Prism.Controllers
 
         public ActionResult DownloadShipmentData(string sdate, string edate)
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "DownloadShipmentData"))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -1009,7 +1009,7 @@ namespace Prism.Controllers
 
         public ActionResult OTDData()
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "OTDData"))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -1092,7 +1092,7 @@ namespace Prism.Controllers
 
         public ActionResult LBSDistribution()
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "LBSDistribution"))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -1251,7 +1251,7 @@ namespace Prism.Controllers
 
         public ActionResult OrderData()
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "OrderData"))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -1451,7 +1451,7 @@ namespace Prism.Controllers
 
         public ActionResult RMAWorkLoad()
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "RMAWorkLoad"))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -1535,6 +1535,10 @@ namespace Prism.Controllers
 
         public ActionResult ShipOutputTrend()
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "ShipOutputTrend"))
+            {
+                return RedirectToAction("Index", "Main");
+            }
             return View();
         }
 

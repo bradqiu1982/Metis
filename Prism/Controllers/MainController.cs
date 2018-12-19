@@ -162,7 +162,7 @@ namespace Prism.Controllers
 
         public ActionResult TableCatch()
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, ""))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -259,6 +259,11 @@ namespace Prism.Controllers
 
         public ActionResult BoringSearch()
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "BoringSearch"))
+            {
+                return RedirectToAction("Index", "Main");
+            }
+
             var searchfield = SearchVM.SearchFields();
             searchfield.Insert(0, SEARCHFIELD.ALLFIELDS);
 

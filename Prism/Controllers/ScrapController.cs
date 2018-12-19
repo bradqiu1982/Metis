@@ -38,7 +38,7 @@ namespace Prism.Controllers
 
         public ActionResult DepartmentScrap(string defyear, string defqrt, string defdepartment)
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "DepartmentScrap"))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -186,7 +186,7 @@ namespace Prism.Controllers
 
         public ActionResult CostCenterOfOneDepart(string x, string defyear, string defqrt)
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "CostCenterOfOneDepart"))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -218,7 +218,7 @@ namespace Prism.Controllers
 
         public ActionResult CostCenterScrap(string defyear, string defqrt, string defpj)
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "CostCenterScrap"))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -436,7 +436,7 @@ namespace Prism.Controllers
 
         public ActionResult ProductScrap(string defyear, string defqrt, string defco)
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "ProductScrap"))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -681,7 +681,7 @@ namespace Prism.Controllers
 
         public ActionResult ScrapTrend(string product)
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "ScrapTrend"))
             {
                 return RedirectToAction("Index", "Main");
             }

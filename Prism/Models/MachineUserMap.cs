@@ -86,7 +86,8 @@ namespace Prism.Models
             { return string.Empty; }
         }
 
-        public static bool IsLxEmployee(string ip, string username, int x)
+
+        public static bool IsLxEmployee(string ip, string username, int x,string msg=null)
         {
             #if DEBUG
             if (string.Compare(ip, "127.0.0.1") == 0)
@@ -115,6 +116,13 @@ namespace Prism.Models
                 foreach (var line in dbret)
                 {
                     var level = Convert.ToString(line[2]);
+                    var name = Convert.ToString(line[1]);
+                #if !DEBUG
+                    if (!string.IsNullOrEmpty(msg))
+                    {
+                        Log(machine, name, msg);
+                    }
+                #endif
                     if (!string.IsNullOrEmpty(level) && level.Length > 1)
                     {
                         var lv = Convert.ToInt32(level.Substring(1));
@@ -142,6 +150,17 @@ namespace Prism.Models
                 return "System";
             }
             return Convert.ToString(dbret[0][0]);
+        }
+
+        private static void Log(string machine, string name, string msg)
+        {
+            var sql = "insert into WebLog(Machine,Name,MSG,UpdateTime) values(@Machine,@Name,@MSG,@UpdateTime)";
+            var dict = new Dictionary<string, string>();
+            dict.Add("@Machine", machine);
+            dict.Add("@Name", name);
+            dict.Add("@MSG",msg);
+            dict.Add("@UpdateTime",DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"));
+            DBUtility.ExeLocalSqlNoRes(sql, dict);
         }
 
 

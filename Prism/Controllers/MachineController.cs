@@ -11,7 +11,7 @@ namespace Prism.Controllers
     {
         public ActionResult DepartmentMachine()
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "DepartmentMachine"))
             {
                 return RedirectToAction("Index", "Main");
             }
@@ -176,7 +176,7 @@ namespace Prism.Controllers
 
         public ActionResult ProductMachine(string productfaimly)
         {
-            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9))
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "ProductMachine"))
             {
                 return RedirectToAction("Index", "Main");
             }

@@ -11,6 +11,10 @@ namespace Prism.Controllers
     {
         public ActionResult DepartmentCapacity()
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "DepartmentCapacity"))
+            {
+                return RedirectToAction("Index", "Main");
+            }
             return View();
         }
 
@@ -194,6 +198,11 @@ namespace Prism.Controllers
 
         public ActionResult ProductCapacity(string producttype)
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "ProductCapacity"))
+            {
+                return RedirectToAction("Index", "Main");
+            }
+
             ViewBag.producttype = "";
             if (!string.IsNullOrEmpty(producttype))
             { ViewBag.producttype = producttype; }
