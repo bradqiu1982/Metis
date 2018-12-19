@@ -16,6 +16,7 @@ namespace Prism.Models
         public static string SCRAP = "SCRAP";
         public static string CAPACITY = "CAPACITY";
         public static string INVENTORY = "INVENTORY";
+        public static string RMA = "RMA";
     }
 
     public class SearchVM
@@ -30,6 +31,7 @@ namespace Prism.Models
             ret.Add(SEARCHFIELD.SCRAP);
             ret.Add(SEARCHFIELD.CAPACITY);
             ret.Add(SEARCHFIELD.INVENTORY);
+            ret.Add(SEARCHFIELD.RMA);
             return ret;
         }
 
@@ -107,6 +109,14 @@ namespace Prism.Models
             return ret;
         }
 
+        private static List<string> RMASearchRange(Controller ctrl)
+        {
+            var ret = new List<string>();
+            var searchcfg = CfgUtility.LoadSearchConfig(ctrl);
+            var shipfamilys = searchcfg["ALLFIELDFAMILY"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            ret.AddRange(shipfamilys);
+            return ret;
+        }
 
         public static List<string> SearchRange(string searchfield,Controller ctrl)
         {
@@ -136,6 +146,10 @@ namespace Prism.Models
             {
                 return InventorySearchRange(ctrl);
             }
+            else if (string.Compare(searchfield, SEARCHFIELD.RMA) == 0)
+            {
+                return RMASearchRange(ctrl);
+            }
 
             return new List<string>();
         }
@@ -152,6 +166,7 @@ namespace Prism.Models
                 SearchInventory(searchrange, tables, ctrl);
                 SearchShipQty(searchrange, tables, ctrl);
                 SearchOTDQty(searchrange, tables, ctrl);
+                SearchRMA(searchrange, tables, ctrl);
             }
             else if (string.Compare(searchfield, SEARCHFIELD.YIELD) == 0)
             {
@@ -180,6 +195,10 @@ namespace Prism.Models
             else if (string.Compare(searchfield, SEARCHFIELD.INVENTORY) == 0)
             {
                 SearchInventory(searchrange, tables, ctrl);
+            }
+            else if (string.Compare(searchfield, SEARCHFIELD.RMA) == 0)
+            {
+                SearchRMA(searchrange, tables, ctrl);
             }
 
             return tables;
@@ -322,6 +341,24 @@ namespace Prism.Models
             else
             { tables.Add(FsrShipData.GetOTDTable(shipdata, searchrange, false)); }
         }
+
+        private static void SearchRMA(string searchrange, List<object> tables, Controller ctrl)
+        {
+            var searchcfg = CfgUtility.LoadSearchConfig(ctrl);
+            if (searchcfg["ALLFIELDFAMILY"].ToUpper().Contains(searchrange.ToUpper()))
+            {
+                var shipdata = FsrShipData.RetrieveOutputDataByQuarter(searchrange, ctrl);
+                if (shipdata.Count == 0 || shipdata[0].Count == 0) { return; }
+                var qtydict = shipdata[0];
+
+                var startdate = searchcfg["SHIP_STARTDATE"];
+                var dppmdata = RMADppmData.RetrieveRMARawDataByMonth(startdate, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), searchrange, ctrl);
+                if (dppmdata.Count == 0) { return; }
+
+                tables.Add(RMADppmData.GetShipoutTable(qtydict,dppmdata,searchrange));
+            }
+        }
+        
 
     }
 }

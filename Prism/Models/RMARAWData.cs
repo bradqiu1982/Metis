@@ -150,13 +150,16 @@ namespace Prism.Models
         }
 
 
-        public static List<RMADppmData> RetrieveRMARawDataByMonth(string sdate, string edate, string producttype)
+        public static List<RMADppmData> RetrieveRMARawDataByMonth(string sdate, string edate, string producttype, Controller ctrl)
         {
+            var syscfg = CfgUtility.GetSysConfig(ctrl);
+            var rootcauselist = syscfg["RMAROOTCAUSEMAP"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+
             var ret = new List<RMADppmData>();
             var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
             var pncond = "('" + string.Join("','", pnlist) + "')";
 
-            var sql = "select AppV_B,AppV_F,AppV_G,AppV_H,AppV_I,AppV_J,AppV_W,AppV_Y,AppV_AI from RMARAWData where AppV_W >= @sdate and AppV_W <=@edate and AppV_Y <> 'NTF' and  AppV_Y <> '' and  AppV_X <> 'NTF' and  AppV_X <> '' and  AppV_X <> 'ESD' and  AppV_Z <> 'NTF' and  AppV_Z not like '%custom%' and AppV_G in <pncond>  order by AppV_W asc";
+            var sql = "select AppV_B,AppV_F,AppV_G,AppV_H,AppV_I,AppV_J,AppV_W,AppV_Y,AppV_AI,AppV_AJ from RMARAWData where AppV_W >= @sdate and AppV_W <=@edate and AppV_Y <> 'NTF' and  AppV_Y <> '' and  AppV_X <> 'NTF' and  AppV_X <> '' and  AppV_X <> 'ESD' and  AppV_Z <> 'NTF' and  AppV_Z not like '%custom%' and AppV_G in <pncond>  order by AppV_W asc";
             sql = sql.Replace("<pncond>", pncond);
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
@@ -164,13 +167,27 @@ namespace Prism.Models
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
             {
-                var rootcause = Convert2Str(line[7]);
-                rootcause = rootcause.Length > 48 ? rootcause.Substring(0, 48) : rootcause;
+                var rootcause = "";
+                var temprootcause = Convert2Str(line[7]).ToUpper();
+                foreach (var rt in rootcauselist)
+                {
+                    if (temprootcause.Contains(rt))
+                    {
+                        rootcause = rt;
+                        break;
+                    }
+                }
+                if (string.IsNullOrEmpty(rootcause))
+                {
+                    rootcause = "OTHERS";
+                }
+
                 var sn = Convert2Str(line[4]);
                 sn = sn.Length > 24 ? sn.Substring(0, 24) : sn;
                 var tempvm = new RMADppmData(Convert2Str(line[0]), Convert2Str(line[1]), Convert2Str(line[2])
                     , Convert2Str(line[3]), sn, Convert2DB(line[5]), Convert2DT(line[6]), rootcause);
                 tempvm.Rate = Convert.ToString(line[8]);
+                tempvm.Product = Convert.ToString(line[9]);
                 ret.Add(tempvm);
             }
             return ret;

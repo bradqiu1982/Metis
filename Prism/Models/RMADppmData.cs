@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace Prism.Models
 {
@@ -42,14 +43,71 @@ namespace Prism.Models
             return RMARAWData.RetrieveRMACntByMonth(sdate, edate, producttype);
         }
 
-        public static List<RMADppmData> RetrieveRMARawDataByMonth(string sdate, string edate,string producttype)
+        public static List<RMADppmData> RetrieveRMARawDataByMonth(string sdate, string edate,string producttype,Controller ctrl)
         {
-            return RMARAWData.RetrieveRMARawDataByMonth(sdate, edate, producttype);
+            return RMARAWData.RetrieveRMARawDataByMonth(sdate, edate, producttype,ctrl);
         }
 
         public static List<RMADppmData> RetrieveRMAWorkLoadDataByMonth(string sdate, string edate, string producttype)
         {
             return RMARAWData.RetrieveRMAWorkLoadDataByMonth(sdate, edate, producttype);
+        }
+
+        public static object GetShipoutTable(Dictionary<string, double> shipqtydict, List<RMADppmData> rmadata,string searchrange)
+        {
+            var rmadict = new Dictionary<string, double>();
+            foreach (var rma in rmadata)
+            {
+                var q = QuarterCLA.RetrieveQuarterFromDate(rma.IssueOpenDate);
+                if (rmadict.ContainsKey(q))
+                {
+                    rmadict[q] += rma.QTY;
+                }
+                else
+                {
+                    rmadict.Add(q, rma.QTY);
+                }
+            }
+
+
+
+            var qlist = shipqtydict.Keys.ToList();
+            qlist.Sort(delegate (string obj1, string obj2)
+            {
+                var i1 = QuarterCLA.RetrieveDateFromQuarter(obj1)[0];
+                var i2 = QuarterCLA.RetrieveDateFromQuarter(obj2)[0];
+                return i1.CompareTo(i2);
+            });
+
+            var titlelist = new List<object>();
+            titlelist.Add("RMA");
+            titlelist.Add("");
+            titlelist.AddRange(qlist);
+
+            var linelist = new List<object>();
+            linelist.Add(searchrange);
+
+
+            linelist.Add("<span class='YFPY'>RMA_Qty</span><br><span class='INPUT'>Ship_Qty</span><br><span class='YFY'>DPPM</span>");
+
+            //var outputiszero = false;
+            var sumscraplist = new List<SCRAPSUMData>();
+            foreach (var q in qlist)
+            {
+                var rmaqty = 0.0;
+                if (rmadict.ContainsKey(q))
+                { rmaqty = rmadict[q]; }
+                var dppm = Math.Round(rmaqty / shipqtydict[q] * 1000000, 0);
+
+                linelist.Add("<span class='YFPY'>"+Math.Round(rmaqty, 0)+"</span><br><span class='INPUT'>"+ String.Format("{0:n0}", shipqtydict[q]) + "</span><br><span class='YFY'>"+ dppm + "</span>");
+            }
+
+            return new
+            {
+                tabletitle = titlelist,
+                tablecontent = linelist
+            };
+
         }
 
         //RMA RAW DATA MAP
