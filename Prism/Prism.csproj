@@ -229,6 +229,7 @@
     <Compile Include="Models\PrismComment.cs" />
     <Compile Include="Models\RMADppmData.cs" />
     <Compile Include="Models\RMARAWData.cs" />
+    <Compile Include="Models\RMASumData.cs" />
     <Compile Include="Models\ScrapData_Base.cs" />
     <Compile Include="Models\SearchVM.cs" />
     <Compile Include="Models\ShipLBSData.cs" />

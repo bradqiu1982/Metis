@@ -988,17 +988,17 @@ namespace Prism.Controllers
         {
             var pdtype = Request.Form["pdtype"];
             var datestr = Request.Form["datestr"];
-            var rmadatalist = new List<RMADppmData>();
+            var rmadatalist = new List<RMASumData>();
             if (datestr.ToUpper().Contains("Q"))
             {
                 var datelist = QuarterCLA.RetrieveDateFromQuarter(datestr);
-                rmadatalist = RMADppmData.RetrieveRMARawDataByMonth(datelist[0].ToString("yyyy-MM-dd HH:mm:ss"), datelist[1].ToString("yyyy-MM-dd HH:mm:ss"), pdtype,this);
+                rmadatalist = RMASumData.RetrieveRMARawDataByMonth(datelist[0].ToString("yyyy-MM-dd HH:mm:ss"), datelist[1].ToString("yyyy-MM-dd HH:mm:ss"), pdtype,this);
             }
             else
             {
                 var sdate = datestr + "-01 00:00:00";
                 var edate = DateTime.Parse(sdate).AddMonths(1).AddSeconds(-1).ToString("yyyy-MM-dd HH:mm:ss");
-                rmadatalist = RMADppmData.RetrieveRMARawDataByMonth(sdate, edate,pdtype,this);
+                rmadatalist = RMASumData.RetrieveRMARawDataByMonth(sdate, edate,pdtype,this);
             }
 
             var ret = new JsonResult();

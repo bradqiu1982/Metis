@@ -320,29 +320,19 @@
                 $('#ramrawbody').empty();
 
                 var appendstr = '<tr>' +
-                                '<th>&nbsp;</th>' +
-                                '<th>RMA Num</th>' +
-                                '<th>PN</th>' +
+                                '<th>Sum Type</th>' +
+                                '<th>Name</th>' +
                                 '<th>QTY</th>' +
-                                '<th>Issue Date</th>' +
-                                '<th>SN</th>' +
-                                '<th>RootCause</th>' +
-                                '<th>PN Desc</th>' +
                                 '<th>Rate</th>' +
                             '</tr>';
                 $('#ramrawhead').append(appendstr);
 
                 $.each(outputdata.rmadatalist, function (i, val) {
                     var appendstr = '<tr>' +
-                        '<td>' + (i + 1) + '</td>' +
-                        '<td>' + val.RMANum + '</td>' +
-                        '<td>' + val.PN + '</td>' +
-                        '<td>' + val.QTY + '</td>' +
-                        '<td>' + val.IssueDateStr + '</td>' +
-                        '<td>' + val.SN + '</td>' +
-                        '<td>' + val.RootCause + '</td>' +
-                        '<td>' + val.PNDesc + '</td>' +
-                        '<td>' + val.Rate + '</td>' +
+                        '<td>' + val.SumType + '</td>' +
+                        '<td>' + val.RMAName + '</td>' +
+                        '<td>' + val.RMAQty + '</td>' +
+                        '<td>' + val.RMARate + '%</td>' +
                         '</tr>';
                     $('#ramrawbody').append(appendstr);
                 });
