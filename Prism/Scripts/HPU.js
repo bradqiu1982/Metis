@@ -342,13 +342,14 @@
                 title: {
                     text: 'YIELD HPU'
                 }
-            }, {
-                opposite: true,
-                min: line_data.minhpureduction,
-                max: line_data.maxhpureduction,
-                title: {
-                    text: 'HPU Reduction (%)'
-                },
+            },
+            //{
+            //    opposite: true,
+            //    min: line_data.minhpureduction,
+            //    max: line_data.maxhpureduction,
+            //    title: {
+            //        text: 'HPU Reduction (%)'
+            //    },
                 //plotLines: [{
                 //    value: line_data.hpuguideline.data,
                 //    color: line_data.hpuguideline.color,
@@ -359,7 +360,8 @@
                 //        align: 'left'
                 //    }
                 //}]
-            }],
+            //}
+            ],
             plotOptions: {
                 series: {
                     cursor: 'pointer',
