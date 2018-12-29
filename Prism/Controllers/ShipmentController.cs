@@ -877,6 +877,14 @@ namespace Prism.Controllers
                 shipdataarray.Add(GetShipmentQuarterChartData(sfpwireshipdata, allrmacntdict, SHIPPRODTYPE.SFPWIRE, SHIPPRODTYPE.SFPWIRE));
             }
 
+            var coherentshipdata = FsrShipData.RetrieveShipDataByMonth("", "COHERENT", startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            if (coherentshipdata.Count > 0)
+            {
+                var vcselrmacntdict = new Dictionary<string, int>();
+                var allrmacntdict = new Dictionary<string, int>();
+                shipdataarray.Add(GetShipmentQuarterChartData(coherentshipdata, allrmacntdict, "COHERENT", "COHERENT"));
+            }
+
             var linecardshipdata = FsrShipData.RetrieveLineCardShipDataByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
             if (linecardshipdata.Count > 0)
             {

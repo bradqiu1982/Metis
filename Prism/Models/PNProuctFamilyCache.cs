@@ -142,7 +142,7 @@ namespace Prism.Models
                 || string.Compare(pf, "Telecom TRX", true) == 0
                 || string.Compare(pf, "OPTIUM", true) == 0)
             {
-                cond = " ProductFamily like '10G Tunable BIDI%' or ProductFamily like 'T-XFP%' or ProductFamily like 'COHERENT%' ";
+                cond = " ProductFamily like '10G Tunable BIDI%' or ProductFamily like 'T-XFP%' ";
             }
             else if (string.Compare(pf, "LINECARD", true) == 0
                 || string.Compare(pf, "LNCD", true) == 0)
@@ -160,7 +160,7 @@ namespace Prism.Models
             }
 
             var ret = new List<string>();
-            var sql = "select PN FROM PNProuctFamilyCache where (<ProductFamilyCond>)";
+            var sql = "select distinct PN FROM PNProuctFamilyCache where (<ProductFamilyCond>)";
             sql = sql.Replace("<ProductFamilyCond>", cond);
 
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);

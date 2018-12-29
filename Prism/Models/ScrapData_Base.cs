@@ -304,7 +304,10 @@ namespace Prism.Models
         public static Dictionary<string, Dictionary<string, double>> RetrieveAllOutputData()
         {
             var ret = new Dictionary<string, Dictionary<string, double>>();
-            var sql = "select Transaction_Value_Usd_1,PRODUCT_GROUP,CrtYear+' '+CrtQuarter from ScrapData_Base where Scrap_Or_Output= '<output>' order by PRODUCT_GROUP";
+
+            var coherentdict = PNProuctFamilyCache.GetPNDictByPF("COHERENT");
+
+            var sql = "select Transaction_Value_Usd_1,PRODUCT_GROUP,CrtYear+' '+CrtQuarter,ASSEMBLY from ScrapData_Base where Scrap_Or_Output= '<output>' order by PRODUCT_GROUP";
             sql = sql.Replace("<output>", SCRAPOUTPUTSCRAP.OUTPUT);
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
@@ -314,6 +317,11 @@ namespace Prism.Models
                     var output = Convert.ToDouble(line[0]);
                     var department = Convert.ToString(line[1]);
                     var quarter = Convert.ToString(line[2]);
+                    var assembly = Convert.ToString(line[3]);
+                    if (coherentdict.ContainsKey(assembly))
+                    {
+                        department = "COHERENT";
+                    }
                     if (ret.ContainsKey(department))
                     {
                         var qdict = ret[department];
@@ -343,6 +351,14 @@ namespace Prism.Models
             var ret = new Dictionary<string,ScrapData_Base>();
 
             var sql = "select PRODUCT,PRIMARY_QUANTITY_1,Transaction_Value_Usd_1 from ScrapData_Base  where  Scrap_Or_Output= '<output>' and PRODUCT_GROUP = '<PRODUCT_GROUP>' ";
+            if (string.Compare(dp, "COHERENT", true) == 0)
+            {
+                var pnlist = PNProuctFamilyCache.GetPNListByPF("COHERENT");
+                var pncond = "('" + string.Join("','", pnlist) + "')";
+                sql = "select PRODUCT,PRIMARY_QUANTITY_1,Transaction_Value_Usd_1 from ScrapData_Base  where  Scrap_Or_Output= '<output>' and ASSEMBLY in <pncond> ";
+                sql = sql.Replace("<pncond>", pncond);
+            }
+
             if (!string.IsNullOrEmpty(qt))
             {
                 sql += "and CrtYear+' '+CrtQuarter = '<quarter>'";
