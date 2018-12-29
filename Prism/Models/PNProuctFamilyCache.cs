@@ -171,6 +171,52 @@ namespace Prism.Models
             return ret;
         }
 
+        public static List<string> GetPNListByPF4JO(string pf)
+        {
+            var cond = "";
+            if (string.Compare(pf, "PARALLEL", true) == 0)
+            {
+                cond = " ProductFamily like 'PARALLEL%' and ProductFamily not like 'PARALLEL.SFPWIRE%' ";
+            }
+            else if (string.Compare(pf, "SFP+ WIRE", true) == 0
+                || string.Compare(pf, "SFP+WIRE", true) == 0)
+            {
+                cond = " ProductFamily like 'PARALLEL.SFPWIRE%' ";
+            }
+            else if (string.Compare(pf, "10G Tunable", true) == 0
+                || string.Compare(pf, "TUNABLE", true) == 0
+                || string.Compare(pf, "Telecom TRX", true) == 0
+                || string.Compare(pf, "OPTIUM", true) == 0)
+            {
+                cond = " ProductFamily like '10G Tunable BIDI%' or ProductFamily like 'T-XFP%' or ProductFamily like 'COHERENT%' ";
+            }
+            else if (string.Compare(pf, "LINECARD", true) == 0
+                || string.Compare(pf, "LNCD", true) == 0)
+            {
+                cond = " ProductFamily like 'Linecard%' ";
+            }
+            else if (string.Compare(pf, "EDFA", true) == 0
+                || string.Compare(pf, "RED-C", true) == 0)
+            {
+                cond = " ProductFamily like 'Linecard.EDFA%' ";
+            }
+            else
+            {
+                cond = " ProductFamily like '%" + pf + "%' ";
+            }
+
+            var ret = new List<string>();
+            var sql = "select PN FROM PNProuctFamilyCache where (<ProductFamilyCond>)";
+            sql = sql.Replace("<ProductFamilyCond>", cond);
+
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(Convert.ToString(line[0]));
+            }
+            return ret;
+        }
+
         public static Dictionary<string, bool> GetPNDictByPF(string pf)
         {
             var ret = new Dictionary<string, bool>();

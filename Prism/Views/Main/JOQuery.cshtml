@@ -1,0 +1,98 @@
+﻿
+@{
+    ViewBag.Title = "JOQuery";
+    Layout = "~/Views/Shared/_LayoutAdditional.cshtml";
+}
+
+<link type="text/css" rel="stylesheet" href="~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css" />
+<link type="text/css" rel="stylesheet" href="~/Scripts/jquery-autocomplete/jquery.auto-complete.css" />
+
+<script type="text/javascript" src="~/Scripts/jquery-autocomplete/jquery.auto-complete.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/joquery.js"></script>
+<script type="text/javascript">
+        $(function(){
+            JOQUERY.INIT();
+        })
+</script>
+
+<div class="row">
+    <div class="nav navbar-nav navbar-left">
+        <img src="~/Content/images/Yield.png" style="height:40px; width:40px">
+    </div>
+    <div class="nav navbar-nav navbar-left">
+        <ol class="breadcrumb" style="width:600px">
+            <li class="active">JO Query</li>
+        </ol>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+        <div class="v-container">
+            <div class="v-filter">
+                <div class="row row-margin">
+                    <label class="col-xs-2">Product</label>
+                    <div class="col-xs-4"><input class="form-control" type="text" id="SearchRange1" name="SearchRange1" placeholder="Product"/></div>
+                    <div class="col-xs-5"><div class="col-xs-2">or</div><div class="col-xs-10"><input class="form-control" type="text" id="PN" name="PN" placeholder="PN" /></div></div>
+                </div>
+                <div class="row row-margin">
+                    <label class="col-xs-2">Date Period</label>
+                    <div class="col-xs-3">
+                        <div class="input-group date" data-date=""
+                             data-date-format="yyyy-mm-dd">
+                            <input type="text" class="form-control"
+                                   id="sdate" name="sdate" value="" readonly>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-1 text-center">~</div>
+                    <div class="col-xs-3">
+                        <div class="input-group date" data-date=""
+                             data-date-format="yyyy-mm-dd">
+                            <input type="text" class="form-control"
+                                   id="edate" name="edate" value="" readonly>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-1 box-search">
+                        <button class="btn btn-primary" type="button" id="searchbtn" name="searchbtn">Search</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="v-content" id="chartdiv" style="margin-top:2%">
+            </div>
+
+            <div class="v-content" style="margin-top:2%">
+                <table class="table table-hover  table-condensed table-striped" id="jodatatable" style="margin-top:1%">
+                    <thead>
+                        <tr>
+                            <th>JO</th>
+                            <th>PN</th>
+                            <th>QTY</th>
+                            <th>Release Date</th>
+                            <th>JO Status</th>
+                            <th>SN Active</th>
+                            <th>SN Closed</th>
+                            <th>SN Hold</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jocontentid"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-1"></div>
+</div>
+
+

@@ -404,5 +404,103 @@ namespace Prism.Controllers
             return View("HeartBeat");
         }
 
+        public ActionResult JOQuery()
+        {
+            return View();
+        }
+
+        public JsonResult JOQueryProducts()
+        {
+            var pfdict = PNProuctFamilyCache.PFPNDict();
+            var pflist = pfdict.Keys.ToList();
+            var newlist = new List<string>();
+            foreach (var item in pflist)
+            {
+                if (item.ToUpper().Contains("PARALLEL"))
+                {
+                    newlist.Add(item);
+                }
+            }
+            newlist.Sort();
+            newlist.Add("10G Tunable BIDI");
+            newlist.Add("T-XFP");
+            newlist.Add("COHERENT");
+            var ret = new JsonResult();
+            ret.Data = new
+            {
+                pdlist = newlist
+            };
+            return ret;
+        }
+
+        public JsonResult JOQueryData()
+        {
+            var pdf = Request.Form["pdf"];
+            var pn = Request.Form["pn"];
+            var ssdate = Request.Form["sdate"];
+            var sedate = Request.Form["edate"];
+
+            var startdate = DateTime.Now;
+            var enddate = DateTime.Now;
+
+            if (!string.IsNullOrEmpty(ssdate) && !string.IsNullOrEmpty(sedate))
+            {
+                var sdate = DateTime.Parse(Request.Form["sdate"]);
+                var edate = DateTime.Parse(Request.Form["edate"]);
+                if (sdate < edate)
+                {
+                    startdate = DateTime.Parse(sdate.ToString("yyyy-MM-dd") + " 00:00:00");
+                    enddate = DateTime.Parse(edate.ToString("yyyy-MM-dd") + " 00:00:00").AddDays(1).AddSeconds(-1);
+                }
+                else
+                {
+                    startdate = DateTime.Parse(edate.ToString("yyyy-MM-dd") + " 00:00:00");
+                    enddate = DateTime.Parse(sdate.ToString("yyyy-MM-dd") + " 00:00:00").AddDays(1).AddSeconds(-1);
+                }
+            }
+            else
+            {
+                enddate = DateTime.Now;
+                startdate = DateTime.Now.AddDays(-7);
+            }
+
+            var title = "";
+            var pncond = "";
+            if (!string.IsNullOrEmpty(pdf))
+            {
+                var pnlist = PNProuctFamilyCache.GetPNListByPF4JO(pdf);
+                pncond = "('" + string.Join("','", pnlist) + "')";
+                title = pdf;
+            }
+            else
+            {
+                var pnlist = pn.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                pncond = "('" + string.Join("','", pnlist) + "')";
+                title = pn;
+            }
+
+            var retdata = JOVM.QueryJO(title,pncond, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"));
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            if (retdata.Count == 0)
+            {
+                ret.Data = new
+                {
+                    success = false
+                };
+            }
+            else
+            {
+                ret.Data = new
+                {
+                    success = true,
+                    jodatalist = retdata[0],
+                    joholddict = retdata[1],
+                    chartdata = retdata[2]
+                };
+            }
+            return ret;
+        }
+
     }
 }
