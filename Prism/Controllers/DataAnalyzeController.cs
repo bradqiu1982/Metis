@@ -93,6 +93,7 @@ namespace Prism.Controllers
             var serial = Request.Form["serial"];
             var srcdata = HPUMainData.RetrieveHPUDataBySerial(serial);
             var syscfg = CfgUtility.GetSysConfig(this);
+            var defseriallist = serial.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
 
             var hpuarray = new List<object>();
             try {
@@ -114,6 +115,16 @@ namespace Prism.Controllers
 
                     foreach (var sitem in seriallist)
                     {
+                        var defserial = "";
+                        foreach (var defs in defseriallist)
+                        {
+                            if (sitem.Contains(defs))
+                            {
+                                defserial = defs;
+                                break;
+                            }
+                        }
+
                         var xaxis = new List<string>();
                         foreach (var data in srcdata)
                         {
@@ -127,35 +138,24 @@ namespace Prism.Controllers
                         { continue; }
 
                         var yieldhpulist = GetHPUDataBySerial(sitem, xaxis, srcdata);
-                        var hpureduction = GetHPUReduction(yieldhpulist);
-                        
+                        //var hpureduction = GetHPUReduction(yieldhpulist);
 
                         var maxhpu = 0.0;
                         foreach (var yhp in yieldhpulist)
                         { if (yhp > maxhpu) { maxhpu = yhp; } }
 
-                        var maxhpureduction = 5.0;
-                        foreach (var hrd in hpureduction)
-                        { if (hrd > maxhpureduction) { maxhpureduction = hrd; } }
-                        var minhpureduction = 0.0;
-                        foreach (var hrd in hpureduction)
-                        { if (hrd < minhpureduction) { minhpureduction = hrd; } }
-
                         var defaultguideline = 5.0;
-                        if (syscfg.ContainsKey(sitem + "-GUIDELINE"))
+                        if (syscfg.ContainsKey(defserial + "-GUIDELINE"))
                         {
-                            defaultguideline = Convert.ToDouble(syscfg[sitem + "-GUIDELINE"]);
+                            defaultguideline = Convert.ToDouble(syscfg[defserial + "-GUIDELINE"]);
                         }
 
-                        var hpuguideline = new { name = "HPU Reduction Guideline", color = "#C9302C", data = defaultguideline, style = "dash" };
-
-                        var columncolors = new List<string>();
-                        foreach (var hrd in hpureduction)
+                        var targetline = new List<double>();
+                        var rate = 1.0;
+                        foreach (var hpu in yieldhpulist)
                         {
-                            if (hrd < defaultguideline)
-                            { columncolors.Add("#cc044d"); }
-                            else
-                            { columncolors.Add("#12cc92"); }
+                            targetline.Add(Math.Round(rate * yieldhpulist[0],3));
+                            rate = rate * (1-defaultguideline*0.01);
                         }
 
                         var title = sitem.Replace("-FG", "").Replace("- FG", "") + " HPU";
@@ -166,12 +166,8 @@ namespace Prism.Controllers
                             title = title,
                             xAxis = new { data = xaxis },
                             maxhpu = maxhpu,
-                            maxhpureduction = maxhpureduction,
-                            minhpureduction = minhpureduction,
-                            hpuguideline = hpuguideline,
-                            columncolors = columncolors,
-                            yieldhpu = new { name = "Yield HPU", data = yieldhpulist },
-                            hpureduction = new { name = "HPU Reduction", data = hpureduction },
+                            yieldhpu = new { name = "Actual HPU", data = yieldhpulist },
+                            hpureductiontarget = new { name = "HPU Reduce "+ defaultguideline.ToString("0")+ "% Target", data = targetline },
                             url = "/DataAnalyze/SerialHPU?defaultserial=" + sitem.Split(new string[] { "-FG", "- FG" },StringSplitOptions.RemoveEmptyEntries)[0]
                         };
 

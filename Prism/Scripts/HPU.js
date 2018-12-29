@@ -349,16 +349,16 @@
                 title: {
                     text: 'HPU Reduction (%)'
                 },
-                plotLines: [{
-                    value: line_data.hpuguideline.data,
-                    color: line_data.hpuguideline.color,
-                    dashStyle: line_data.hpuguideline.style,
-                    width: 2,
-                    label: {
-                        text: line_data.hpuguideline.name + ':' + line_data.hpuguideline.data,
-                        align: 'left'
-                    }
-                }]
+                //plotLines: [{
+                //    value: line_data.hpuguideline.data,
+                //    color: line_data.hpuguideline.color,
+                //    dashStyle: line_data.hpuguideline.style,
+                //    width: 2,
+                //    label: {
+                //        text: line_data.hpuguideline.name + ':' + line_data.hpuguideline.data,
+                //        align: 'left'
+                //    }
+                //}]
             }],
             plotOptions: {
                 series: {
@@ -390,20 +390,21 @@
                     colorByPoint: true
                 }
             },
-            colors : line_data.columncolors,
             series: [
                 {
                     name: line_data.yieldhpu.name,
                     type: 'line',
                     data: line_data.yieldhpu.data,
-                    yAxis: 0
+                    yAxis: 0,
+                    color: '#cc044d'
                 },
                 {
-                    name: line_data.hpureduction.name,
-                    type: 'column',
-                    data: line_data.hpureduction.data,
-                    yAxis: 1
-                }
+                    name: line_data.hpureductiontarget.name,
+                    type: 'line',
+                    data: line_data.hpureductiontarget.data,
+                    yAxis: 0,
+                    color: '#12cc92'
+                },
             ],
             exporting: {
                 menuItemDefinitions: {
