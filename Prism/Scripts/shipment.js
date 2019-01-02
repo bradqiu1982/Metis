@@ -96,7 +96,6 @@
 
     }
 
-
     var lbsdata = function () {
         $('.date').datepicker({ autoclose: true, viewMode: "months", minViewMode: "months" });
         
@@ -234,7 +233,7 @@
     {
         var datestr = event.point.category;
         var rate = col_data.rate
-        $('#waferval').html(datestr);
+        //$('#waferval').html(datestr);
 
         $.post('/Shipment/RetrieveVcselRMARawDataByMonth',
             {
@@ -297,14 +296,15 @@
                     buttons: ['copyHtml5', 'csv', 'excelHtml5']
                 });
 
+                $('#shipdistributiondetaillabel').html('Parallel' + ' ' + rate + ' ' + datestr + ' VCSEL RMA Summary');
                 $('#rmarawdata').modal('show')
             })
     }
 
     var showallrmadata = function (event, col_data) {
         var datestr = event.point.category;
-        var pdtype = col_data.producttype
-        $('#waferval').html(datestr);
+        var pdtype = col_data.producttype;
+        //$('#waferval').html(datestr);
 
         $.post('/Shipment/RetrieveRMARawDataByMonth',
             {
@@ -347,8 +347,54 @@
                     buttons: ['copyHtml5', 'csv', 'excelHtml5']
                 });
 
+                $('#shipdistributiondetaillabel').html(pdtype + ' ' + datestr + ' RMA Summary');
                 $('#rmarawdata').modal('show')
             })
+    }
+
+    var showshipoutdata4shipdistribution = function (event, col_data) {
+        var qt = event.point.category;
+        var dp = col_data.producttype;
+        $.post('/Shipment/ShipOutputDetailData',
+            {
+                dp: dp,
+                qt: qt
+            },
+            function (outputdata) {
+                if (myrmatable) {
+                    myrmatable.destroy();
+                }
+                $('#ramrawhead').empty();
+                $('#ramrawbody').empty();
+
+                var appendstr0 = '<tr>' +
+                        '<th>Product</th>' +
+                        '<th>QTY</th>' +
+                        '<th>Output</th>' +
+                        '</tr>';
+                $('#ramrawhead').append(appendstr0);
+
+                $.each(outputdata.shipoutlist, function (i, val) {
+                    var appendstr = '<tr>' +
+                        '<td>' + val.MarketFamily + '</td>' +
+                        '<td>' + val.ShipQty + '</td>' +
+                        '<td>' + val.Output + '</td>' +
+                        '</tr>';
+                    $('#ramrawbody').append(appendstr);
+                });
+
+                myrmatable = $('#myrmatable').DataTable({
+                    'iDisplayLength': 50,
+                    'aLengthMenu': [[20, 50, 100, -1],
+                    [20, 50, 100, "All"]],
+                    "aaSorting": [],
+                    "order": [],
+                    dom: 'lBfrtip',
+                    buttons: ['copyHtml5', 'csv', 'excelHtml5']
+                });
+                $('#shipdistributiondetaillabel').html(dp + ' ' + qt + ' Ship Info');
+                $('#rmarawdata').modal('show')
+            });
     }
 
     var showworkloadrmadata = function (event, col_data) {
@@ -576,9 +622,18 @@
                             {
                                 showvcesldata(event, col_data);
                             }
-                            if (event.point.series.name.indexOf('ALL RMA DPPM') != -1
+                            else if (event.point.series.name.indexOf('ALL RMA DPPM') != -1
                                 || event.point.series.name.indexOf('QUARTER RMA DPPM') != -1) {
                                 showallrmadata(event, col_data);
+                            }
+                            else
+                            {
+                                if (event.point.series.name.indexOf('DPPM') == -1
+                                    && col_data.title.indexOf('25G') == -1
+                                    && col_data.title.indexOf('10G_14G') == -1)
+                                {
+                                    showshipoutdata4shipdistribution(event, col_data);
+                                }
                             }
                         }
                     }
