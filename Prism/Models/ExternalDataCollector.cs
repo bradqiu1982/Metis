@@ -15,6 +15,7 @@ namespace Prism.Models
     {
         public static void LoadScrapData(Controller ctrl)
         {
+            var coherentdict = PNProuctFamilyCache.GetPNDictByPF("COHERENT");
             var syscfg = CfgUtility.GetSysConfig(ctrl);
             var srcfile = syscfg["SCRAPDATAFILE"];
             var desfile = DownloadShareFile(srcfile, ctrl);
@@ -65,6 +66,8 @@ namespace Prism.Models
                                 tempvm.JOB_PREFIX = line[15];
                                 tempvm.ORIGINAL_PROJECT_CODE = line[16];
                                 tempvm.PRODUCT_GROUP = line[17].Replace(",","");
+                                if (coherentdict.ContainsKey(tempvm.ASSEMBLY))
+                                { tempvm.PRODUCT_GROUP = "COHERENT"; }
                                 tempvm.PRODUCT = line[18].Replace(",", "");
                                 tempvm.JOB_POSTFIX = line[19];
                                 tempvm.PLM = line[20];
