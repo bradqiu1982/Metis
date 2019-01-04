@@ -404,6 +404,14 @@ namespace Prism.Controllers
             return View("HeartBeat");
         }
 
+        public ActionResult RefreshWaferData()
+        {
+            //var vcselpndict = CfgUtility.LoadVcselPNConfig(this);
+            WaferData.LoadAllWaferData(this);
+            return View("HeartBeat");
+        }
+
+
         public ActionResult JOQuery()
         {
             return View();

@@ -440,3 +440,84 @@ CREATE TABLE [dbo].[WebLog] (
 	[MSG]   NVARCHAR (MAX) DEFAULT ('') NOT NULL,
 	[UpdateTime]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL,
 );
+
+
+
+CREATE TABLE [dbo].[WaferData] (
+	[WaferNum]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[WaferPN]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Rate]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[WaferArray]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[WaferTech]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[WaferCount]   [INT] DEFAULT (1) NOT NULL,
+	[BuildDate]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL,
+	[Appv_1]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_2]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_3]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
+);
+
+CREATE TABLE [dbo].[WaferSNMap] (
+	[WaferNum]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[SN]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[SNDate]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL,
+	[Appv_1]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_2]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_3]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
+);
+
+
+CREATE TABLE [dbo].[VcselRMAData](
+	[SN] [nvarchar](200) NOT NULL,
+	[BuildDate] [datetime] NOT NULL,
+	[Wafer] [nvarchar](200) NOT NULL,
+	[PN] [nvarchar](200) NOT NULL,
+	[PNDesc] [nvarchar](300) NOT NULL,
+	[VcselPN] [nvarchar](200) NOT NULL,
+	[VcselType] [nvarchar](200) NOT NULL,
+	[ProductType] [nvarchar](200) NOT NULL,
+	[ShipDate] [datetime] NULL,
+	[RMAOpenDate] [datetime] NOT NULL,
+	[RMANum] [nvarchar](200) NOT NULL,
+	[Customer] [nvarchar](200) NOT NULL
+) ON [PRIMARY]
+
+GO
+
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [SN]
+GO
+
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('1982-05-06 10:00:00') FOR [BuildDate]
+GO
+
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [Wafer]
+GO
+
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [PN]
+GO
+
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [PNDesc]
+GO
+
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [VcselPN]
+GO
+
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [VcselType]
+GO
+
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [ProductType]
+GO
+
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('1982-05-06 10:00:00') FOR [ShipDate]
+GO
+
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('1982-05-06 10:00:00') FOR [RMAOpenDate]
+GO
+
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [RMANum]
+GO
+
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [Customer]
+GO
+
+
+

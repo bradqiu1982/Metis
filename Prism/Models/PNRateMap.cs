@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Web.Mvc;
 
 namespace Prism.Models
 {
     public class PNRateMap
     {
-        public static Dictionary<string,string> RetrievePNRateMap(List<string> pnlist)
+        public static Dictionary<string,string> RetrievePNRateMap(List<string> pnlist, Controller ctrl)
         {
             if (pnlist.Count == 0)
             { return new Dictionary<string, string>(); }
@@ -22,6 +23,15 @@ namespace Prism.Models
             var retobj = PN2MPn(pnsndict);
             var pn_mpn_dict = (Dictionary<string, List<string>>)retobj[0];
             var mpnratedict = (Dictionary<string, string>)retobj[1];
+
+            var mpnratefromcfg = CfgUtility.LoadVcselPNConfig(ctrl);
+            foreach (var cfgkv in mpnratefromcfg)
+            {
+                if (!mpnratedict.ContainsKey(cfgkv.Key))
+                {
+                    mpnratedict.Add(cfgkv.Key, cfgkv.Value.vrate);
+                }
+            }
 
             var pndesdict = pnpndesmap(pnlist);
 

@@ -61,7 +61,7 @@ namespace Prism.Models
                     item.StoreData();
                 }
 
-                RMARAWData.UpdatePNRate();
+                RMARAWData.UpdatePNRate(ctrl);
                 RMARAWData.UpdateProduct();
             }//end if
 
@@ -362,7 +362,7 @@ namespace Prism.Models
         //    return new List<RMADppmData>();
         //}
 
-        public static void UpdatePNRate()
+        public static void UpdatePNRate(Controller ctrl)
         {
             var sql = @"select distinct AppV_G from RMARAWData where AppV_AI='' and AppV_G <> '' and AppV_F like 'Parallel'";
             var pnlist = new List<string>();
@@ -371,7 +371,7 @@ namespace Prism.Models
             {
                 pnlist.Add(Convert.ToString(line[0]));
             }
-            var pnratemap = PNRateMap.RetrievePNRateMap(pnlist);
+            var pnratemap = PNRateMap.RetrievePNRateMap(pnlist, ctrl);
             foreach (var kv in pnratemap)
             {
                 sql = "update RMARAWData set AppV_AI = @AppV_AI where AppV_G=@AppV_G";

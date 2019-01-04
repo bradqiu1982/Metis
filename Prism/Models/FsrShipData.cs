@@ -1249,7 +1249,7 @@ namespace Prism.Models
                 //    { pnratedict.Add(pnmpnkv.Key,rate); }
                 //}
 
-                var pnratedict = PNRateMap.RetrievePNRateMap(pnsndict.Keys.ToList());
+                var pnratedict = PNRateMap.RetrievePNRateMap(pnsndict.Keys.ToList(),ctrl);
 
                 foreach (var item in shipdatalist)
                 {
@@ -1276,25 +1276,25 @@ namespace Prism.Models
             }//end if
         }
 
-        public static void UpdateShipDataRate()
-        {
-            var sql = "select distinct PN from FsrShipData where Configuration = 'PARALLEL' and VcselType = '' and PN <> ''";
-            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
-            var pnlist = new List<string>();
-            foreach (var line in dbret)
-            {
-                pnlist.Add(Convert.ToString(line[0]));
-            }
-            var pnratedict = PNRateMap.RetrievePNRateMap(pnlist);
-            foreach (var kv in pnratedict)
-            {
-                sql = "update FsrShipData set VcselType = @VcselType where PN = @PN";
-                var dict = new Dictionary<string, string>();
-                dict.Add("@PN", kv.Key);
-                dict.Add("@VcselType", kv.Value);
-                DBUtility.ExeLocalSqlNoRes(sql, dict);
-            }
-        }
+        //public static void UpdateShipDataRate()
+        //{
+        //    var sql = "select distinct PN from FsrShipData where Configuration = 'PARALLEL' and VcselType = '' and PN <> ''";
+        //    var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+        //    var pnlist = new List<string>();
+        //    foreach (var line in dbret)
+        //    {
+        //        pnlist.Add(Convert.ToString(line[0]));
+        //    }
+        //    var pnratedict = PNRateMap.RetrievePNRateMap(pnlist);
+        //    foreach (var kv in pnratedict)
+        //    {
+        //        sql = "update FsrShipData set VcselType = @VcselType where PN = @PN";
+        //        var dict = new Dictionary<string, string>();
+        //        dict.Add("@PN", kv.Key);
+        //        dict.Add("@VcselType", kv.Value);
+        //        DBUtility.ExeLocalSqlNoRes(sql, dict);
+        //    }
+        //}
 
         private static string Convert2Str(object obj)
         {

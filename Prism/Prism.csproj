@@ -235,6 +235,7 @@
     <Compile Include="Models\SearchVM.cs" />
     <Compile Include="Models\ShipLBSData.cs" />
     <Compile Include="Models\VcselRMAData.cs" />
+    <Compile Include="Models\WaferData.cs" />
     <Compile Include="Models\Website2Data.cs" />
     <Compile Include="Models\WebsiteToImage.cs" />
     <Compile Include="Models\YieldPreData.cs" />
@@ -865,6 +866,7 @@
     <Content Include="Scripts\NamePFMap.cfg" />
     <Content Include="Views\Shared\_LayoutAdditional.cshtml" />
     <Content Include="Views\Main\JOQuery.cshtml" />
+    <Content Include="Scripts\VcselPNMap.cfg" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

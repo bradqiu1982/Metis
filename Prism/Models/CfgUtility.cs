@@ -75,7 +75,7 @@ namespace Prism.Models
                         var val = kvpair[1].ToUpper().Trim();
                         if (!ret.ContainsKey(key))
                         {
-                            ret.Add(key,val);
+                            ret.Add(key, val);
                         }
                     }
                 }//end if
@@ -291,6 +291,38 @@ namespace Prism.Models
             return ret;
         }
 
+        public static Dictionary<string, VcselPNInfo> LoadVcselPNConfig(Controller ctrl)
+        {
+            var lines = System.IO.File.ReadAllLines(ctrl.Server.MapPath("~/Scripts/VcselPNMap.cfg"));
+            var ret = new Dictionary<string, VcselPNInfo>();
+            foreach (var line in lines)
+            {
+                if (line.Contains("##"))
+                {
+                    continue;
+                }
+
+                if (line.Contains(":::"))
+                {
+                    var kvpair = line.Split(new string[] { ":::" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (!ret.ContainsKey(kvpair[0].Trim()) && kvpair.Length > 1)
+                    {
+                        var vals = kvpair[1].ToUpper().Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
+                        if (vals.Length != 3)
+                        { continue; }
+
+                        var tempvm = new VcselPNInfo();
+                        tempvm.pn = kvpair[0].Trim();
+                        tempvm.varray = vals[0].Trim();
+                        tempvm.vrate = vals[1].Trim();
+                        tempvm.vtech = vals[2].Trim();
+                        ret.Add(kvpair[0].Trim(), tempvm);
+                    }
+                }//end if
+            }//end foreach
+            return ret;
+        }
+
         //public static Dictionary<string, string> GetNPIMachine(Controller ctrl)
         //{
         //    var lines = System.IO.File.ReadAllLines(ctrl.Server.MapPath("~/Scripts/npidepartmentmachine.cfg"));
@@ -315,4 +347,21 @@ namespace Prism.Models
         //}
 
     }
+
+    public class VcselPNInfo
+    {
+        public VcselPNInfo()
+        {
+            pn = "";
+            varray = "";
+            vrate = "";
+            vtech = "";
+        }
+
+        public string pn{set;get;}
+        public string varray { set; get; }
+        public string vrate { set; get; }
+        public string vtech { set; get; }
+    }
+
 }
