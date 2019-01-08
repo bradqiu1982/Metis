@@ -456,10 +456,12 @@ CREATE TABLE [dbo].[WaferData] (
 	[Appv_3]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
 );
 
+
 CREATE TABLE [dbo].[WaferSNMap] (
 	[WaferNum]   NVARCHAR (200) DEFAULT ('') NOT NULL,
 	[SN]   NVARCHAR (200) DEFAULT ('') NOT NULL,
 	[SNDate]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL,
+	[SNWorkFlowName]   NVARCHAR (200) DEFAULT ('') NOT NULL,
 	[Appv_1]   NVARCHAR (200) DEFAULT ('') NOT NULL,
 	[Appv_2]   NVARCHAR (200) DEFAULT ('') NOT NULL,
 	[Appv_3]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
@@ -474,6 +476,8 @@ CREATE TABLE [dbo].[VcselRMAData](
 	[PNDesc] [nvarchar](300) NOT NULL,
 	[VcselPN] [nvarchar](200) NOT NULL,
 	[VcselType] [nvarchar](200) NOT NULL,
+	[VcselArray] [nvarchar](200) NOT NULL,
+	[VcselTech] [nvarchar](200) NOT NULL,
 	[ProductType] [nvarchar](200) NOT NULL,
 	[ShipDate] [datetime] NULL,
 	[RMAOpenDate] [datetime] NOT NULL,
@@ -504,6 +508,12 @@ GO
 ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [VcselType]
 GO
 
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [VcselArray]
+GO
+
+ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [VcselTech]
+GO
+
 ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [ProductType]
 GO
 
@@ -518,6 +528,7 @@ GO
 
 ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [Customer]
 GO
+
 
 
 

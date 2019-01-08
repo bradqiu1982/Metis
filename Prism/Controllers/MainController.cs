@@ -150,6 +150,21 @@ namespace Prism.Controllers
                 }
                 catch (Exception ex) { }
 
+                if (DateTime.Now.DayOfWeek == DayOfWeek.Monday
+                    || DateTime.Now.DayOfWeek == DayOfWeek.Thursday)
+                {
+                    try
+                    {
+                        WaferData.LoadWaferDataIn3Month(this);
+                    }
+                    catch (Exception ex) { }
+                }
+
+                try
+                {
+                    VcselRMAData.LoadVCSELRMA(this);
+                }
+                catch (Exception ex) { }
 
             }//end only run once
 
@@ -407,10 +422,18 @@ namespace Prism.Controllers
         public ActionResult RefreshWaferData()
         {
             //var vcselpndict = CfgUtility.LoadVcselPNConfig(this);
+            //WaferData.LoadWaferData("165113-20", vcselpndict);
+            //WaferData.LoadWaferData("162614-30", vcselpndict);
+            //WaferData.LoadWaferData("163815-30", vcselpndict);
             WaferData.LoadAllWaferData(this);
             return View("HeartBeat");
         }
 
+        public ActionResult RefreshVcselRMAData()
+        {
+            VcselRMAData.LoadVCSELRMA(this);
+            return View("HeartBeat");
+        }
 
         public ActionResult JOQuery()
         {

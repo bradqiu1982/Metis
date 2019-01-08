@@ -1,0 +1,116 @@
+﻿
+@{
+    ViewBag.Title = "VCSEL SHIPMENT DPPM";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link type="text/css" rel="stylesheet" href="~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css" />
+<link type="text/css" rel="stylesheet" href="~/Scripts/jquery-autocomplete/jquery.auto-complete.css" />
+<link type="text/css" rel="stylesheet" href="~/Content/shipment.css" />
+<link type="text/css" rel="stylesheet" href="~/Scripts/tooltipster/css/tooltipster.bundle.min.css" />
+
+<script type="text/javascript" src="~/Scripts/jquery-autocomplete/jquery.auto-complete.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+<script type="text/javascript" src="~/Scripts/tooltipster/js/tooltipster.bundle.min.js"></script>
+
+<script type="text/javascript" src="~/Scripts/VcselData.js"></script>
+<script type="text/javascript">
+        $(function(){
+            VcselData.SHIPDPPMINIT();
+        })
+</script>
+
+
+<div class="row">
+    <div class="nav navbar-nav navbar-left">
+        <img src="~/Content/images/Yield.png" style="height:40px; width:40px">
+    </div>
+    <div class="nav navbar-nav navbar-left">
+        <ol class="breadcrumb" style="width:600px">
+            <li class="active">VCSEL SHIPMENT DPPM</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <nav class="col-xs-2 nav-sidebar">
+        <ul class="nav">
+            <li class="active">
+                <a href="/VCSEL/VCSELShipmentDppm">
+                    <span class="item-show">VCSEL SHIPMENT DPPM</span>
+                </a>
+            </li>
+            <li>
+                <a href="/VCSEL/VCSELWaferDppm">
+                    <span class="item-show">VCSEL WAFER DPPM</span>
+                </a>
+            </li>
+            <li>
+                <a href="/VCSEL/VCSELStatistic">
+                    <span class="item-show">VCSEL RMA STATISTIC</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <div class="col-xs-10">
+        <div class="v-container">
+            <div class="v-filter">
+                <div class="row row-margin">
+                    <label class="col-xs-1">Date Period</label>
+                    <div class="col-xs-3">
+                        <div class="input-group date" data-date=""
+                             data-date-format="yyyy-mm">
+                            <input type="text" class="form-control"
+                                   id="sdate" name="sdate" value="" readonly>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-1 text-center">~</div>
+                    <div class="col-xs-3">
+                        <div class="input-group date" data-date=""
+                             data-date-format="yyyy-mm">
+                            <input type="text" class="form-control"
+                                   id="edate" name="edate" value="" readonly>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-1 box-search">
+                        <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
+                    </div>
+                </div>
+            </div>
+            <div class="v-content">
+            </div>
+        </div>
+    </div>
+    <div class="hidden">
+        <a id="exportLink"></a>
+    </div>
+</div>
+
+<div class="modal fade" id="rmarawdata" tabindex="-1" role="dialog" style="margin-top:10%">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="shipdistributiondetaillabel"></h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="padding-left:15px;padding-right:15px;">
+                    <table class="table table-hover table-striped" id="myrmatable">
+                        <thead id="ramrawhead" name="ramrawhead"></thead>
+                        <tbody id="ramrawbody" name="ramrawbody"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
