@@ -318,11 +318,16 @@ namespace Prism.Models
         public static Dictionary<string, int> RetriveWaferTechCountDict()
         {
             var ret = new Dictionary<string, int>();
-            var sql = "select WaferTech,WaferCount from WaferData";
+            var sql = "select WaferTech,WaferCount,Rate from WaferData";
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
                 var tech = Convert.ToString(line[0]);
+                var rate = Convert.ToString(line[2]);
+                if (string.Compare(tech, "MESA", true) == 0 &&
+                    (rate.Contains("10G") || rate.Contains("14G")))
+                { continue; }
+
                 var wafercount = Convert.ToInt32(line[1]);
                 if (!ret.ContainsKey(tech))
                 {
@@ -331,6 +336,27 @@ namespace Prism.Models
                 else
                 {
                     ret[tech] += wafercount;
+                }
+            }
+            return ret;
+        }
+
+        public static Dictionary<string, int> RetriveWaferArrayCountDict()
+        {
+            var ret = new Dictionary<string, int>();
+            var sql = "select WaferArray,WaferCount from WaferData where Rate='25G'";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var ary = Convert.ToString(line[0]);
+                var wafercount = Convert.ToInt32(line[1]);
+                if (!ret.ContainsKey(ary))
+                {
+                    ret.Add(ary, wafercount);
+                }
+                else
+                {
+                    ret[ary] += wafercount;
                 }
             }
             return ret;

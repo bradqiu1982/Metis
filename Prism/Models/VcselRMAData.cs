@@ -313,15 +313,45 @@ namespace Prism.Models
         public static Dictionary<string, int> RetrieveVcselTechDict()
         {
             var ret = new Dictionary<string, int>();
-            var sql = "select count(*) as cnt,VcselTech from [BSSupport].[dbo].[VcselRMAData] group by VcselTech";
+            var sql = " select count(*) as cnt,VcselTech,VcselType from [BSSupport].[dbo].[VcselRMAData] group by VcselTech,VcselType";
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
-                var wafer = Convert.ToString(line[1]);
+                
+                var tech = Convert.ToString(line[1]);
+                var rate = Convert.ToString(line[2]);
+                if (string.Compare(tech, "MESA", true) == 0 &&
+                    (rate.Contains("10G") || rate.Contains("14G")))
+                { continue; }
                 var cnt = Convert.ToInt32(line[0]);
-                if (!ret.ContainsKey(wafer))
+                if (!ret.ContainsKey(tech))
                 {
-                    ret.Add(wafer, cnt);
+                    ret.Add(tech, cnt);
+                }
+                else
+                {
+                    ret[tech] += cnt;
+                }
+            }
+            return ret;
+        }
+
+        public static Dictionary<string, int> RetrieveVcselArrayDict()
+        {
+            var ret = new Dictionary<string, int>();
+            var sql = "select count(*) as cnt,VcselArray,VcselType from [BSSupport].[dbo].[VcselRMAData] group by VcselArray,VcselType";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var rate = Convert.ToString(line[2]);
+                if (!rate.Contains("25G"))
+                { continue; }
+
+                var ary = Convert.ToString(line[1]);
+                var cnt = Convert.ToInt32(line[0]);
+                if (!ret.ContainsKey(ary))
+                {
+                    ret.Add(ary, cnt);
                 }
             }
             return ret;

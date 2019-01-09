@@ -11,6 +11,10 @@ namespace Prism.Controllers
     {
         public ActionResult VCSELShipmentDppm()
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "ShipmentData"))
+            {
+                return RedirectToAction("Index", "Main");
+            }
             return View();
         }
 
@@ -134,7 +138,9 @@ namespace Prism.Controllers
                     name = "VCSEL RMA DPPM",
                     type = "line",
                     data = ddata,
-                    yAxis = 1
+                    yAxis = 1,
+                    color = "#f7a35c",
+                    lineWidth = 4
                 });
             }
 
@@ -215,6 +221,10 @@ namespace Prism.Controllers
 
         public ActionResult VCSELWaferDppm()
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "ShipmentData"))
+            {
+                return RedirectToAction("Index", "Main");
+            }
             return View();
         }
 
@@ -327,12 +337,17 @@ namespace Prism.Controllers
 
         public ActionResult VCSELStatistic()
         {
+            if (!MachineUserMap.IsLxEmployee(Request.UserHostName, null, 9, "ShipmentData"))
+            {
+                return RedirectToAction("Index", "Main");
+            }
             return View();
         }
 
         public JsonResult VCSELStatisticData()
         {
             var vcseltech = VcselTechDppm();
+            var vcselarray = VcselArrayDppm();
             var vcselvstime = VcselVSTimeData();
             var milestone = VcselRMAMileStoneData();
             var ret = new JsonResult();
@@ -341,6 +356,7 @@ namespace Prism.Controllers
             {
                 success = true,
                 vcseltechdata = vcseltech,
+                vcselarraydata = vcselarray,
                 shipdatedata = vcselvstime[0],
                 accumulatedata =vcselvstime[1],
                 vcsel_milestone = milestone
@@ -470,7 +486,8 @@ namespace Prism.Controllers
                 rmashipchartdata.Add(new
                 {
                     name = kv.Key + " Failure",
-                    data = kv.Value
+                    data = kv.Value,
+                    lineWidth = 3
                 });
             }
 
@@ -488,7 +505,8 @@ namespace Prism.Controllers
                     rmaaccudata.Add(new
                     {
                         name = kv.Key + " accu",
-                        data = templist
+                        data = templist,
+                        lineWidth = 3
                     });
                 }
             }
@@ -745,6 +763,19 @@ namespace Prism.Controllers
                 techlist.Insert(0, "PLANAR");
             }
 
+            var tempxlist = new List<string>();
+            foreach (var x in techlist)
+            {
+                if (x.Contains("PLANAR"))
+                {
+                    tempxlist.Add("10G/14G PLANAR");
+                }
+                else
+                {
+                    tempxlist.Add("25G " + x);
+                }
+            }
+
             var shiplist = new List<double>();
             var dppmlist = new List<double>();
 
@@ -767,12 +798,51 @@ namespace Prism.Controllers
             return new
             {
                 id = "vcsel_tech_dppm",
-                title = "VCSEL TECH DPPM",
-                xlist = techlist,
+                title = "VCSEL TECH DPPM FROM 2016",
+                xlist = tempxlist,
                 series = serial
             };
         }
 
+
+        public object VcselArrayDppm()
+        {
+            var arrayshipdata = WaferData.RetriveWaferArrayCountDict();
+            var arrayrmadata = VcselRMAData.RetrieveVcselArrayDict();
+            var arraylist = arrayshipdata.Keys.ToList();
+            arraylist.Sort(delegate(string obj1,string obj2) {
+                var v1 = Convert.ToInt32(obj1.Split(new string[] { "X", "x" }, StringSplitOptions.RemoveEmptyEntries)[1]);
+                var v2 = Convert.ToInt32(obj2.Split(new string[] { "X", "x" }, StringSplitOptions.RemoveEmptyEntries)[1]);
+                return v1.CompareTo(v2);
+            });
+
+            var shiplist = new List<double>();
+            var dppmlist = new List<double>();
+
+            foreach (var ary in arraylist)
+            {
+                shiplist.Add(arrayshipdata[ary]);
+                if (arrayrmadata.ContainsKey(ary))
+                {
+                    dppmlist.Add(Math.Round((double)arrayrmadata[ary] / (double)arrayshipdata[ary] * 1000000, 0));
+                }
+                else
+                {
+                    dppmlist.Add(0);
+                }
+            }
+
+            var serial = new List<object>();
+            serial.Add(new { name = "ship count", data = shiplist, type = "column", yAxis = 1 });
+            serial.Add(new { name = "vcsel dppm", data = dppmlist, type = "line" });
+            return new
+            {
+                id = "vcsel_array_dppm",
+                title = "VCSEL 25G ARRAY DPPM FROM 2016",
+                xlist = arraylist,
+                series = serial
+            };
+        }
 
     }
 }

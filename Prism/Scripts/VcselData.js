@@ -464,6 +464,12 @@
                     drawvcseltechdppm(output.vcseltechdata);
 
                     appendstr = '<div class="col-xs-12">' +
+                                   '<div class="v-box" id="' + output.vcselarraydata.id + '"></div>' +
+                                   '</div>';
+                    $('.v-content').append(appendstr);
+                    drawvcseltechdppm(output.vcselarraydata);
+
+                    appendstr = '<div class="col-xs-12">' +
                                    '<div class="v-box" id="' + output.shipdatedata.id + '"></div>' +
                                    '</div>';
                     $('.v-content').append(appendstr);
