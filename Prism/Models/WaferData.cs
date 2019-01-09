@@ -362,14 +362,16 @@ namespace Prism.Models
             return ret;
         }
 
-        public static List<string> RetrieveDistinctWaferListASC(string rate)
+        public static List<string> RetrieveDistinctWaferListASC(string rate, string startdate,string enddate)
         {
             var ret = new List<string>();
             var wdict = new Dictionary<string, bool>();
-            var sql = "select WaferNum,BuildDate,Rate from WaferData ";
+            var sql = "select WaferNum,BuildDate,Rate from WaferData where BuildDate > '<startdate>' and  BuildDate < '<enddate>'";
+            sql = sql.Replace("<startdate>", startdate).Replace("<enddate>", enddate);
+
             if (!string.IsNullOrEmpty(rate.Trim()))
             {
-                sql = sql + "  where Rate = '<Rate>'  ";
+                sql = sql + "  and Rate = '<Rate>'  ";
                 sql = sql.Replace("<Rate>", rate);
             }
             sql = sql + " order by BuildDate ASC";

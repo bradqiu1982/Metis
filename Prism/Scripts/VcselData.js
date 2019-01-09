@@ -261,7 +261,12 @@
 
 
     var vcselwaferdppm = function () {
+        $('.date').datepicker({ autoclose: true, viewMode: "months", minViewMode: "months" });
+
         function searchdata() {
+            var sdate = $.trim($('#sdate').val());
+            var edate = $.trim($('#edate').val());
+
             var options = {
                 loadingTips: "loading data......",
                 backgroundColor: "#aaa",
@@ -273,6 +278,8 @@
             $.bootstrapLoading.start(options);
 
             $.post('/VCSEL/VCSELWaferDppmData', {
+                sdate: sdate,
+                edate: edate
                 }, function (output) {
                     $.bootstrapLoading.end();
 
@@ -291,6 +298,10 @@
                 }
             })
         }
+
+        $('body').on('click', '#btn-search', function () {
+            searchdata();
+        })
 
         $(function () {
             searchdata();

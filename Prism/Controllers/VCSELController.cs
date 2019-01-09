@@ -239,12 +239,43 @@ namespace Prism.Controllers
 
         public JsonResult VCSELWaferDppmData()
         {
+            var ssdate = Request.Form["sdate"];
+            var sedate = Request.Form["edate"];
+            var startdate = DateTime.Now;
+            var enddate = DateTime.Now;
+            if (!string.IsNullOrEmpty(ssdate) && !string.IsNullOrEmpty(sedate))
+            {
+                var sdate = DateTime.Parse(Request.Form["sdate"]);
+                var edate = DateTime.Parse(Request.Form["edate"]);
+                if (sdate < edate)
+                {
+                    startdate = DateTime.Parse(sdate.ToString("yyyy-MM") + "-01 00:00:00");
+                    enddate = DateTime.Parse(edate.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
+                }
+                else
+                {
+                    startdate = DateTime.Parse(edate.ToString("yyyy-MM") + "-01 00:00:00");
+                    enddate = DateTime.Parse(sdate.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
+                }
+
+                if (startdate < DateTime.Parse("2016-01-01 00:00:00"))
+                { startdate = DateTime.Parse("2016-01-01 00:00:00"); }
+
+                if (enddate < DateTime.Parse("2016-01-01 00:00:00"))
+                { enddate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1); }
+            }
+            else
+            {
+                startdate = DateTime.Parse("2016-01-01 00:00:00");
+                enddate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM") + "-01 00:00:00").AddMonths(1).AddSeconds(-1);
+            }
+
             var ratechartlist = new List<object>();
 
-            var ratelist = VcselRMAData.RetrieveRateList();
+            var ratelist = VcselRMAData.RetrieveRateList(startdate.ToString("yyyy-MM-dd HH:mm:ss"),enddate.ToString("yyyy-MM-dd HH:mm:ss"));
             foreach (var rate in ratelist)
             {
-                var dppmlist = VcselRMASum.RetrieveVcselDPPM(rate);
+                var dppmlist = VcselRMASum.RetrieveVcselDPPM(rate, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"));
 
                 var xdatalist = new List<string>();
                 var dppmdatalist = new List<double>();
@@ -275,14 +306,17 @@ namespace Prism.Controllers
                         }
                         idx = idx + 1.0;
                     }
-                    plotbands.Add(
-                        new
-                        {
-                            color = "#00b050",
-                            from = from,
-                            to = to,
-                        }
-                        );
+                    if (to != 0.0)
+                    {
+                        plotbands.Add(
+                            new
+                            {
+                                color = "#00b050",
+                                from = from,
+                                to = to,
+                            }
+                            );
+                    }
                 }
 
                 var xAxis = new

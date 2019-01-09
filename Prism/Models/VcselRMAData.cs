@@ -434,10 +434,12 @@ namespace Prism.Models
             return ret;
         }
 
-        public static List<string> RetrieveRateList()
+        public static List<string> RetrieveRateList(string startdate,string enddate)
         {
             var ret = new List<string>();
-            var sql = "select distinct VcselType from VcselRMAData";
+            var sql = "select distinct VcselType from VcselRMAData where BuildDate > '<startdate>' and  BuildDate < '<enddate>'";
+            sql = sql.Replace("<startdate>", startdate).Replace("<enddate>", enddate);
+
             var dbret = DBUtility.ExeLocalSqlWithRes(sql,null);
             foreach (var line in dbret)
             {
@@ -531,11 +533,11 @@ namespace Prism.Models
             };
         }
 
-        public static List<VcselRMADPPM> RetrieveVcselDPPM(string rate)
+        public static List<VcselRMADPPM> RetrieveVcselDPPM(string rate,string startdate,string enddate)
         {
             var ret = new List<VcselRMADPPM>();
 
-            var wlist = WaferData.RetrieveDistinctWaferListASC(rate);
+            var wlist = WaferData.RetrieveDistinctWaferListASC(rate, startdate, enddate);
             var rmacntdict = VcselRMAData.RetrieveWaferCountDict();
             var wafercntdict = WaferData.RetriveWaferCountDict();
             foreach (var wf in wlist)
