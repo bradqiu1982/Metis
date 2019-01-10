@@ -166,6 +166,7 @@ namespace Prism.Controllers
                 }
                 catch (Exception ex) { }
 
+                heartbeatlog("Heart Beat one day end", filename);
             }//end only run once
 
             heartbeatlog("Heart Beat Start", filename);
@@ -421,11 +422,10 @@ namespace Prism.Controllers
 
         public ActionResult RefreshWaferData()
         {
-            //var vcselpndict = CfgUtility.LoadVcselPNConfig(this);
-            //WaferData.LoadWaferData("165113-20", vcselpndict);
-            //WaferData.LoadWaferData("162614-30", vcselpndict);
-            //WaferData.LoadWaferData("163815-30", vcselpndict);
-            WaferData.LoadAllWaferData(this);
+            var vcselpndict = CfgUtility.LoadVcselPNConfig(this);
+            WaferData.LoadWaferData("150814-40", vcselpndict);
+
+            //WaferData.LoadAllWaferData(this);
             return View("HeartBeat");
         }
 

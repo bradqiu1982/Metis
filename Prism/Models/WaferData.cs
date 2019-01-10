@@ -153,7 +153,7 @@ namespace Prism.Models
                 sql = @"select  distinct c.ContainerName FROM InsiteDB.insite.container c 
 		                left join InsiteDB.insite.historyMainline hml with (nolock) on c.containerId = hml.containerId 
 		                left join InsiteDB.insite.workflowstep ws(nolock) on  hml.WorkflowStepId = ws.WorkflowStepId 
-		                 where c.ContainerName in <sncond> and ws.WorkflowStepName = 'Shipping'";
+		                 where c.ContainerName in <sncond> and ( ws.WorkflowStepName = 'Shipping' or ws.WorkflowStepName = 'Main Store')";
                 sql = sql.Replace("<sncond>", sncond);
                 dbret = DBUtility.ExeMESSqlWithRes(sql);
                 foreach (var line in dbret)
@@ -193,7 +193,7 @@ namespace Prism.Models
                      left join InsiteDB.insite.container co on co.ContainerId = c.IssuedToContainerId 
                      left join InsiteDB.insite.historyMainline nhml with (nolock) on co.containerId = nhml.containerId 
                      left join InsiteDB.insite.workflowstep nws(nolock) on  nhml.WorkflowStepId = nws.WorkflowStepId 
-                     where c.ContainerName in  <sncond>  and  nws.WorkflowStepName  = 'Shipping'";
+                     where c.ContainerName in  <sncond>  and  (nws.WorkflowStepName  = 'Shipping' or nws.WorkflowStepName  = 'Main Store')";
 
                 sql = sql.Replace("<sncond>", sncond);
                 dbret = DBUtility.ExeMESSqlWithRes(sql);
