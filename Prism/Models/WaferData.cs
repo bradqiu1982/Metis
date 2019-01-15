@@ -57,7 +57,7 @@ namespace Prism.Models
 
             var tempvm = new WaferData();
 
-            var sql = @"SELECT distinct c.ContainerName,pb.productname MaterialPN,hml.MfgDate,ws.WorkflowStepName
+            var sql = @"SELECT distinct c.ContainerName,pb.productname MaterialPN,hml.MfgDate,ws.WorkflowStepName,pbb.ProductName ProductPN
                         FROM InsiteDB.insite.container c with (nolock) 
                         left join InsiteDB.insite.currentStatus cs (nolock) on c.currentStatusId = cs.currentStatusId 
                         left join InsiteDB.insite.workflowstep ws(nolock) on  cs.WorkflowStepId = ws.WorkflowStepId 
@@ -95,6 +95,7 @@ namespace Prism.Models
                 
                 var sn = Convert.ToString(line[0]);
                 var workstepname = Convert.ToString(line[3]).ToUpper();
+                var ppn = Convert.ToString(line[4]);
                 if (!sndict.ContainsKey(sn))
                 {
                     sndict.Add(sn, true);
@@ -107,6 +108,7 @@ namespace Prism.Models
                         var tempval = new WaferData();
                         tempval.BuildDate = builddate;
                         tempval.SNWorkFlowName = workstepname;
+                        tempval.SNPN = ppn;
                         shipsndict.Add(sn, tempval);
                     }
                     else
@@ -114,6 +116,7 @@ namespace Prism.Models
                         var tempval = new WaferData();
                         tempval.BuildDate = builddate;
                         tempval.SNWorkFlowName = workstepname;
+                        tempval.SNPN = ppn;
                         undefinesndict.Add(sn, tempval);
                     }
                 }
@@ -123,9 +126,16 @@ namespace Prism.Models
             {
                 var combinsndict = new Dictionary<string, List<string>>();
                 var sncond = "('" + string.Join("','", undefinesndict.Keys.ToList()) + "')";
-                sql = "select ToContainer,FromContainer FROM [PDMS].[dbo].[ComponentIssueSummary] where FromContainer in <sncond> and ToContainer is not null and FromContainer is not null order by IssueDate desc";
+                //sql = "select ToContainer,FromContainer FROM [PDMS].[dbo].[ComponentIssueSummary] where FromContainer in <sncond> and ToContainer is not null and FromContainer is not null order by IssueDate desc";
+                sql = @"select  co.ContainerName ToContainer,fc.ContainerName FromContainer from insitedb.insite.ComponentIssueHistory cih with(nolock) 
+                        inner join insitedb.insite.Historymainline hml  with(nolock) on hml.HistoryMainlineId = cih.historymainlineid  
+                        inner join insitedb.insite.IssueHistoryDetail  ihd with(nolock) on ihd.ComponentIssueHistoryId= cih.ComponentIssueHistoryId 
+                        inner join insitedb.insite.IssueActualsHistory iah with(nolock) on iah.IssueHistoryDetailId=ihd.IssueHistoryDetailId 
+                        inner join  InsiteDB.insite.container co (nolock) on co.containerid=hml.HistoryId 
+                        inner join  InsiteDB.insite.container fc (nolock) on fc.ContainerId=iah.FromContainerId 
+                        where fc.ContainerName in <sncond>  and co.ContainerName is not null and fc.ContainerName is not null order by hml.MfgDate desc";
                 sql = sql.Replace("<sncond>", sncond);
-                dbret = DBUtility.ExeMESReportMasterSqlWithRes(sql);
+                dbret = DBUtility.ExeMESSqlWithRes(sql);
                 foreach (var line in dbret)
                 {
                     var csn = Convert.ToString(line[0]);
@@ -221,14 +231,14 @@ namespace Prism.Models
                 tempvm.StoreData();
                 foreach (var kv in shipsndict)
                 {
-                    StoreWafeSNMap(Wafer, kv.Key, kv.Value.BuildDate,kv.Value.SNWorkFlowName);
+                    StoreWafeSNMap(Wafer, kv.Key, kv.Value.BuildDate,kv.Value.SNWorkFlowName,kv.Value.SNPN);
                 }
 
                 foreach (var kv in undefinesndict)
                 {
                     if (!shipsndict.ContainsKey(kv.Key))
                     {
-                        StoreWafeSNMap(Wafer, kv.Key, kv.Value.BuildDate, kv.Value.SNWorkFlowName);
+                        StoreWafeSNMap(Wafer, kv.Key, kv.Value.BuildDate, kv.Value.SNWorkFlowName, kv.Value.SNPN);
                     }
                 }
             }
@@ -259,14 +269,15 @@ namespace Prism.Models
             DBUtility.ExeLocalSqlNoRes(sql, dict);
         }
 
-        private static void StoreWafeSNMap(string wafer, string sn, string sndate,string workname)
+        private static void StoreWafeSNMap(string wafer, string sn, string sndate,string workname,string snpn)
         {
-            var sql = "insert into WaferSNMap(WaferNum,SN,SNDate,SNWorkFlowName) values(@WaferNum,@SN,@SNDate,@SNWorkFlowName)";
+            var sql = "insert into WaferSNMap(WaferNum,SN,SNDate,SNWorkFlowName,Appv_1) values(@WaferNum,@SN,@SNDate,@SNWorkFlowName,@SNPN)";
             var dict = new Dictionary<string, string>();
             dict.Add("@WaferNum", wafer);
             dict.Add("@SN", sn);
             dict.Add("@SNDate", sndate);
             dict.Add("@SNWorkFlowName", workname);
+            dict.Add("@SNPN", snpn);
             DBUtility.ExeLocalSqlNoRes(sql, dict);
         }
 
@@ -389,7 +400,6 @@ namespace Prism.Models
             return ret;
         }
 
-
         public WaferData()
         {
             WaferNum = "";
@@ -417,5 +427,6 @@ namespace Prism.Models
         public string SN { set; get; }
         public string SNDate { set; get; }
         public string SNWorkFlowName { set; get; }
+        public string SNPN { set; get; }
     }
 }

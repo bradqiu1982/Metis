@@ -524,6 +524,14 @@ namespace Prism.Models
         public static object GetScrapTable(List<ScrapData_Base> onepddata, string pd, bool fordepartment)
         {
             var sumdata = SCRAPSUMData.GetSumDataFromRawDataByQuarter(onepddata);
+            var outputzerokeys = new List<string>();
+            foreach (var kv in sumdata)
+            {
+                if (kv.Value.output == 0)
+                { outputzerokeys.Add(kv.Key); }
+            }
+            foreach (var k in outputzerokeys)
+            { sumdata.Remove(k); }
 
             var qlist = sumdata.Keys.ToList();
             qlist.Sort(delegate (string obj1, string obj2)

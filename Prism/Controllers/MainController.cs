@@ -423,7 +423,7 @@ namespace Prism.Controllers
         public ActionResult RefreshWaferData()
         {
             var vcselpndict = CfgUtility.LoadVcselPNConfig(this);
-            WaferData.LoadWaferData("150814-40", vcselpndict);
+            WaferData.LoadWaferData("151723-10", vcselpndict);
 
             //WaferData.LoadAllWaferData(this);
             return View("HeartBeat");

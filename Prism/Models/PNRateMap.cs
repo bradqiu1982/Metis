@@ -139,9 +139,18 @@ namespace Prism.Models
             var sncond = sb.ToString(0, sb.Length - 2) + ")";
 
             var snmpndict = new Dictionary<string, List<string>>();
-            var csql = "select distinct  [ToContainer],[FromProductName],FromPNDescription FROM [PDMS].[dbo].[ComponentIssueSummary] where [ToContainer] in <sncond>";
+            //var csql = "select distinct  [ToContainer],[FromProductName],FromPNDescription FROM [PDMS].[dbo].[ComponentIssueSummary] where [ToContainer] in <sncond>";
+
+            var csql = @"select distinct co.ContainerName ToContainer,pb.ProductName FromProductName, p.Description FromPNDescription from insitedb.insite.ComponentIssueHistory cih with(nolock) 
+                        inner join insitedb.insite.Historymainline hml  with(nolock) on hml.HistoryMainlineId = cih.historymainlineid  
+                        inner join insitedb.insite.IssueHistoryDetail  ihd with(nolock) on ihd.ComponentIssueHistoryId= cih.ComponentIssueHistoryId 
+                        inner join insitedb.insite.IssueActualsHistory iah with(nolock) on iah.IssueHistoryDetailId=ihd.IssueHistoryDetailId 
+                        inner join insitedb.insite.Product p with(nolock) on p.ProductId  = ihd.ProductId 
+                        inner join insitedb.insite.ProductBase pb with(nolock) on pb.ProductBaseId  = p.ProductBaseId 
+                        inner join  InsiteDB.insite.container co (nolock) on co.containerid=hml.HistoryId 
+                        where co.ContainerName in <sncond>";
             csql = csql.Replace("<sncond>", sncond);
-            var cdbret = DBUtility.ExeMESReportSqlWithRes(csql);
+            var cdbret = DBUtility.ExeMESSqlWithRes(csql);
             foreach (var line in cdbret)
             {
                 var sn = Convert.ToString(line[0]);
@@ -219,10 +228,19 @@ namespace Prism.Models
 
             var sncond = sb.ToString(0, sb.Length - 2) + ")";
 
-            var sql = @"SELECT  max([FromContainer]),ToContainer
-                        FROM [PDMS].[dbo].[ComponentIssueSummary] where ToContainer in <sncond> and len([FromContainer]) = 7 group by ToContainer";
+            //var sql = @"SELECT  max([FromContainer]),ToContainer
+            //            FROM [PDMS].[dbo].[ComponentIssueSummary] where ToContainer in <sncond> and len([FromContainer]) = 7 group by ToContainer";
+
+            var sql = @"select  max(fc.ContainerName) FromContainer,co.ContainerName ToContainer from  insitedb.insite.ComponentIssueHistory cih with(nolock) 
+                        inner join insitedb.insite.Historymainline hml  with(nolock) on hml.HistoryMainlineId = cih.historymainlineid  
+                        inner join insitedb.insite.IssueHistoryDetail  ihd with(nolock) on ihd.ComponentIssueHistoryId= cih.ComponentIssueHistoryId 
+                        inner join insitedb.insite.IssueActualsHistory iah with(nolock) on iah.IssueHistoryDetailId=ihd.IssueHistoryDetailId 
+                        inner join  InsiteDB.insite.container co (nolock) on co.containerid=hml.HistoryId 
+                        inner join  InsiteDB.insite.container fc (nolock) on fc.ContainerId=iah.FromContainerId 
+                        where co.ContainerName in <sncond>  and len(fc.ContainerName) = 7 group by co.ContainerName";
+
             sql = sql.Replace("<sncond>", sncond);
-            var dbret = DBUtility.ExeMESReportSqlWithRes(sql);
+            var dbret = DBUtility.ExeMESSqlWithRes(sql);
             foreach (var line in dbret)
             {
                 var tosn = Convert.ToString(line[1]);
