@@ -145,7 +145,7 @@ namespace Prism.Models
                         inner join insitedb.insite.Historymainline hml  with(nolock) on hml.HistoryMainlineId = cih.historymainlineid  
                         inner join insitedb.insite.IssueHistoryDetail  ihd with(nolock) on ihd.ComponentIssueHistoryId= cih.ComponentIssueHistoryId 
                         inner join insitedb.insite.IssueActualsHistory iah with(nolock) on iah.IssueHistoryDetailId=ihd.IssueHistoryDetailId 
-                        inner join insitedb.insite.Product p with(nolock) on p.ProductId  = ihd.ProductId 
+                        inner join insitedb.insite.Product p with(nolock) on p.ProductId  = iah.ProductId 
                         inner join insitedb.insite.ProductBase pb with(nolock) on pb.ProductBaseId  = p.ProductBaseId 
                         inner join  InsiteDB.insite.container co (nolock) on co.containerid=hml.HistoryId 
                         where co.ContainerName in <sncond>";
