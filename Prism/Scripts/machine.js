@@ -524,6 +524,108 @@
         }
     }
 
+    var hydramachine = function () {
+        var testyieldtable = null;
+        $('.date').datepicker({ autoclose: true, viewMode: "days", minViewMode: "days" });
+
+        function searchdata() {
+            var sdate = $.trim($('#sdate').val());
+            var edate = $.trim($('#edate').val());
+            var tester = $.trim($('#hydratesterlist').val());
+
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
+
+            $.post('/Machine/HydraMachineUsageData', {
+                sdate: sdate,
+                edate: edate,
+                tester:tester
+            }, function (output) {
+                $.bootstrapLoading.end();
+                if (output.success) {
+                    $('#chart-content').empty();
+
+                    var appendstr = "";
+
+                    $.each(output.chartlist, function (i, val) {
+                        appendstr = '<div class="col-xs-12">' +
+                               '<div class="v-box" id="' + val.id + '"></div>' +
+                               '</div>';
+                        $('#chart-content').append(appendstr);
+                        drawworkstatus(val);
+                    })
+
+                    if (testyieldtable) {
+                        testyieldtable.destroy();
+                    }
+                    $("#testyieldcontentid").empty();
+                    if (output.chartlist.length == 0)
+                    {
+                        return false;
+                    }
+
+                    appendstr = "";
+                    $.each(output.chartlist[0].pendindlist, function (i, val) {
+                        appendstr += "<tr>";
+                        appendstr += "<td>Pending</td>";
+                        appendstr += "<td>" + val.StartDateStr + "</td>";
+                        appendstr += "<td>" + val.EndDateStr + "</td>";
+                        appendstr += "<td>" + val.SpendSec + "</td>";
+                        appendstr += "<td>" + val.TotalSpend + "</td>";
+                        appendstr += "</tr>";
+                    })
+                    $("#testyieldcontentid").append(appendstr);
+
+                    testyieldtable = $('#testyieldtable').DataTable({
+                        'iDisplayLength': 50,
+                        'aLengthMenu': [[20, 50, 100, -1],
+                        [20, 50, 100, "All"]],
+                        "aaSorting": [],
+                        "order": [],
+                        dom: 'lBfrtip',
+                        buttons: ['copyHtml5', 'csv', 'excelHtml5']
+                    });
+
+                }
+            })
+        }
+
+        $('body').on('click', '#btn-search', function () {
+            searchdata();
+        })
+
+        $(function () {
+            searchdata();
+        });
+
+        function drawworkstatus(line_data)
+        {
+            var options = {
+                title: {
+                    text: line_data.title
+                },
+
+                yAxis: {
+                    uniqueNames: true
+                },
+
+                tooltip: {
+                    xDateFormat: '%y-%m-%d,%H:%M:%S'
+                },
+
+                series: line_data.series
+            };
+            Highcharts.ganttChart(line_data.id,options);
+        }
+
+    }
 
     return {
         DEPARTMENTINIT: function () {
@@ -531,6 +633,9 @@
         },
         PRODUCTINIT: function () {
             productmachine();
+        },
+        HYDRAINIT: function () {
+            hydramachine();
         },
     }
 }();

@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=10,IE=Edge" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Engineering Bussiness Support</title>
+
+    <link href="@Url.Content("~/Content/bootstrap/bootstrap.min.css")" rel="stylesheet" type="text/css" />
+
+    <link href="@Url.Content("~/Content/jquery-ui.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/bootstrapfileinput.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Scripts/jquery-autocomplete/jquery.auto-complete.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/Layout.css")" rel="stylesheet" type="text/css" />
+
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="~/Scripts/jquery-1.12.4.min.js" type="text/javascript"></script>
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jquery-ui")
+
+
+    <script src="~/Scripts/bootstrap/bootstrap.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/ajaxfileupload.js" type="text/javascript"></script>
+    <script src="~/Scripts/moment.min.js"></script>
+
+    <script src="~/Scripts/gantt/highcharts-gantt.js"></script>
+    <script src="~/Scripts/gantt/exporting.js"></script>
+
+    <script src="~/Scripts/exporting.js"></script>
+    <script src="~/Scripts/jquery-autocomplete/jquery.auto-complete.min.js" type="text/javascript"></script>
+    <script src="~/Scripts/jquery-bootstrap-loading.js" type="text/javascript"></script>
+
+    <link type="text/css" rel="stylesheet" href="~/Content/jquery.datatables.min.css" />
+    <script type="text/javascript" src="~/Scripts/jquery.datatables.min.js"></script>
+    <link href="~/Scripts/datatables/buttons.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <script src="~/Scripts/datatables/buttons.html5.min.js"></script>
+    <script src="~/Scripts/datatables/dataTables.buttons.min.js"></script>
+    <script src="~/Scripts/datatables/jszip.min.js"></script>
+
+
+    @*<script type="text/javascript">
+        $(function () {
+            HighChartModal.init();
+        });
+    </script>*@
+</head>
+
+@{
+    var isvideook = true;
+    var ua = Request.UserAgent;
+    if (ua.IndexOf("MSIE ") > 0)
+    { isvideook = false; }
+    if (ua.IndexOf("Edge/") > 0 || ua.IndexOf("Trident/") > 0)
+    { isvideook = true; }
+}
+
+<body>
+    <script type="text/javascript">
+        $(function () {
+            $('[data-toggle="popover"]').popover({ html: true, placement: 'bottom' });
+        })
+    </script>
+
+    <div class="navbar navbar-default navbar-fixed-top div-nav">
+        <nav class="navbar navbar-default navbar-fixed-top nav-content">
+            <div class="container">
+                <div class="row">
+                    <div class="navbar-header logo">
+                        <a class="navbar-brand" href="#">
+                            <img alt="Brand" src="~/Content/images/FinisarLogo.jpg" height="54" width="250">
+                        </a>
+                    </div>
+                    <div id="navbar" class="navbar-collapse collapse div-navlink">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Main<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        @Html.ActionLink("Index", "Index", "Main")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Boring Search", "BoringSearch", "Main")
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Yield<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        @Html.ActionLink("Yield Trend", "YieldTrend", "Yield")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Department Yield", "DepartmentYield", "Yield")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Product Yield", "ProductYield", "Yield")
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Machine<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        @Html.ActionLink("Department Machine Use Rate", "DepartmentMachine", "Machine")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Product Machine Use Rate", "ProductMachine", "Machine")
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Shipment<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        @Html.ActionLink("Shipment Distribution", "ShipmentData", "Shipment")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("OTD Trend", "OTDData", "Shipment")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Shipment LBS", "LBSDistribution", "Shipment")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Order Distribution", "OrderData", "Shipment")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Ship Output Trend", "ShipOutputTrend", "Shipment")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("RMA WorkLoad", "RMAWorkLoad", "Shipment")
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Scrap<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        @Html.ActionLink("Department Scrap", "DepartmentScrap", "Scrap")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Cost Center Scrap", "CostCenterScrap", "Scrap")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Product Scrap", "ProductScrap", "Scrap")
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">HPU<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        @Html.ActionLink("HPU Trend", "HPUTrend", "DataAnalyze")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Department HPU", "DepartmentHPU", "DataAnalyze")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Serial HPU", "SerialHPU", "DataAnalyze")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("PN HPU", "PNHPU", "DataAnalyze")
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Capacity<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        @Html.ActionLink("Department Capacity", "DepartmentCapacity", "Capacity")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Product Capacity", "ProductCapacity", "Capacity")
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Inventory<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        @Html.ActionLink("Department Inventory Turns", "DepartmentInventory", "Inventory")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("Product Inventory Turns", "ProductInventory", "Inventory")
+                                    </li>
+                                    <li>
+                                        <a href="http://wuxinpi.china.ads.finisar.com:8082/BRTrace/ERPComponent" target="_blank">Inventory Item Query</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">VCSEL<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        @Html.ActionLink("VCSEL SHIPMENT DPPM", "VCSELShipmentDppm", "VCSEL")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("VCSEL WAFER DPPM", "VCSELWaferDppm", "VCSEL")
+                                    </li>
+                                    <li>
+                                        @Html.ActionLink("VCSEL RMA STATISTIC", "VCSELStatistic", "VCSEL")
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        @*@Html.Partial("_LoginPartial")
+
+                            <ul class="nav navbar-nav">
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                        <span class="glyphicon glyphicon-link" title="Friendly Links" data-toggle="tooltip"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="http://cn-traceview/" target="_blank">Trace View</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>*@
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Engineering Bussiness Support</p>
+        </footer>
+        <script type="text/javascript">
+            function SetReplyPeople(reply) {
+                CKEDITOR.instances.editor1.setData(reply + '&nbsp;');
+                $('#commentinput').collapse('show');
+                var scrollingElement = (document.scrollingElement || document.body)
+                scrollingElement.scrollTop = scrollingElement.scrollHeight;
+            }
+
+        </script>
+    </div>
+
+</body>
+</html>

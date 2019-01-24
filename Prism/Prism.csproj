@@ -734,6 +734,8 @@
     <None Include="Properties\PublishProfiles\prismpublish.pubxml" />
     <Content Include="Scripts\boringsearch.js" />
     <Content Include="Scripts\bssupport_db.txt" />
+    <Content Include="Scripts\gantt\exporting.js" />
+    <Content Include="Scripts\gantt\highcharts-gantt.js" />
     <Content Include="Scripts\highmaps\flags32.png" />
     <Content Include="Scripts\highmaps\map.js" />
     <Content Include="Scripts\highmaps\proj4.js" />
@@ -873,6 +875,8 @@
     <Content Include="Views\VCSEL\VCSELShipmentDppm.cshtml" />
     <Content Include="Views\VCSEL\VCSELWaferDppm.cshtml" />
     <Content Include="Views\VCSEL\VCSELStatistic.cshtml" />
+    <Content Include="Views\Machine\HydraMachineUsage.cshtml" />
+    <Content Include="Views\Shared\_LayoutGantt.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

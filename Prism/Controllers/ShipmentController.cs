@@ -111,10 +111,27 @@ namespace Prism.Controllers
                 {
                     name = name,
                     data = namecnt,
-                    color = colorlist[cidx % colorlist.Count]
+                    color = colorlist[cidx % colorlist.Count],
+                    visible = false,
+                    maxPointWidth = 80
                 });
                 cidx += 1;
             }
+
+            var totaldata = new List<double>();
+            foreach (var x in shipdatelist)
+            {
+                totaldata.Add(datecntdict[x]);
+            }
+            ydata.Add(new
+            {
+                name = "Total Shipment",
+                type = "column",
+                data = totaldata,
+                yAxis = 0,
+                color= "#0053A2",
+                maxPointWidth = 80
+            });
 
             var totalship = cussumlist.Sum();
             var customerrate = new List<string>();
@@ -124,7 +141,7 @@ namespace Prism.Controllers
                 customerrate.Add(newnamelist[cidx] + ":" + Math.Round(cs / totalship * 100.0, 2) + "%");
                 cidx += 1;
             }
-            customerrate.Add(""); customerrate.Add(""); customerrate.Add("");
+            customerrate.Add(""); customerrate.Add(""); customerrate.Add(""); customerrate.Add(""); customerrate.Add(""); customerrate.Add("");
 
             if (vcselrmacntdict.Count > 0)
             {
@@ -168,7 +185,9 @@ namespace Prism.Controllers
                     name = "ALL RMA DPPM",
                     type = "line",
                     data = ddata,
-                    yAxis = 1
+                    yAxis = 1,
+                    lineWidth = 2,
+                    color= "#eb6100"
                 });
             }
 
@@ -191,7 +210,8 @@ namespace Prism.Controllers
                     name = "25G RMA DPPM",
                     type = "line",
                     data = ddata,
-                    yAxis = 1
+                    yAxis = 1,
+                    dashStyle="shortdash",
                 });
             }
 
@@ -214,7 +234,8 @@ namespace Prism.Controllers
                     name = "10G RMA DPPM",
                     type = "line",
                     data = ddata,
-                    yAxis = 1
+                    yAxis = 1,
+                    dashStyle= "shortdash",
                 });
             }
 
@@ -398,10 +419,27 @@ namespace Prism.Controllers
                 {
                     name = name,
                     data = namecnt,
-                    color = colorlist[cidx % colorlist.Count]
+                    color = colorlist[cidx % colorlist.Count],
+                    visible = false,
+                    maxPointWidth = 80
                 });
                 cidx += 1;
             }
+
+            var totaldata = new List<double>();
+            foreach (var x in shipdatelist)
+            {
+                totaldata.Add(datecntdict[x]);
+            }
+            ydata.Add(new
+            {
+                name = "Total Shipment",
+                type = "column",
+                data = totaldata,
+                yAxis = 0,
+                color = "#0053A2",
+                maxPointWidth = 80
+            });
 
             var totalship = cussumlist.Sum();
             var customerrate = new List<string>();
@@ -411,7 +449,7 @@ namespace Prism.Controllers
                 customerrate.Add(newnamelist[cidx] + ":" + Math.Round(cs / totalship * 100.0, 2) + "%");
                 cidx += 1;
             }
-            customerrate.Add(""); customerrate.Add(""); customerrate.Add("");
+            customerrate.Add(""); customerrate.Add(""); customerrate.Add(""); customerrate.Add(""); customerrate.Add(""); customerrate.Add("");
 
 
             if (qrmacntdict.Count > 0)
@@ -433,7 +471,9 @@ namespace Prism.Controllers
                     name = "QUARTER RMA DPPM",
                     type = "line",
                     data = ddata,
-                    yAxis = 1
+                    yAxis = 1,
+                    lineWidth = 2,
+                    color = "#eb6100"
                 });
             }
 
@@ -456,7 +496,8 @@ namespace Prism.Controllers
                     name = "QUARTER 25G DPPM",
                     type = "line",
                     data = ddata,
-                    yAxis = 1
+                    yAxis = 1,
+                    dashStyle = "shortdash"
                 });
             }
 
@@ -479,7 +520,8 @@ namespace Prism.Controllers
                     name = "QUARTER 10G DPPM",
                     type = "line",
                     data = ddata,
-                    yAxis = 1
+                    yAxis = 1,
+                    dashStyle = "shortdash"
                 });
             }
 
@@ -588,7 +630,7 @@ namespace Prism.Controllers
                 customerrate.Add(newnamelist[cidx] + ":" + Math.Round(cs / totalship * 100.0, 2) + "%");
                 cidx += 1;
             }
-            customerrate.Add(""); customerrate.Add(""); customerrate.Add("");
+            customerrate.Add(""); customerrate.Add(""); customerrate.Add(""); customerrate.Add(""); customerrate.Add(""); customerrate.Add("");
 
             return new
             {
@@ -832,18 +874,18 @@ namespace Prism.Controllers
             var shipdata25g = FsrShipData.RetrieveShipDataByMonth(VCSELRATE.r25G, SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
             var shipdata14g = FsrShipData.RetrieveShipDataByMonth(VCSELRATE.r14G, SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
             var shipdataarray = new List<object>();
-            if (shipdata25g.Count > 0)
-            {
-                var vcselrmacntdict = VcselRMAData.RetrieveRMACntByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), VCSELRATE.r25G);
-                var allrmacntdict = new Dictionary<string, int>();
-                shipdataarray.Add(GetShipmentChartData(shipdata25g, vcselrmacntdict, allrmacntdict, VCSELRATE.r25G, SHIPPRODTYPE.PARALLEL));
-            }
-            if (shipdata14g.Count > 0)
-            {
-                var vcselrmacntdict = VcselRMAData.RetrieveRMACntByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), VCSELRATE.r14G);
-                var allrmacntdict = new Dictionary<string, int>();
-                shipdataarray.Add(GetShipmentChartData(shipdata14g, vcselrmacntdict, allrmacntdict, "10G_14G", SHIPPRODTYPE.PARALLEL));
-            }
+            //if (shipdata25g.Count > 0)
+            //{
+            //    var vcselrmacntdict = VcselRMAData.RetrieveRMACntByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), VCSELRATE.r25G);
+            //    var allrmacntdict = new Dictionary<string, int>();
+            //    shipdataarray.Add(GetShipmentChartData(shipdata25g, vcselrmacntdict, allrmacntdict, VCSELRATE.r25G, SHIPPRODTYPE.PARALLEL));
+            //}
+            //if (shipdata14g.Count > 0)
+            //{
+            //    var vcselrmacntdict = VcselRMAData.RetrieveRMACntByMonth(startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), VCSELRATE.r14G);
+            //    var allrmacntdict = new Dictionary<string, int>();
+            //    shipdataarray.Add(GetShipmentChartData(shipdata14g, vcselrmacntdict, allrmacntdict, "10G_14G", SHIPPRODTYPE.PARALLEL));
+            //}
 
             var allparallelship = FsrShipData.RetrieveShipDataByMonth("ALL", SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
             if (allparallelship.Count > 0)

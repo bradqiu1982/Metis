@@ -39,6 +39,9 @@ RMAROOTCAUSEMAP:::PUMP;VCSEL;WSS;ROSA;CAPACITOR;FLEX;RESISTENCE;SETTING;ASSEMBLY
 
 VCSELRMASHARE:::\\wux-fs\public\Quality\10.Quality case summary\Customer Quality Case Summary\13. RMA & Complaint New\VCSEL Issue Tracking Master List.xlsx
 
+HYDRATESTER:::SNY-DPDH1346;SNY-DPDH1357;SNY-DPDH1345;SNY-DPDH1355;SNY-DPDH1360;SNY-DPDH1354;SNY-DPDH1359;SNY-DPDH1349
+HYDRATOWHO:::Windy.Ju@finisar.com;jose.escauriasa@finisar.com;candy.wang@finisar.com;leon.ren@finisar.com;Chris.Bao@finisar.com
+
 ##SCRAPFOCUSPJ:::
 ###\\wux-fs\PUBLIC\WUXI IE\HPU
 

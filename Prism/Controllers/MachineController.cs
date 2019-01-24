@@ -235,5 +235,144 @@ namespace Prism.Controllers
             return GetMachineTableAndChart(sortedlist, "Product");
         }
 
+        private List<SelectListItem> CreateSelectList(List<string> valist, string defVal)
+        {
+            bool selected = false;
+            var pslist = new List<SelectListItem>();
+            foreach (var p in valist)
+            {
+                var pitem = new SelectListItem();
+                pitem.Text = p;
+                pitem.Value = p;
+                if (!string.IsNullOrEmpty(defVal) && string.Compare(defVal, p, true) == 0)
+                {
+                    pitem.Selected = true;
+                    selected = true;
+                }
+                pslist.Add(pitem);
+            }
+
+            if (!selected && pslist.Count > 0)
+            {
+                pslist[0].Selected = true;
+            }
+
+            return pslist;
+        }
+
+        public ActionResult HydraMachineUsage(string deftester)
+        {
+            var syscfg = CfgUtility.GetSysConfig(this);
+            var hydratesters = syscfg["HYDRATESTER"].Split(new string[] {";"}, StringSplitOptions.RemoveEmptyEntries).ToList();
+            hydratesters.Sort();
+            ViewBag.hydratesterlist = CreateSelectList(hydratesters, deftester);
+            return View();
+        }
+
+
+
+        private object GetHydraChart(string tester,DateTime startdate,List<ModuleTestData> datalist)
+        {
+            var retdata = ModuleTestData.CollectWorkingStatus(startdate,datalist);
+            var workinglist =  (List<ModuleTestData>)retdata[0];
+            var pendindlist =  (List<ModuleTestData>)retdata[1];
+            var dataarray = new List<object>();
+            var offset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMilliseconds;
+
+            foreach (var item in workinglist)
+            {
+                var sm = item.StartDate.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds+offset;
+                var em = item.EndDate.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds+offset;
+                dataarray.Add(new {
+                    start= sm,
+                    end= em,
+                    name= "Working",
+                    color = "#90ed7d"
+                });
+            }
+
+            foreach (var item in pendindlist)
+            {
+                var sm = item.StartDate.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds+offset;
+                var em = item.EndDate.ToUniversalTime().Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds+offset;
+                dataarray.Add(new
+                {
+                    start = sm,
+                    end = em,
+                    name = "Pending",
+                    color = "#fa0"
+                });
+            }
+
+            var series = new List<object>();
+            series.Add(new {
+                name = "Machine Status",
+                data = dataarray
+            });
+
+            var id = tester.ToLower().Replace(" ", "_");
+            var title = tester + " Machine Running Status";
+
+            return new {
+                id = id,
+                title = title,
+                series = series,
+                workinglist = workinglist,
+                pendindlist = pendindlist
+            };
+        }
+
+        public JsonResult HydraMachineUsageData()
+        {
+            var tester = Request.Form["tester"];
+            var ssdate = Request.Form["sdate"];
+            var sedate = Request.Form["edate"];
+            var startdate = DateTime.Now;
+            var enddate = DateTime.Now;
+
+            if (!string.IsNullOrEmpty(ssdate) && !string.IsNullOrEmpty(sedate))
+            {
+                var sdate = DateTime.Parse(Request.Form["sdate"]);
+                var edate = DateTime.Parse(Request.Form["edate"]);
+                if (sdate < edate)
+                {
+                    startdate = DateTime.Parse(sdate.ToString("yyyy-MM-dd") + " 00:00:00");
+                    enddate = DateTime.Parse(edate.ToString("yyyy-MM-dd") + " 00:00:00").AddDays(1).AddSeconds(-1);
+                }
+                else
+                {
+                    startdate = DateTime.Parse(edate.ToString("yyyy-MM-dd") + " 00:00:00");
+                    enddate = DateTime.Parse(sdate.ToString("yyyy-MM-dd") + " 00:00:00").AddDays(1).AddSeconds(-1);
+                }
+
+                if (startdate < DateTime.Parse("2019-01-17 00:00:00"))
+                { startdate = DateTime.Parse("2019-01-17 00:00:00"); }
+
+                if (enddate < DateTime.Parse("2019-01-17 00:00:00"))
+                { enddate = DateTime.Now; }
+            }
+            else
+            {
+                enddate = DateTime.Now;
+                startdate = DateTime.Parse(enddate.AddDays(-7).ToString("yyyy-MM-dd") + " 00:00:00");
+                if (startdate < DateTime.Parse("2019-01-17 00:00:00"))
+                { startdate = DateTime.Parse("2019-01-17 00:00:00"); }
+            }
+
+            var chartlist = new List<object>();
+            var hydradatalist = ModuleTestData.RetrieveHydraData(tester, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"));
+            if (hydradatalist.Count > 0)
+            {
+                chartlist.Add(GetHydraChart(tester,startdate,hydradatalist));
+            }
+
+            var ret = new JsonResult();
+            ret.Data = new {
+                success = true,
+                chartlist = chartlist
+            };
+            return ret;
+        }
+
     }
 }

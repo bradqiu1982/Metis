@@ -119,15 +119,21 @@ namespace Prism.Controllers
                 }
                 catch (Exception ex) { }
 
+                try
+                {
+                    YieldRawData.LoadData(this);
+                }
+                catch (Exception ex) { }
+
+                try
+                {
+                    ModuleTestData.SendHydraWarningEmail(this);
+                }
+                catch (Exception ex) { }
+
                 if (DateTime.Now.DayOfWeek == DayOfWeek.Sunday
                     || DateTime.Now.DayOfWeek == DayOfWeek.Wednesday)
                 {
-                    try
-                    {
-                        YieldRawData.LoadData(this);
-                    }
-                    catch (Exception ex) { }
-
                     try
                     {
                         YieldPreData.YieldPreScan(this);
@@ -368,6 +374,12 @@ namespace Prism.Controllers
                 YieldRawData.LoadData(this);
             }
             catch (Exception ex) { }
+            return View("HeartBeat");
+        }
+
+        public ActionResult SendHydraWarningEmail()
+        {
+            ModuleTestData.SendHydraWarningEmail(this);
             return View("HeartBeat");
         }
 
