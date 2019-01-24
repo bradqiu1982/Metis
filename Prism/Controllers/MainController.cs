@@ -64,42 +64,51 @@ namespace Prism.Controllers
 
                 try
                 {
+                    heartbeatlog("PNProuctFamilyCache.LoadData", filename);
                     PNProuctFamilyCache.LoadData();
                 }
                 catch (Exception ex) { }
 
+                
                 try
                 {
+                    heartbeatlog("ExternalDataCollector.LoadPNPlannerData", filename);
                     ExternalDataCollector.LoadPNPlannerData(this);
                 }
                 catch (Exception ex) { }
 
+                
                 try
                 {
+                    heartbeatlog("ExternalDataCollector.LoadScrapData", filename);
                     ExternalDataCollector.LoadScrapData(this);
                 }
                 catch (Exception ex) { }
 
                 try
                 {
+                    heartbeatlog("ExternalDataCollector.LoadIEScrapBuget", filename);
                     ExternalDataCollector.LoadIEScrapBuget(this);
                 }
                 catch (Exception ex) { }
 
                 try
                 {
+                    heartbeatlog("ExternalDataCollector.LoadIEHPU", filename);
                     ExternalDataCollector.LoadIEHPU(this);
                 }
                 catch (Exception ex) { }
 
                 try
                 {
+                    heartbeatlog("ItemCostData.LoadCostData", filename);
                     ItemCostData.LoadCostData(this);
                 }
                 catch (Exception ex) { }
 
                 try
                 {
+                    heartbeatlog("FsrShipData.RefreshShipData", filename);
                     FsrShipData.RefreshShipData(this);
                 }
                 catch (Exception ex) { }
@@ -108,6 +117,7 @@ namespace Prism.Controllers
                 {
                     if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday)
                     {
+                        heartbeatlog("CostCentScrapWarning.Waring", filename);
                         CostCentScrapWarning.Waring(this);
                     }
                 }
@@ -115,18 +125,21 @@ namespace Prism.Controllers
 
                 try
                 {
+                    heartbeatlog("RMARAWData.LoadRMARawData", filename);
                     RMARAWData.LoadRMARawData(this);
                 }
                 catch (Exception ex) { }
 
                 try
                 {
+                    heartbeatlog("YieldRawData.LoadData", filename);
                     YieldRawData.LoadData(this);
                 }
                 catch (Exception ex) { }
 
                 try
                 {
+                    heartbeatlog("ModuleTestData.SendHydraWarningEmail", filename);
                     ModuleTestData.SendHydraWarningEmail(this);
                 }
                 catch (Exception ex) { }
@@ -136,6 +149,7 @@ namespace Prism.Controllers
                 {
                     try
                     {
+                        heartbeatlog("YieldPreData.YieldPreScan", filename);
                         YieldPreData.YieldPreScan(this);
                         MachinePreData.MachinePreScan(this);
                         YieldPreData.LoadProjectKey();
@@ -145,12 +159,14 @@ namespace Prism.Controllers
 
                 try
                 {
+                    heartbeatlog("CapacityRawData.LoadCapacityRawData", filename);
                     CapacityRawData.LoadCapacityRawData(this);
                 }
                 catch (Exception ex) { }
 
                 try
                 {
+                    heartbeatlog("InventoryData.LoadInventoryTrend", filename);
                     InventoryData.LoadInventoryTrend(this);
                     InventoryData.LoadInventoryDetail(this);
                 }
@@ -161,6 +177,7 @@ namespace Prism.Controllers
                 {
                     try
                     {
+                        heartbeatlog("WaferData.LoadWaferDataIn3Month", filename);
                         WaferData.LoadWaferDataIn3Month(this);
                     }
                     catch (Exception ex) { }
@@ -168,6 +185,7 @@ namespace Prism.Controllers
 
                 try
                 {
+                    heartbeatlog("VcselRMAData.LoadVCSELRMA", filename);
                     VcselRMAData.LoadVCSELRMA(this);
                 }
                 catch (Exception ex) { }
