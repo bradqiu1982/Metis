@@ -15,8 +15,8 @@ namespace Prism.Models
             Init();
         }
 
-        public ModuleTestData(string dataid,string sn,string tm,string wt,string err,string station,
-            string pf,string pn,string pndesc,string mt,string spd,string spt,string mes,string yf)
+        public ModuleTestData(string dataid, string sn, string tm, string wt, string err, string station,
+            string pf, string pn, string pndesc, string mt, string spd, string spt, string mes, string yf)
         {
             DataID = dataid;
             ModuleSN = sn;
@@ -32,8 +32,6 @@ namespace Prism.Models
             SpendTime = spt;
             MESTab = mes;
             YieldFamily = yf;
-
-            SpendSec = 0;
         }
 
         private void Init()
@@ -65,8 +63,8 @@ namespace Prism.Models
         public static void CleanTestData(string yieldfamily, string mestab, DateTime startdate)
         {
             var sql = "delete from ModuleTestData where MESTab='<MESTab>' and YieldFamily = '<YieldFamily>' and TestTimeStamp >= '<startdate>' and TestTimeStamp < '<enddate>'";
-            sql = sql.Replace("<MESTab>",mestab).Replace("<YieldFamily>",yieldfamily)
-                .Replace("<startdate>",startdate.ToString("yyyy-MM-dd HH:mm:dd")).Replace("<enddate>", startdate.AddMonths(1).ToString("yyyy-MM-dd HH:mm:dd"));
+            sql = sql.Replace("<MESTab>", mestab).Replace("<YieldFamily>", yieldfamily)
+                .Replace("<startdate>", startdate.ToString("yyyy-MM-dd HH:mm:dd")).Replace("<enddate>", startdate.AddMonths(1).ToString("yyyy-MM-dd HH:mm:dd"));
             DBUtility.ExeLocalSqlNoRes(sql);
         }
 
@@ -74,7 +72,7 @@ namespace Prism.Models
         {
             var ret = new List<string>();
             var sql = "select distinct ProductFamily from ModuleTestData";
-            var dbret = DBUtility.ExeLocalSqlWithRes(sql,null);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
                 ret.Add(Convert.ToString(line[0]));
@@ -82,7 +80,7 @@ namespace Prism.Models
             return ret;
         }
 
-        public static List<ModuleTestData> RetrieveTestDate(string productfamily, DateTime startdate,DateTime enddate)
+        public static List<ModuleTestData> RetrieveTestDate(string productfamily, DateTime startdate, DateTime enddate)
         {
             var ret = new List<ModuleTestData>();
 
@@ -100,6 +98,32 @@ namespace Prism.Models
             return ret;
         }
 
+
+        public string DataID { set; get; }
+        public string ModuleSN { set; get; }
+        public string TestTimeStamp { set; get; }
+        public string WhichTest { set; get; }
+        public string ErrAbbr { set; get; }
+        public string TestStation { set; get; }
+        public string ProductFamily { set; get; }
+
+        public string PN { set; get; }
+        public string PNDesc { set; get; }
+        public string ModuleType { set; get; }
+        public string SpeedRate { set; get; }
+        public string SpendTime { set; get; }
+
+        public string MESTab { set; get; }
+        public string YieldFamily { set; get; }
+
+    }
+
+    public class HYDRASummary
+    {
+        public HYDRASummary()
+        {
+            SpendSec = 0;
+        }
 
         public static void SendHydraWarningEmail(Controller ctrl)
         {
@@ -124,7 +148,7 @@ namespace Prism.Models
                 var mdata = RetrieveHydraData(tester, starttime, endtime);
                 if (mdata.Count > 0)
                 {
-                    var pendinglist = (List<ModuleTestData>) CollectWorkingStatus(DateTime.Parse(starttime), mdata)[1];
+                    var pendinglist = (List<HYDRASummary>)CollectWorkingStatus(DateTime.Parse(starttime), mdata)[1];
                     if (pendinglist.Count > 0)
                     {
                         foreach (var item in pendinglist)
@@ -155,9 +179,9 @@ namespace Prism.Models
             new System.Threading.ManualResetEvent(false).WaitOne(1000);
         }
 
-        public static List<ModuleTestData> RetrieveHydraData(string tester, string startdate, string enddate)
+        public static List<HYDRASummary> RetrieveHydraData(string tester, string startdate, string enddate)
         {
-            var ret = new List<ModuleTestData>();
+            var ret = new List<HYDRASummary>();
 
             var sql = "select ProductFamily,TestStation,TestTimeStamp StartTime,SpendTime FROM [BSSupport].[dbo].[ModuleTestData] WHERE TestStation = '<tester>' and TestTimeStamp > '<startdate>' and TestTimeStamp < '<enddate>' order by TestTimeStamp asc";
             sql = sql.Replace("<tester>", tester).Replace("<startdate>", startdate).Replace("<enddate>", enddate);
@@ -165,7 +189,7 @@ namespace Prism.Models
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
-                var tempvm = new ModuleTestData();
+                var tempvm = new HYDRASummary();
                 tempvm.ProductFamily = Convert.ToString(line[0]);
                 tempvm.TestStation = Convert.ToString(line[1]);
                 tempvm.StartDate = Convert.ToDateTime(line[2]);
@@ -177,17 +201,17 @@ namespace Prism.Models
             return ret;
         }
 
-        public static List<object> CollectWorkingStatus(DateTime startdate, List<ModuleTestData> srcdatalist)
+        public static List<object> CollectWorkingStatus(DateTime startdate, List<HYDRASummary> srcdatalist)
         {
             var ret = new List<object>();
 
-            var workinglist = new List<ModuleTestData>();
-            var pendindlist = new List<ModuleTestData>();
+            var workinglist = new List<HYDRASummary>();
+            var pendindlist = new List<HYDRASummary>();
             var halfhour = 30.0 * 60;
             var pendingtotal = 0.0;
             var workingtotal = 0.0;
 
-            var datalist = new List<ModuleTestData>();
+            var datalist = new List<HYDRASummary>();
             var timedict = new Dictionary<string, bool>();
             foreach (var item in srcdatalist)
             {
@@ -208,7 +232,7 @@ namespace Prism.Models
                     if ((datalist[0].StartDate - startdate).TotalSeconds > halfhour)
                     {
 
-                        var tempvm = new ModuleTestData();
+                        var tempvm = new HYDRASummary();
                         tempvm.StartDate = startdate;
                         tempvm.EndDate = datalist[0].EndDate;
                         tempvm.SpendSec = Math.Round((tempvm.EndDate - tempvm.StartDate).TotalSeconds / 3600.0, 2);
@@ -218,7 +242,7 @@ namespace Prism.Models
                     }
                     else
                     {
-                        var tempvm = new ModuleTestData();
+                        var tempvm = new HYDRASummary();
                         tempvm.StartDate = startdate;
                         tempvm.EndDate = datalist[0].EndDate;
                         tempvm.SpendSec = Math.Round((tempvm.EndDate - tempvm.StartDate).TotalSeconds / 3600.0, 2);
@@ -231,7 +255,7 @@ namespace Prism.Models
                 {
                     if ((datalist[idx].StartDate - datalist[idx - 1].EndDate).TotalSeconds > halfhour)
                     {
-                        var tempvm = new ModuleTestData();
+                        var tempvm = new HYDRASummary();
                         tempvm.StartDate = datalist[idx - 1].EndDate;
                         tempvm.EndDate = datalist[idx].StartDate;
                         tempvm.SpendSec = Math.Round((tempvm.EndDate - tempvm.StartDate).TotalSeconds / 3600.0, 2);
@@ -245,7 +269,7 @@ namespace Prism.Models
                         { workinglist[workinglist.Count - 1].EndDate = datalist[idx].EndDate; }
                         else
                         {
-                            var tempvm = new ModuleTestData();
+                            var tempvm = new HYDRASummary();
                             tempvm.StartDate = datalist[idx - 1].StartDate;
                             tempvm.EndDate = datalist[idx].EndDate;
                             tempvm.SpendSec = Math.Round((tempvm.EndDate - tempvm.StartDate).TotalSeconds / 3600.0, 2);
@@ -264,7 +288,7 @@ namespace Prism.Models
                 && (endoflastday - srcdatalist[srcdatalist.Count - 1].EndDate).TotalSeconds > halfhour)
             {
 
-                var tempvm = new ModuleTestData();
+                var tempvm = new HYDRASummary();
                 tempvm.StartDate = srcdatalist[srcdatalist.Count - 1].EndDate;
                 tempvm.EndDate = endoflastday;
                 tempvm.SpendSec = Math.Round((tempvm.EndDate - tempvm.StartDate).TotalSeconds / 3600.0, 2);
@@ -282,31 +306,14 @@ namespace Prism.Models
             return ret;
         }
 
-        public string DataID { set; get; }
-        public string ModuleSN { set; get; }
-        public string TestTimeStamp { set; get; }
-        public string WhichTest { set; get; }
-        public string ErrAbbr { set; get; }
-        public string TestStation { set; get; }
-        public string ProductFamily { set; get; }
-
-        public string PN { set; get; }
-        public string PNDesc { set; get; } 
-        public string ModuleType { set; get; }
-        public string SpeedRate { set; get; }
-        public string SpendTime { set; get; }
-
-        public string MESTab { set; get; }
-        public string YieldFamily { set; get; }
-
-
-        #region HYDRA
         public DateTime StartDate { set; get; }
         public double SpendSec { set; get; }
         public DateTime EndDate { set; get; }
         public string StartDateStr { get { return StartDate.ToString("yyyy-MM-dd HH:mm:ss"); } }
         public string EndDateStr { get { return EndDate.ToString("yyyy-MM-dd HH:mm:ss"); } }
         public double TotalSpend { set; get; }
-        #endregion
+        public string TestStation { set; get; }
+        public string ProductFamily { set; get; }
     }
+
 }

@@ -140,7 +140,7 @@ namespace Prism.Controllers
                 try
                 {
                     heartbeatlog("ModuleTestData.SendHydraWarningEmail", filename);
-                    ModuleTestData.SendHydraWarningEmail(this);
+                    HYDRASummary.SendHydraWarningEmail(this);
                 }
                 catch (Exception ex) { }
 
@@ -397,7 +397,7 @@ namespace Prism.Controllers
 
         public ActionResult SendHydraWarningEmail()
         {
-            ModuleTestData.SendHydraWarningEmail(this);
+            HYDRASummary.SendHydraWarningEmail(this);
             return View("HeartBeat");
         }
 

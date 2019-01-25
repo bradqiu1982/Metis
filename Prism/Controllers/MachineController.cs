@@ -271,11 +271,11 @@ namespace Prism.Controllers
 
 
 
-        private object GetHydraChart(string tester,DateTime startdate,List<ModuleTestData> datalist)
+        private object GetHydraChart(string tester,DateTime startdate,List<HYDRASummary> datalist)
         {
-            var retdata = ModuleTestData.CollectWorkingStatus(startdate,datalist);
-            var workinglist =  (List<ModuleTestData>)retdata[0];
-            var pendindlist =  (List<ModuleTestData>)retdata[1];
+            var retdata = HYDRASummary.CollectWorkingStatus(startdate,datalist);
+            var workinglist =  (List<HYDRASummary>)retdata[0];
+            var pendindlist =  (List<HYDRASummary>)retdata[1];
             var dataarray = new List<object>();
             var offset = TimeZoneInfo.Local.GetUtcOffset(DateTime.UtcNow).TotalMilliseconds;
 
@@ -360,7 +360,7 @@ namespace Prism.Controllers
             }
 
             var chartlist = new List<object>();
-            var hydradatalist = ModuleTestData.RetrieveHydraData(tester, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"));
+            var hydradatalist = HYDRASummary.RetrieveHydraData(tester, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"));
             if (hydradatalist.Count > 0)
             {
                 chartlist.Add(GetHydraChart(tester,startdate,hydradatalist));
