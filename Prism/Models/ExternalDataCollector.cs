@@ -330,6 +330,7 @@ namespace Prism.Models
 
             dict.Add("产品线".ToUpper(), -1);
             dict.Add("Line".ToUpper(), -1);
+            dict.Add("Group".ToUpper(), -1);
 
             dict.Add("产品系列".ToUpper(), -1);
             dict.Add("产品系列1".ToUpper(), -1);
@@ -430,6 +431,7 @@ namespace Prism.Models
                     { tempvm.HPUCode = line[hpucodeidx]; }
 
                     var idx = (hpucol["产品线".ToUpper()] == -1) ? hpucol["Line".ToUpper()] : hpucol["产品线".ToUpper()];
+                    idx = (idx == -1) ? hpucol["Group".ToUpper()] : idx;
                     if (idx != -1)
                     { tempvm.ProductLine = line[idx].Replace(",", ""); }
 
