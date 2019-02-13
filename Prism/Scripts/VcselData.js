@@ -122,6 +122,71 @@
             })
     }
 
+    var eventfunction = function (chart, legend, i, col_data) {
+        var item = legend.allItems[i].legendItem;
+        item.on('mouseover', function (e) {
+            if (col_data.customerrate[i] != '') {
+                $('.mysptooltip').attr('style', 'position: fixed;top:' + e.y + 'px;left:' + e.x + 'px;')
+                $('.mysptooltip').tooltipster({});
+                $('.mysptooltip').tooltipster('content', col_data.customerrate[i]);
+                $('.mysptooltip').tooltipster('open');
+            }
+        }).on('mouseout', function (e) {
+            if (col_data.customerrate[i] != '') {
+                $('.mysptooltip').tooltipster('close');
+                $('.mysptooltip').tooltipster('destroy');
+            }
+        }).on('click', function (e) {
+            var legendname = e.target.innerHTML;
+            if (legendname.indexOf('Total Shipment') != -1) {
+                var slength = chart.series.length;
+                var totalshipvisible = false;
+                for (var idx = 0; idx < slength; idx++) {
+                    if (chart.series[idx].name.indexOf('Total Shipment') != -1) {
+                        if (chart.series[idx].visible) {
+                            totalshipvisible = true;
+                        }
+                        else {
+                            totalshipvisible = false;
+                        }
+                    }
+                }
+
+                if (totalshipvisible) {
+                    //for (var idx = 0; idx < slength; idx++) {
+                    //    if (chart.series[idx].name.indexOf('Total Shipment') == -1) {
+                    //        chart.series[idx].update({ visible: true });
+                    //    }
+                    //    if (chart.series[idx].name.indexOf('DPPM') != -1) {
+                    //        chart.series[idx].update({ visible: true });
+                    //    }
+                    //}
+                }
+                else {
+                    for (var idx = 0; idx < slength; idx++) {
+                        if (chart.series[idx].name.indexOf('Total Shipment') == -1) {
+                            chart.series[idx].update({ visible: false });
+                        }
+                        if (chart.series[idx].name.indexOf('DPPM') != -1) {
+                            chart.series[idx].update({ visible: true });
+                        }
+                    }
+                }
+
+            }
+            else {
+                if (legendname.indexOf('DPPM') == -1) {
+                    var slength = chart.series.length;
+                    for (var idx = 0; idx < slength; idx++) {
+                        if (chart.series[idx].name.indexOf('Total Shipment') != -1) {
+                            chart.series[idx].update({ visible: false });
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     var drawshipdppm = function (col_data) {
         var options = {
             chart: {
@@ -134,20 +199,17 @@
 
                         for (var i = 0, len = legend.allItems.length; i < len; i++) {
                             (function (i) {
-                                var item = legend.allItems[i].legendItem;
-                                item.on('mouseover', function (e) {
-                                    if (col_data.customerrate[i] != '') {
-                                        $('.mysptooltip').attr('style', 'position: fixed;top:' + e.y + 'px;left:' + e.x + 'px;')
-                                        $('.mysptooltip').tooltipster({});
-                                        $('.mysptooltip').tooltipster('content', col_data.customerrate[i]);
-                                        $('.mysptooltip').tooltipster('open');
-                                    }
-                                }).on('mouseout', function (e) {
-                                    if (col_data.customerrate[i] != '') {
-                                        $('.mysptooltip').tooltipster('close');
-                                        $('.mysptooltip').tooltipster('destroy');
-                                    }
-                                });
+                                eventfunction(chart, legend, i, col_data);
+                            })(i);
+                        }
+                    },
+                    redraw: function () {
+                        var chart = this,
+                            legend = chart.legend;
+
+                        for (var i = 0, len = legend.allItems.length; i < len; i++) {
+                            (function (i) {
+                                eventfunction(chart, legend, i, col_data);
                             })(i);
                         }
                     }

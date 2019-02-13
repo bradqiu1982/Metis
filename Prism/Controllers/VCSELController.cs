@@ -104,10 +104,27 @@ namespace Prism.Controllers
                 {
                     name = name,
                     data = namecnt,
-                    color = colorlist[cidx % colorlist.Count]
+                    color = colorlist[cidx % colorlist.Count],
+                    visible = false,
+                    maxPointWidth = 80
                 });
                 cidx += 1;
             }
+
+            var totaldata = new List<double>();
+            foreach (var x in shipdatelist)
+            {
+                totaldata.Add(datecntdict[x]);
+            }
+            ydata.Add(new
+            {
+                name = "Total Shipment",
+                type = "column",
+                data = totaldata,
+                yAxis = 0,
+                color = "#0053A2",
+                maxPointWidth = 80
+            });
 
             var totalship = cussumlist.Sum();
             var customerrate = new List<string>();

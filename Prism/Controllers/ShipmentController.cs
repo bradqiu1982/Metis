@@ -621,7 +621,8 @@ namespace Prism.Controllers
                 {
                     name = name,
                     data = namecnt,
-                    color = colorlist[cidx % colorlist.Count]
+                    color = colorlist[cidx % colorlist.Count],
+                    maxPointWidth = 80
                 });
                 cidx += 1;
             }
@@ -875,8 +876,8 @@ namespace Prism.Controllers
             }
 
             //<date,<customer,int>>
-            var shipdata25g = FsrShipData.RetrieveShipDataByMonth(VCSELRATE.r25G, SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
-            var shipdata14g = FsrShipData.RetrieveShipDataByMonth(VCSELRATE.r14G, SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            //var shipdata25g = FsrShipData.RetrieveShipDataByMonth(VCSELRATE.r25G, SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
+            //var shipdata14g = FsrShipData.RetrieveShipDataByMonth(VCSELRATE.r14G, SHIPPRODTYPE.PARALLEL, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), this);
             var shipdataarray = new List<object>();
             //if (shipdata25g.Count > 0)
             //{

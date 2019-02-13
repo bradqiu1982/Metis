@@ -66,13 +66,24 @@
             var sdate = $.trim($('#sdate').val());
             var edate = $.trim($('#edate').val());
 
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
+
             $.post('/Shipment/OTDDistribution', {
                 sdate: sdate,
                 edate: edate
             }, function (output) {
+                $.bootstrapLoading.end();
+
                 if (output.success) {
                     $('.v-content').empty();
-                    
                     var appendstr = "";
 
                     $.each(output.otdarray, function (i, val) {
@@ -139,10 +150,21 @@
             var sdate = $.trim($('#sdate').val());
             var edate = $.trim($('#edate').val());
 
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
+
             $.post('/Shipment/OrderDistribution', {
                 sdate: sdate,
                 edate: edate
             }, function (output) {
+                $.bootstrapLoading.end();
                 if (output.success) {
                     $('.v-content').empty();
                     $('.v-content').append('<div class="col-xs-12"><span class="mysptooltip" title="This is my span tooltip message!"></span></div>');
@@ -198,12 +220,24 @@
         {
             var sdate = $.trim($('#sdate').val());
             var edate = $.trim($('#edate').val());
+
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
+
             $.post('/Shipment/ShipOutputTrendData',
                 {
                     sdate: sdate,
                     edate: edate
                 },
                 function (output) {
+                    $.bootstrapLoading.end();
                     $('.v-content').empty();
                     var appendstr = "";
 

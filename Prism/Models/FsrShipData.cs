@@ -310,7 +310,9 @@ namespace Prism.Models
             dict.Add("@edate", edate);
             sql = sql.Replace("<pncond>", pncond);
 
-            var realcustdict = new Dictionary<string, bool>();
+            var sumqty = 0.0;
+            var realcustdict = new Dictionary<string, double>();
+
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
             {
@@ -321,7 +323,10 @@ namespace Prism.Models
                 var realcust = RetrieveCustome(cust1, cust2, custdict);
 
                 if (!realcustdict.ContainsKey(realcust))
-                { realcustdict.Add(realcust, true); }
+                { realcustdict.Add(realcust, qty); }
+                else
+                { realcustdict[realcust] += qty; }
+                sumqty += qty;
 
                 if (ret.ContainsKey(shipdate))
                 {
@@ -339,7 +344,48 @@ namespace Prism.Models
                 }
             }
 
+            //find the small customer, < 1%
+            var removecustdict = new Dictionary<string, bool>();
+            foreach (var kv in realcustdict)
+            {
+                if (kv.Value / sumqty < 0.01)
+                {
+                    removecustdict.Add(kv.Key, true);
+                }
+            }
+
+
             var shipdatelist = ret.Keys.ToList();
+
+            foreach (var sd in shipdatelist)
+            {
+                var custcntdict = ret[sd];
+                var movetoothersqty = 0.0;
+                foreach (var c in removecustdict)
+                {
+                    if (custcntdict.ContainsKey(c.Key))
+                    {
+                        movetoothersqty += custcntdict[c.Key];
+                        //clean customer
+                        custcntdict.Remove(c.Key);
+                    }
+                }
+
+                if (custcntdict.ContainsKey("OTHERS"))
+                { custcntdict["OTHERS"] += movetoothersqty; }
+                else
+                { custcntdict.Add("OTHERS", movetoothersqty); }
+            }
+
+            //clean small customer from total customer list
+            foreach (var ckv in removecustdict)
+            {
+                if (realcustdict.ContainsKey(ckv.Key))
+                {
+                    realcustdict.Remove(ckv.Key);
+                }
+            }
+
             var realcustlist = realcustdict.Keys.ToList();
 
             foreach (var sd in shipdatelist)
