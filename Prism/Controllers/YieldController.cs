@@ -89,11 +89,11 @@ namespace Prism.Controllers
 
                 if (string.Compare(pdy.ProductFamily, "PARALLEL", true) == 0 && fordepartment)
                 {
-                    linelist.Add("<span class='YINPUT'>INPUT</span><br><span class='YFPY'>FPY</span><br><span class='YFY'>FY</span><br><span class='YINPUT'>Pre Burn-In</span><br><span class='YINPUT'>Post Burn-In</span>");
+                    linelist.Add("<span class='YFPY'>FPY</span><br><span class='YFY'>FY</span><br><span class='YINPUT'>INPUT</span><br><span class='YINPUT'>Pre BI</span><br><span class='YINPUT'>Post BI</span>");
                 }
                 else
                 {
-                    linelist.Add("<span class='YINPUT'>INPUT</span><br><span class='YFPY'>FPY</span><br><span class='YFY'>FY</span>");
+                    linelist.Add("<span class='YFPY'>FPY</span><br><span class='YFY'>FY</span><br><span class='YINPUT'>INPUT</span>");
                 }
 
 
@@ -135,13 +135,13 @@ namespace Prism.Controllers
                                 post = Math.Round((double)pass / (double)(pass + fail) * 100.0, 2).ToString();
                             }
 
-                            linelist.Add("<span class='YINPUT'>" + pdy.FirstYieldList[matchidx].MaxInput + "</span><br><span class='YFPY YIELDDATA' myid='" + id1 + "'>" + pdy.FirstYieldList[matchidx].YieldVal 
-                                + "</span><br><span class='YFY YIELDDATA' myid='" + id2 + "'>" + pdy.FinalYieldList[matchidx].YieldVal + "</span><br>"
-                                + "<span class='YINPUT'>" + pre + "</span><br><span class='YINPUT'>"+post+"</span>");
+                            linelist.Add("<span class='YFPY YIELDDATA' myid='" + id1 + "'>" + pdy.FirstYieldList[matchidx].YieldVal 
+                                + "</span><br><span class='YFY YIELDDATA' myid='" + id2 + "'>" + pdy.FinalYieldList[matchidx].YieldVal + "</span><br><span class='YINPUT'>" + pdy.FirstYieldList[matchidx].MaxInput + "</span><br>"
+                                + "<span class='YINPUT'>" + pre + "</span><br><span class='YINPUT'>"+post+ "</span>");
                         }
                         else
                         {
-                            linelist.Add("<span class='YINPUT'>" + pdy.FirstYieldList[matchidx].MaxInput+ "</span><br><span class='YFPY YIELDDATA' myid='"+id1+"'>" + pdy.FirstYieldList[matchidx].YieldVal + "</span><br><span class='YFY YIELDDATA' myid='" + id2+"'>" + pdy.FinalYieldList[matchidx].YieldVal+"</span>");
+                            linelist.Add("<span class='YFPY YIELDDATA' myid='"+id1+"'>" + pdy.FirstYieldList[matchidx].YieldVal + "</span><br><span class='YFY YIELDDATA' myid='" + id2+"'>" + pdy.FinalYieldList[matchidx].YieldVal+ "</span><br><span class='YINPUT'>" + pdy.FirstYieldList[matchidx].MaxInput + "</span>");
                         }
 
                         pdy.FirstYieldList[matchidx].TestYieldList.Sort(delegate (TestYieldVM obj1, TestYieldVM obj2) { return obj1.Yield.CompareTo(obj2.Yield); });

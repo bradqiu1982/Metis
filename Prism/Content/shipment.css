@@ -16,7 +16,14 @@ body{
     padding: 2px;
     width: 93%;
 }
-
+.highcharts-container {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #aaa;
+    margin-bottom:10px;
+    margin-top:10px;
+    
+}
 .nav-sidebar {
     display: inline-block;
     height: 100%;
@@ -37,7 +44,7 @@ body{
 }
 
 .nav-sidebar .active a {
-    background-color: #428bca;
+    background-color: #03519f;
     color: #fff;
     text-shadow: 1px 1px 1px #666;
 }
@@ -51,9 +58,8 @@ body{
     background-color: #aaa;
     padding: 10px 15px;
 }
-.v-container{
-
-}
+/*.v-container{
+}*/
 
 .v-filter, .w-filter{
     padding-bottom: 5px;
@@ -68,8 +74,15 @@ body{
 .v-content{
 }
 
-.v-box{
-    height: 400px;
+
+highcharts-root {
+    border-width: 1px;
+    border-style: solid;
+    border-width: 1px;
+}
+.v-box {
+    /*height: 400px;*/
+    align-items: center;
     /*border: 1px solid #888;*/
 }
 

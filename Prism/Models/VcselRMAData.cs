@@ -525,7 +525,7 @@ namespace Prism.Models
         public static List<string> FMColor()
         {
             return new List<string> {
-                "#ff3399","#0099ff","#00b050","#7030a0",
+                "#AF0A00","#009f30","#0053a2","#7030a0",
                 "#105D9C","#23735D","#A55417","#821A08","#7030A0",
                 "#0C779D","#34AC8B","#D85C00","#CC044D","#B925A7",
                 "#4FADF3","#12CC92","#FA9604","#ED6161","#EF46FC",

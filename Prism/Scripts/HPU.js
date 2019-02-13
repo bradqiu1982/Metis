@@ -405,7 +405,7 @@
                     type: 'line',
                     data: line_data.hpureductiontarget.data,
                     yAxis: 0,
-                    color: '#12cc92'
+                    color: '#01539c'//'#12cc92'
                 },
             ],
             exporting: {

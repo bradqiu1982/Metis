@@ -42,7 +42,7 @@ namespace Prism.Controllers
                 datecntdict.Add(kv.Key, totle);
             }
 
-            var colorlist = new string[] { "#161525", "#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
+            var colorlist = new string[] { "#161525", "#0053a2", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
                 , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
                 , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
 
@@ -139,8 +139,8 @@ namespace Prism.Controllers
                     type = "line",
                     data = ddata,
                     yAxis = 1,
-                    color = "#f7a35c",
-                    lineWidth = 4
+                    color = "#81171b",
+                    lineWidth = 2
                 });
             }
 
@@ -330,13 +330,13 @@ namespace Prism.Controllers
                 var dppmdata = new
                 {
                     name = "Dppm",
-                    color = "#5CB85C",
+                    //color = "#81171b",
                     data = dppmdatalist
                 };
                 var shipdata = new
                 {
                     name = "Shipped",
-                    color = "#12CC92",
+                    //color = "#12CC92",
                     data = shippeddatalist
                 };
                 var alldata = new

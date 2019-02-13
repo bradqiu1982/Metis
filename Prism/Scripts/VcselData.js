@@ -375,12 +375,13 @@
             },
             series: [{
                 name: line_data.data.cdata.name,
-                color: '#ff3399',
+                color: '#0053a2',
                 type: 'column',
                 data: line_data.data.cdata.data,
                 yAxis: 1
             }, {
                 name: line_data.data.data.name,
+                    color:'#81171b',
                 dataLabels: {
                     enabled: false,
                     color: line_data.data.data.color,

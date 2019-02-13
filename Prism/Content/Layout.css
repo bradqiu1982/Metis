@@ -30,24 +30,30 @@
 
 
 .YINPUT {
-    background-color:aliceblue;
+    /*background-color:aliceblue;*/
     border-radius:3px 3px;
 }
 
 .NOBUFF {
-    background-color:orangered;
-    border-radius:3px 3px;
+    /*background-color:orangered;*/
+    border-radius: 3px 3px;
+    color: orangered;
+    font-weight: bolder;
 }
 
 .YFPY {
-    background-color:aqua;
-    border-radius:3px 3px;
-    cursor:pointer;
+    /*background-color:aqua;*/
+    border-radius: 3px 3px;
+    cursor: pointer;
+    color: #49057a;
+    font-weight: bolder;
 }
 .YFY {
-    background-color:chartreuse;
-    border-radius:3px 3px;
-    cursor:pointer;
+    /*background-color:chartreuse;*/
+    border-radius: 3px 3px;
+    cursor: pointer;
+    color: #0a2eab;
+    font-weight: bolder;
 }
 
 .YIELDDATA {

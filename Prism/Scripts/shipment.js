@@ -29,7 +29,7 @@
                     var appendstr = "";
 
                     $.each(output.shipdataarray, function (i, val) {
-                        appendstr = '<div class="row" style="margin-top:10px!important"><div class="col-xs-1"></div><div class="col-xs-10" style="border-width:1px;border-style:solid;border-color:#ddd;height: 410px;">' +
+                        appendstr = '<div class="row" style="margin-top:10px!important"><div class="col-xs-1"></div><div class="col-xs-10" style="height: 410px;">' +
                                '<div class="v-box" id="' + val.id + '"></div>' +
                                '</div><div class="col-xs-1"></div></div>';
                         $('.v-content').append(appendstr);
@@ -1254,7 +1254,7 @@
                 name: 'ShipPath',
                 type: 'mapline',
                 lineWidth: 1,
-                color: '#f15c80',
+                color: '#DAEB00',
                 data: pathdata
             });
     }

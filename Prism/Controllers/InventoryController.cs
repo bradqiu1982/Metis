@@ -21,7 +21,10 @@ namespace Prism.Controllers
 
         private JsonResult GetInventoryDataChart(List<InventoryData> inventorydata, bool fordepartment = true)
         {
-            var colorlist = new string[] { "#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
+            //var colorlist = new string[] { "#0053a2", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
+            //    , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
+            //    , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
+            var colorlist = new string[] { "#749dd2", "#3c92ba", "#645c87","#ff4500","#a9302e","#84a370", "#ebc843",  "#EB6100", "#E4007F"
                 , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
                 , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
 

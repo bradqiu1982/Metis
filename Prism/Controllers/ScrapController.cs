@@ -151,13 +151,13 @@ namespace Prism.Controllers
                     nonchinascraprate.Add(Math.Round(item.nonchinascrap / item.output * 100.0, 2));
                 }
                 var chartlist = new List<object>();
-                chartlist.Add(new { name = "Non-China Scrap Rate", data = nonchinascraprate, type = "line", yAxis = 0, color = "#90ed7d" });
-                chartlist.Add(new { name = "General Scrap Rate", data = generalscraprate, type = "line", yAxis = 0, color = "#f7a35c" });
-                chartlist.Add(new { name = "Totle Scrap Rate", data = totlescraprate, type = "line", yAxis = 0, color = "#8085e9" });
-                chartlist.Add(new { name = "Non-China Scrap", data = nonchinascrap, type = "column", yAxis = 1, color = "#90ed7d" });
-                chartlist.Add(new { name = "General Scrap", data = generalscrap, type = "column", yAxis = 1, color = "#f7a35c" });
-                chartlist.Add(new { name = "Totle Scrap", data = totlescrap, type = "column", yAxis = 1, color = "#8085e9" });
-                chartlist.Add(new { name = "Output", data = output, type = "column", yAxis = 1, color = "#f15c80" });
+                chartlist.Add(new { name = "Non-China Scrap Rate", data = nonchinascraprate, type = "line", yAxis = 0, color = "#082F52" });
+                chartlist.Add(new { name = "General Scrap Rate", data = generalscraprate, type = "line", yAxis = 0, color = "#ebc843" });
+                chartlist.Add(new { name = "Totle Scrap Rate", data = totlescraprate, type = "line", yAxis = 0, color = "#AC1911" });
+                chartlist.Add(new { name = "Non-China Scrap", data = nonchinascrap, type = "column", yAxis = 1, color = "#082F52" });
+                chartlist.Add(new { name = "General Scrap", data = generalscrap, type = "column", yAxis = 1, color = "#ebc843" });
+                chartlist.Add(new { name = "Totle Scrap", data = totlescrap, type = "column", yAxis = 1, color = "#AC1911" });
+                chartlist.Add(new { name = "Output", data = output, type = "column", yAxis = 1, color = "#00539f" });
 
                 var onepjobj = new
                 {
@@ -399,13 +399,13 @@ namespace Prism.Controllers
                     }
 
                     var chartlist = new List<object>();
-                    chartlist.Add(new { name = "Non-China Scrap Rate", data = nonchinascraprate, type = "line", yAxis = 0, color = "#90ed7d" });
-                    chartlist.Add(new { name = "General Scrap Rate", data = generalscraprate, type = "line", yAxis = 0, color = "#f7a35c" });
-                    chartlist.Add(new { name = "Totle Scrap Rate", data = totlescraprate, type = "line", yAxis = 0, color = "#8085e9" });
-                    chartlist.Add(new { name = "Non-China Scrap", data = nonchinascrap, type = "column", yAxis = 1, color = "#90ed7d" });
-                    chartlist.Add(new { name = "General Scrap", data = generalscrap, type = "column", yAxis = 1, color = "#f7a35c" });
-                    chartlist.Add(new { name = "Totle Scrap", data = totlescrap, type = "column", yAxis = 1, color = "#8085e9" });
-                    chartlist.Add(new { name = "Output", data = output, type = "column", yAxis = 1, color = "#f15c80" });
+                    chartlist.Add(new { name = "Non-China Scrap Rate", data = nonchinascraprate, type = "line", yAxis = 0, color = "#082F52" });
+                    chartlist.Add(new { name = "General Scrap Rate", data = generalscraprate, type = "line", yAxis = 0, color = "#ebc843" });
+                    chartlist.Add(new { name = "Totle Scrap Rate", data = totlescraprate, type = "line", yAxis = 0, color = "#AC1911" });
+                    chartlist.Add(new { name = "Non-China Scrap", data = nonchinascrap, type = "column", yAxis = 1, color = "#082F52" });
+                    chartlist.Add(new { name = "General Scrap", data = generalscrap, type = "column", yAxis = 1, color = "#ebc843" });
+                    chartlist.Add(new { name = "Totle Scrap", data = totlescrap, type = "column", yAxis = 1, color = "#AC1911" });
+                    chartlist.Add(new { name = "Output", data = output, type = "column", yAxis = 1, color = "#00539f" });
 
                     var onepjobj = new
                     {
@@ -634,13 +634,13 @@ namespace Prism.Controllers
                         var title = pd.Replace(".","") + " " + fyear + " " + fquarter + " SCRAP";
 
                         var chartlist = new List<object>();
-                        chartlist.Add(new { name = "Non-China Scrap Rate", data = nonchinascraprate, type = "line", yAxis = 0, color = "#90ed7d" });
-                        chartlist.Add(new { name = "General Scrap Rate", data = generalscraprate, type = "line", yAxis = 0, color = "#f7a35c" });
-                        chartlist.Add(new { name = "Totle Scrap Rate", data = totlescraprate, type = "line", yAxis = 0, color = "#8085e9" });
-                        chartlist.Add(new { name = "Non-China Scrap", data = nonchinascrap, type = "column", yAxis = 1, color = "#90ed7d" });
-                        chartlist.Add(new { name = "General Scrap", data = generalscrap, type = "column", yAxis = 1, color = "#f7a35c" });
-                        chartlist.Add(new { name = "Totle Scrap", data = totlescrap, type = "column", yAxis = 1, color = "#8085e9" });
-                        chartlist.Add(new { name = "Output", data = output, type = "column", yAxis = 1, color = "#f15c80" });
+                        chartlist.Add(new { name = "Non-China Scrap Rate", data = nonchinascraprate, type = "line", yAxis = 0, color = "#082F52" });
+                        chartlist.Add(new { name = "General Scrap Rate", data = generalscraprate, type = "line", yAxis = 0, color = "#ebc843" });
+                        chartlist.Add(new { name = "Totle Scrap Rate", data = totlescraprate, type = "line", yAxis = 0, color = "#AC1911" });
+                        chartlist.Add(new { name = "Non-China Scrap", data = nonchinascrap, type = "column", yAxis = 1, color = "#082F52" });
+                        chartlist.Add(new { name = "General Scrap", data = generalscrap, type = "column", yAxis = 1, color = "#ebc843" });
+                        chartlist.Add(new { name = "Totle Scrap", data = totlescrap, type = "column", yAxis = 1, color = "#AC1911" });
+                        chartlist.Add(new { name = "Output", data = output, type = "column", yAxis = 1, color = "#00539f" });
 
                         var onepjobj = new
                         {
@@ -764,13 +764,13 @@ namespace Prism.Controllers
                 var title = pd + " SCRAP Trend";
 
                 var chartlist = new List<object>();
-                chartlist.Add(new { name = "Non-China Scrap Rate", data = nonchinascraprate, type = "line", yAxis = 0, color = "#90ed7d" });
-                chartlist.Add(new { name = "General Scrap Rate", data = generalscraprate, type = "line", yAxis = 0, color = "#f7a35c" });
-                chartlist.Add(new { name = "Totle Scrap Rate", data = totlescraprate, type = "line", yAxis = 0, color = "#8085e9" });
-                chartlist.Add(new { name = "Non-China Scrap", data = nonchinascrap, type = "column", yAxis = 1, color = "#90ed7d" });
-                chartlist.Add(new { name = "General Scrap", data = generalscrap, type = "column", yAxis = 1, color = "#f7a35c" });
-                chartlist.Add(new { name = "Totle Scrap", data = totlescrap, type = "column", yAxis = 1, color = "#8085e9" });
-                chartlist.Add(new { name = "Output", data = output, type = "column", yAxis = 1, color = "#f15c80" });
+                chartlist.Add(new { name = "Non-China Scrap Rate", data = nonchinascraprate, type = "line", yAxis = 0, color = "#082F52" });
+                chartlist.Add(new { name = "General Scrap Rate", data = generalscraprate, type = "line", yAxis = 0, color = "#ebc843" });
+                chartlist.Add(new { name = "Totle Scrap Rate", data = totlescraprate, type = "line", yAxis = 0, color = "#AC1911" });
+                chartlist.Add(new { name = "Non-China Scrap", data = nonchinascrap, type = "column", yAxis = 1, color = "#082F52" });
+                chartlist.Add(new { name = "General Scrap", data = generalscrap, type = "column", yAxis = 1, color = "#ebc843" });
+                chartlist.Add(new { name = "Totle Scrap", data = totlescrap, type = "column", yAxis = 1, color = "#AC1911" });
+                chartlist.Add(new { name = "Output", data = output, type = "column", yAxis = 1, color = "#00539f" });
 
                 return new
                 {

@@ -49,7 +49,7 @@ namespace Prism.Controllers
                 datecntdict.Add(kv.Key, totle);
             }
 
-            var colorlist = new string[] { "#161525", "#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
+            var colorlist = new string[] { "#161525", "#0053a2", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
                 , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
                 , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
 
@@ -187,7 +187,7 @@ namespace Prism.Controllers
                     data = ddata,
                     yAxis = 1,
                     lineWidth = 2,
-                    color= "#eb6100"
+                    color= "#ac1911"//"#eb6100"ac1911
                 });
             }
 
@@ -212,6 +212,7 @@ namespace Prism.Controllers
                     data = ddata,
                     yAxis = 1,
                     dashStyle="shortdash",
+                    color = "#749dd2"
                 });
             }
 
@@ -236,6 +237,7 @@ namespace Prism.Controllers
                     data = ddata,
                     yAxis = 1,
                     dashStyle= "shortdash",
+                    color = "#eb6100"//"#eb6100"ac1911
                 });
             }
 
@@ -358,7 +360,7 @@ namespace Prism.Controllers
                 datecntdict.Add(kv.Key, totle);
             }
 
-            var colorlist = new string[] { "#161525", "#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
+            var colorlist = new string[] { "#161525", "#0053a2", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
                 , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
                 , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
 
@@ -473,7 +475,7 @@ namespace Prism.Controllers
                     data = ddata,
                     yAxis = 1,
                     lineWidth = 2,
-                    color = "#eb6100"
+                    color = "#ac1911"//"#eb6100"
                 });
             }
 
@@ -497,7 +499,8 @@ namespace Prism.Controllers
                     type = "line",
                     data = ddata,
                     yAxis = 1,
-                    dashStyle = "shortdash"
+                    dashStyle = "shortdash",
+                    color = "#749dd2"
                 });
             }
 
@@ -521,7 +524,8 @@ namespace Prism.Controllers
                     type = "line",
                     data = ddata,
                     yAxis = 1,
-                    dashStyle = "shortdash"
+                    dashStyle = "shortdash",
+                    color = "#eb6100"//"#eb6100"ac1911
                 });
             }
 
@@ -601,7 +605,7 @@ namespace Prism.Controllers
                 title = "Amount"
             };
 
-            var colorlist = new string[] { "#161525", "#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
+            var colorlist = new string[] { "#161525", "#0053a2", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
                 , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
                 , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
             var cidx = 0;
@@ -1461,7 +1465,7 @@ namespace Prism.Controllers
                     .Replace("(", "").Replace(")", "").Replace("#", "").Replace("+", "").ToLower() + "_id";
             var title = mark + " RMA Quarter WorkLoad";
 
-            var colorlist = new string[] { "#161525","#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
+            var colorlist = new string[] { "#ac1911","#0053a2", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
                 , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
                 , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
 
@@ -1632,7 +1636,10 @@ namespace Prism.Controllers
 
         private object ShipOutputChartData(Dictionary<string,Dictionary<string,double>> shipdata,string id,string title)
         {
-            var colorlist = new string[] { "#00A0E9", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
+            //var colorlist = new string[] { "#0053a2", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
+            //    , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
+            //    , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
+            var colorlist = new string[] {"#03519f", "#749dd2", "#3c92ba", "#645c87","#ff4500","#84a370", "#ebc843",  "#EB6100", "#E4007F"
                 , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
                 , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
 

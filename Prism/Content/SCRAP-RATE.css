@@ -37,7 +37,7 @@ body{
 }
 
 .nav-sidebar .active a {
-    background-color: #428bca;
+    background-color: #00539e;
     color: #fff;
     text-shadow: 1px 1px 1px #666;
 }
@@ -65,11 +65,18 @@ body{
     text-align: right;
 }
 
-.v-content{
+.v-content {
+    padding-top: 20px;
 }
-
-.v-box{
+.highcharts-container {
+    border-width: 0.5px;
+    border-style: solid;
+    border-color: #ddd;
+    /*margin:10px;*/
+}
+.v-box {
     height: 400px;
+    margin: 20px;
     /*border: 1px solid #888;*/
 }
 
