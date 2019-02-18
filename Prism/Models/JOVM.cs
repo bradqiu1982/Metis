@@ -86,9 +86,9 @@ namespace Prism.Models
             };
         }
 
-        public static List<object> QueryJO(string title,string pncond, string startdate, string enddate)
+
+        private static List<List<object>> QueryMESJO(string pncond, string startdate, string enddate)
         {
-            var ret = new List<object>();
             var sql = @"SELECT C.containername,pb.ProductName ,MO.MfgOrderName,MO.Qty,MO.ReleaseDate,w.WorkflowStepName, C.OriginalStartDate
                       , case when MO.ClosedDate is null then 'Active' else 'Closed' end JOStatus
                       , case when c.status = 1 then 'ACTIVE' when c.status = 2 then 'CLOSED' else 'HOLD' end SNStatus
@@ -103,16 +103,74 @@ namespace Prism.Models
                      and pb.ProductName in <pncond> and  MO.ReleaseDate > '<startdate>' and MO.ReleaseDate < '<enddate>' ORDER BY  c.OriginalStartDate DESC";
 
             sql = sql.Replace("<pncond>", pncond).Replace("<startdate>", startdate).Replace("<enddate>", enddate);
-            var dbret = DBUtility.ExeMESSqlWithRes(sql);
+            return DBUtility.ExeMESSqlWithRes(sql);
+        }
+
+        private static List<List<object>> QueryATEJO(string pncond, string startdate, string enddate)
+        {
+            var sql = @"SELECT distinct  a.MFR_SN,a.MFR_PN,b.JOB_ID,j.oracle_qty,j.time,b.state,ds.maxtime,
+                        'Active' as JOStatus,
+                        case when b.status = 'END_ROUTE' then 'CLOSED' when b.state = 'TROUBLESHOOT' then 'HOLD' else 'ACTIVE' end SNStatus
+                        FROM PARTS a   
+                        INNER JOIN ROUTES b ON a.OPT_INDEX = b.PART_INDEX  
+                        INNER JOIN BOM_CONTEXT_ID c ON c.BOM_CONTEXT_ID = b.BOM_CONTEXT_ID 
+                        INNER JOIN DATASETS d ON b.ROUTE_ID = d.ROUTE_ID 
+                        INNER JOIN JOBS j ON j.job_id = b.job_id
+                        inner join (select ROUTE_ID,max(start_time) as maxtime from datasets group by ROUTE_ID) ds on ds.ROUTE_ID = b.route_id
+                        WHERE  a.mfr_pn in <pncond> and d.start_time >= '<startdate>' and d.start_time < '<enddate>' AND b.state <> 'GOLDEN' order by a.mfr_sn,ds.maxtime desc";
+
+            sql = sql.Replace("<pncond>", pncond).Replace("<startdate>", DateTime.Parse(startdate).ToString("yyyyMMddHHmmss")).Replace("<enddate>", DateTime.Parse(enddate).ToString("yyyyMMddHHmmss"));
+            return DBUtility.ExeATESqlWithRes(sql);
+        }
+
+
+        public static List<object> QueryJO(string title,string pncond, string startdate, string enddate,string defdb="MES")
+        {
+            var ret = new List<object>();
+            var dbret = new List<List<object>>();
+            if (string.Compare(defdb, "ATE", true) == 0)
+            {
+                dbret = QueryATEJO(pncond, startdate, enddate);
+            }
+            else
+            {
+                dbret = QueryMESJO(pncond, startdate, enddate);
+            }
+
             var sndict = new Dictionary<string, bool>();
             var workflowdict = new Dictionary<string, int>();
             var jodict = new Dictionary<string, JOItem>();
             var joholddict = new Dictionary<string, List<string>>();
 
+            var sntimedict = new Dictionary<string, string>();
+            if (string.Compare(defdb, "ATE", true) == 0)
+            {
+                foreach (var line in dbret)
+                {
+                    try
+                    {
+                        var sn = Convert.ToString(line[0]);
+                        var time = Convert.ToString(line[6]);
+                        if (!sntimedict.ContainsKey(sn))
+                        { sntimedict.Add(sn, time); }
+                    }
+                    catch (Exception ex) { }
+                }
+            }
+
             foreach (var line in dbret)
             {
                 try
                 {
+                    if (string.Compare(defdb, "ATE", true) == 0)
+                    {
+                        var asn = Convert.ToString(line[0]);
+                        var time = Convert.ToString(line[6]);
+                        if (string.Compare(sntimedict[asn],time) != 0)
+                        { continue; }
+
+                    }
+
                     var sn = Convert.ToString(line[0]);
                     if (!sndict.ContainsKey(sn))
                     {
@@ -121,10 +179,15 @@ namespace Prism.Models
                         var jo = Convert.ToString(line[2]);
                         var workflow = Convert.ToString(line[5]).ToUpper();
                         var snstatus = Convert.ToString(line[8]);
-                        var snholdstatus = Convert.ToString(line[9]);
-                        if (!string.IsNullOrEmpty(snholdstatus))
-                        { snstatus = "HOLD"; }
 
+                        if (string.Compare(defdb, "ATE", true) == 0)
+                        {}
+                        else
+                        {
+                            var snholdstatus = Convert.ToString(line[9]);
+                            if (!string.IsNullOrEmpty(snholdstatus))
+                            { snstatus = "HOLD"; }
+                        }
 
                         if (workflowdict.ContainsKey(workflow))
                         { workflowdict[workflow] += 1; }
@@ -154,8 +217,23 @@ namespace Prism.Models
                         {
                             var pn = Convert.ToString(line[1]);
                             var qty = Convert.ToInt32(line[3]);
-                            var releasedate = Convert.ToDateTime(line[4]).ToString("yyyy-MM-dd");
-                            var joactivedate = Convert.ToDateTime(line[6]).ToString("yyyy-MM-dd");
+
+                            var releasedate = "";
+                            var joactivedate = "";
+
+                            if (string.Compare(defdb, "ATE", true) == 0)
+                            {
+                                var spdatetime = Convert.ToString(line[4]);
+                                releasedate = spdatetime.Substring(0, 4) + "-" + spdatetime.Substring(4, 2) + "-" + spdatetime.Substring(6, 2);
+                                spdatetime  = Convert.ToString(line[6]);
+                                joactivedate = spdatetime.Substring(0, 4) + "-" + spdatetime.Substring(4, 2) + "-" + spdatetime.Substring(6, 2);
+                            }
+                            else
+                            {
+                                releasedate = Convert.ToDateTime(line[4]).ToString("yyyy-MM-dd");
+                                joactivedate = Convert.ToDateTime(line[6]).ToString("yyyy-MM-dd");
+                            }
+
                             var jostatus = Convert.ToString(line[7]);
 
                             var tempvm = new JOItem();
@@ -207,5 +285,47 @@ namespace Prism.Models
             ret.Add(GetChartData(title,workflowdict));
             return ret;
         }
+
+        public static object QueryJOProcess(string jo)
+        {
+            var sql = @"SELECT distinct  a.MFR_SN,a.MFR_PN,b.JOB_ID,j.oracle_qty,j.time,b.state,ds.maxtime,
+                        'Active' as JOStatus,
+                        case when b.status = 'END_ROUTE' then 'CLOSED' when b.state = 'TROUBLESHOOT' then 'HOLD' else 'ACTIVE' end SNStatus
+                        FROM PARTS a   
+                        INNER JOIN ROUTES b ON a.OPT_INDEX = b.PART_INDEX  
+                        INNER JOIN BOM_CONTEXT_ID c ON c.BOM_CONTEXT_ID = b.BOM_CONTEXT_ID 
+                        INNER JOIN DATASETS d ON b.ROUTE_ID = d.ROUTE_ID   
+                        INNER JOIN JOBS j ON j.job_id = b.job_id
+                        inner join (select ROUTE_ID,max(start_time) as maxtime from datasets group by ROUTE_ID) ds on ds.ROUTE_ID = b.route_id
+                        WHERE b.JOB_ID = '<jo>' AND b.state <> 'GOLDEN' order by a.mfr_sn,ds.maxtime desc";
+
+            sql = sql.Replace("<jo>", jo);
+            var dbret = DBUtility.ExeATESqlWithRes(sql);
+
+            var sndict = new Dictionary<string, bool>();
+            var workflowdict = new Dictionary<string, int>();
+
+            foreach (var line in dbret)
+            {
+                try
+                {
+                    var sn = Convert.ToString(line[0]);
+                    if (!sndict.ContainsKey(sn))
+                    {
+                        sndict.Add(sn, true);
+                        var workflow = Convert.ToString(line[5]).ToUpper();
+                        if (workflowdict.ContainsKey(workflow))
+                        { workflowdict[workflow] += 1; }
+                        else
+                        { workflowdict.Add(workflow, 1); }
+                    }
+                }
+                catch (Exception ex) { }
+            }
+
+            return GetChartData(jo, workflowdict);
+        }
+
+
     }
 }

@@ -877,6 +877,7 @@
     <Content Include="Views\VCSEL\VCSELStatistic.cshtml" />
     <Content Include="Views\Machine\HydraMachineUsage.cshtml" />
     <Content Include="Views\Shared\_LayoutGantt.cshtml" />
+    <Content Include="Views\Main\JOProgress.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

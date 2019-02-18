@@ -1,0 +1,28 @@
+﻿
+@{
+    ViewBag.Title = "JOProgress";
+    Layout = "~/Views/Shared/_LayoutAdditional.cshtml";
+}
+
+<script type="text/javascript" src="~/Scripts/joquery.js"></script>
+<script type="text/javascript">
+        $(function(){
+            JOQUERY.JOPROCESS();
+        })
+</script>
+
+<div class="row">
+    <div class="nav navbar-nav navbar-left">
+        <img src="~/Content/images/Yield.png" style="height:40px; width:40px">
+    </div>
+    <div class="nav navbar-nav navbar-left">
+        <ol class="breadcrumb" style="width:600px">
+            <li class="active">JO Progress</li>
+        </ol>
+    </div>
+</div>
+
+<div class="v-content" id="chartdiv" style="margin-top:2%">
+</div>
+<input class="hide" type="text" id="defjo" name="defjo" value="@ViewBag.defjo">
+

@@ -467,6 +467,10 @@ namespace Prism.Controllers
 
         public ActionResult JOQuery()
         {
+            var dbs = new List<string>();
+            dbs.Add("MES");
+            dbs.Add("ATE");
+            ViewBag.dblist = CreateSelectList(dbs, "");
             return View();
         }
 
@@ -500,6 +504,7 @@ namespace Prism.Controllers
             var pn = Request.Form["pn"];
             var ssdate = Request.Form["sdate"];
             var sedate = Request.Form["edate"];
+            var dbstr = Request.Form["dbstr"];
 
             var startdate = DateTime.Now;
             var enddate = DateTime.Now;
@@ -540,7 +545,7 @@ namespace Prism.Controllers
                 title = pn;
             }
 
-            var retdata = JOVM.QueryJO(title,pncond, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"));
+            var retdata = JOVM.QueryJO(title,pncond, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), dbstr);
             var ret = new JsonResult();
             ret.MaxJsonLength = Int32.MaxValue;
             if (retdata.Count == 0)
@@ -557,9 +562,32 @@ namespace Prism.Controllers
                     success = true,
                     jodatalist = retdata[0],
                     joholddict = retdata[1],
-                    chartdata = retdata[2]
+                    chartdata = retdata[2],
+                    datafrom = dbstr
                 };
             }
+            return ret;
+        }
+
+        public ActionResult JOProgress(string jo)
+        {
+            ViewBag.defjo = "";
+            if (!string.IsNullOrEmpty(jo))
+            { ViewBag.defjo = jo; }
+            return View();
+        }
+
+        public JsonResult JOProgressData()
+        {
+            var jo = Request.Form["jo"];
+            var chartdata = JOVM.QueryJOProcess(jo);
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                success = true,
+                chartdata = chartdata
+            };
             return ret;
         }
 

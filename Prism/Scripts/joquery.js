@@ -27,6 +27,7 @@
             var pn = $('#PN').val();
             var sdate = $('#sdate').val();
             var edate = $('#edate').val();
+            var dbstr = $('#dblist').val();
 
             if (pdf == '' && pn == '')
             {
@@ -34,21 +35,38 @@
                 return false;
             }
 
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
+
             $.post('/main/JOQueryData', {
                 pdf: pdf,
                 pn: pn,
                 sdate: sdate,
-                edate: edate
+                edate: edate,
+                dbstr: dbstr
             }, function (output) {
-                if (output.success == false)
-                { return false; }
+
+                $.bootstrapLoading.end();
 
                 if (myjotable) {
                     myjotable.destroy();
+                    myjotable = null;
                 }
+
                 $('#jocontentid').empty();
 
                 $('#chartdiv').empty();
+
+                if (output.success == false)
+                { return false; }
+
                 var appendstr = '<div class="col-xs-12">' +
                                '<div class="v-box" id="' + output.chartdata.id + '"></div>' +
                                '</div>';
@@ -68,8 +86,16 @@
                         holdstr = '<td>' + val.SNHold + '</td>';
                     }
 
+                    var linkstr = '';
+                    if (output.datafrom.indexOf('ATE') != -1) {
+                        linkstr = '/Main/JOProgress?jo=' + encodeURIComponent(val.JO);
+                    }
+                    else {
+                        linkstr = 'http://wuxinpi.china.ads.finisar.com/CustomerData/JOMesProgress?jo=' + encodeURIComponent(val.JO);
+                    }
+
                      appendstr = '<tr>' +
-                        '<td><a href="http://wuxinpi.china.ads.finisar.com/CustomerData/JOMesProgress?jo=' + encodeURIComponent(val.JO) + '" target="_blank">' + val.JO + '</a></td>' +
+                        '<td><a href="'+linkstr +'" target="_blank">' + val.JO + '</a></td>' +
                         '<td>' + val.PN + '</td>' +
                         '<td>' + val.Qty + '</td>' +
                         '<td>' + val.ReleaseDate + '</td>' +
@@ -103,6 +129,37 @@
                 holdsns += val + ',';
             });
             alert(holdsns);
+        });
+    }
+
+    var PROCESS = function ()
+    {
+        function searchdata()
+        {
+            var jo = $('#defjo').val();
+            if (jo == '')
+            {
+                alert('Default JO Number is not offered!');
+                return false;
+            }
+
+            $.post('/Main/JOProgressData', {
+                jo:jo
+            }, function (output) {
+                $('#chartdiv').empty();
+                if (output.success == false)
+                { return false; }
+
+                var appendstr = '<div class="col-xs-12">' +
+                               '<div class="v-box" id="' + output.chartdata.id + '"></div>' +
+                               '</div>';
+                $('#chartdiv').append(appendstr);
+                drawcolumn(output.chartdata);
+            })
+        }
+
+        $(function () {
+            searchdata();
         });
     }
 
@@ -160,6 +217,9 @@
     return {
         INIT: function () {
             QUERYINIT();
+        },
+        JOPROCESS:function(){
+            PROCESS();
         }
     }
 }();
