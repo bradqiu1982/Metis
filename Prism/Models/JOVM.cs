@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace Prism.Models
 {
@@ -33,16 +34,39 @@ namespace Prism.Models
 
     public class JOVM
     {
-        private static object GetChartData(string title, Dictionary<string, int> wfcntdict)
+        private static object GetChartData(string title, Dictionary<string, int> wfcntdict,string defdb,Controller ctrl)
         {
             var colorarray = new string[] { "#0053a2", "#bada55", "#1D2088" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
                 , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
                 , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" };
             var colorlist = colorarray.ToList();
 
-          
-            var wflist = wfcntdict.Keys.ToList();
-            wflist.Sort();
+            var wflist = new List<string>();
+            if (string.Compare(defdb, "ATE") == 0)
+            {
+                var syscfg = CfgUtility.GetSysConfig(ctrl);
+                var allwflist = syscfg["JOQUERYWORKFLOW"].Split(new string[] { ";" },StringSplitOptions.RemoveEmptyEntries).ToList();
+
+                var tempwflist = wfcntdict.Keys.ToList();
+                tempwflist.Sort();
+
+                foreach (var item in allwflist)
+                {
+                    if (tempwflist.Contains(item))
+                    {
+                        wflist.Add(item);
+                        tempwflist.Remove(item);
+                    }
+                }
+
+                wflist.AddRange(tempwflist);
+            }
+            else
+            {
+                wflist = wfcntdict.Keys.ToList();
+                wflist.Sort();
+            }
+
 
             var cidx = 0;
             var datalist = new List<object>();
@@ -124,7 +148,7 @@ namespace Prism.Models
         }
 
 
-        public static List<object> QueryJO(string title,string pncond, string startdate, string enddate,string defdb="MES")
+        public static List<object> QueryJO(string title,string pncond, string startdate, string enddate,Controller ctrl,string defdb="MES")
         {
             var ret = new List<object>();
             var dbret = new List<List<object>>();
@@ -282,11 +306,11 @@ namespace Prism.Models
 
             ret.Add(jolist);
             ret.Add(joholddict);
-            ret.Add(GetChartData(title,workflowdict));
+            ret.Add(GetChartData(title,workflowdict,defdb,ctrl));
             return ret;
         }
 
-        public static object QueryJOProcess(string jo)
+        public static object QueryJOProcess(string jo, Controller ctrl)
         {
             var sql = @"SELECT distinct  a.MFR_SN,a.MFR_PN,b.JOB_ID,j.oracle_qty,j.time,b.state,ds.maxtime,
                         'Active' as JOStatus,
@@ -323,7 +347,7 @@ namespace Prism.Models
                 catch (Exception ex) { }
             }
 
-            return GetChartData(jo, workflowdict);
+            return GetChartData(jo, workflowdict,"ATE",ctrl);
         }
 
 

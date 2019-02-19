@@ -545,7 +545,7 @@ namespace Prism.Controllers
                 title = pn;
             }
 
-            var retdata = JOVM.QueryJO(title,pncond, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"), dbstr);
+            var retdata = JOVM.QueryJO(title,pncond, startdate.ToString("yyyy-MM-dd HH:mm:ss"), enddate.ToString("yyyy-MM-dd HH:mm:ss"),this, dbstr);
             var ret = new JsonResult();
             ret.MaxJsonLength = Int32.MaxValue;
             if (retdata.Count == 0)
@@ -580,7 +580,7 @@ namespace Prism.Controllers
         public JsonResult JOProgressData()
         {
             var jo = Request.Form["jo"];
-            var chartdata = JOVM.QueryJOProcess(jo);
+            var chartdata = JOVM.QueryJOProcess(jo,this);
             var ret = new JsonResult();
             ret.MaxJsonLength = Int32.MaxValue;
             ret.Data = new
