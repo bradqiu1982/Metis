@@ -878,6 +878,7 @@
     <Content Include="Views\Machine\HydraMachineUsage.cshtml" />
     <Content Include="Views\Shared\_LayoutGantt.cshtml" />
     <Content Include="Views\Main\JOProgress.cshtml" />
+    <Content Include="Views\Machine\HydraMACRate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

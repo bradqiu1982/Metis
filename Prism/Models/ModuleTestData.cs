@@ -123,6 +123,7 @@ namespace Prism.Models
         public HYDRASummary()
         {
             SpendSec = 0;
+            Rate = 0;
         }
 
         public static void SendHydraWarningEmail(Controller ctrl)
@@ -306,6 +307,59 @@ namespace Prism.Models
             return ret;
         }
 
+        public static List<HYDRASummary> RetrieveHydraRate(string tester, string startdate, string enddate)
+        {
+            var ret = new List<HYDRASummary>();
+
+            var sql = "select ProductFamily,TestStation,TestTimeStamp StartTime,SpendTime FROM [BSSupport].[dbo].[ModuleTestData] WHERE TestStation = '<tester>' and TestTimeStamp > '<startdate>' and TestTimeStamp < '<enddate>' order by TestTimeStamp asc";
+            sql = sql.Replace("<tester>", tester).Replace("<startdate>", startdate).Replace("<enddate>", enddate);
+
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var tempvm = new HYDRASummary();
+                tempvm.ProductFamily = Convert.ToString(line[0]);
+                tempvm.TestStation = Convert.ToString(line[1]);
+                tempvm.StartDate = Convert.ToDateTime(line[2]);
+                tempvm.SpendSec = Convert.ToInt32(line[3]);
+                tempvm.EndDate = tempvm.StartDate.AddSeconds(tempvm.SpendSec);
+                ret.Add(tempvm);
+            }
+
+            var retdata = new List<HYDRASummary>();
+            var dayhour = 22.0;
+            if (string.Compare(DateTime.Parse(startdate).ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd")) == 0)
+            {
+                dayhour = (DateTime.Now - DateTime.Parse(startdate)).TotalSeconds / 3600.0;
+            }
+
+            if (ret.Count > 0)
+            {
+                var workinglist = (List<HYDRASummary>)CollectWorkingStatus(DateTime.Parse(startdate), ret)[0];
+                if (workinglist.Count > 0)
+                {
+                    var days = (DateTime.Parse(enddate) - DateTime.Parse(startdate)).Days + 1;
+
+                    var tempvm = new HYDRASummary();
+                    tempvm.TestStation = tester;
+                    tempvm.TotalSpend = workinglist[0].TotalSpend;
+                    tempvm.StartDate = DateTime.Parse(startdate);
+                    tempvm.Rate = Math.Round(tempvm.TotalSpend / (dayhour*days) * 100.0, 1);
+                    retdata.Add(tempvm);
+                }
+                else
+                {
+                    var tempvm = new HYDRASummary();
+                    tempvm.TestStation = tester;
+                    tempvm.TotalSpend = 0.0;
+                    tempvm.StartDate = DateTime.Parse(startdate);
+                    tempvm.Rate = Math.Round(tempvm.TotalSpend / 22.0, 3);
+                    retdata.Add(tempvm);
+                }
+            }
+            return retdata;
+        }
+
         public DateTime StartDate { set; get; }
         public double SpendSec { set; get; }
         public DateTime EndDate { set; get; }
@@ -314,6 +368,8 @@ namespace Prism.Models
         public double TotalSpend { set; get; }
         public string TestStation { set; get; }
         public string ProductFamily { set; get; }
+
+        public double Rate { set; get; }
     }
 
 }

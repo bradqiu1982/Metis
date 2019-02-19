@@ -1,7 +1,7 @@
 ﻿
 @{
-    ViewBag.Title = "HydraMachineUsage";
-    Layout = "~/Views/Shared/_LayoutGantt.cshtml";
+    ViewBag.Title = "HydraMACRate";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <link type="text/css" rel="stylesheet" href="~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css" />
@@ -16,7 +16,7 @@
 <script type="text/javascript" src="~/Scripts/machine.js"></script>
 <script type="text/javascript">
         $(function(){
-            MACHINE.HYDRAINIT();
+            MACHINE.MRATEINIT();
         })
 </script>
 
@@ -46,12 +46,12 @@
                     <span class="item-show">Product Machine</span>
                 </a>
             </li>
-            <li class="active">
+            <li>
                 <a href="/Machine/HydraMachineUsage">
                     <span class="item-show">Hydra Machine</span>
                 </a>
             </li>
-            <li>
+            <li class="active">
                 <a href="/Machine/HydraMACRate">
                     <span class="item-show">Hydra Rate</span>
                 </a>
@@ -62,7 +62,6 @@
         <div class="v-container">
             <div class="v-filter">
                 <div class="row row-margin">
-                    <div class="col-xs-2">@Html.DropDownList("hydratesterlist", null, new { @id = "hydratesterlist", @class = "form-control" })</div>
                     <div class="col-xs-3">
                         <div class="input-group date" data-date=""
                              data-date-format="yyyy-mm-dd">
@@ -84,6 +83,7 @@
                             </span>
                         </div>
                     </div>
+                    <div class="col-xs-2">@Html.DropDownList("weeklist", null, new { @id = "weeklist", @class = "form-control" })</div>
                     <div class="col-xs-2">
                         <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
                     </div>
@@ -93,14 +93,13 @@
             </div>
             <div class="v-content">
                 <table class="table table-hover  table-condensed table-striped" id="testyieldtable" style="margin-top:1%">
-                    <caption class="tb-caption">MACHINE RUNING STATUS TABLE</caption>
+                    <caption class="tb-caption">HYDRA RATE TABLE</caption>
                     <thead>
                         <tr>
-                        <th>Status</th>
-                        <th>StartTime</th>
-                        <th>EndTime</th>
-                        <th>PendingHour</th>
-                        <th>TotalPendingHour</th>
+                            <th>Machine</th>
+                            <th>Date</th>
+                            <th>WorkingHour</th>
+                            <th>Rate</th>
                         </tr>
                     </thead>
                     <tbody id="testyieldcontentid"></tbody>
@@ -109,3 +108,5 @@
         </div>
     </div>
 </div>
+
+

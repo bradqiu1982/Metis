@@ -564,8 +564,10 @@
 
                     if (testyieldtable) {
                         testyieldtable.destroy();
+                        testyieldtable = null;
                     }
                     $("#testyieldcontentid").empty();
+
                     if (output.chartlist.length == 0)
                     {
                         return false;
@@ -624,6 +626,114 @@
             };
             Highcharts.ganttChart(line_data.id,options);
         }
+    }
+
+
+    var hydrarate = function () {
+
+        var testyieldtable = null;
+        $('.date').datepicker({ autoclose: true, viewMode: "days", minViewMode: "days" });
+
+        function searchdata()
+        {
+            var week = $('#weeklist').val();
+            if (week == null || week.indexOf('WEEKS') != -1)
+            {
+                week = '';
+            }
+
+            var sdate = $.trim($('#sdate').val());
+            var edate = $.trim($('#edate').val());
+            
+
+            var boptions = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(boptions);
+
+            $.post('/Machine/HydraMACRateData', {
+                sdate: sdate,
+                edate: edate,
+                week: week
+            }, function (output) {
+                $.bootstrapLoading.end();
+
+                $('#chart-content').empty();
+                var appendstr = '<div class="col-xs-12">' +
+                                '<div class="v-box" id="' + output.chartdata.id + '"></div>' +
+                                '</div>';
+                $('#chart-content').append(appendstr);
+                drawhydraline(output.chartdata);
+
+                if (testyieldtable) {
+                    testyieldtable.destroy();
+                    testyieldtable = null;
+                }
+                $("#testyieldcontentid").empty();
+
+                appendstr = "";
+                $.each(output.ratedata, function (i, val) {
+                    appendstr += "<tr>";
+                    appendstr += "<td>" + val.TestStation + "</td>";
+                    appendstr += "<td>" + val.StartDateStr + "</td>";
+                    appendstr += "<td>" + val.TotalSpend + "</td>";
+                    appendstr += "<td>" + val.Rate + "%</td>";
+                    appendstr += "</tr>";
+                })
+                $("#testyieldcontentid").append(appendstr);
+
+                testyieldtable = $('#testyieldtable').DataTable({
+                    'iDisplayLength': 50,
+                    'aLengthMenu': [[20, 50, 100, -1],
+                    [20, 50, 100, "All"]],
+                    "aaSorting": [],
+                    "order": [],
+                    dom: 'lBfrtip',
+                    buttons: ['copyHtml5', 'csv', 'excelHtml5']
+                });
+
+
+            });
+        }
+
+        $('body').on('click', '#btn-search', function () {
+            searchdata();
+        })
+
+        //$(function () {
+        //    searchdata();
+        //});
+
+
+        var drawhydraline = function (line_data) {
+            var options = {
+                chart: {
+                    type: 'line'
+                },
+                title: {
+                    text: 'HYDRA MACHINE RATE'
+                },
+                xAxis: {
+                    title: {
+                        text: "Date"
+                    },
+                    categories: line_data.xlist
+                },
+                yAxis: {
+                    title: {
+                        text: "Use Rate %"
+                    }
+                },
+                series: line_data.serial
+            };
+
+            Highcharts.chart(line_data.id, options);
+        }
 
     }
 
@@ -637,5 +747,8 @@
         HYDRAINIT: function () {
             hydramachine();
         },
+        MRATEINIT: function () {
+            hydrarate();
+        }
     }
 }();

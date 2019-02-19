@@ -374,5 +374,231 @@ namespace Prism.Controllers
             return ret;
         }
 
+
+        public ActionResult HydraMACRate()
+        {
+            var weeks = new string[] { "WEEKS", "4", "8", "12", "16", "20", "24"};
+            var weeklist = CreateSelectList(weeks.ToList(), "");
+            weeklist[0].Disabled = true;
+            weeklist[0].Selected = true;
+            ViewBag.weeklist = weeklist;
+
+            return View();
+        }
+
+        private Dictionary<string, List<HYDRASummary>> HydraWeeklyRate()
+        {
+            var syscfg = CfgUtility.GetSysConfig(this);
+            var hydratesters = syscfg["HYDRATESTER"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            hydratesters.Sort();
+
+            var weeks = Convert.ToInt32(Request.Form["week"]);
+            var previousdate = DateTime.Now.AddDays(-7 * weeks);
+            var firstdate = previousdate;
+            while (firstdate.DayOfWeek != DayOfWeek.Monday)
+            {
+                firstdate = firstdate.AddDays(1);
+            }
+
+            firstdate = DateTime.Parse(firstdate.ToString("yyyy-MM-dd") + " 00:00:00");
+            var datelist = new List<DateTime>();
+            
+            while (firstdate < DateTime.Now)
+            {
+                datelist.Add(firstdate);
+                firstdate = firstdate.AddDays(7);
+            }
+
+            var ret = new Dictionary<string, List<HYDRASummary>>();
+            foreach (var tester in hydratesters)
+            {
+                foreach (var sd in datelist)
+                {
+                    var edate = sd.AddDays(7).AddSeconds(-1);
+                    if (edate > DateTime.Now)
+                    { edate = DateTime.Now; }
+
+                    var hydrarate = HYDRASummary.RetrieveHydraRate(tester, sd.ToString("yyyy-MM-dd HH:mm:ss"),edate.ToString("yyyy-MM-dd HH:mm:ss"));
+                    if (hydrarate.Count > 0)
+                    {
+                        if (ret.ContainsKey(tester))
+                        {
+                            ret[tester].Add(hydrarate[0]);
+                        }
+                        else
+                        {
+                            var templist = new List<HYDRASummary>();
+                            templist.Add(hydrarate[0]);
+                            ret.Add(tester, templist);
+                        }
+                    }
+                }//end for
+            }//end foreach
+            return ret;
+        }
+
+        private Dictionary<string,List<HYDRASummary>> HydraDailyRate()
+        {
+            var syscfg = CfgUtility.GetSysConfig(this);
+            var hydratesters = syscfg["HYDRATESTER"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            hydratesters.Sort();
+
+
+            var ssdate = Request.Form["sdate"];
+            var sedate = Request.Form["edate"];
+            var startdate = DateTime.Now;
+            var enddate = DateTime.Now;
+
+            if (!string.IsNullOrEmpty(ssdate) && !string.IsNullOrEmpty(sedate))
+            {
+                var sdate = DateTime.Parse(Request.Form["sdate"]);
+                var edate = DateTime.Parse(Request.Form["edate"]);
+                if (sdate < edate)
+                {
+                    startdate = DateTime.Parse(sdate.ToString("yyyy-MM-dd") + " 00:00:00");
+                    enddate = DateTime.Parse(edate.ToString("yyyy-MM-dd") + " 00:00:00").AddDays(1).AddSeconds(-1);
+                }
+                else
+                {
+                    startdate = DateTime.Parse(edate.ToString("yyyy-MM-dd") + " 00:00:00");
+                    enddate = DateTime.Parse(sdate.ToString("yyyy-MM-dd") + " 00:00:00").AddDays(1).AddSeconds(-1);
+                }
+
+                if (startdate < DateTime.Parse("2019-01-17 00:00:00"))
+                { startdate = DateTime.Parse("2019-01-17 00:00:00"); }
+
+                if (enddate < DateTime.Parse("2019-01-17 00:00:00"))
+                { enddate = DateTime.Now; }
+            }
+            else
+            {
+                enddate = DateTime.Now;
+                startdate = DateTime.Parse(enddate.AddDays(-7).ToString("yyyy-MM-dd") + " 00:00:00");
+                if (startdate < DateTime.Parse("2019-01-17 00:00:00"))
+                { startdate = DateTime.Parse("2019-01-17 00:00:00"); }
+            }
+
+            var ret = new Dictionary<string, List<HYDRASummary>>();
+            foreach (var tester in hydratesters)
+            {
+                var sd = startdate;
+                for (; sd < enddate;)
+                {
+                    var hydrarate = HYDRASummary.RetrieveHydraRate(tester, sd.ToString("yyyy-MM-dd HH:mm:ss"), sd.AddDays(1).AddSeconds(-1).ToString("yyyy-MM-dd HH:mm:ss"));
+                    if (hydrarate.Count > 0)
+                    {
+                        if (ret.ContainsKey(tester))
+                        {
+                            ret[tester].Add(hydrarate[0]);
+                        }
+                        else
+                        {
+                            var templist = new List<HYDRASummary>();
+                            templist.Add(hydrarate[0]);
+                            ret.Add(tester, templist);
+                        }
+                    }
+                    sd = sd.AddDays(1);
+                }//end for
+            }//end foreach
+            return ret;
+        }
+
+        public object GetHydraRateChart(Dictionary<string, List<HYDRASummary>> srcdata)
+        {
+            var serialist = new List<object>();
+            var xlist = new List<string>();
+            foreach (var kv in srcdata)
+            {
+                var dataarray = new List<object>();
+                foreach (var hdata in kv.Value)
+                {
+                    var temlist = new List<object>();
+                    temlist.Add(hdata.StartDate.ToString("yyyy-MM-dd"));
+                    if (!xlist.Contains(hdata.StartDate.ToString("yyyy-MM-dd")))
+                    {
+                        xlist.Add(hdata.StartDate.ToString("yyyy-MM-dd"));
+                    }
+                    temlist.Add(hdata.Rate);
+                    dataarray.Add(temlist);
+                }
+                serialist.Add(new {
+                    name = kv.Key,
+                    data = dataarray
+                });
+            }
+
+            xlist.Sort(delegate (string obj1, string obj2)
+            {
+                var d1 = DateTime.Parse(obj1 + " 00:00:00");
+                var d2 = DateTime.Parse(obj2 + " 00:00:00");
+                return d1.CompareTo(d2);
+            });
+
+            return new {
+                id = "hydrarateid",
+                xlist = xlist,
+                serial = serialist
+            };
+        }
+
+        public JsonResult HydraMACRateData()
+        {
+            var colorlist = new string[] { "#0053a2", "#bada55" ,"#00ff00", "#fca2cf", "#E60012", "#EB6100", "#E4007F"
+                , "#CFDB00", "#8FC31F", "#22AC38", "#920783",  "#b5f2b0", "#F39800","#4e92d2" , "#FFF100"
+                , "#1bfff5", "#4f4840", "#FCC800", "#0068B7", "#6666ff", "#009B6B", "#16ff9b" }.ToList();
+            var week = Request.Form["week"];
+            if (!string.IsNullOrEmpty(week))
+            {
+                var weeklydata = HydraWeeklyRate();
+                var ratedata = new List<HYDRASummary>();
+                var idx = 0;
+                foreach (var kv in weeklydata)
+                {
+                    var color = colorlist[idx % colorlist.Count];
+                    foreach (var item in kv.Value)
+                    { item.TestStation = "<span style='background-color:" + color + "'>" + item.TestStation + "</span>"; }
+
+                    ratedata.AddRange(kv.Value);
+                    idx = idx + 1;
+                }
+
+                var chartdata = GetHydraRateChart(weeklydata);
+                var ret = new JsonResult();
+                ret.MaxJsonLength = Int32.MaxValue;
+                ret.Data = new
+                {
+                    chartdata = chartdata,
+                    ratedata = ratedata
+                };
+                return ret;
+            }
+            else
+            {
+                var dailydata = HydraDailyRate();
+                var ratedata = new List<HYDRASummary>();
+                var idx = 0;
+                foreach (var kv in dailydata)
+                {
+                    var color = colorlist[idx%colorlist.Count];
+                    foreach (var item in kv.Value)
+                    { item.TestStation = "<span style='background-color:"+color+"'>" + item.TestStation + "</span>"; }
+
+                    ratedata.AddRange(kv.Value);
+                    idx = idx + 1;
+                }
+
+                var chartdata = GetHydraRateChart(dailydata);
+                var ret = new JsonResult();
+                ret.MaxJsonLength = Int32.MaxValue;
+                ret.Data = new {
+                    chartdata = chartdata,
+                    ratedata = ratedata
+                };
+                return ret;
+            }
+        }
+
+
     }
 }
