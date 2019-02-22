@@ -667,6 +667,7 @@
     <Content Include="Content\bootstrap\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap\bootstrap.css" />
     <Content Include="Content\bootstrap\bootstrap.min.css" />
+    <Content Include="Content\images\banner.jpg" />
     <Content Include="Content\images\end.png" />
     <Content Include="Content\images\Report.png" />
     <Content Include="Content\images\start.png" />
@@ -784,6 +785,7 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\layout.js" />
     <Content Include="Scripts\machine.js" />
     <Content Include="Scripts\MyVideoRecord.js" />
     <Content Include="Scripts\NPI_TestData_Table.txt" />

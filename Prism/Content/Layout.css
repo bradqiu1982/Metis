@@ -60,35 +60,118 @@
    cursor:pointer;
 }
 body{
-    margin-top: 5% !important;
-    padding-top: 10px !important;
+    /*margin-top: 3.5% !important;*/
+    /*padding-top: 10px !important;*/
     background-color:#f9f9f9;
 }
 
 .body-content{
-    margin-top: 1%;
+    margin-top:10px!important;
 }
+
 
 .div-nav{
     background-color: white;
     border-color: #5B9BD5;
-    height: 85px;
+    height: 50px;
     margin-bottom: 0px;
     border-bottom-width: 0px!important;
 }
 
-.nav-content{
-    background-color:white;
-    border-color:#5B9BD5;
+.nav-content {
+    /*background-color:black;*/
+    background-image: url("../Content/images/banner.jpg");
+    border-color: #081f49;
 }
 
 .logo{
     margin-left: 20px;
 }
 
+#defmenudiv {
+    background-color:#cac8c8;
+    height:50px;
+    margin-top:50px;
+    padding-left:0px;
+    padding-top:0px;
+    padding-bottom:0px;
+    padding-right:10px;
+    position:fixed;
+    top:0px;
+    left:0px;
+    z-index:1009;
+    border-width: 0px!important;
+}
+
+#emptydiv {
+    height:50px;
+    margin-top:50px;
+    padding:0px;
+}
+
+#submenudiv {
+    background-color:#2d3033;
+    height:50px;
+    margin-top:50px;
+    padding:0px;
+}
+
+.top-menum {
+    padding-left:1em;
+    margin-top:15px;
+    display:inline-block;
+    cursor:pointer;
+}
+
+#deftitle {
+    margin-top:15px;
+    color:black;
+    font-size:18px;
+    font-weight:bold;
+    display:inline-block;
+    margin-left:10px;
+}
+
+#menuicon {
+    margin-left:20px;
+    font-size:18px;
+    font-weight:bold;
+    display:inline-block;
+}
+
+.top-menum-def-color {
+    color:#777777;
+}
+
+.top-menum-mvin-color {
+    color:white;
+}
+
+.sub-menum {
+    padding-left:2em;
+    margin-top:15px;
+    display:inline-block;
+    cursor:pointer;
+}
+
+.sub-menum-title {
+    padding-left:2em;
+    margin-top:15px;
+    display:inline-block;
+    font-weight:bold;
+}
+
+.sub-menum-def-color {
+    color:#777777;
+}
+
+.sub-menum-mvin-color {
+    color:white;
+}
+
 .div-navlink{
-    margin-bottom:0px;
-    margin-top: 30px;
+    /*margin-bottom:0px;
+    margin-top: 30px;*/
     min-width: 1200px;
 }
 .div-nav-right{

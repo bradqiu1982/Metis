@@ -39,12 +39,15 @@
     <script src="~/Scripts/datatables/dataTables.buttons.min.js"></script>
     <script src="~/Scripts/datatables/jszip.min.js"></script>
 
+    <script src="~/Scripts/layout.js"></script>
 
     <script type="text/javascript">
         $(function () {
             HighChartModal.init();
+            LAYOUT.INIT();
         });
     </script>
+
 </head>
 
 @{
@@ -56,23 +59,22 @@
     { isvideook = true; }
 }
 
-<body>
+<body style="padding:0px;margin:0px">
     <script type="text/javascript">
         $(function () {
             $('[data-toggle="popover"]').popover({ html: true, placement: 'bottom' });
         })
     </script>
-
-    <div class="navbar navbar-default navbar-fixed-top div-nav">
+    <div class="navbar navbar-default navbar-fixed-top div-nav" style="margin-bottom:0px;padding:0px">
         <nav class="navbar navbar-default navbar-fixed-top nav-content">
             <div class="container">
                 <div class="row">
-                    <div class="navbar-header logo">
+                    <div class="navbar-header logo" style="display:inline-block">
                         <a class="navbar-brand" href="#">
-                            <img alt="Brand" src="~/Content/images/FinisarLogo.jpg" height="54" width="250">
+                            <img alt="Brand" src="~/Content/images/FinisarLogo.jpg" width="100">
                         </a>
                     </div>
-                    <div id="navbar" class="navbar-collapse collapse div-navlink">
+                    @*<div id="navbar" class="navbar-collapse collapse div-navlink" style="display:inline-block">
                         <ul class="nav navbar-nav">
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Main<span class="caret"></span></a>
@@ -205,24 +207,48 @@
                             </li>
                         </ul>
 
-                        @*@Html.Partial("_LoginPartial")
+                        @Html.Partial("_LoginPartial")
 
-                        <ul class="nav navbar-nav">
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                    <span class="glyphicon glyphicon-link" title="Friendly Links" data-toggle="tooltip"></span>
-                                </a>
-                                <ul class="dropdown-menu">
-                                    <li>
-                                        <a href="http://cn-traceview/" target="_blank">Trace View</a>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>*@
-                    </div>
+                            <ul class="nav navbar-nav">
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                        <span class="glyphicon glyphicon-link" title="Friendly Links" data-toggle="tooltip"></span>
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li>
+                                            <a href="http://cn-traceview/" target="_blank">Trace View</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </ul>
+                    </div>*@
+                    <span class="top-menum top-menum-def-color" myid="MAIN">MAIN</span>
+                    <span class="top-menum top-menum-def-color" myid="YIELD">YIELD</span>
+                    <span class="top-menum top-menum-def-color" myid="MACHINE">MACHINE</span>
+                    <span class="top-menum top-menum-def-color" myid="SHIPMENT">SHIPMENT</span>
+                    <span class="top-menum top-menum-def-color" myid="SCRAP">SCRAP</span>
+                    <span class="top-menum top-menum-def-color" myid="HPU">HPU</span>
+                    <span class="top-menum top-menum-def-color" myid="CAPACITY">CAPACITY</span>
+                    <span class="top-menum top-menum-def-color" myid="INVENTORY">INVENTORY</span>
+                    <span class="top-menum top-menum-def-color" myid="VCSEL">VCSEL</span>
                 </div>
             </div>
         </nav>
+        
+    </div>
+
+    <div id="defmenudiv" name="defmenudiv">
+        <span class="glyphicon glyphicon-menu-hamburger" id="menuicon" name="menuicon"></span>
+        <span id="deftitle" name="deftitle"></span>
+    </div>
+    <div id="emptydiv" name="emptydiv">
+        <span>&nbsp;</span>
+    </div>
+    <div class="hide" id="submenudiv" name="submenudiv">
+        <div class="row">
+            <div class="col-xs-1"></div>
+            <div class="col-xs-11" id="submenu" name="submenu"></div>
+        </div>
     </div>
 
     <div class="container body-content">
@@ -238,7 +264,6 @@
                 var scrollingElement = (document.scrollingElement || document.body)
                 scrollingElement.scrollTop = scrollingElement.scrollHeight;
             }
-
         </script>
     </div>
 
