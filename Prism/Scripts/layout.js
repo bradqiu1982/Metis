@@ -68,6 +68,7 @@
             }
 
             $('#defmenudiv').addClass('hide');
+
             $('#emptydiv').addClass('hide');
             $('#submenudiv').removeClass('hide');
         });
@@ -93,6 +94,7 @@
 
         $('body').on('mouseover', '.body-content', function () {
             $('#defmenudiv').removeClass('hide');
+
             $('#emptydiv').removeClass('hide');
             $('#submenudiv').addClass('hide');
         });
