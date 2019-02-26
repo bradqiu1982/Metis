@@ -27,6 +27,9 @@ namespace Prism.Models
                         {
                             var quarter = line[0].ToUpper().Trim().Replace("FY", "20").Replace("-ACTUAL", "");
                             var department = line[1];
+                            if (string.IsNullOrEmpty(department))
+                            { continue; }
+
                             var id = quarter + "_" + department;
                             var cogs = Convert.ToDouble(line[2].Replace("$", ""));
                             var inventory = Convert.ToDouble(line[3].Replace("$", ""));
