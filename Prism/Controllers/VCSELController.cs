@@ -844,7 +844,7 @@ namespace Prism.Controllers
             }
 
             var serial = new List<object>();
-            serial.Add(new { name="ship count",data=shiplist,type="column", yAxis=1 });
+            serial.Add(new { name="ship count",data=shiplist,type="column", yAxis=1, maxPointWidth = 80 });
             serial.Add(new { name = "vcsel dppm", data = dppmlist,type="line" });
             return new
             {
@@ -884,7 +884,7 @@ namespace Prism.Controllers
             }
 
             var serial = new List<object>();
-            serial.Add(new { name = "ship count", data = shiplist, type = "column", yAxis = 1 });
+            serial.Add(new { name = "ship count", data = shiplist, type = "column", yAxis = 1, maxPointWidth = 80 });
             serial.Add(new { name = "vcsel dppm", data = dppmlist, type = "line" });
             return new
             {

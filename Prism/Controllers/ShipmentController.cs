@@ -1487,7 +1487,8 @@ namespace Prism.Controllers
                 name = "RMA Count",
                 data = rmacnt,
                 yAxis = 1,
-                color = colorlist[1]
+                color = colorlist[1],
+                maxPointWidth = 80
             };
             var chartdata = new List<object>();
             chartdata.Add(rmacntchart);

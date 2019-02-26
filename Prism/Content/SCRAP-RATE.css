@@ -12,9 +12,9 @@ body{
     margin-top:1%!important;
 }
 .container{
-    margin: auto 2% auto 5%;
+    /*margin: auto 2% auto 5%;*/
     padding: 2px;
-    width: 93%;
+    width: 80%;
 }
 
 .nav-sidebar {
