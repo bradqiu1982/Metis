@@ -28,7 +28,10 @@ namespace Prism.Models
                     continue;
                 }
 
-                var sn = line[10].Trim().ToUpper();
+                if (string.IsNullOrEmpty(line[10].Trim()))
+                { continue; }
+
+                var sn = line[10].Trim().ToUpper().Split(new string[] { ";","/"," "},StringSplitOptions.RemoveEmptyEntries)[0];
                 if (!existrmasn.ContainsKey(sn))
                 {
                     existrmasn.Add(sn, true);
@@ -69,7 +72,7 @@ namespace Prism.Models
                         item.VcselTech = snwaferdict[item.SN].WaferTech;
                         item.Wafer = snwaferdict[item.SN].WaferNum;
                         item.BuildDate = DateTime.Parse(snwaferdict[item.SN].SNDate);
-                        if (string.IsNullOrEmpty(item.ShipDate))
+                        if (string.IsNullOrEmpty(item.ShipDate) || !CheckDate(item.ShipDate))
                         {
                             item.ShipDate = item.BuildDate.AddMonths(2).ToString("yyyy-MM-dd HH:mm:ss");
                         }
@@ -81,6 +84,15 @@ namespace Prism.Models
                     }
                 }//end foreach
             }
+        }
+
+        private static bool CheckDate(string d)
+        {
+            try
+            {
+                DateTime.Parse(d);
+            }catch (Exception ex) { return false; }
+            return true;
         }
 
         public static Dictionary<string, int> RetrieveRMACntByMonth(string sdate, string edate, string rate)

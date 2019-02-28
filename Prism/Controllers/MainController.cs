@@ -94,13 +94,6 @@ namespace Prism.Controllers
 
                 try
                 {
-                    heartbeatlog("ExternalDataCollector.LoadIEHPU", filename);
-                    ExternalDataCollector.LoadIEHPU(this);
-                }
-                catch (Exception ex) { }
-
-                try
-                {
                     heartbeatlog("ItemCostData.LoadCostData", filename);
                     ItemCostData.LoadCostData(this);
                 }
@@ -187,6 +180,13 @@ namespace Prism.Controllers
                 {
                     heartbeatlog("VcselRMAData.LoadVCSELRMA", filename);
                     VcselRMAData.LoadVCSELRMA(this);
+                }
+                catch (Exception ex) { }
+
+                try
+                {
+                    heartbeatlog("ExternalDataCollector.LoadIEHPU", filename);
+                    ExternalDataCollector.LoadIEHPU(this);
                 }
                 catch (Exception ex) { }
 
@@ -366,10 +366,9 @@ namespace Prism.Controllers
             return ret;
         }
 
-        public ActionResult HeartBeat2()
+        public ActionResult RefreshHPU()
         {
-            var syscfg = CfgUtility.GetSysConfig(this);
-            ExternalDataCollector.LoadIEHPU(this,syscfg["MANUALHPUQUARTER"]);
+            ExternalDataCollector.LoadIEHPU(this);
             return View("HeartBeat");
         }
 
