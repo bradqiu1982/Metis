@@ -729,7 +729,275 @@
                         text: "Use Rate %"
                     }
                 },
-                series: line_data.serial
+                series: line_data.serial,
+                exporting: {
+                    menuItemDefinitions: {
+                        fullscreen: {
+                            onclick: function () {
+                                $('#' + line_data.id).parent().toggleClass('chart-modal');
+                                $('#' + line_data.id).highcharts().reflow();
+                            },
+                            text: 'Full Screen'
+                        },
+                        datalabel: {
+                            onclick: function () {
+                                var labelflag = !this.series[0].options.dataLabels.enabled;
+                                $.each(this.series, function (idx, val) {
+                                    var opt = val.options;
+                                    opt.dataLabels.enabled = labelflag;
+                                    val.update(opt);
+                                })
+                            },
+                            text: 'Data Label'
+                        },
+                        copycharts: {
+                            onclick: function () {
+                                var svg = this.getSVG({
+                                    chart: {
+                                        width: this.chartWidth,
+                                        height: this.chartHeight
+                                    }
+                                });
+                                var c = document.createElement('canvas');
+                                c.width = this.chartWidth;
+                                c.height = this.chartHeight;
+                                canvg(c, svg);
+                                var dataURL = c.toDataURL("image/png");
+                                //var imgtag = '<img src="' + dataURL + '"/>';
+
+                                var img = new Image();
+                                img.src = dataURL;
+
+                                copyImgToClipboard(img);
+                            },
+                            text: 'copy 2 clipboard'
+                        }
+                    },
+                    buttons: {
+                        contextButton: {
+                            menuItems: ['fullscreen', 'datalabel', 'copycharts', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG']
+                        }
+                    }
+                }
+            };
+
+            Highcharts.chart(line_data.id, options);
+        }
+
+    }
+
+
+    var testtime = function () {
+
+        mdtable = null;
+        $('.date').datepicker({ autoclose: true, viewMode: "days", minViewMode: "days" });
+
+        function searchdata() {
+            var whichtest = $('#whichtestlist').val();
+
+            var sdate = $.trim($('#sdate').val());
+            var edate = $.trim($('#edate').val());
+            if (sdate == '' || edate == '')
+            {
+                alert('Please select test date!');
+                return false;
+            }
+
+            var boptions = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(boptions);
+
+            $.post('/Machine/MachineTestTimeData', {
+                sdate: sdate,
+                edate: edate,
+                whichtest: whichtest
+            }, function (output) {
+                $.bootstrapLoading.end();
+
+                $('#chart-content').empty();
+
+                $.each(output.chartdatalist, function (i, val) {
+                    var appendstr = '<div class="col-xs-12" style="margin-top:15px;">' +
+                                    '<div class="v-box" id="' + val.id + '"></div>' +
+                                    '</div>';
+                    $('#chartdiv').append(appendstr);
+                    drawtesttime(val);
+                });
+
+            });
+        }
+
+        $('body').on('click', '#btn-search', function () {
+            searchdata();
+        })
+
+        var showmoduledata = function (event, line_data)
+        {
+            var tester = event.point.series.name;
+            var sec = event.point.y;
+            var whichtest = line_data.whichtest;
+            var startdate = line_data.startdate;
+            var enddate = line_data.enddate;
+            $.post('/Machine/MachineTestTimeDetail',
+            {
+                tester: tester,
+                sec: sec,
+                whichtest: whichtest,
+                startdate: startdate,
+                enddate: enddate
+            },
+            function (outputdata) {
+                if (mdtable) {
+                    mdtable.destroy();
+                    mdtable = null;
+                }
+                $('#moduleheadid').empty();
+                $('#modulecontentid').empty();
+
+                var appendstr0 = '<tr>' +
+                        '<th>SN</th>' +
+                        '<th>PN</th>' +
+                        '<th>WhichTest</th>' +
+                        '<th>TimeStamp</th>' +
+                        '<th>Tester</th>' +
+                        '<th>SpendTime</th>' +
+                        '</tr>';
+                $('#moduleheadid').append(appendstr0);
+
+                $.each(outputdata.mdatalist, function (i, val) {
+                    var appendstr = '<tr>' +
+                        '<td>' + val.ModuleSN + '</td>' +
+                        '<td>' + val.PN + '</td>' +
+                        '<td>' + val.WhichTest + '</td>' +
+                        '<td>' + val.TestTimeStamp + '</td>' +
+                        '<td>' + val.TestStation + '</td>' +
+                        '<td>' + val.SpendTime + '</td>' +
+                        '</tr>';
+                    $('#modulecontentid').append(appendstr);
+                });
+
+                mdtable = $('#moduledatatable').DataTable({
+                    'iDisplayLength': 50,
+                    'aLengthMenu': [[20, 50, 100, -1],
+                    [20, 50, 100, "All"]],
+                    "aaSorting": [],
+                    "order": [],
+                    dom: 'lBfrtip',
+                    buttons: ['copyHtml5', 'csv', 'excelHtml5']
+                });
+                
+                $('#modulemodal').modal('show')
+            });
+        }
+
+        var drawtesttime = function (line_data) {
+            var options = {
+                chart: {
+                    type: 'scatter',
+                    zoomType: 'xy',
+                },
+                title: {
+                    text: line_data.title
+                },
+                xAxis: {
+                    categories:line_data.mlist,
+                    title: {
+                        text: "Machine"
+                    },
+                },
+                yAxis: {
+                    title: {
+                        text: "Seconds"
+                    },
+                    plotLines: [{
+                        value: line_data.target,
+                        color: 'red',
+                        width: 2,
+                        label: {
+                            text: 'Target:' + line_data.target,
+                            align: 'left'
+                        }
+                    }]
+                },
+                tooltip: {
+                    useHTML: true,
+                    formatter: function () {
+                        return '<b>' + this.series.name + '</b><br/> ' + this.y;
+                    }
+                },
+                plotOptions:
+                {
+                    series: {
+                        cursor: 'pointer',
+                        events: {
+                            click: function (event) {
+                                showmoduledata(event, line_data);
+                            }
+                        }
+                    },
+                    scatter: {
+                        marker:{
+                            radius:2
+                        }
+                    }
+                }
+                ,
+                series: line_data.serial,
+                exporting: {
+                    menuItemDefinitions: {
+                        fullscreen: {
+                            onclick: function () {
+                                $('#' + line_data.id).parent().toggleClass('chart-modal');
+                                $('#' + line_data.id).highcharts().reflow();
+                            },
+                            text: 'Full Screen'
+                        },
+                        datalabel: {
+                            onclick: function () {
+                                var labelflag = !this.series[0].options.dataLabels.enabled;
+                                $.each(this.series, function (idx, val) {
+                                    var opt = val.options;
+                                    opt.dataLabels.enabled = labelflag;
+                                    val.update(opt);
+                                })
+                            },
+                            text: 'Data Label'
+                        },
+                        copycharts: {
+                            onclick: function () {
+                                var svg = this.getSVG({
+                                    chart: {
+                                        width: this.chartWidth,
+                                        height: this.chartHeight
+                                    }
+                                });
+                                var c = document.createElement('canvas');
+                                c.width = this.chartWidth;
+                                c.height = this.chartHeight;
+                                canvg(c, svg);
+                                var dataURL = c.toDataURL("image/png");
+                                //var imgtag = '<img src="' + dataURL + '"/>';
+
+                                var img = new Image();
+                                img.src = dataURL;
+
+                                copyImgToClipboard(img);
+                            },
+                            text: 'copy 2 clipboard'
+                        }
+                    },
+                    buttons: {
+                        contextButton: {
+                            menuItems: ['fullscreen', 'datalabel', 'copycharts', 'printChart', 'separator', 'downloadPNG', 'downloadJPEG', 'downloadPDF', 'downloadSVG']
+                        }
+                    }
+                }
             };
 
             Highcharts.chart(line_data.id, options);
@@ -749,6 +1017,9 @@
         },
         MRATEINIT: function () {
             hydrarate();
+        },
+        MACTESTTIME: function () {
+            testtime();
         }
     }
 }();

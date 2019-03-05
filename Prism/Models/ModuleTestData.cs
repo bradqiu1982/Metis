@@ -98,6 +98,50 @@ namespace Prism.Models
             return ret;
         }
 
+        public static List<ModuleTestData> RetrieveModuleTestTimeDetail(string tester, string startdate, string enddate,string whichtest,string sec)
+        {
+            var ret = new List<ModuleTestData>();
+
+            var sql = @"select DataID,ModuleSN,TestTimeStamp,WhichTest,ErrAbbr,TestStation,ProductFamily,PN,PNDesc,ModuleType,SpeedRate,SpendTime,MESTab,YieldFamily from ModuleTestData 
+                            where TestStation = '<TestStation>' and TestTimeStamp >= '<startdate>' and TestTimeStamp < '<enddate>' and WhichTest = '<WhichTest>' and SpendTime = '<SpendTime>' order by ModuleSN,TestTimeStamp desc";
+            sql = sql.Replace("<TestStation>", tester).Replace("<startdate>", startdate).Replace("<enddate>", enddate)
+                .Replace("<WhichTest>", whichtest).Replace("<SpendTime>", sec);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                ret.Add(new ModuleTestData(Convert.ToString(line[0]), Convert.ToString(line[1]), Convert.ToDateTime(line[2]).ToString("yyyy-MM-dd HH:mm:ss")
+                    , Convert.ToString(line[3]), Convert.ToString(line[4]), Convert.ToString(line[5]), Convert.ToString(line[6])
+                    , Convert.ToString(line[7]), Convert.ToString(line[8]), Convert.ToString(line[9]), Convert.ToString(line[10])
+                    , Convert.ToString(line[11]), Convert.ToString(line[12]), Convert.ToString(line[13])));
+            }
+            return ret;
+        }
+
+        public static Dictionary<string, List<int>> GetMachineTestTime(string mcond,string whichtest, DateTime startdate, DateTime enddate)
+        {
+            var ret = new Dictionary<string, List<int>>();
+
+            var sql = "select TestStation,SpendTime from ModuleTestData where TestStation in <mcond> and WhichTest = '<whichtest>'  and TestTimeStamp >= '<startdate>' and TestTimeStamp < '<enddate>' and ErrAbbr = 'PASS'";
+            sql = sql.Replace("<mcond>",mcond).Replace("<whichtest>", whichtest).Replace("<startdate>", startdate.ToString("yyyy-MM-dd HH:mm:ss")).Replace("<enddate>", enddate.ToString("yyyy-MM-dd HH:mm:ss"));
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var m = Convert.ToString(line[0]).ToUpper().Trim();
+                var sec = Convert.ToInt32(line[1]);
+                if (ret.ContainsKey(m))
+                {
+                    ret[m].Add(sec);
+                }
+                else
+                {
+                    var templist = new List<int>();
+                    templist.Add(sec);
+                    ret.Add(m, templist);
+                }
+            }
+
+            return ret;
+        }
 
         public string DataID { set; get; }
         public string ModuleSN { set; get; }

@@ -600,5 +600,134 @@ namespace Prism.Controllers
         }
 
 
+        public ActionResult MachineTestTime()
+        {
+            var syscfg = CfgUtility.GetSysConfig(this);
+            var whichtests = syscfg["MACHINETIMEWHICHTEST"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            ViewBag.whichtestlist = CreateSelectList(whichtests, "");
+            return View();
+        }
+
+        private object GetMachineChart(DateTime startdate,DateTime enddate,List<string> machinelist,string whichtest,string title,string target)
+        {
+            var mcond = "('" + string.Join("','", machinelist) + "')";
+            var datadict = ModuleTestData.GetMachineTestTime(mcond,whichtest, startdate, enddate);
+
+            var mlist = datadict.Keys.ToList();
+            mlist.Sort();
+
+            var mdict = new Dictionary<string, List<List<object>>>();
+
+            var rad = new System.Random(DateTime.Now.Second);
+            var idx = 0.0;
+            foreach (var m in mlist)
+            {
+                var datapair = new List<List<object>>();
+                var jdx = 0;
+                foreach (var val in datadict[m])
+                {
+                    var templist = new List<object>();
+                    var x = 0.0;
+                    if (jdx % 2 == 0)
+                    { x = idx + (rad.NextDouble() / 5.0); }
+                    else
+                    { x = idx - (rad.NextDouble() / 5.0); }
+                    templist.Add(x);
+                    templist.Add(val);
+                    datapair.Add(templist);
+
+                    jdx = jdx + 1;
+                }
+                idx = idx + 1.0;
+
+                mdict.Add(m, datapair);
+            }
+
+            var serial = new List<object>();
+            foreach (var m in mlist)
+            {
+                serial.Add(new
+                {
+                    name = m,
+                    data = mdict[m]
+                });
+            }
+
+            return new
+            {
+                id = title.ToLower().Trim().Replace(" ", "_").Replace("-", "_") + "_id",
+                title = title,
+                mlist = mlist,
+                serial = serial,
+                target = target,
+                whichtest = whichtest,
+                startdate = startdate.ToString("yyyy-MM-dd HH:mm:ss"),
+                enddate = enddate.ToString("yyyy-MM-dd HH:mm:ss"),
+            };
+        }
+
+        public JsonResult MachineTestTimeData()
+        {
+            var syscfg = CfgUtility.GetSysConfig(this);
+            var whichtest = Request.Form["whichtest"];
+            var startdate = DateTime.Now;
+            var enddate = DateTime.Now;
+            var sdate = DateTime.Parse(Request.Form["sdate"]);
+            var edate = DateTime.Parse(Request.Form["edate"]);
+            if (sdate < edate)
+            {
+                startdate = DateTime.Parse(sdate.ToString("yyyy-MM-dd") + " 00:00:00");
+                enddate = DateTime.Parse(edate.ToString("yyyy-MM-dd") + " 00:00:00").AddDays(1).AddSeconds(-1);
+            }
+            else
+            {
+                startdate = DateTime.Parse(edate.ToString("yyyy-MM-dd") + " 00:00:00");
+                enddate = DateTime.Parse(sdate.ToString("yyyy-MM-dd") + " 00:00:00").AddDays(1).AddSeconds(-1);
+            }
+
+            var chartdatalist = new List<object>();
+
+            var hydratesterkey = whichtest + "-HYDRA";
+            var singletesterkey = whichtest + "-SINGLE";
+            if (syscfg.ContainsKey(hydratesterkey))
+            {
+                var machinelist = syscfg[hydratesterkey].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                var target = syscfg[hydratesterkey + "-TIMETARGET"];
+                chartdatalist.Add(GetMachineChart(startdate, enddate, machinelist,whichtest, "HYDRA MACHINE TEST TIME-"+whichtest,target));
+            }
+            if (syscfg.ContainsKey(singletesterkey))
+            {
+                var machinelist = syscfg[singletesterkey].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                var target = syscfg[singletesterkey + "-TIMETARGET"];
+                chartdatalist.Add(GetMachineChart(startdate, enddate, machinelist,whichtest, "SINGLE MACHINE TEST TIME-"+whichtest,target));
+            }
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                chartdatalist = chartdatalist,
+            };
+            return ret;
+        }
+
+        public JsonResult MachineTestTimeDetail()
+        {
+            var tester = Request.Form["tester"];
+            var sec = Request.Form["sec"];
+            var whichtest = Request.Form["whichtest"];
+            var startdate = Request.Form["startdate"];
+            var enddate = Request.Form["enddate"];
+
+            var mdatalist = ModuleTestData.RetrieveModuleTestTimeDetail(tester, startdate, enddate, whichtest, sec);
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                mdatalist = mdatalist
+            };
+            return ret;
+        }
+
     }
 }

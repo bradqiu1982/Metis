@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewBag.Title = "MachineTestTime";
+    Layout = "~/Views/Shared/_LayoutAdditional.cshtml";
+}
+
+<link type="text/css" rel="stylesheet" href="~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css" />
+<link type="text/css" rel="stylesheet" href="~/Scripts/jquery-autocomplete/jquery.auto-complete.css" />
+
+<script type="text/javascript" src="~/Scripts/jquery-autocomplete/jquery.auto-complete.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/machine.js"></script>
+<script type="text/javascript">
+        $(function(){
+            MACHINE.MACTESTTIME();
+        })
+</script>
+
+<div class="row">
+    <div class="nav navbar-nav navbar-left">
+        <img src="~/Content/images/Yield.png" style="height:40px; width:40px">
+    </div>
+    <div class="nav navbar-nav navbar-left">
+        <ol class="breadcrumb" style="width:600px">
+            <li class="active">MACHINE TEST TIME</li>
+        </ol>
+    </div>
+</div>
+
+
+
+<div class="row">
+    <div class="col-xs-1"></div>
+    <div class="col-xs-10">
+        <div class="v-container">
+            <div class="v-filter">
+                <div class="row row-margin">
+                    <div class="col-xs-3">
+                        <div class="input-group date" data-date=""
+                             data-date-format="yyyy-mm-dd">
+                            <input type="text" class="form-control"
+                                   id="sdate" name="sdate" value="" readonly>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-1">~</div>
+                    <div class="col-xs-3">
+                        <div class="input-group date" data-date=""
+                             data-date-format="yyyy-mm-dd">
+                            <input type="text" class="form-control"
+                                   id="edate" name="edate" value="" readonly>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-th"></span>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-xs-3">@Html.DropDownList("whichtestlist", null, new { @id = "whichtestlist", @class = "form-control" })</div>
+                    <div class="col-xs-2">
+                        <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
+                    </div>
+                </div>
+            </div>
+
+            <div class="v-content" id="chartdiv" style="margin-top:2%">
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-1"></div>
+</div>
+
+<div class="modal" id="modulemodal" tabindex="-1" role="dialog" aria-labelledby="modulemodalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="modulemodalLabel">Module Info</h4>
+            </div>
+            <div class="row" style="margin-left:15px!important;margin-right:15px!important;">
+                <table class="table table-hover  table-condensed table-striped" id="moduledatatable" style="margin-top:1%">
+                    <thead id="moduleheadid"></thead>
+                    <tbody id="modulecontentid"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
