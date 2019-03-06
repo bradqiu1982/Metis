@@ -820,7 +820,7 @@
             }, function (output) {
                 $.bootstrapLoading.end();
 
-                $('#chart-content').empty();
+                $('#chartdiv').empty();
 
                 $.each(output.chartdatalist, function (i, val) {
                     var appendstr = '<div class="col-xs-12" style="margin-top:15px;">' +
