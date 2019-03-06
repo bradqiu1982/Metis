@@ -539,7 +539,7 @@ namespace Prism.Controllers
             }
             else
             {
-                var pnlist = pn.Split(new string[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                var pnlist = pn.Split(new string[] { ",", ";"," " }, StringSplitOptions.RemoveEmptyEntries).ToList();
                 pncond = "('" + string.Join("','", pnlist) + "')";
                 title = pn;
             }
