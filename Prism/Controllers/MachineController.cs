@@ -157,6 +157,7 @@ namespace Prism.Controllers
             }
 
             var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
             ret.Data = new
             {
                 tabletitle = titlelist,
@@ -367,6 +368,7 @@ namespace Prism.Controllers
             }
 
             var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
             ret.Data = new {
                 success = true,
                 chartlist = chartlist

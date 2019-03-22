@@ -182,6 +182,7 @@ namespace Prism.Controllers
 
 
             var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
             ret.Data = new
             {
                 success = true,
@@ -223,6 +224,7 @@ namespace Prism.Controllers
 
             var data = HPUMainData.RetrieveHPUData(productline,fquarter);
             var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
             ret.Data = new
             {
                 success = true,
@@ -275,6 +277,7 @@ namespace Prism.Controllers
             var serial = Request.Form["serial"];
             var data = HPUMainData.RetrieveHPUDataBySerial(serial);
             var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
             ret.Data = new
             {
                 success = true,
@@ -318,6 +321,7 @@ namespace Prism.Controllers
             }
 
             var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
             ret.Data = new
             {
                 success = true,
@@ -370,6 +374,7 @@ namespace Prism.Controllers
                 };
 
                 var ret = new JsonResult();
+                ret.MaxJsonLength = Int32.MaxValue;
                 ret.Data = new
                 {
                     success = true,
@@ -386,6 +391,7 @@ namespace Prism.Controllers
                     content = wreportlist[0].Comment
                 };
                 var ret = new JsonResult();
+                ret.MaxJsonLength = Int32.MaxValue;
                 ret.Data = new
                 {
                     success = true,

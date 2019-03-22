@@ -1628,6 +1628,7 @@ namespace Prism.Controllers
             chartlist.Add(ShipOutputChartData(shipdata,"shipout_id", "Department Ship Output"));
 
             var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
             ret.Data = new
             {
                 chartlist = chartlist
