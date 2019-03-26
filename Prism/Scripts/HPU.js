@@ -44,7 +44,7 @@
                             '<td>' + line.UpdateDate + '</td>' +
                             //'<td>' + line.FormMake + '</td>' +
                             '<td>' + line.Remark + '</td>' +
-                            + '</tr>');
+                            '</tr>');
                     }
 
 
@@ -204,7 +204,7 @@
                             '<td>' + line.Phase + '</td>' +
                             '<td>' + line.YieldHPU + '</td>' +
                             '<td>' + line.Remark + '</td>' +
-                            + '</tr>');
+                            '</tr>');
                     }
 
 
