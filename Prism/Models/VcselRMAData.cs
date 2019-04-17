@@ -15,75 +15,83 @@ namespace Prism.Models
             if (string.IsNullOrEmpty(vcselrmafile))
             { return; }
 
-            var existrmasn = VcselRMAData.GetAllVcselRMASN();
-            var idx = 0;
-            var data =  ExcelReader.RetrieveDataFromExcel(vcselrmafile, "Master list");
-            var vcselrmalist = new List<VcselRMAData>();
-
-            foreach (var line in data)
+            //load RMA data
+            try
             {
-                if (idx == 0)
+                var existrmasn = VcselRMAData.GetAllVcselRMASN();
+                var idx = 0;
+                var data =  ExcelReader.RetrieveDataFromExcel(vcselrmafile, "Master list");
+                var vcselrmalist = new List<VcselRMAData>();
+
+                foreach (var line in data)
                 {
-                    idx = idx + 1;
-                    continue;
-                }
-
-                if (string.IsNullOrEmpty(line[10].Trim()))
-                { continue; }
-
-                var sn = line[10].Trim().ToUpper().Split(new string[] { ";","/"," "},StringSplitOptions.RemoveEmptyEntries)[0];
-                if (!existrmasn.ContainsKey(sn))
-                {
-                    existrmasn.Add(sn, true);
-
-                    var tempvm = new VcselRMAData();
-                    tempvm.SN = sn;
-                    tempvm.PN = line[8];
-                    tempvm.PNDesc = line[9];
-                    
-                    tempvm.RMANum = line[0];
-                    tempvm.Customer = line[1];
-                    tempvm.ProductType = line[2];
-                    tempvm.ShipDate = line[3];
-                    tempvm.RMAOpenDate = line[4];
-
-                    vcselrmalist.Add(tempvm);
-                }//not exist
-            }//end foreach
-
-            if (vcselrmalist.Count > 0)
-            {
-                var snlist = new List<string>();
-                foreach (var item in vcselrmalist)
-                {
-                    snlist.Add(item.SN);
-                }
-
-                var sncond = "('" + string.Join("','", snlist) + "')";
-                var snwaferdict = WaferData.GetWaferInfoBySN(sncond);
-
-                foreach (var item in vcselrmalist)
-                {
-                    if (snwaferdict.ContainsKey(item.SN))
+                    if (idx == 0)
                     {
-                        item.VcselType = snwaferdict[item.SN].Rate;
-                        item.VcselPN = snwaferdict[item.SN].WaferPN;
-                        item.VcselArray = snwaferdict[item.SN].WaferArray;
-                        item.VcselTech = snwaferdict[item.SN].WaferTech;
-                        item.Wafer = snwaferdict[item.SN].WaferNum;
-                        item.BuildDate = DateTime.Parse(snwaferdict[item.SN].SNDate);
-                        if (string.IsNullOrEmpty(item.ShipDate) || !CheckDate(item.ShipDate))
-                        {
-                            item.ShipDate = item.BuildDate.AddMonths(2).ToString("yyyy-MM-dd HH:mm:ss");
-                        }
-                        if (item.BuildDate > DateTime.Parse(item.ShipDate))
-                        {
-                            item.BuildDate = DateTime.Parse(item.ShipDate).AddMonths(-2);
-                        }
-                        item.StoreVcselRMA();
+                        idx = idx + 1;
+                        continue;
                     }
+
+                    if (string.IsNullOrEmpty(line[10].Trim()))
+                    { continue; }
+
+                    var sn = line[10].Trim().ToUpper().Split(new string[] { ";","/"," "},StringSplitOptions.RemoveEmptyEntries)[0];
+                    if (!existrmasn.ContainsKey(sn))
+                    {
+                        existrmasn.Add(sn, true);
+
+                        var tempvm = new VcselRMAData();
+                        tempvm.SN = sn;
+                        tempvm.PN = line[8];
+                        tempvm.PNDesc = line[9];
+                    
+                        tempvm.RMANum = line[0];
+                        tempvm.Customer = line[1];
+                        tempvm.ProductType = line[2];
+                        tempvm.ShipDate = line[3];
+                        tempvm.RMAOpenDate = line[4];
+
+                        vcselrmalist.Add(tempvm);
+                    }//not exist
                 }//end foreach
+
+                if (vcselrmalist.Count > 0)
+                {
+                    var snlist = new List<string>();
+                    foreach (var item in vcselrmalist)
+                    {
+                        snlist.Add(item.SN);
+                    }
+
+                    var sncond = "('" + string.Join("','", snlist) + "')";
+                    var snwaferdict = WaferData.GetWaferInfoBySN(sncond);
+
+                    foreach (var item in vcselrmalist)
+                    {
+                        if (snwaferdict.ContainsKey(item.SN))
+                        {
+                            item.VcselType = snwaferdict[item.SN].Rate;
+                            item.VcselPN = snwaferdict[item.SN].WaferPN;
+                            item.VcselArray = snwaferdict[item.SN].WaferArray;
+                            item.VcselTech = snwaferdict[item.SN].WaferTech;
+                            item.Wafer = snwaferdict[item.SN].WaferNum;
+                            item.BuildDate = DateTime.Parse(snwaferdict[item.SN].SNDate);
+                            if (string.IsNullOrEmpty(item.ShipDate) || !CheckDate(item.ShipDate))
+                            {
+                                item.ShipDate = item.BuildDate.AddMonths(2).ToString("yyyy-MM-dd HH:mm:ss");
+                            }
+                            if (item.BuildDate > DateTime.Parse(item.ShipDate))
+                            {
+                                item.BuildDate = DateTime.Parse(item.ShipDate).AddMonths(-2);
+                            }
+                            item.StoreVcselRMA();
+                        }
+                    }//end foreach
+                }
             }
+            catch (Exception ex) { }
+
+            //load milestone
+            EngineeringMileStone.LoadMileStone(ctrl, vcselrmafile);
         }
 
         private static bool CheckDate(string d)

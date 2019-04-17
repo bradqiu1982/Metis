@@ -530,5 +530,13 @@ ALTER TABLE [dbo].[VcselRMAData] ADD  DEFAULT ('') FOR [Customer]
 GO
 
 
+CREATE TABLE [dbo].[EngineeringMileStone] (
+    [PJKey]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[ActionDate]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL,
+	[Location]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[ActionDetail] NVARCHAR (MAX) DEFAULT ('') NOT NULL,
+	[AppendInfo]   NVARCHAR (200) DEFAULT ('') NOT NULL
+	);
+
 
 
