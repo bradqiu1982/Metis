@@ -125,32 +125,43 @@ namespace Prism.Models
             if (undefinesndict.Count > 0)
             {
                 var combinsndict = new Dictionary<string, List<string>>();
-                var sncond = "('" + string.Join("','", undefinesndict.Keys.ToList()) + "')";
-                //sql = "select ToContainer,FromContainer FROM [PDMS].[dbo].[ComponentIssueSummary] where FromContainer in <sncond> and ToContainer is not null and FromContainer is not null order by IssueDate desc";
-                sql = @"select  co.ContainerName ToContainer,fc.ContainerName FromContainer from insitedb.insite.ComponentIssueHistory cih with(nolock) 
-                        inner join insitedb.insite.Historymainline hml  with(nolock) on hml.HistoryMainlineId = cih.historymainlineid  
-                        inner join insitedb.insite.IssueHistoryDetail  ihd with(nolock) on ihd.ComponentIssueHistoryId= cih.ComponentIssueHistoryId 
-                        inner join insitedb.insite.IssueActualsHistory iah with(nolock) on iah.IssueHistoryDetailId=ihd.IssueHistoryDetailId 
-                        inner join  InsiteDB.insite.container co (nolock) on co.containerid=hml.HistoryId 
-                        inner join  InsiteDB.insite.container fc (nolock) on fc.ContainerId=iah.FromContainerId 
-                        where fc.ContainerName in <sncond>  and co.ContainerName is not null and fc.ContainerName is not null order by hml.MfgDate desc";
-                sql = sql.Replace("<sncond>", sncond);
-                dbret = DBUtility.ExeMESSqlWithRes(sql);
-                foreach (var line in dbret)
+
+                var snlist = undefinesndict.Keys.ToList();
+                var snlistlist = UT.SplitList(snlist, 2000);
+                var sncond = "";
+
+                foreach (var tempsnlist in snlistlist)
                 {
-                    var csn = Convert.ToString(line[0]);
-                    var sn = Convert.ToString(line[1]);
-                    if (!combinsndict.ContainsKey(csn))
+                    if (tempsnlist.Count == 0)
+                    { break; }
+
+                    sncond = "('" + string.Join("','", tempsnlist) + "')";
+                    //sql = "select ToContainer,FromContainer FROM [PDMS].[dbo].[ComponentIssueSummary] where FromContainer in <sncond> and ToContainer is not null and FromContainer is not null order by IssueDate desc";
+                    sql = @"select  co.ContainerName ToContainer,fc.ContainerName FromContainer from insitedb.insite.ComponentIssueHistory cih with(nolock) 
+                            inner join insitedb.insite.Historymainline hml  with(nolock) on hml.HistoryMainlineId = cih.historymainlineid  
+                            inner join insitedb.insite.IssueHistoryDetail  ihd with(nolock) on ihd.ComponentIssueHistoryId= cih.ComponentIssueHistoryId 
+                            inner join insitedb.insite.IssueActualsHistory iah with(nolock) on iah.IssueHistoryDetailId=ihd.IssueHistoryDetailId 
+                            inner join  InsiteDB.insite.container co (nolock) on co.containerid=hml.HistoryId 
+                            inner join  InsiteDB.insite.container fc (nolock) on fc.ContainerId=iah.FromContainerId 
+                            where fc.ContainerName in <sncond>  and co.ContainerName is not null and fc.ContainerName is not null order by hml.MfgDate desc";
+                    sql = sql.Replace("<sncond>", sncond);
+                    dbret = DBUtility.ExeMESSqlWithRes(sql);
+                    foreach (var line in dbret)
                     {
-                        var templist = new List<string>();
-                        templist.Add(sn);
-                        combinsndict.Add(csn, templist);
-                    }
-                    else
-                    {
-                        combinsndict[csn].Add(sn);
-                    }
-                }
+                        var csn = Convert.ToString(line[0]);
+                        var sn = Convert.ToString(line[1]);
+                        if (!combinsndict.ContainsKey(csn))
+                        {
+                            var templist = new List<string>();
+                            templist.Add(sn);
+                            combinsndict.Add(csn, templist);
+                        }
+                        else
+                        {
+                            combinsndict[csn].Add(sn);
+                        }
+                    }//end foreach
+                }//end foreach
 
                 if (combinsndict.Count > 0)
                 {
@@ -158,6 +169,10 @@ namespace Prism.Models
                     templist.AddRange(undefinesndict.Keys.ToList());
                     templist.AddRange(combinsndict.Keys.ToList());
                     sncond = "('" + string.Join("','", templist) + "')";
+                }
+                else
+                {
+                    sncond = "('" + string.Join("','", undefinesndict.Keys.ToList()) + "')";
                 }
 
                 sql = @"select  distinct c.ContainerName FROM InsiteDB.insite.container c 
