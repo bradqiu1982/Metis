@@ -307,6 +307,21 @@ CREATE TABLE [dbo].[ItemCostData]
 	[Appv_4]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
 );
 
+fake itemcost data
+ insert into [BSSupport].[dbo].[ItemCostData] SELECT Left([ID],8)+'2020 Q4' as ID
+      ,[PN]
+      ,[FrozenCost]
+      ,[FrozenMaterialCost]
+      ,[FrozenResourceCost]
+      ,[FrozenOverhead]
+      ,[PlannerCode]
+      ,'2020 Q4' as [Quarter]
+      ,[Appv_1]
+      ,[Appv_2]
+      ,[Appv_3]
+      ,[Appv_4]
+   FROM [BSSupport].[dbo].[ItemCostData_bak]
+
 CREATE TABLE [dbo].[PNProuctFamilyCache]
 (
 	[PN]    NVARCHAR (300)   DEFAULT ('') NOT NULL,
