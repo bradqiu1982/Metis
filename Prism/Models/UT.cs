@@ -14,7 +14,11 @@ namespace Prism.Models
             {
                 for (int i = 0; i < me.Count; i += size)
                 {
-                    list.Add(me.GetRange(i, Math.Min(size, me.Count - i)));
+                    var sz = Math.Min(size, me.Count - i);
+                    if (sz <= 0)
+                    { break; }
+
+                    list.Add(me.GetRange(i,sz));
                 }
             }
             catch (Exception ex) { }

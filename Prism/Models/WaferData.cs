@@ -152,9 +152,9 @@ namespace Prism.Models
                         var sn = Convert.ToString(line[1]);
                         if (!combinsndict.ContainsKey(csn))
                         {
-                            var templist = new List<string>();
-                            templist.Add(sn);
-                            combinsndict.Add(csn, templist);
+                            var vtemplist = new List<string>();
+                            vtemplist.Add(sn);
+                            combinsndict.Add(csn, vtemplist);
                         }
                         else
                         {
@@ -163,74 +163,91 @@ namespace Prism.Models
                     }//end foreach
                 }//end foreach
 
+                var templistwithcombine = new List<string>();
                 if (combinsndict.Count > 0)
                 {
-                    var templist = new List<string>();
-                    templist.AddRange(undefinesndict.Keys.ToList());
-                    templist.AddRange(combinsndict.Keys.ToList());
-                    sncond = "('" + string.Join("','", templist) + "')";
+                    
+                    templistwithcombine.AddRange(undefinesndict.Keys.ToList());
+                    templistwithcombine.AddRange(combinsndict.Keys.ToList());
                 }
                 else
                 {
-                    sncond = "('" + string.Join("','", undefinesndict.Keys.ToList()) + "')";
+                    templistwithcombine.AddRange(undefinesndict.Keys.ToList());
                 }
 
-                sql = @"select  distinct c.ContainerName FROM InsiteDB.insite.container c 
-		                left join InsiteDB.insite.historyMainline hml with (nolock) on c.containerId = hml.containerId 
-		                left join InsiteDB.insite.workflowstep ws(nolock) on  hml.WorkflowStepId = ws.WorkflowStepId 
-		                 where c.ContainerName in <sncond> and ( ws.WorkflowStepName = 'Shipping' or ws.WorkflowStepName = 'Main Store')";
-                sql = sql.Replace("<sncond>", sncond);
-                dbret = DBUtility.ExeMESSqlWithRes(sql);
-                foreach (var line in dbret)
-                {
-                    var sn = Convert.ToString(line[0]);
-                    if (!shipsndict.ContainsKey(sn))
-                    {
-                        if (undefinesndict.ContainsKey(sn))
-                        {
-                            undefinesndict[sn].SNWorkFlowName = "SHIPPING";
-                            shipsndict.Add(sn, undefinesndict[sn]);
-                        }
-                        else
-                        {
-                            if (combinsndict.ContainsKey(sn))
-                            {
-                                var tempsnlist = combinsndict[sn];
-                                foreach (var tempsn in tempsnlist)
-                                {
-                                    if (!undefinesndict.ContainsKey(tempsn))
-                                    { continue; }
 
-                                    undefinesndict[tempsn].SNWorkFlowName = "SHIPPING";
-                                    if (!shipsndict.ContainsKey(tempsn))
+                snlistlist = UT.SplitList(templistwithcombine, 2000);
+                foreach (var listitem in snlistlist)
+                {
+                    if (listitem.Count == 0)
+                    { break; }
+
+                    sncond = "('" + string.Join("','", listitem) + "')";
+                    sql = @"select  distinct c.ContainerName FROM InsiteDB.insite.container c 
+		                    left join InsiteDB.insite.historyMainline hml with (nolock) on c.containerId = hml.containerId 
+		                    left join InsiteDB.insite.workflowstep ws(nolock) on  hml.WorkflowStepId = ws.WorkflowStepId 
+		                     where c.ContainerName in <sncond> and ( ws.WorkflowStepName = 'Shipping' or ws.WorkflowStepName = 'Main Store')";
+                    sql = sql.Replace("<sncond>", sncond);
+                    dbret = DBUtility.ExeMESSqlWithRes(sql);
+                    foreach (var line in dbret)
+                    {
+                        var sn = Convert.ToString(line[0]);
+                        if (!shipsndict.ContainsKey(sn))
+                        {
+                            if (undefinesndict.ContainsKey(sn))
+                            {
+                                undefinesndict[sn].SNWorkFlowName = "SHIPPING";
+                                shipsndict.Add(sn, undefinesndict[sn]);
+                            }
+                            else
+                            {
+                                if (combinsndict.ContainsKey(sn))
+                                {
+                                    var tempsnlist = combinsndict[sn];
+                                    foreach (var tempsn in tempsnlist)
                                     {
-                                        shipsndict.Add(tempsn, undefinesndict[tempsn]);
+                                        if (!undefinesndict.ContainsKey(tempsn))
+                                        { continue; }
+
+                                        undefinesndict[tempsn].SNWorkFlowName = "SHIPPING";
+                                        if (!shipsndict.ContainsKey(tempsn))
+                                        {
+                                            shipsndict.Add(tempsn, undefinesndict[tempsn]);
+                                        }
                                     }
                                 }
-                            }
-                        }//end else
-                    }//end if
+                            }//end else
+                        }//end if
+                    }//end foreach
                 }//end foreach
 
 
-                sncond = "('" + string.Join("','", undefinesndict.Keys.ToList()) + "')";
-                sql = @"select distinct  c.ContainerName FROM InsiteDB.insite.container c 
+                snlistlist = UT.SplitList(undefinesndict.Keys.ToList(), 2000);
+                foreach (var listitem in snlistlist)
+                {
+                    if (listitem.Count == 0)
+                    { break; }
+
+                    sncond = "('" + string.Join("','", listitem) + "')";
+                    sql = @"select distinct  c.ContainerName FROM InsiteDB.insite.container c 
                      left join InsiteDB.insite.container co on co.ContainerId = c.IssuedToContainerId 
                      left join InsiteDB.insite.historyMainline nhml with (nolock) on co.containerId = nhml.containerId 
                      left join InsiteDB.insite.workflowstep nws(nolock) on  nhml.WorkflowStepId = nws.WorkflowStepId 
                      where c.ContainerName in  <sncond>  and  (nws.WorkflowStepName  = 'Shipping' or nws.WorkflowStepName  = 'Main Store')";
 
-                sql = sql.Replace("<sncond>", sncond);
-                dbret = DBUtility.ExeMESSqlWithRes(sql);
-                foreach (var line in dbret)
-                {
-                    var sn = Convert.ToString(line[0]);
-                    if (!shipsndict.ContainsKey(sn))
+                    sql = sql.Replace("<sncond>", sncond);
+                    dbret = DBUtility.ExeMESSqlWithRes(sql);
+                    foreach (var line in dbret)
                     {
-                        undefinesndict[sn].SNWorkFlowName = "SHIPPING";
-                        shipsndict.Add(sn, undefinesndict[sn]);
+                        var sn = Convert.ToString(line[0]);
+                        if (!shipsndict.ContainsKey(sn))
+                        {
+                            undefinesndict[sn].SNWorkFlowName = "SHIPPING";
+                            shipsndict.Add(sn, undefinesndict[sn]);
+                        }
                     }
-                }
+
+                }//end foreach
 
             }
 
