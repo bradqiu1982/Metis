@@ -215,7 +215,16 @@ bool updateLinks)
                     }
                 }
 
-                var ret = RetrieveDataFromExcel2(sheet, columns, getlink);
+                var ret = new List<List<string>>();
+                if (getlink)
+                {
+                    ret = RetrieveDataFromExcel2(sheet, columns, getlink);
+                }
+                else
+                {
+                    ret = RetrieveDataFromExcel3(sheet, columns);
+                }
+                 
                 
                 wkb.Close();
                 books.Close();
@@ -327,137 +336,79 @@ bool updateLinks)
 
         }
 
-        public static List<List<string>> RetrieveDataFromExcel_bak(string wholefn, string sheetname)
+        private static List<List<string>> RetrieveDataFromExcel3(Excel.Worksheet sheet, int columns = 99)
         {
-            var data = new List<List<string>>();
-            Excel.Application excel = null;
-            Excel.Workbook wkb = null;
-            Excel.Workbooks books = null;
-            Excel.Worksheet sheet = null;
+            var ret = new List<List<string>>();
+            var totalrow = 100000;
+            int emptycount = 0;
+            int alldatacount = 0;
+
+            if (columns > 101)
+            { columns = 101; }
 
             try
             {
-                excel = new Excel.Application();
-                excel.DisplayAlerts = false;
-                books = excel.Workbooks;
-                wkb = OpenBook(books, wholefn, true, false, false);
-
-                if (string.IsNullOrEmpty(sheetname))
+                for (var rowidx = 1; rowidx < totalrow;)
                 {
-                    sheet = wkb.Sheets[1] as Excel.Worksheet;
-                }
-                else
-                {
-                    sheet = wkb.Sheets[sheetname] as Excel.Worksheet;
-                }
+                    var range = sheet.get_Range(columnFlag[0] + rowidx.ToString(), columnFlag[columns] + (rowidx + 9999).ToString());
+                    var saRet = (System.Object[,])range.get_Value(Type.Missing);
 
-
-                var excelRange = sheet.UsedRange;
-                object[,] valueArray = (object[,])excelRange.get_Value(
-                Excel.XlRangeValueDataType.xlRangeValueDefault);
-                var totalrows = sheet.UsedRange.Rows.Count;
-                var totalcols = sheet.UsedRange.Columns.Count;
-
-                for (int row = 1; row <= totalrows; ++row)
-                {
-                    var line = new List<string>();
-                    for (int col = 1; col <= totalcols; ++col)
+                    for (var rowcount = 1; rowcount <= 10000; rowcount++)
                     {
-                        if (valueArray[row, col] == null)
+                        var newline = new List<string>();
+                        for (var colidx = 1; colidx < columns; colidx++)
                         {
-                            line.Add(string.Empty);
+                            var val = saRet[rowcount, colidx];
+                            if (val != null)
+                            {
+                                newline.Add(val.ToString().Replace("'", "").Replace("\"", "").Trim());
+                            }
+                            else
+                            {
+                                newline.Add("");
+                            }
+                        }
+
+                        var empty = true;
+                        foreach (var item in newline)
+                        {
+                            if (!string.IsNullOrEmpty(item.Trim()))
+                            {
+                                empty = false;
+                            }
+                        }
+
+                        if (!empty)
+                        {
+                            emptycount = 0;
+                            ret.Add(newline);
+                            alldatacount += 1;
                         }
                         else
                         {
-                            line.Add(valueArray[row, col].ToString().Trim().Replace("'", "").Replace("\"", ""));
+                            emptycount = emptycount + 1;
+                            alldatacount += 1;
                         }
-                    }
-                    //if (!WholeLineEmpty(line))
-                    //{
-                    data.Add(line);
-                    //}
-                }
 
 
-                wkb.Close();
-                excel.Quit();
+                        if (emptycount > 20 || alldatacount > 500000)
+                        {
+                            return ret;
+                        }
 
-                Marshal.ReleaseComObject(sheet);
-                Marshal.ReleaseComObject(wkb);
-                Marshal.ReleaseComObject(books);
-                Marshal.ReleaseComObject(excel);
+                        if (alldatacount == totalrow - 10)
+                        {
+                            totalrow = totalrow + 100000;
+                        }
 
-                if (wkb != null)
-                    ReleaseRCM(wkb);
-                if (excel != null)
-                    ReleaseRCM(excel);
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
+                    }//end rowcount
 
-                return data;
+                    rowidx = rowidx + 10000;
+
+                }//end for rowidx
             }
-            catch (Exception ex)
-            {
-                logthdinfo(DateTime.Now.ToString() + " Exception on " + wholefn + " :" + ex.Message + "\r\n\r\n");
-
-                if (ex.Message.Contains("DISP_E_OVERFLOW") && sheet != null)
-                {
-                    var ret = RetrieveDataFromExcel2(sheet);
-
-                    if (sheet != null)
-                        Marshal.ReleaseComObject(sheet);
-                    if (wkb != null)
-                        Marshal.ReleaseComObject(wkb);
-                    if (books != null)
-                        Marshal.ReleaseComObject(books);
-                    if (excel != null)
-                        Marshal.ReleaseComObject(excel);
-
-                    if (wkb != null)
-                        ReleaseRCM(wkb);
-                    if (excel != null)
-                        ReleaseRCM(excel);
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-
-                    return ret;
-                }
-                else
-                {
-                    data.Clear();
-
-                    if (sheet != null)
-                        Marshal.ReleaseComObject(sheet);
-                    if (wkb != null)
-                        Marshal.ReleaseComObject(wkb);
-                    if (books != null)
-                        Marshal.ReleaseComObject(books);
-                    if (excel != null)
-                        Marshal.ReleaseComObject(excel);
-
-                    if (wkb != null)
-                        ReleaseRCM(wkb);
-                    if (excel != null)
-                        ReleaseRCM(excel);
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-                    GC.Collect();
-                    GC.WaitForPendingFinalizers();
-
-                    return data;
-                }
-            }
-
+            catch (Exception ex1) { }
+            return ret;
         }
     }
 }
