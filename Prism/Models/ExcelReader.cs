@@ -90,7 +90,14 @@ bool updateLinks)
             }
             else if (ext.Contains("XLS"))
             {
-                return RetrieveDataFromExcel_XLS(wholefn, sheetname, columns);
+                var ret = RetrieveDataFromExcel_XLS(wholefn, sheetname, columns);
+                if (ret.Count == 1
+                    && ret[0].Count == 1
+                    && ret[0][0].ToUpper().Contains("BIFF5"))
+                {
+                    return RetrieveDataFromExcel_OLD(wholefn, sheetname, columns);
+                }
+                return ret;
             }
             else if (ext.Contains("CSV"))
             {
@@ -139,9 +146,7 @@ bool updateLinks)
                         {
                             idlist.Sort(delegate (StringValue obj1, StringValue obj2)
                             {
-                                var i1 = Convert.ToInt32(obj1.Value);
-                                var i2 = Convert.ToInt32(obj2.Value);
-                                return i1.CompareTo(i2);
+                                return obj1.Value.CompareTo(obj2.Value);
                             });
                             wsPart = (WorksheetPart)wbPart.GetPartById(idlist[0]);
                         }
@@ -400,7 +405,18 @@ bool updateLinks)
             {
                 if (hssfwb != null)
                 { hssfwb.Close(); }
-                logthdinfo(DateTime.Now.ToString() + " Exception on " + wholefn + " :" + ex.Message + "\r\n\r\n");
+
+                if (ex.Message.ToUpper().Contains("BIFF5"))
+                {
+                    ret.Clear();
+                    var line = new List<string>();
+                    line.Add(ex.Message);
+                    ret.Add(line);
+                }
+                else
+                {
+                    logthdinfo(DateTime.Now.ToString() + " Exception on " + wholefn + " :" + ex.Message + "\r\n\r\n");
+                }
             }
 
             return ret;
@@ -508,6 +524,143 @@ bool updateLinks)
 
         [DllImport("user32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        public static List<List<string>> RetrieveDataFromExcel_OLD(string wholefn, string sheetname, int columns = 101)
+        {
+            var data = new List<List<string>>();
+
+            Excel.Application excel = null;
+            Excel.Workbook wkb = null;
+            Excel.Workbooks books = null;
+            Excel.Worksheet sheet = null;
+            int hWnd = 0;
+            uint processID = 0;
+
+            try
+            {
+                excel = new Excel.Application();
+                excel.DisplayAlerts = false;
+                books = excel.Workbooks;
+                wkb = OpenBook(books, wholefn, true, false, false);
+
+                hWnd = excel.Application.Hwnd;
+                GetWindowThreadProcessId((IntPtr)hWnd, out processID);
+
+                if (string.IsNullOrEmpty(sheetname))
+                {
+                    sheet = wkb.Sheets[1] as Excel.Worksheet;
+                }
+                else
+                {
+                    sheet = wkb.Sheets[sheetname] as Excel.Worksheet;
+                }
+
+                var ret = RetrieveDataFromExcel2(sheet, columns);
+
+                wkb.Close();
+                excel.Quit();
+
+                Marshal.ReleaseComObject(sheet);
+                Marshal.ReleaseComObject(wkb);
+                Marshal.ReleaseComObject(books);
+                Marshal.ReleaseComObject(excel);
+
+                if (wkb != null)
+                    ReleaseRCM(wkb);
+                if (excel != null)
+                    ReleaseRCM(excel);
+
+                sheet = null;
+                wkb = null;
+                books = null;
+                excel = null;
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+
+                try
+                {
+                    Process[] procs = Process.GetProcessesByName("EXCEL");
+                    foreach (Process p in procs)
+                    {
+                        if (p.Id == processID)
+                        {
+                            p.Kill();
+                        }
+                        else
+                        {
+                            var btime = p.TotalProcessorTime;
+                            new System.Threading.ManualResetEvent(false).WaitOne(200);
+                            p.Refresh();
+                            var etime = p.TotalProcessorTime;
+                            if ((etime - btime).Ticks <= 10)
+                            { p.Kill(); }
+                        }
+                    }
+                }
+                catch (Exception e) { }
+
+
+                return ret;
+
+            }
+            catch (Exception ex)
+            {
+                logthdinfo(DateTime.Now.ToString() + " Exception on " + wholefn + " :" + ex.Message + "\r\n\r\n");
+
+                if (sheet != null)
+                    Marshal.ReleaseComObject(sheet);
+                if (wkb != null)
+                    Marshal.ReleaseComObject(wkb);
+                if (books != null)
+                    Marshal.ReleaseComObject(books);
+                if (excel != null)
+                    Marshal.ReleaseComObject(excel);
+
+                if (wkb != null)
+                    ReleaseRCM(wkb);
+                if (excel != null)
+                    ReleaseRCM(excel);
+
+                sheet = null;
+                wkb = null;
+                books = null;
+                excel = null;
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+                try
+                {
+                    Process[] procs = Process.GetProcessesByName("EXCEL");
+                    foreach (Process p in procs)
+                    {
+                        if (p.Id == processID)
+                        {
+                            p.Kill();
+                        }
+                        else
+                        {
+                            var btime = p.TotalProcessorTime;
+                            new System.Threading.ManualResetEvent(false).WaitOne(200);
+                            p.Refresh();
+                            var etime = p.TotalProcessorTime;
+                            if ((etime - btime).Ticks <= 10)
+                            { p.Kill(); }
+                        }
+                    }
+                }
+                catch (Exception e) { }
+
+                return data;
+            }
+
+        }
 
         public static List<List<string>> RetrieveDataFromExcel(string wholefn, string sheetname, int columns = 101,bool getlink=false)
         {
