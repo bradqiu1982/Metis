@@ -590,5 +590,10 @@ namespace Prism.Controllers
             return ret;
         }
 
+        public ActionResult LoadUnitCost()
+        {
+            ExternalDataCollector.LoadProductCostData(this);
+            return View("Index");
+        }
     }
 }

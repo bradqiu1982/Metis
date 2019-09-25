@@ -8,11 +8,6 @@ namespace Prism.Models
 {
     public class MachineUserMap
     {
-        public MachineUserMap()
-        {
-            machine = "";
-            username = "";
-        }
 
         public static void AddMachineUserMap(string machine, string username)
         {
@@ -86,6 +81,43 @@ namespace Prism.Models
             { return string.Empty; }
         }
 
+        public static MachineUserMap GetUserInfo(string ip,string ugroup = null)
+        {
+            var ret = new MachineUserMap();
+
+            #if DEBUG
+            if (string.Compare(ip, "127.0.0.1") == 0)
+            {
+                ret.username = "BRAD.QIU";
+                ret.machine = "SHG-L80003583";
+                ret.level = 10;
+                return ret;
+            }
+            #endif
+
+            
+            string machine = DetermineCompName(ip);
+            var sql = "select machine,username,level from machineusermap where machine = '<machine>' ";
+            sql = sql.Replace("<machine>", machine);
+            if (ugroup != null)
+            {
+                sql = sql + " and ugroup like '" + ugroup + "%'";
+            }
+
+            var dbret = DBUtility.ExeNPISqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                
+                ret.machine = Convert.ToString(line[0]);
+                ret.username =  Convert.ToString(line[1]);
+                var slv = Convert.ToString(line[2]);
+                if (!string.IsNullOrEmpty(slv) && slv.Length > 1)
+                { ret.level = Convert.ToInt32(slv.Substring(1)); }
+                return ret;
+            }
+
+            return ret;
+        }
 
         public static bool IsLxEmployee(string ip, string username, int x,string msg=null)
         {
@@ -164,8 +196,17 @@ namespace Prism.Models
         }
 
 
+        public MachineUserMap()
+        {
+            machine = "";
+            username = "";
+            level = -1;
+        }
+
         public string machine { set; get; }
         public string username { set; get; }
+        public int level { set; get; }
+
     }
 
 

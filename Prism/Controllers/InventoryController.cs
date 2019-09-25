@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Prism.Models;
+using System.Reflection;
 
 namespace Prism.Controllers
 {
@@ -258,5 +259,377 @@ namespace Prism.Controllers
             };
             return ret;
         }
+
+        public ActionResult ProductCost()
+        {
+            ViewBag.AUTH = false;
+            var usermap = MachineUserMap.GetUserInfo(Request.UserHostName,"COST");
+            if (!string.IsNullOrEmpty(usermap.username))
+            {
+                ViewBag.AUTH = true;
+            }
+            ViewBag.Level = usermap.level;
+            return View();
+        }
+
+        public JsonResult ProductCostPMList()
+        {
+            var pmlist = ProductCostVM.PMList();
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                pmlist = pmlist
+            };
+            return ret;
+        }
+
+        public JsonResult ProductCostPNList()
+        {
+            var pnlist = ProductCostVM.PNList();
+            var pnfamdict = PNProuctFamilyCache.PNPFDict();
+            var famdict = new Dictionary<string, bool>();
+            foreach (var pn in pnlist)
+            {
+                if (pnfamdict.ContainsKey(pn)) {
+                    if (!famdict.ContainsKey(pnfamdict[pn]))
+                    { famdict.Add(pnfamdict[pn],true); }
+                }
+            }
+
+            pnlist.AddRange(famdict.Keys);
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                pnlist = pnlist
+            };
+            return ret;
+        }
+
+
+        private object SolveProductCost(Dictionary<string, List<ProductCostVM>> pdcost)
+        {
+            var paramlist = ProductCostVM.GetCostFields();
+            var parammap = ProductCostVM.GetCostFieldNameMap();
+
+            PropertyInfo[] properties = typeof(ProductCostVM).GetProperties();
+            var properlist = new List<PropertyInfo>();
+            foreach (var param in paramlist)
+            {
+                foreach (var proper in properties)
+                {
+                    if (string.Compare(param, proper.Name) == 0)
+                    {
+                        properlist.Add(proper);
+                    }
+                }
+            }
+
+            var ret = new List<object>();
+            foreach (var kv in pdcost)
+            {
+                var table = new List<List<string>>();
+                foreach (var proper in properlist)
+                {
+                    var line = new List<string>();
+                    line.Add(parammap[proper.Name]);
+                    foreach (var cost in kv.Value)
+                    {
+                        var val = proper.GetValue(cost);
+                        if (string.Compare(proper.Name, "QuarterType") == 0)
+                        {
+                            line.Add(UT.O2S(val).ToUpper().Replace("WUXI","").Replace("MATERIAL","M").Replace("UPDATE",""));
+                        }
+                        else if (string.Compare(proper.Name, "Yield") == 0
+                            || string.Compare(proper.Name, "LobEff") == 0)
+                        {
+                             line.Add(Math.Round(UT.O2D(val) * 100.0, 0).ToString() + "%");
+                        }
+                        else if (proper.Name.Contains("HPU"))
+                        {
+                            line.Add(Math.Round(UT.O2D(val), 2).ToString());
+                        }
+                        else if (string.Compare(proper.Name, "Qty") == 0
+                            || string.Compare(proper.Name, "ASP") == 0)
+                        {
+                            line.Add(Math.Round(UT.O2D(val), 0).ToString());
+                        }
+                        else
+                        {
+                            line.Add("$ "+Math.Round(UT.O2D(val), 2).ToString());
+                        }
+                    }//end foreach
+                    table.Add(line);
+                }
+
+                var chart1xlist = new List<object>();
+                var epcostdatalist = new List<object>();
+                var fcostdatalist = new List<object>();
+                var fmcostdict = new Dictionary<string, double>();
+                foreach (var cost in kv.Value)
+                {
+                    var epdatapair = new List<object>();
+                    if (cost.QuarterType.ToUpper().Contains("EP"))
+                    {
+                        chart1xlist.Add(cost.Quarter);
+                        epdatapair.Add(cost.Quarter);
+                        epdatapair.Add(Math.Round(UT.O2D(cost.UMCost),2));
+                        epcostdatalist.Add(epdatapair);
+                    }
+
+                    var fdatapaire = new List<object>();
+                    if (cost.QuarterType.ToUpper().Contains("F") 
+                        && !cost.QuarterType.ToUpper().Contains("MATE"))
+                    {
+                        fdatapaire.Add(cost.Quarter);
+                        fdatapaire.Add(Math.Round(UT.O2D(cost.UMCost), 2));
+                        fcostdatalist.Add(fdatapaire);
+                    }
+
+                    if (cost.QuarterType.ToUpper().Contains("MATE"))
+                    {
+                        fmcostdict.Add(cost.Quarter, Math.Round(UT.O2D(cost.UMCost), 2));
+                    }
+                }//end foreach
+
+                foreach (var fcostpair in fcostdatalist)
+                {
+                    if (fmcostdict.ContainsKey((string)((List<object>)fcostpair)[0]))
+                    {
+                        ((List<object>)fcostpair)[1] = fmcostdict[(string)((List<object>)fcostpair)[0]];
+                    }
+                }
+
+                var chart1chartseris = new List<object>();
+                chart1chartseris.Add(new
+                {
+                    name = "COST(EP)",
+                    type = "column",
+                    data = epcostdatalist,
+                    color = "#d91919",
+                    maxPointWidth = 40
+                });
+                chart1chartseris.Add(new
+                {
+                    name = "COST(F)",
+                    type = "column",
+                    data = fcostdatalist,
+                    color = "#193979",
+                    maxPointWidth = 40
+                });
+
+                var chart1 = new {
+                    title = kv.Key+" COST ROADMAP",
+                    xlist = chart1xlist,
+                    chartseris = chart1chartseris
+                };
+
+                var fdataselect = new Dictionary<string, bool>();
+                foreach (var cost in kv.Value)
+                {
+                    if (cost.QuarterType.ToUpper().Contains("F")
+                        && !cost.QuarterType.ToUpper().Contains("MATE"))
+                    {
+                        if (!fdataselect.ContainsKey(cost.Quarter))
+                        {
+                            fdataselect.Add(cost.Quarter, true);
+                        }
+                    }
+                }
+
+                var chart2xlist = new List<object>();
+                var bomlist = new List<object>();
+                var dllist = new List<object>();
+                var scraplist = new List<object>();
+                var overheadlist = new List<object>();
+
+                var umcostlist = new List<object>();
+                var asplist = new List<object>();
+                var crossmargin = new List<object>();
+
+                foreach (var tempcost in kv.Value)
+                {
+                    ProductCostVM cost = null;
+                    if (fdataselect.ContainsKey(tempcost.Quarter))
+                    {
+                        if (tempcost.QuarterType.ToUpper().Contains("F")
+                        && !tempcost.QuarterType.ToUpper().Contains("MATE"))
+                        { cost = tempcost; }
+                    }
+                    else
+                    {
+                        if (tempcost.QuarterType.ToUpper().Contains("EP"))
+                        { cost = tempcost; }
+                    }
+
+                    if (cost != null)
+                    {
+                        chart2xlist.Add(cost.Quarter);
+                        bomlist.Add(Math.Round(UT.O2D(cost.BOM), 2));
+                        dllist.Add(Math.Round(UT.O2D(cost.LabFOther)+ UT.O2D(cost.DLFG) + UT.O2D(cost.DLSFG), 2));
+                        scraplist.Add(Math.Round(UT.O2D(cost.SMFG) + UT.O2D(cost.SMSFG), 2));
+                        overheadlist.Add(Math.Round(UT.O2D(cost.UMCost) - UT.O2D(cost.VairableCost), 2));
+
+                        umcostlist.Add(Math.Round(UT.O2D(cost.UMCost), 2));
+                        asplist.Add(Math.Round(UT.O2D(cost.ASP), 2));
+                        crossmargin.Add(Math.Round((UT.O2D(cost.ASP) - UT.O2D(cost.UMCost)) / UT.O2D(cost.ASP)*100,2));
+                    }
+                }
+
+                var chart2chartseris = new List<object>();
+
+                chart2chartseris.Add(new
+                {
+                    name = "Overhead(VCSEL/PD)",
+                    type = "column",
+                    data = overheadlist,
+                    color = "#d91919",
+                    maxPointWidth = 40,
+                    yAxis = 0
+                });
+
+                chart2chartseris.Add(new
+                {
+                    name = "Scrap",
+                    type = "column",
+                    data = scraplist,
+                    color = "#bc2226",
+                    maxPointWidth = 40,
+                    yAxis = 0
+                });
+
+                chart2chartseris.Add(new
+                {
+                    name = "DL",
+                    type = "column",
+                    data = dllist,
+                    color = "#8c2025",
+                    maxPointWidth = 40,
+                    yAxis = 0
+                });
+
+                chart2chartseris.Add(new
+                {
+                    name = "BOM",
+                    type = "column",
+                    data = bomlist,
+                    color = "#451920",
+                    maxPointWidth = 40,
+                    yAxis = 0
+                });
+
+                chart2chartseris.Add(new
+                {
+                    name = "Unit Mfg Cost",
+                    type = "line",
+                    data = umcostlist,
+                    color = "#7030a0",
+                    yAxis = 0
+                });
+
+                chart2chartseris.Add(new
+                {
+                    name = "Crosss Margin",
+                    type = "line",
+                    data = crossmargin,
+                    color = "#5dc1f4",
+                    yAxis = 1
+                });
+
+                chart2chartseris.Add(new
+                {
+                    name = "ASP",
+                    type = "line",
+                    data = asplist,
+                    color = "#1c2bbe",
+                    yAxis = 0,
+                    visible = false
+                });
+
+                var chart2 = new
+                {
+                    title = kv.Key + " MFG COST TREND",
+                    xlist = chart2xlist,
+                    chartseris = chart2chartseris
+                };
+
+                var pm = "";
+                if (kv.Value.Count > 0)
+                { pm = kv.Value[0].PM; }
+                ret.Add(new
+                {
+                    pn = kv.Key,
+                    pm = pm,
+                    table = table,
+                    chart1 = chart1,
+                    chart2 = chart2
+                });
+            }
+
+            return ret;
+        }
+
+        //public JsonResult ProductCostPMData()
+        //{
+        //    var usermap = MachineUserMap.GetUserInfo(Request.UserHostName);
+        //    var pdcost = ProductCostVM.GetProdctCostData(usermap.username, "");
+        //    var datalist = SolveProductCost(pdcost);
+
+        //    var ret = new JsonResult();
+        //    ret.MaxJsonLength = Int32.MaxValue;
+        //    ret.Data = new
+        //    {
+        //        datalist = datalist
+        //    };
+        //    return ret;
+        //}
+
+        public JsonResult ProductCostQuery()
+        {
+            var pm = Request.Form["pm"];
+            var pd = Request.Form["pd"];
+
+            var famdpnict = PNProuctFamilyCache.PFPNDict();
+            var pnlist = new List<string>();
+            if (!string.IsNullOrEmpty(pd))
+            {
+                pm = "";
+                if (famdpnict.ContainsKey(pd))
+                {
+                    pnlist.AddRange(famdpnict[pd]);
+                }
+                else
+                {
+                    pnlist.Add(pd);
+                }
+            }
+
+            var pdcost = ProductCostVM.GetProdctCostData(pm, pnlist);
+            var datalist = SolveProductCost(pdcost);
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                datalist = datalist
+            };
+            return ret;
+        }
+
+        public JsonResult UpdateProductCost()
+        {
+            ExternalDataCollector.LoadProductCostData(this);
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                sucess = true
+            };
+            return ret;
+        }
+
+
     }
 }

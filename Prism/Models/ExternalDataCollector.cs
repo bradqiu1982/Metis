@@ -13,6 +13,137 @@ namespace Prism.Models
 {
     public class ExternalDataCollector
     {
+
+        public static void LoadProductCostData(Controller ctrl)
+        {
+            var syscfg = CfgUtility.GetSysConfig(ctrl);
+            var costfiles = DirectoryEnumerateFiles(ctrl, syscfg["PRODUCTCOSTPATH"]);
+            foreach (var cf in costfiles)
+            {
+                var fn = Path.GetFileName(cf);
+                if (fn.ToUpper().Contains("COST") && fn.Contains("_"))
+                {
+                    SolveCostData(ctrl,cf);
+                }
+            }
+        }
+        private static void logthdinfo(string info)
+        {
+            var filename = "d:\\log\\excelexception-" + DateTime.Now.ToString("yyyy-MM-dd");
+            if (System.IO.File.Exists(filename))
+            {
+                var content = System.IO.File.ReadAllText(filename);
+                content = content + "\r\n" + DateTime.Now.ToString() + " : " + info;
+                System.IO.File.WriteAllText(filename, content);
+            }
+            else
+            {
+                System.IO.File.WriteAllText(filename, DateTime.Now.ToString() + " : " + info);
+            }
+        }
+
+        private static void SolveCostData(Controller ctrl,string costfile)
+        {
+            try
+            {
+                var rawdata = RetrieveDataFromExcelWithAuth(ctrl, costfile);
+                var datarow = 0;
+                var datacol = 0;
+                var findunitcost = false;
+                var validcolidx = new List<int>();
+                foreach (var line in rawdata)
+                {
+                    datacol = 0;
+                    foreach (var cell in line)
+                    {
+                        if (findunitcost)
+                        {
+                            if (cell.ToUpper().Contains("Q")
+                                && cell.Contains("(") && cell.Contains(")"))
+                            {
+                                validcolidx.Add(datacol);
+                            }
+                        }
+
+                        if (string.Compare(cell.Replace(" ", "").ToUpper().Trim(), "UNITCOST") == 0)
+                        {
+                            findunitcost = true;
+                        }
+
+                        datacol++;
+                    }
+
+                    if (findunitcost)
+                    { break; }
+                    datarow++;
+                }
+
+                if (!findunitcost)
+                {
+                    logthdinfo("Fail to get unit cost from file: " + costfile);
+                    return;
+                }
+
+                if (rawdata.Count < (datarow + 24))
+                {
+                    logthdinfo("Fail to check the cost data row count from file: " + costfile);
+                    return;
+                }
+                var fn = Path.GetFileName(costfile);
+                var pnpm = fn.Split(new string[] { "_" }, StringSplitOptions.RemoveEmptyEntries);
+                if (pnpm.Length < 2)
+                {
+                    logthdinfo("Wrong cost file name format: " + costfile);
+                }
+                var pn = pnpm[0].Trim();
+                var pm = pnpm[1].ToUpper().Replace("'", "").Trim().Replace(" ",".");
+
+                var datalist = new List<ProductCostVM>();
+                foreach (var cidx in validcolidx)
+                {
+                    var ridx = datarow;
+                    var tempvm = new ProductCostVM();
+                    tempvm.PN = pn;
+                    tempvm.PM = pm;
+                    tempvm.QuarterType = rawdata[ridx++][cidx].Replace("\r","").Replace("\n","").Replace("$","");
+                    tempvm.ProcessHPU = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.Yield = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.LobEff = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.OralceHPU = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.BOM = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.LabFOther = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.OverheadFOther = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.DLFG = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.DLSFG = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.SMFG = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.SMSFG = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.IMFG = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.IMSFG = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.VairableCost = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.DOHFG = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.DOHSFG = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.IOHFG = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.IOHSFG = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.IOHSNYFG = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.IOHSNYSFG = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.UMCost = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.Qty = rawdata[ridx++][cidx].Replace("$","");
+                    tempvm.ASP = rawdata[ridx++][cidx].Replace("$","");
+
+                    if (string.IsNullOrEmpty(tempvm.UMCost))
+                    { continue; }
+
+                    datalist.Add(tempvm);
+                }
+
+                foreach (var data in datalist)
+                {
+                    data.StoreData();
+                }
+            }
+            catch (Exception ex) { }
+        }
+
         public static void LoadScrapData(Controller ctrl)
         {
             var coherentdict = PNProuctFamilyCache.GetPNDictByPF("COHERENT");

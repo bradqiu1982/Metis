@@ -1,0 +1,73 @@
+﻿
+@{
+    ViewBag.Title = "ProductCost";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+    th.dt-center, td.dt-center {
+        text-align: center;
+        max-width: 600px;
+        word-wrap: break-word;
+    }
+
+    .tb-caption {
+    text-align: center;
+    font-size: 20px;
+    color: #000;
+    font-weight: bold;
+    }
+</style>
+
+<script type="text/javascript" src="~/Scripts/inventory.js"></script>
+
+<input class="hide" type="text" id="hidetitle" name="hidetitle" value="Procut Cost">
+
+@if (!ViewBag.AUTH)
+{
+    <h3>You or Your computer is not authorized to review this page!</h3>
+    <h3>Please contact Brad.Qiu.</h3>
+}
+else
+{
+    <script type="text/javascript">
+        $(function(){
+            INVENTORY.PRODUCTCOSTINIT();
+        })
+    </script>
+
+    <input type="text" class="hide" id="level" name="level" value="@(ViewBag.Level)">
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="v-container">
+                <div class="v-filter">
+
+                        <div class="row row-margin">
+                            <label class="col-xs-2">PM</label>
+                            <div class="col-xs-3">
+                                <input class="form-control" type="text" id="pmlist" name="pmlist" placeholder="PM" readonly="readonly">
+                            </div>
+                            <label class="col-xs-2">Product</label>
+                            <div class="col-xs-3">
+                                <input class="form-control" type="text" id="pdlist" name="pdlist" placeholder="Product" readonly="readonly">
+                            </div>
+                            <div class="col-xs-1 box-search" style="padding-left:0">
+                                <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
+                            </div>
+                        </div>
+
+                </div>
+                <div class="v-content" style="margin-top:2%;">
+                    @*<table class="table table-hover  table-condensed table-striped" id="pdcosttable" style="margin-top:1%">
+                        <caption class="tb-caption">Product Cost</caption>
+                        <thead id="pdcosthead"></thead>
+                        <tbody id="pdcostcontent"></tbody>
+                    </table>*@
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+

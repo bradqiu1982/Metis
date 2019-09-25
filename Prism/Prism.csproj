@@ -260,6 +260,7 @@
     <Compile Include="Models\PNProuctFamilyCache.cs" />
     <Compile Include="Models\PNRateMap.cs" />
     <Compile Include="Models\PrismComment.cs" />
+    <Compile Include="Models\ProductCostVM.cs" />
     <Compile Include="Models\RMADppmData.cs" />
     <Compile Include="Models\RMARAWData.cs" />
     <Compile Include="Models\RMASumData.cs" />
@@ -913,6 +914,7 @@
     <Content Include="Views\Main\JOProgress.cshtml" />
     <Content Include="Views\Machine\HydraMACRate.cshtml" />
     <Content Include="Views\Machine\MachineTestTime.cshtml" />
+    <Content Include="Views\Inventory\ProductCost.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
