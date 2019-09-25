@@ -166,7 +166,7 @@ bool updateLinks)
                                 var cells = row.Elements<Cell>();
                                 foreach (Cell c in cells)
                                 {
-                                    line.Add(GetFormattedCellValue(wbPart, c));
+                                    line.Add(GetFormattedCellValue(wbPart, c).Replace("'", "").Replace("\"", "").Trim());
                                     if (line.Count >= columns)
                                     { break; }
                                 }
@@ -282,7 +282,7 @@ bool updateLinks)
                             var val = "";
                             if (csv.TryGetField<string>(idx, out val))
                             {
-                                line.Add(val);
+                                line.Add(val.Replace("'", "").Replace("\"", "").Trim());
                             }
                             else
                             {
@@ -361,26 +361,26 @@ bool updateLinks)
                                 switch (c.CellType)
                                 {
                                     case NPOI.SS.UserModel.CellType.String:
-                                        line.Add(c.StringCellValue);
+                                        line.Add(c.StringCellValue.Replace("'", "").Replace("\"", "").Trim());
                                         break;
                                     case NPOI.SS.UserModel.CellType.Numeric:
                                         if (DateUtil.IsCellDateFormatted(c))
                                         {
-                                            line.Add(c.DateCellValue.ToString("yyyy-MM-dd HH:mm:ss"));
+                                            line.Add(c.DateCellValue.ToString("yyyy-MM-dd HH:mm:ss").Replace("'", "").Replace("\"", "").Trim());
                                         }
                                         else
                                         {
-                                            line.Add(c.NumericCellValue.ToString());
+                                            line.Add(c.NumericCellValue.ToString().Replace("'", "").Replace("\"", "").Trim());
                                         }
                                         break;
                                     case NPOI.SS.UserModel.CellType.Boolean:
-                                        line.Add(c.StringCellValue);
+                                        line.Add(c.StringCellValue.Replace("'", "").Replace("\"", "").Trim());
                                         break;
                                     case NPOI.SS.UserModel.CellType.Blank:
                                         line.Add("");
                                         break;
                                     case NPOI.SS.UserModel.CellType.Formula:
-                                        line.Add(GetFormulaVal(formula, c));
+                                        line.Add(GetFormulaVal(formula, c).Replace("'", "").Replace("\"", "").Trim());
                                         break;
                                     default:
                                         line.Add("");
