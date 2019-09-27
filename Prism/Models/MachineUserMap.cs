@@ -91,13 +91,14 @@ namespace Prism.Models
                 ret.username = "BRAD.QIU";
                 ret.machine = "SHG-L80003583";
                 ret.level = 10;
+                ret.ugroup = "COST";
                 return ret;
             }
             #endif
 
             
             string machine = DetermineCompName(ip);
-            var sql = "select machine,username,level from machineusermap where machine = '<machine>' ";
+            var sql = "select machine,username,level,ugroup from machineusermap where machine = '<machine>' ";
             sql = sql.Replace("<machine>", machine);
             if (ugroup != null)
             {
@@ -113,6 +114,7 @@ namespace Prism.Models
                 var slv = Convert.ToString(line[2]);
                 if (!string.IsNullOrEmpty(slv) && slv.Length > 1)
                 { ret.level = Convert.ToInt32(slv.Substring(1)); }
+                ret.ugroup = UT.O2S(line[3]);
                 return ret;
             }
 
@@ -201,11 +203,13 @@ namespace Prism.Models
             machine = "";
             username = "";
             level = -1;
+            ugroup = "";
         }
 
         public string machine { set; get; }
         public string username { set; get; }
         public int level { set; get; }
+        public string ugroup { set; get; }
 
     }
 

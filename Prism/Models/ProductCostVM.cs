@@ -77,10 +77,16 @@ namespace Prism.Models
             return ret;
         }
 
-        public static List<string> PNList()
+        public static List<string> PNList(string pm=null)
         {
             var ret = new List<string>();
             var sql = "select distinct PN from ProductCostVM";
+
+            if(pm != null)
+            {
+                sql = sql + " where PM = '"+pm.Trim()+"'";
+            }
+
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             { ret.Add(UT.O2S(line[0])); }

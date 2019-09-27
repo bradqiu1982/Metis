@@ -586,6 +586,45 @@ namespace Prism.Controllers
         //    return ret;
         //}
 
+        private Dictionary<string, bool> GetAuthorizatedPN()
+        {
+            var usermap = MachineUserMap.GetUserInfo(Request.UserHostName, "COST");
+            var allowedpndict = new Dictionary<string, bool>();
+            if (usermap.ugroup.ToUpper().Contains("COSTIPOH"))
+            {
+                var ipohpns = CfgUtility.GetSysConfig(this)["COSTIPOH"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var ipn in ipohpns)
+                {
+                    if (!allowedpndict.ContainsKey(ipn))
+                    { allowedpndict.Add(ipn, true); }
+                }
+            }
+            else if (usermap.ugroup.ToUpper().Contains("COSTPRIV"))
+            {
+                var syscfg = CfgUtility.GetSysConfig(this);
+                if (syscfg.ContainsKey(usermap.username+"_COST"))
+                {
+                    var sppns = CfgUtility.GetSysConfig(this)[usermap.username+ "_COST"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var ipn in sppns)
+                    {
+                        if (!allowedpndict.ContainsKey(ipn))
+                        { allowedpndict.Add(ipn, true); }
+                    }
+                }
+                else
+                {
+                    var sppns = ProductCostVM.PNList(usermap.username);
+                    foreach (var ipn in sppns)
+                    {
+                        if (!allowedpndict.ContainsKey(ipn))
+                        { allowedpndict.Add(ipn, true); }
+                    }
+                }
+            }
+
+            return allowedpndict;
+        }
+        
         public JsonResult ProductCostQuery()
         {
             var pm = Request.Form["pm"];
@@ -607,8 +646,20 @@ namespace Prism.Controllers
             }
 
             var pdcost = ProductCostVM.GetProdctCostData(pm, pnlist);
-            var datalist = SolveProductCost(pdcost);
+            var allowedpndict = GetAuthorizatedPN();
+            var filtercost = new Dictionary<string, List<ProductCostVM>>();
+            foreach (var kv in pdcost)
+            {
+                if (allowedpndict.Count > 0)
+                {
+                    if (!allowedpndict.ContainsKey(kv.Key))
+                    { continue; }
+                }
 
+                filtercost.Add(kv.Key, kv.Value);
+            }
+
+            var datalist = SolveProductCost(filtercost);
             var ret = new JsonResult();
             ret.MaxJsonLength = Int32.MaxValue;
             ret.Data = new

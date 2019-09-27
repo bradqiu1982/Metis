@@ -706,6 +706,9 @@
             costtabs = new Array();
             $('.v-content').empty();
 
+            if (output.datalist.length == 0)
+            { alert("No authorization to access this data or no such data.");}
+
             $.each(output.datalist, function (i, onecost) {
                 CreateTabs(onecost);
                 DrawCostChart1(onecost);
