@@ -107,7 +107,12 @@ namespace Prism.Models
 
                 SmtpClient client = new SmtpClient();
                 client.Host = syscfgdict["EMAILSERVER"];
-                client.EnableSsl = true;
+
+                if (syscfgdict["EMAILSSL"].Contains("TRUE"))
+                { client.EnableSsl = true; }
+                else
+                { client.EnableSsl = false; }
+
                 client.Timeout = 60000;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
                 client.UseDefaultCredentials = false;
