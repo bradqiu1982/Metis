@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using Prism.Models;
 using System.Reflection;
+using System.IO;
 
 namespace Prism.Controllers
 {
@@ -669,18 +670,72 @@ namespace Prism.Controllers
             return ret;
         }
 
-        public JsonResult UpdateProductCost()
+        //public JsonResult UpdateProductCost()
+        //{
+        //    ExternalDataCollector.LoadProductCostData(this);
+        //    var ret = new JsonResult();
+        //    ret.MaxJsonLength = Int32.MaxValue;
+        //    ret.Data = new
+        //    {
+        //        sucess = true
+        //    };
+        //    return ret;
+        //}
+
+        public JsonResult UploadProductCost()
         {
-            ExternalDataCollector.LoadProductCostData(this);
+            var msg = "the upload cost data is not update for format reason!";
+            var sucess = false;
+
+            try
+            {
+                foreach (string fl in Request.Files)
+                {
+                    if (fl != null && Request.Files[fl].ContentLength > 0)
+                    {
+                        string fn = Path.GetFileName(Request.Files[fl].FileName).Replace("#", "")
+                            .Replace("&", "").Replace("?", "").Replace("%", "").Replace("+", "");
+                        if (!fn.ToUpper().Contains(".XLSX") || !fn.ToUpper().Contains("COST"))
+                        { continue; }
+                        var fnsegs = fn.Split(new string[] { "_" }, StringSplitOptions.RemoveEmptyEntries);
+                        if (fnsegs.Length != 3)
+                        { continue; }
+
+                        string datestring = DateTime.Now.ToString("yyyyMMdd");
+                        string imgdir = Server.MapPath("~/userfiles") + "\\docs\\" + datestring + "\\";
+
+                        if (!Directory.Exists(imgdir))
+                        {
+                            Directory.CreateDirectory(imgdir);
+                        }
+
+                        fn = Path.GetFileNameWithoutExtension(fn) + "-" + DateTime.Now.ToString("yyyyMMddHHmmss") + Path.GetExtension(fn);
+                        Request.Files[fl].SaveAs(imgdir + fn);
+
+                        ExternalDataCollector.SolveCostData(this, imgdir + fn);
+
+                        sucess = true;
+                        msg = "";
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                sucess = false;
+                msg = ex.Message;
+            }
+
+
             var ret = new JsonResult();
             ret.MaxJsonLength = Int32.MaxValue;
             ret.Data = new
             {
-                sucess = true
+                sucess = sucess,
+                msg = msg
             };
             return ret;
         }
-
 
     }
 }

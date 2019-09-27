@@ -432,14 +432,40 @@
             });
         }
 
-        $.fn.dataTable.ext.buttons.updatecost = {
-            text: 'Update Cost',
+        //$.fn.dataTable.ext.buttons.updatecost = {
+        //    text: 'Update Cost',
+        //    action: function (e, dt, node, config) {
+        //        $.post('/Inventory/UpdateProductCost', {}, function (output) {
+        //            window.location.reload();
+        //        });
+        //    }
+        //};
+
+        $.fn.dataTable.ext.buttons.uploadcost = {
+            text: 'Upload Cost',
             action: function (e, dt, node, config) {
-                $.post('/Inventory/UpdateProductCost', {}, function (output) {
-                    window.location.reload();
-                });
+                $('#file1').click();
             }
         };
+
+
+        $('body').on('change', '#file1', function () {
+        $.ajaxFileUpload({
+                            url: '/Inventory/UploadProductCost',
+                            secureuri: false,
+                            fileElementId: 'file1',
+                            dataType: 'json',
+                            success: function (data, status) {
+                                if (!data.sucess)
+                                { alert(data.msg); }
+                                else
+                                { window.location.reload(); }
+                            },
+                            error: function (e) {
+                                alert(e);
+                            }
+                        });
+        })
 
         $.fn.dataTable.ext.buttons.costdetail = {
             text: 'Cost Detail',
@@ -504,7 +530,7 @@
                         "aaSorting": [],
                         "order": [],
                         dom: 'lBfrtip',
-                        buttons: ['copyHtml5', 'csv', 'excelHtml5', 'updatecost','costdetail','costcollapse']
+                        buttons: ['copyHtml5', 'csv', 'excelHtml5', 'costdetail','costcollapse','uploadcost']
                     });
                 costtabs.push(tabhandle);
 

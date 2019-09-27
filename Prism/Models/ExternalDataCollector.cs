@@ -42,7 +42,7 @@ namespace Prism.Models
             }
         }
 
-        private static void SolveCostData(Controller ctrl,string costfile)
+        public static void SolveCostData(Controller ctrl,string costfile)
         {
             try
             {
