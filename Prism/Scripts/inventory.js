@@ -459,7 +459,7 @@
                                 if (!data.sucess)
                                 { alert(data.msg); }
                                 else
-                                { window.location.reload(); }
+                                { window.location.reload(true); }
                             },
                             error: function (e) {
                                 alert(e);
@@ -482,6 +482,76 @@
                 $('.' + detailcla).removeClass('hide').addClass('hide');
             }
         };
+
+        $.fn.dataTable.ext.buttons.addepcost = {
+            text: 'Add EP Cost',
+            action: function (e, dt, node, config) {
+                var pn = $(e.currentTarget).attr('aria-controls').replace("_tab", "");
+                $('#eppn').val(pn);
+                $('#epdlg').modal('show');
+            }
+        };
+
+        $('body').on('click', '#btn-addep', function () {
+            
+            var qart = $('#epquarterlist').val();
+            var eppn = $('#eppn').val();
+            var prochpu = $('#prochpu').val();
+            var epyield = $('#epyield').val().replace("%", "");
+
+            var eplab = $('#eplab').val();
+            var epbom = $('#epbom').val();
+            var eplabfos = $('#eplabfos').val();
+
+            var epoverheadfos = $('#epoverheadfos').val();
+            var epqty = $('#epqty').val();
+            var epasp = $('#epasp').val();
+
+            if (prochpu == ''
+                || epyield == ''
+                || eplab == ''
+                || epbom == ''
+                || epoverheadfos == ''
+                || epqty == ''
+                || epasp == '') {
+                alert("All input field need to be input!");
+                return false;
+            }
+
+            if (!$.isNumeric(prochpu)
+                || !$.isNumeric(epyield)
+                || !$.isNumeric(eplab)
+                || !$.isNumeric(epbom)
+                || !$.isNumeric(epoverheadfos)
+                || !$.isNumeric(epqty)
+                || !$.isNumeric(epasp)) {
+                alert("All input field need to be numberic!");
+                return false;
+            }
+
+            $('#epdlg').modal('hide');
+
+            $.post('/Inventory/CreateEPCost', {
+                qart: qart,
+                eppn: eppn,
+                prochpu: prochpu,
+                epyield: epyield,
+                eplab: eplab,
+                epbom: epbom,
+                eplabfos: eplabfos,
+                epoverheadfos: epoverheadfos,
+                epqty: epqty,
+                epasp: epasp
+                },
+                function (output) {
+                    if (!output.sucess)
+                    { alert(output.msg); }
+                    else
+                    { window.location.reload(true);}
+                });
+
+
+        })
 
         function CreateTabs(onecost)
         {
@@ -530,7 +600,7 @@
                         "aaSorting": [],
                         "order": [],
                         dom: 'lBfrtip',
-                        buttons: ['copyHtml5', 'csv', 'excelHtml5', 'costdetail','costcollapse','uploadcost']
+                        buttons: ['copyHtml5', 'csv', 'excelHtml5', 'costdetail','costcollapse','uploadcost','addepcost']
                     });
                 costtabs.push(tabhandle);
 

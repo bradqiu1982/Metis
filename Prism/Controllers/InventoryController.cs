@@ -261,6 +261,31 @@ namespace Prism.Controllers
             return ret;
         }
 
+        private List<SelectListItem> CreateSelectList(List<string> valist, string defVal)
+        {
+            bool selected = false;
+            var pslist = new List<SelectListItem>();
+            foreach (var p in valist)
+            {
+                var pitem = new SelectListItem();
+                pitem.Text = p;
+                pitem.Value = p;
+                if (!string.IsNullOrEmpty(defVal) && string.Compare(defVal, p, true) == 0)
+                {
+                    pitem.Selected = true;
+                    selected = true;
+                }
+                pslist.Add(pitem);
+            }
+
+            if (!selected && pslist.Count > 0)
+            {
+                pslist[0].Selected = true;
+            }
+
+            return pslist;
+        }
+
         public ActionResult ProductCost()
         {
             ViewBag.AUTH = false;
@@ -270,6 +295,14 @@ namespace Prism.Controllers
                 ViewBag.AUTH = true;
             }
             ViewBag.Level = usermap.level;
+
+            var currentdate = DateTime.Now;
+            var quartlist = new List<string>();
+            quartlist.Add(QuarterCLA.RetrieveQuarterFromDate(currentdate.AddMonths(3)));
+            quartlist.Add(QuarterCLA.RetrieveQuarterFromDate(currentdate.AddMonths(6)));
+            quartlist.Add(QuarterCLA.RetrieveQuarterFromDate(currentdate.AddMonths(9)));
+            ViewBag.epquarterlist = CreateSelectList(quartlist, "");
+
             return View();
         }
 
@@ -736,6 +769,77 @@ namespace Prism.Controllers
             };
             return ret;
         }
+
+        public JsonResult CreateEPCost()
+        {
+            var sucess = true;
+            var msg = "";
+
+            var qart = Request.Form["qart"];
+            var eppn = Request.Form["eppn"];
+            var prochpu = UT.O2D(Request.Form["prochpu"]);
+            var epyield = UT.O2D(Request.Form["epyield"]);
+            var eplab = UT.O2D(Request.Form["eplab"]);
+            var epbom = UT.O2D(Request.Form["epbom"]);
+            var eplabfos = UT.O2D(Request.Form["eplabfos"]);
+            var epoverheadfos = UT.O2D(Request.Form["epoverheadfos"]);
+            var epqty = UT.O2D(Request.Form["epqty"]);
+            var epasp = UT.O2D(Request.Form["epasp"]);
+
+            if (epyield > 1)
+            { epyield = epyield * 0.01; }
+            if (eplab > 1)
+            { eplab = eplab * 0.01; }
+
+            var eporaclehpu = prochpu / eplab * 1.075;
+
+            var crtqt = QuarterCLA.RetrieveQuarterFromDate(DateTime.Now);
+            var crtfcostlist = ProductCostVM.GetOneProdctCostData(eppn, crtqt, "2F");
+
+            if (crtfcostlist.Count > 0)
+            {
+                try
+                {
+
+                }
+                catch (Exception ex) {
+                    sucess = false;
+                    msg = ex.Message;
+                }
+                var crtfcost = crtfcostlist[0];
+
+                var dlfgrate = UT.O2D(crtfcost.DLFG) / UT.O2D(crtfcost.OralceHPU);
+                var dlsfgrate = UT.O2D(crtfcost.DLSFG) / UT.O2D(crtfcost.OralceHPU);
+                var smfgrate = UT.O2D(crtfcost.SMFG) / UT.O2D(crtfcost.OralceHPU);
+                var smsfgrate = UT.O2D(crtfcost.SMSFG) / UT.O2D(crtfcost.OralceHPU);
+                var imfgrate = UT.O2D(crtfcost.IMFG) / UT.O2D(crtfcost.OralceHPU);
+                var imsfgrate = UT.O2D(crtfcost.IMSFG) / UT.O2D(crtfcost.OralceHPU);
+
+                var dohfgrate = UT.O2D(crtfcost.DOHFG) / UT.O2D(crtfcost.OralceHPU);
+                var dohsfgrate = UT.O2D(crtfcost.DOHSFG) / UT.O2D(crtfcost.OralceHPU);
+                var iohfgrate = UT.O2D(crtfcost.IOHFG) / UT.O2D(crtfcost.OralceHPU);
+                var iohsfgrate = UT.O2D(crtfcost.IOHSFG) / UT.O2D(crtfcost.OralceHPU);
+                var iohsnyfgrate = UT.O2D(crtfcost.IOHSNYFG) / UT.O2D(crtfcost.OralceHPU);
+                var iohsnysfgrate = UT.O2D(crtfcost.IOHSNYSFG) / UT.O2D(crtfcost.OralceHPU);
+            }
+            else
+            {
+                sucess = false;
+                msg = "Fail to create EP cost,current quarter has no financial forcast cost";
+            }
+
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                sucess = sucess,
+                msg = msg
+            };
+            return ret;
+
+        }
+
 
     }
 }

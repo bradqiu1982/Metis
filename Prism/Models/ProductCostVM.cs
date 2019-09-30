@@ -159,6 +159,55 @@ namespace Prism.Models
             return ret;
         }
 
+        public static  List<ProductCostVM> GetOneProdctCostData(string pn, string qt,string datatype)
+        {
+            var ret = new List<ProductCostVM>();
+
+            var sql = @"select PN,PM,QuarterType,ProcessHPU,Yield,LobEff,OralceHPU,BOM
+                        ,LabFOther,OverheadFOther,DLFG,DLSFG,SMFG,SMSFG,IMFG,IMSFG,VairableCost,DOHFG,DOHSFG
+                        ,IOHFG,IOHSFG,IOHSNYFG,IOHSNYSFG,UMCost,Qty,ASP from ProductCostVM where PN=@PN and Quarter=@Quarter and DataType=@DataType";
+
+            var dict = new Dictionary<string, string>();
+            dict.Add("@PN",pn);
+            dict.Add("@Quarter",qt);
+            dict.Add("@DataType",datatype);
+
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
+            foreach (var line in dbret)
+            {
+                var tempvm = new ProductCostVM();
+                tempvm.PN = UT.O2S(line[0]);
+                tempvm.PM = UT.O2S(line[1]);
+                tempvm.QuarterType = UT.O2S(line[2]);
+                tempvm.ProcessHPU = UT.O2S(line[3]);
+                tempvm.Yield = UT.O2S(line[4]);
+                tempvm.LobEff = UT.O2S(line[5]);
+                tempvm.OralceHPU = UT.O2S(line[6]);
+                tempvm.BOM = UT.O2S(line[7]);
+                tempvm.LabFOther = UT.O2S(line[8]);
+                tempvm.OverheadFOther = UT.O2S(line[9]);
+                tempvm.DLFG = UT.O2S(line[10]);
+                tempvm.DLSFG = UT.O2S(line[11]);
+                tempvm.SMFG = UT.O2S(line[12]);
+                tempvm.SMSFG = UT.O2S(line[13]);
+                tempvm.IMFG = UT.O2S(line[14]);
+                tempvm.IMSFG = UT.O2S(line[15]);
+                tempvm.VairableCost = UT.O2S(line[16]);
+                tempvm.DOHFG = UT.O2S(line[17]);
+                tempvm.DOHSFG = UT.O2S(line[18]);
+                tempvm.IOHFG = UT.O2S(line[19]);
+                tempvm.IOHSFG = UT.O2S(line[20]);
+                tempvm.IOHSNYFG = UT.O2S(line[21]);
+                tempvm.IOHSNYSFG = UT.O2S(line[22]);
+                tempvm.UMCost = UT.O2S(line[23]);
+                tempvm.Qty = UT.O2S(line[24]);
+                tempvm.ASP = UT.O2S(line[25]);
+
+                ret.Add(tempvm);
+            }
+            return ret;
+        }
+
         public void StoreData()
         {
             if (HasData())
