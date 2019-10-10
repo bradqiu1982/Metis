@@ -370,6 +370,45 @@ namespace Prism.Models
 
         }
 
+        public ProductCostVM(string pn,string pm,string qt,string prochpu,string yield
+               ,string lobeff,string oraclehpu,string bom,string labfos,string overfos
+               ,string dlfg,string dlsfg,string smfg,string smsfg,string imfg
+               ,string imsfg,string variablecost,string dohfg,string dohsfg,string iohfg
+               ,string iohsfg,string iohsnyfg,string iohsnysfg,string umcost,string qty,string asp)
+        {
+            PN = pn;
+            PM = pm;
+            QuarterType = qt;
+            ProcessHPU = prochpu;
+            Yield = yield;
+
+            LobEff = lobeff;
+            OralceHPU = oraclehpu;
+            BOM = bom;
+            LabFOther = labfos;
+            OverheadFOther = overfos;
+
+            DLFG = dlfg;
+            DLSFG = dlsfg;
+            SMFG = smfg;
+            SMSFG = smsfg;
+            IMFG = imfg;
+
+            IMSFG = imsfg;
+            VairableCost = variablecost;
+            DOHFG = dohfg;
+            DOHSFG = dohsfg;
+            IOHFG = iohfg;
+
+            IOHSFG = iohsfg;
+            IOHSNYFG = iohsnyfg;
+            IOHSNYSFG = iohsnysfg;
+            UMCost = umcost;
+            Qty = qty;
+
+            ASP = asp;
+        }
+
         public string PN { set; get; }
         public string PM { set; get; }
         public string QuarterType { set; get; }

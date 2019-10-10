@@ -800,27 +800,54 @@ namespace Prism.Controllers
             {
                 try
                 {
+                    var crtfcost = crtfcostlist[0];
+
+                    var dlfgrate = UT.O2D(crtfcost.DLFG) / UT.O2D(crtfcost.OralceHPU);
+                    var dlsfgrate = UT.O2D(crtfcost.DLSFG) / UT.O2D(crtfcost.OralceHPU);
+                    var smfgrate = UT.O2D(crtfcost.SMFG) / UT.O2D(crtfcost.OralceHPU);
+                    var smsfgrate = UT.O2D(crtfcost.SMSFG) / UT.O2D(crtfcost.OralceHPU);
+                    var imfgrate = UT.O2D(crtfcost.IMFG) / UT.O2D(crtfcost.OralceHPU);
+                    var imsfgrate = UT.O2D(crtfcost.IMSFG) / UT.O2D(crtfcost.OralceHPU);
+
+                    var dohfgrate = UT.O2D(crtfcost.DOHFG) / UT.O2D(crtfcost.OralceHPU);
+                    var dohsfgrate = UT.O2D(crtfcost.DOHSFG) / UT.O2D(crtfcost.OralceHPU);
+                    var iohfgrate = UT.O2D(crtfcost.IOHFG) / UT.O2D(crtfcost.OralceHPU);
+                    var iohsfgrate = UT.O2D(crtfcost.IOHSFG) / UT.O2D(crtfcost.OralceHPU);
+                    var iohsnyfgrate = UT.O2D(crtfcost.IOHSNYFG) / UT.O2D(crtfcost.OralceHPU);
+                    var iohsnysfgrate = UT.O2D(crtfcost.IOHSNYSFG) / UT.O2D(crtfcost.OralceHPU);
+
+                    var DLFG = eporaclehpu * dlfgrate;
+                    var DLSFG = eporaclehpu * dlsfgrate;
+                    var SMFG = eporaclehpu * smfgrate * (UT.O2D(crtfcost.Yield) / epyield);
+                    var SMSFG = eporaclehpu * smsfgrate;
+                    var IMFG = eporaclehpu * imfgrate;
+                    var IMSFG = eporaclehpu * imsfgrate;
+
+                    var variablecost = epbom + eplabfos + DLFG + DLSFG + SMFG + SMSFG + IMFG + IMSFG;
+
+                    var DOHFG = eporaclehpu * dohfgrate;
+                    var DOHSFG = eporaclehpu * dohsfgrate;
+                    var IOHFG = eporaclehpu * iohfgrate;
+                    var IOHSFG = eporaclehpu * iohsfgrate;
+                    var IOHSNYFG = eporaclehpu * iohsnyfgrate;
+                    var IOHSNYSFG = eporaclehpu * iohsnysfgrate;
+
+                    var UMFCost = variablecost + epoverheadfos + DOHFG + DOHSFG + IOHFG + IOHSFG + IOHSNYFG + IOHSNYSFG;
+
+                    var quartertype = qart.Substring(5) + qart.Substring(2, 2) + " (EP) WUXI";
+
+                    var tempvm = new ProductCostVM(eppn, crtfcost.PM, quartertype, prochpu.ToString(), epyield.ToString()
+                       , eplab.ToString(), eporaclehpu.ToString(), epbom.ToString(), eplabfos.ToString(),epoverheadfos.ToString()
+                       , DLFG.ToString(), DLSFG.ToString(), SMFG.ToString(),SMSFG.ToString(), IMFG.ToString()
+                       , IMSFG.ToString(), variablecost.ToString(), DOHFG.ToString(), DOHSFG.ToString(),IOHFG.ToString()
+                       , IOHSFG.ToString(), IOHSNYFG.ToString(), IOHSNYSFG.ToString(), UMFCost.ToString(),epqty.ToString(), epasp.ToString());
+                    tempvm.StoreData();
 
                 }
                 catch (Exception ex) {
                     sucess = false;
                     msg = ex.Message;
                 }
-                var crtfcost = crtfcostlist[0];
-
-                var dlfgrate = UT.O2D(crtfcost.DLFG) / UT.O2D(crtfcost.OralceHPU);
-                var dlsfgrate = UT.O2D(crtfcost.DLSFG) / UT.O2D(crtfcost.OralceHPU);
-                var smfgrate = UT.O2D(crtfcost.SMFG) / UT.O2D(crtfcost.OralceHPU);
-                var smsfgrate = UT.O2D(crtfcost.SMSFG) / UT.O2D(crtfcost.OralceHPU);
-                var imfgrate = UT.O2D(crtfcost.IMFG) / UT.O2D(crtfcost.OralceHPU);
-                var imsfgrate = UT.O2D(crtfcost.IMSFG) / UT.O2D(crtfcost.OralceHPU);
-
-                var dohfgrate = UT.O2D(crtfcost.DOHFG) / UT.O2D(crtfcost.OralceHPU);
-                var dohsfgrate = UT.O2D(crtfcost.DOHSFG) / UT.O2D(crtfcost.OralceHPU);
-                var iohfgrate = UT.O2D(crtfcost.IOHFG) / UT.O2D(crtfcost.OralceHPU);
-                var iohsfgrate = UT.O2D(crtfcost.IOHSFG) / UT.O2D(crtfcost.OralceHPU);
-                var iohsnyfgrate = UT.O2D(crtfcost.IOHSNYFG) / UT.O2D(crtfcost.OralceHPU);
-                var iohsnysfgrate = UT.O2D(crtfcost.IOHSNYSFG) / UT.O2D(crtfcost.OralceHPU);
             }
             else
             {
