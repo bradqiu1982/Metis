@@ -162,14 +162,29 @@ bool updateLinks)
                             if (reader.ElementType == typeof(Row) && reader.IsStartElement)
                             {
                                 Row row = (Row)reader.LoadCurrentElement();
-                                var line = new List<string>();
+                                var linedict = new Dictionary<string, string>();
                                 var cells = row.Elements<Cell>();
                                 foreach (Cell c in cells)
                                 {
-                                    line.Add(GetFormattedCellValue(wbPart, c).Replace("'", "").Replace("\"", "").Trim());
+                                    linedict.Add(System.Text.RegularExpressions.Regex.Replace(c.CellReference.Value, @"[\d-]", string.Empty)
+                                        , GetFormattedCellValue(wbPart, c).Replace("'", "").Replace("\"", "").Trim());
+
+                                    if (linedict.Count >= columns)
+                                    { break; }
+                                }
+
+                                var line = new List<string>();
+                                foreach (var k in columnFlag)
+                                {
+                                    if (linedict.ContainsKey(k))
+                                    { line.Add(linedict[k]); }
+                                    else
+                                    { line.Add(""); }
+
                                     if (line.Count >= columns)
                                     { break; }
                                 }
+
                                 if (WholeLineEmpty(line)) { continue; }
                                 ret.Add(line);
                             }
