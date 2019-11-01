@@ -44,9 +44,9 @@ else
                 <div class="v-filter">
 
                         <div class="row row-margin">
-                            <label class="col-xs-2">PM</label>
-                            <div class="col-xs-3">
-                                <input class="form-control" type="text" id="pmlist" name="pmlist" placeholder="PM" readonly="readonly">
+                            <label class="col-xs-2 hide">PM</label>
+                            <div class="col-xs-3 hide">
+                                <input class="form-control hide" type="text" id="pmlist" name="pmlist" placeholder="PM" readonly="readonly">
                             </div>
                             <label class="col-xs-2">Product</label>
                             <div class="col-xs-3">
@@ -56,7 +56,7 @@ else
                                 <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="Search">
                             </div>
                         </div>
-
+                    <input class="form-control hide" type="text" id="hpn" name="hpn" value="@ViewBag.pn">
                 </div>
                 <div class="v-content" style="margin-top:2%;">
                     @*<table class="table table-hover  table-condensed table-striped" id="pdcosttable" style="margin-top:1%">

@@ -286,7 +286,7 @@ namespace Prism.Controllers
             return pslist;
         }
 
-        public ActionResult ProductCost()
+        public ActionResult ProductCost(string pn)
         {
             ViewBag.AUTH = false;
             var usermap = MachineUserMap.GetUserInfo(Request.UserHostName,"COST");
@@ -301,7 +301,12 @@ namespace Prism.Controllers
             quartlist.Add(QuarterCLA.RetrieveQuarterFromDate(currentdate.AddMonths(3)));
             quartlist.Add(QuarterCLA.RetrieveQuarterFromDate(currentdate.AddMonths(6)));
             quartlist.Add(QuarterCLA.RetrieveQuarterFromDate(currentdate.AddMonths(9)));
+            quartlist.Add(QuarterCLA.RetrieveQuarterFromDate(currentdate.AddMonths(12)));
             ViewBag.epquarterlist = CreateSelectList(quartlist, "");
+
+            ViewBag.pn = "";
+            if (!string.IsNullOrEmpty(pn))
+            { ViewBag.pn = pn; }
 
             return View();
         }
@@ -791,58 +796,14 @@ namespace Prism.Controllers
             if (eplab > 1)
             { eplab = eplab * 0.01; }
 
-            var eporaclehpu = prochpu / eplab * 1.075;
-
             var crtqt = QuarterCLA.RetrieveQuarterFromDate(DateTime.Now);
             var crtfcostlist = ProductCostVM.GetOneProdctCostData(eppn, crtqt, "2F");
-
             if (crtfcostlist.Count > 0)
             {
                 try
                 {
                     var crtfcost = crtfcostlist[0];
-
-                    var dlfgrate = UT.O2D(crtfcost.DLFG) / UT.O2D(crtfcost.OralceHPU);
-                    var dlsfgrate = UT.O2D(crtfcost.DLSFG) / UT.O2D(crtfcost.OralceHPU);
-                    var smfgrate = UT.O2D(crtfcost.SMFG) / UT.O2D(crtfcost.OralceHPU);
-                    var smsfgrate = UT.O2D(crtfcost.SMSFG) / UT.O2D(crtfcost.OralceHPU);
-                    var imfgrate = UT.O2D(crtfcost.IMFG) / UT.O2D(crtfcost.OralceHPU);
-                    var imsfgrate = UT.O2D(crtfcost.IMSFG) / UT.O2D(crtfcost.OralceHPU);
-
-                    var dohfgrate = UT.O2D(crtfcost.DOHFG) / UT.O2D(crtfcost.OralceHPU);
-                    var dohsfgrate = UT.O2D(crtfcost.DOHSFG) / UT.O2D(crtfcost.OralceHPU);
-                    var iohfgrate = UT.O2D(crtfcost.IOHFG) / UT.O2D(crtfcost.OralceHPU);
-                    var iohsfgrate = UT.O2D(crtfcost.IOHSFG) / UT.O2D(crtfcost.OralceHPU);
-                    var iohsnyfgrate = UT.O2D(crtfcost.IOHSNYFG) / UT.O2D(crtfcost.OralceHPU);
-                    var iohsnysfgrate = UT.O2D(crtfcost.IOHSNYSFG) / UT.O2D(crtfcost.OralceHPU);
-
-                    var DLFG = eporaclehpu * dlfgrate;
-                    var DLSFG = eporaclehpu * dlsfgrate;
-                    var SMFG = eporaclehpu * smfgrate * (UT.O2D(crtfcost.Yield) / epyield);
-                    var SMSFG = eporaclehpu * smsfgrate;
-                    var IMFG = eporaclehpu * imfgrate;
-                    var IMSFG = eporaclehpu * imsfgrate;
-
-                    var variablecost = epbom + eplabfos + DLFG + DLSFG + SMFG + SMSFG + IMFG + IMSFG;
-
-                    var DOHFG = eporaclehpu * dohfgrate;
-                    var DOHSFG = eporaclehpu * dohsfgrate;
-                    var IOHFG = eporaclehpu * iohfgrate;
-                    var IOHSFG = eporaclehpu * iohsfgrate;
-                    var IOHSNYFG = eporaclehpu * iohsnyfgrate;
-                    var IOHSNYSFG = eporaclehpu * iohsnysfgrate;
-
-                    var UMFCost = variablecost + epoverheadfos + DOHFG + DOHSFG + IOHFG + IOHSFG + IOHSNYFG + IOHSNYSFG;
-
-                    var quartertype = qart.Substring(5) + qart.Substring(2, 2) + " (EP) WUXI";
-
-                    var tempvm = new ProductCostVM(eppn, crtfcost.PM, quartertype, prochpu.ToString(), epyield.ToString()
-                       , eplab.ToString(), eporaclehpu.ToString(), epbom.ToString(), eplabfos.ToString(),epoverheadfos.ToString()
-                       , DLFG.ToString(), DLSFG.ToString(), SMFG.ToString(),SMSFG.ToString(), IMFG.ToString()
-                       , IMSFG.ToString(), variablecost.ToString(), DOHFG.ToString(), DOHSFG.ToString(),IOHFG.ToString()
-                       , IOHSFG.ToString(), IOHSNYFG.ToString(), IOHSNYSFG.ToString(), UMFCost.ToString(),epqty.ToString(), epasp.ToString());
-                    tempvm.StoreData();
-
+                    ProductCostVM.CreateEPCost(qart,eppn,prochpu,epyield,eplab,epbom,eplabfos,epoverheadfos,epqty,epasp,crtfcost);
                 }
                 catch (Exception ex) {
                     sucess = false;
@@ -864,6 +825,75 @@ namespace Prism.Controllers
                 msg = msg
             };
             return ret;
+
+        }
+
+        public ActionResult AddProductCost()
+        {
+            ViewBag.AUTH = false;
+            var usermap = MachineUserMap.GetUserInfo(Request.UserHostName, "COST");
+            if (!string.IsNullOrEmpty(usermap.username))
+            {
+                ViewBag.AUTH = true;
+            }
+            return View();
+        }
+
+        public JsonResult AddProductCostData()
+        {
+            var pn = Request.Form["pd"];
+            var pm = Request.Form["pm"];
+
+            var hasdata = false;
+            var qlist = QuarterCLA.GetQuerterFrom19Q3();
+            foreach (var q in qlist)
+            {
+                var costdata = FCostModel.LoadDataFromFDB(q, pn);
+                if (costdata["F"].IsOK && costdata["F"].ProcessHPU != 0)
+                {
+                    hasdata = true;
+                    string qtype = q.Replace("FY", "") + " (F) WUXI";
+                    ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["F"]);
+
+                    qtype = q.Replace("FY", "") + " (EP) WUXI";
+                    ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["F"]);
+                }
+
+                if (costdata["FM"].IsOK && costdata["FM"].ProcessHPU != 0)
+                {
+                    var qtype = q.Replace("FY", "") + " (F)Material Update";
+                    ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["FM"]);
+                }
+
+                if (costdata["A"].IsOK && costdata["A"].ProcessHPU != 0)
+                {
+                    var qtype = q.Replace("FY", "") + " (A) WUXI";
+                    ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["A"]);
+                }
+            }//end foreach
+
+            if (!hasdata)
+            {
+                var ret = new JsonResult();
+                ret.MaxJsonLength = Int32.MaxValue;
+                ret.Data = new
+                {
+                    sucess = false,
+                    msg = "Fail to load cost data for "+pn+" from ME system"
+                };
+                return ret;
+            }
+            else
+            {
+                var ret = new JsonResult();
+                ret.MaxJsonLength = Int32.MaxValue;
+                ret.Data = new
+                {
+                    sucess = true,
+                    pn = pn
+                };
+                return ret;
+            }
 
         }
 

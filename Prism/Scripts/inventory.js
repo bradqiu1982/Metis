@@ -600,7 +600,7 @@
                         "aaSorting": [],
                         "order": [],
                         dom: 'lBfrtip',
-                        buttons: ['copyHtml5', 'csv', 'excelHtml5', 'costdetail','costcollapse','uploadcost','addepcost']
+                        buttons: ['copyHtml5', 'csv', 'excelHtml5', 'costdetail','costcollapse','addepcost']
                     });
                 costtabs.push(tabhandle);
 
@@ -820,16 +820,8 @@
         //    });
         //}
 
-        function QueryCostData()
+        function QueryCostData(pd,pm)
         {
-            var pm = $('#pmlist').val();
-            var pd = $('#pdlist').val();
-            if (pm == '' && pd == '')
-            {
-                alert('At least one query condition need to be input!');
-                return 
-            }
-
             $.post('/Inventory/ProductCostQuery', {
                 pm: pm,
                 pd: pd
@@ -840,10 +832,71 @@
 
         $(function () {
             GetMGPMList();
+            var pd = $('#hpn').val();
+            if (pd != '')
+            { QueryCostData(pd, ''); }
         });
 
         $('body').on('click', '#btn-search', function () {
-            QueryCostData();
+            var pm = $('#pmlist').val();
+            var pd = $('#pdlist').val();
+            if (pm == '' && pd == '')
+            {
+                alert('At least one query condition need to be input!');
+                return 
+            }
+            QueryCostData(pd,pm);
+        })
+
+    }
+
+    var addproductcost = function () {
+        $.post('/Inventory/ProductCostPMList', {}, function (output) {
+            $('#pmlist').autoComplete({
+                minChars: 0,
+                source: function (term, suggest) {
+                    term = term.toLowerCase();
+                    var choices = output.pmlist;
+                    var suggestions = [];
+                    for (i = 0; i < choices.length; i++)
+                        if (~choices[i].toLowerCase().indexOf(term)) suggestions.push(choices[i]);
+                    suggest(suggestions);
+                }
+            });
+            $('#pmlist').removeAttr('ReadOnly');
+        });
+
+        $('body').on('click', '#btn-search', function () {
+            var pm = $('#pmlist').val();
+            var pd = $('#pdlist').val();
+            if (pm == '' || pd == '') {
+                alert('pn and maintainer need to be input to load cost data!');
+                return
+            }
+
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
+
+            $.post('/Inventory/AddProductCostData', {
+                pm: pm,
+                pd: pd
+            }, function (output) {
+                $.bootstrapLoading.end();
+
+                if (output.sucess) {
+                    window.location.href = '/Inventory/ProductCost?pn='+output.pn;
+                }
+                else {
+                    alert(output.msg);
+                }
+            })
         })
 
     }
@@ -857,7 +910,9 @@
         },
         PRODUCTCOSTINIT: function () {
             productcost();
+        },
+        ADDPRODUCTCOST: function () {
+            addproductcost();
         }
-
     }
 }();

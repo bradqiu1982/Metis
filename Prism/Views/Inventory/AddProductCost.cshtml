@@ -1,0 +1,52 @@
+﻿
+@{
+    ViewBag.Title = "AddProductCost";
+    Layout = "~/Views/Shared/_LayoutAdditional.cshtml";
+}
+
+<script type="text/javascript" src="~/Scripts/inventory.js"></script>
+
+<input class="hide" type="text" id="hidetitle" name="hidetitle" value="Add Procut Cost">
+
+@if (!ViewBag.AUTH)
+{
+    <h3>You or Your computer is not authorized to review this page!</h3>
+    <h3>Please contact Brad.Qiu.</h3>
+}
+else
+{
+    <script type="text/javascript">
+        $(function(){
+            INVENTORY.ADDPRODUCTCOST();
+        })
+    </script>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="v-container">
+                <div class="v-filter">
+
+                    <div class="row row-margin">
+                        <label class="col-xs-2">Maintainer</label>
+                        <div class="col-xs-3">
+                            <input class="form-control" type="text" id="pmlist" name="pmlist" placeholder="Maintainer" readonly>
+                        </div>
+                        <label class="col-xs-2">PN</label>
+                        <div class="col-xs-3">
+                            <input class="form-control" type="text" id="pdlist" name="pdlist" placeholder="PN">
+                        </div>
+                        <div class="col-xs-2 box-search" style="padding-left:0">
+                            <input type="button" class="btn btn-success" name="btn-search" id="btn-search" value="ADD PRODUCT COST">
+                        </div>
+                    </div>
+                    <input class="form-control hide" type="text" id="hpn" name="hpn" value="@ViewBag.pn">
+                </div>
+                <div class="v-content" style="margin-top:2%;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+}
+
+

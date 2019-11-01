@@ -595,5 +595,12 @@ namespace Prism.Controllers
             ExternalDataCollector.LoadProductCostData(this);
             return View("Index");
         }
+
+        public ActionResult LoadFCost()
+        {
+            FCostModel.LoadDataFromFDB("Q1FY20", "1178834");
+            return View("Index");
+        }
+
     }
 }

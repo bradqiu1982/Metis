@@ -246,6 +246,7 @@
     <Compile Include="Models\EngineeringMileStone.cs" />
     <Compile Include="Models\ExcelReader.cs" />
     <Compile Include="Models\ExternalDataCollector.cs" />
+    <Compile Include="Models\FCostModel.cs" />
     <Compile Include="Models\FsrShipData.cs" />
     <Compile Include="Models\HPUMainData.cs" />
     <Compile Include="Models\IEScrapBuget.cs" />
@@ -261,6 +262,7 @@
     <Compile Include="Models\PNRateMap.cs" />
     <Compile Include="Models\PrismComment.cs" />
     <Compile Include="Models\ProductCostVM.cs" />
+    <Compile Include="Models\QuarterCLA.cs" />
     <Compile Include="Models\RMADppmData.cs" />
     <Compile Include="Models\RMARAWData.cs" />
     <Compile Include="Models\RMASumData.cs" />
@@ -915,6 +917,7 @@
     <Content Include="Views\Machine\HydraMACRate.cshtml" />
     <Content Include="Views\Machine\MachineTestTime.cshtml" />
     <Content Include="Views\Inventory\ProductCost.cshtml" />
+    <Content Include="Views\Inventory\AddProductCost.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
