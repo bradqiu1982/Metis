@@ -842,35 +842,9 @@ namespace Prism.Controllers
         public JsonResult AddProductCostData()
         {
             var pn = Request.Form["pd"];
-            var pm = Request.Form["pm"];
+            var pm = Request.Form["pm"].Trim().Replace(" ",".");
 
-            var hasdata = false;
-            var qlist = QuarterCLA.GetQuerterFrom19Q3();
-            foreach (var q in qlist)
-            {
-                var costdata = FCostModel.LoadDataFromFDB(q, pn);
-                if (costdata["F"].IsOK && costdata["F"].ProcessHPU != 0)
-                {
-                    hasdata = true;
-                    string qtype = q.Replace("FY", "") + " (F) WUXI";
-                    ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["F"]);
-
-                    qtype = q.Replace("FY", "") + " (EP) WUXI";
-                    ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["F"]);
-                }
-
-                if (costdata["FM"].IsOK && costdata["FM"].ProcessHPU != 0)
-                {
-                    var qtype = q.Replace("FY", "") + " (F)Material Update";
-                    ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["FM"]);
-                }
-
-                if (costdata["A"].IsOK && costdata["A"].ProcessHPU != 0)
-                {
-                    var qtype = q.Replace("FY", "") + " (A) WUXI";
-                    ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["A"]);
-                }
-            }//end foreach
+            var hasdata = ProductCostVM.AddFCostByPN(pm, pn, this);
 
             if (!hasdata)
             {
@@ -896,7 +870,6 @@ namespace Prism.Controllers
             }
 
         }
-
 
     }
 }

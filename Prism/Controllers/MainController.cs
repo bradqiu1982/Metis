@@ -62,6 +62,13 @@ namespace Prism.Controllers
             {
                 heartbeatlog("Heart Beat one day Start", filename);
 
+                //try
+                //{
+                //    heartbeatlog("ProductCostVM.RefreshFCost", filename);
+                //    ProductCostVM.RefreshFCost(this);
+                //}
+                //catch (Exception ex) { }
+
                 try
                 {
                     heartbeatlog("PNProuctFamilyCache.LoadData", filename);
@@ -199,6 +206,8 @@ namespace Prism.Controllers
 
             return View();
         }
+
+
 
         public ActionResult TableCatch()
         {
@@ -601,6 +610,14 @@ namespace Prism.Controllers
             FCostModel.LoadDataFromFDB("Q1FY20", "1178834");
             return View("Index");
         }
+
+        public ActionResult QueryCDP()
+        {
+            var sql = "select  * from wuxi.dc_final_tx where moduleserialnum = 'X2AA5DY'";
+            var dbret = DBUtility.ExeCDPSqlWithRes(sql);
+            return View("Index");
+        }
+
 
     }
 }

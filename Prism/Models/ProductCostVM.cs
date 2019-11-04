@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace Prism.Models
 {
@@ -88,6 +90,18 @@ namespace Prism.Models
             }
 
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            { ret.Add(UT.O2S(line[0])); }
+            return ret;
+        }
+
+        public static List<string> GetPMByPN(string PN)
+        {
+            var ret = new List<string>();
+            var sql = "select distinct PM from ProductCostVM where PN = @PN";
+            var dict = new Dictionary<string, string>();
+            dict.Add("@PN", PN);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql,null, dict);
             foreach (var line in dbret)
             { ret.Add(UT.O2S(line[0])); }
             return ret;
@@ -227,6 +241,7 @@ namespace Prism.Models
             }
             else
             {
+                FirstTimesComingData = true;
                 InsertData();
             }
         }
@@ -296,17 +311,17 @@ namespace Prism.Models
         private void UpdateData()
         {
             var dict = new Dictionary<string, string>();
-            var sql = @"update ProductCostVM set PM=@PM,ProcessHPU=@ProcessHPU,Yield=@Yield,LobEff=@LobEff,OralceHPU=@OralceHPU,BOM=@BOM
+            var sql = @"update ProductCostVM set PM=@PM,ProcessHPU=@ProcessHPU,LobEff=@LobEff,OralceHPU=@OralceHPU,BOM=@BOM
                         ,LabFOther=@LabFOther,OverheadFOther=@OverheadFOther,DLFG=@DLFG,DLSFG=@DLSFG,SMFG=@SMFG,SMSFG=@SMSFG,IMFG=@IMFG
                         ,IMSFG=@IMSFG,VairableCost=@VairableCost,DOHFG=@DOHFG,DOHSFG=@DOHSFG,IOHFG=@IOHFG,IOHSFG=@IOHSFG,IOHSNYFG=@IOHSNYFG
-                        ,IOHSNYSFG=@IOHSNYSFG,UMCost=@UMCost,Qty=@Qty,ASP=@ASP,UpdateTime=@UpdateTime where PN=@PN and QuarterType=@QuarterType";
+                        ,IOHSNYSFG=@IOHSNYSFG,UMCost=@UMCost,Qty=@Qty,UpdateTime=@UpdateTime where PN=@PN and QuarterType=@QuarterType";
             dict.Add("@PN", PN);
             dict.Add("@PM", PM);
             dict.Add("@QuarterType", QuarterType);
             dict.Add("@Quarter", Quarter);
             dict.Add("@DataType", DataType);
             dict.Add("@ProcessHPU", ProcessHPU);
-            dict.Add("@Yield", Yield);
+            //dict.Add("@Yield", Yield);
             dict.Add("@LobEff", LobEff);
             dict.Add("@OralceHPU", OralceHPU);
             dict.Add("@BOM", BOM);
@@ -327,7 +342,7 @@ namespace Prism.Models
             dict.Add("@IOHSNYSFG", IOHSNYSFG);
             dict.Add("@UMCost", UMCost);
             dict.Add("@Qty", Qty);
-            dict.Add("@ASP", ASP);
+            //dict.Add("@ASP", ASP);
             dict.Add("@UpdateTime", UpdateTime);
 
             DBUtility.ExeLocalSqlNoRes(sql, dict);
@@ -379,7 +394,7 @@ namespace Prism.Models
             tempvm.StoreData();
         }
 
-        public static void UpdateFCost(string pn,string pm,string qtype,FCostModel vm)
+        private static bool UpdateFCost(string pn,string pm,string qtype,FCostModel vm)
         {
             var tempvm = new ProductCostVM(pn, pm, qtype, vm.ProcessHPU.ToString(), (0.85).ToString()
                        , vm.LabEff.ToString(), vm.OralceHPU.ToString(), vm.BOM.ToString(), vm.LabFOther.ToString(), vm.OverheadFOther.ToString()
@@ -387,8 +402,118 @@ namespace Prism.Models
                        , vm.IMSFG.ToString(), vm.VairableCost.ToString(), vm.DOHFG.ToString(), vm.DOHSFG.ToString(), vm.IOHFG.ToString()
                        , vm.IOHSFG.ToString(), vm.IOHSNYFG.ToString(), vm.IOHSNYSFG.ToString(), vm.UMCost.ToString(), vm.Qty.ToString(), (vm.UMCost*1.3).ToString());
             tempvm.StoreData();
+            return tempvm.FirstTimesComingData;
         }
-        
+
+        public static void SendAddingEPNotice(string pm, string pn, string CFQ, Controller ctrl)
+        {
+            try
+            {
+                var syscfg = CfgUtility.GetSysConfig(ctrl);
+                var tolist = new List<string>();
+                if (syscfg.ContainsKey("EPNOTICELIST"))
+                {
+                    tolist.AddRange(syscfg["EPNOTICELIST"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList());
+                }
+                tolist.Add(pm.Replace(" ", ".") + "@finisar.com");
+
+                var routevalue = new RouteValueDictionary();
+                routevalue.Add("pn", pn);
+                string scheme = ctrl.Url.RequestContext.HttpContext.Request.Url.Scheme;
+                string url = ctrl.Url.Action("ProductCost", "Inventory", routevalue, scheme);
+
+                var netcomputername = EmailUtility.RetrieveCurrentMachineName();
+                url = url.Replace("//localhost", "//" + netcomputername);
+                var econtent = EmailUtility.CreateTableHtml("Hi Cost Maintainer", "The financial cost forcast for pn - "+pn+" is updated,please go to below link to add your EP for next 3 quarters:", url, null);
+                EmailUtility.SendEmail(ctrl, "Adding Cost EP Notice", tolist, econtent);
+                new System.Threading.ManualResetEvent(false).WaitOne(500);
+            }
+            catch (Exception ex) { }
+        }
+
+        public static void RefreshFCost(Controller ctrl)
+        {
+            var dayinmonth = DateTime.Now.Day;
+            if (dayinmonth >= 4 && dayinmonth <= 27)
+            {
+                var pnlist = ProductCostVM.PNList();
+
+                var Q = QuarterCLA.RetrieveQuarterFromDate(DateTime.Now);
+                var FQ = Q.Substring(5, 2) + "FY" + Q.Substring(2, 2);
+                foreach (var pn in pnlist)
+                {
+                    var pm = ProductCostVM.GetPMByPN(pn)[0];
+
+                    var costdata = FCostModel.LoadDataFromFDB(FQ, pn);
+                    if (costdata["F"].IsOK && costdata["F"].ProcessHPU != 0)
+                    {
+                        string qtype = FQ.Replace("FY", "") + " (F) WUXI";
+                        var firsttimes = ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["F"]);
+                        if (firsttimes)
+                        {
+                            ProductCostVM.SendAddingEPNotice(pm, pn, FQ, ctrl);
+                        }
+                    }
+
+                    if (costdata["FM"].IsOK && costdata["FM"].ProcessHPU != 0)
+                    {
+                        var qtype = FQ.Replace("FY", "") + " (F)Material Update";
+                        ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["FM"]);
+                    }
+
+                    if (costdata["A"].IsOK && costdata["A"].ProcessHPU != 0)
+                    {
+                        var qtype = FQ.Replace("FY", "") + " (A) WUXI";
+                        ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["A"]);
+                    }
+
+                }//end foreach
+            }//end if
+        }
+
+        public static bool AddFCostByPN(string pm, string pn,Controller ctrl)
+        {
+            var CQ = QuarterCLA.RetrieveQuarterFromDate(DateTime.Now);
+            var CFQ = CQ.Substring(5, 2) + "FY" + CQ.Substring(2, 2);
+
+            var hasdata = false;
+            var qlist = QuarterCLA.GetQuerterFrom19Q3();
+            foreach (var q in qlist)
+            {
+                var costdata = FCostModel.LoadDataFromFDB(q, pn);
+                if (costdata["F"].IsOK && costdata["F"].ProcessHPU != 0)
+                {
+                    hasdata = true;
+                    string qtype = q.Replace("FY", "") + " (F) WUXI";
+                    var firsttimes = ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["F"]);
+                    if (string.Compare(q, CFQ, true) == 0 && firsttimes)
+                    {
+                        ProductCostVM.SendAddingEPNotice(pm, pn, CFQ, ctrl);
+                    }
+
+                    qtype = q.Replace("FY", "") + " (EP) WUXI";
+                    ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["F"]);
+                }
+
+                if (costdata["FM"].IsOK && costdata["FM"].ProcessHPU != 0)
+                {
+                    hasdata = true;
+                    var qtype = q.Replace("FY", "") + " (F)Material Update";
+                    ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["FM"]);
+                }
+
+                if (costdata["A"].IsOK && costdata["A"].ProcessHPU != 0)
+                {
+                    hasdata = true;
+                    var qtype = q.Replace("FY", "") + " (A) WUXI";
+                    ProductCostVM.UpdateFCost(pn, pm, qtype, costdata["A"]);
+                }
+            }//end foreach
+
+            return hasdata;
+        }
+
+
         public ProductCostVM()
         {
             PN = "";
@@ -423,7 +548,7 @@ namespace Prism.Models
             AppVal3 = "";
             AppVal4 = "";
             AppVal5 = "";
-
+            FirstTimesComingData = false;
         }
 
         public ProductCostVM(string pn,string pm,string qt,string prochpu,string yield
@@ -463,6 +588,8 @@ namespace Prism.Models
             Qty = qty;
 
             ASP = asp;
+
+            FirstTimesComingData = false;
         }
 
         public string PN { set; get; }
@@ -525,5 +652,6 @@ namespace Prism.Models
         public string AppVal3 { set; get; }
         public string AppVal4 { set; get; }
         public string AppVal5 { set; get; }
+        public bool FirstTimesComingData { set; get; }
     }
 }
