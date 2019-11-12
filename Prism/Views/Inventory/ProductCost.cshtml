@@ -17,6 +17,10 @@
     color: #000;
     font-weight: bold;
     }
+
+    .mdyddata {
+        cursor:pointer;    
+    }
 </style>
 
 <script type="text/javascript" src="~/Scripts/inventory.js"></script>
@@ -142,6 +146,39 @@ else
             </div>
         </div>
     </div>
+
+
+    <div class="modal fade" id="mddlg" tabindex="-1" role="dialog" style="margin-top:2%">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Modify Forcast Yield/ASP</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group row">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-4"><label class="form-control">Yield</label></div>
+                        <div class="col-sm-6"><input class="form-control" type="text" id="fyield" name="fyield" /></div>
+                        <div class="col-sm-1"></div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-4"><label class="form-control">ASP</label></div>
+                        <div class="col-sm-6"><input class="form-control" type="text" id="fasp" name="fasp" /></div>
+                        <div class="col-sm-1"></div>
+                        <input class="hide" type="text" id="fpn" name="fpn" value="" />
+                        <input class="hide" type="text" id="fqt" name="fqt" value="" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="btn-mdyd" name="btn-mdyd">submit</button>
+                    <button type="button" class="btn btn-danger" id="btn-can" name="btn-can" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 }
 
 

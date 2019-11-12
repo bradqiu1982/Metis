@@ -62,12 +62,12 @@ namespace Prism.Controllers
             {
                 heartbeatlog("Heart Beat one day Start", filename);
 
-                //try
-                //{
-                //    heartbeatlog("ProductCostVM.RefreshFCost", filename);
-                //    ProductCostVM.RefreshFCost(this);
-                //}
-                //catch (Exception ex) { }
+                try
+                {
+                    heartbeatlog("ProductCostVM.RefreshFCost", filename);
+                    ProductCostVM.RefreshFCost(this);
+                }
+                catch (Exception ex) { }
 
                 try
                 {

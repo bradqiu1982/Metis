@@ -822,7 +822,8 @@ namespace Prism.Controllers
             ret.Data = new
             {
                 sucess = sucess,
-                msg = msg
+                msg = msg,
+                pn = eppn
             };
             return ret;
 
@@ -870,6 +871,39 @@ namespace Prism.Controllers
             }
 
         }
+
+        public JsonResult ModifyYieldASPData()
+        {
+            var pn = Request.Form["pn"];
+            var qt = Request.Form["qt"].ToUpper().Trim();
+            var yd = UT.O2D(Request.Form["yd"]);
+            var ap = Request.Form["ap"];
+
+            if (yd > 1)
+            { yd = yd * 0.01; }
+
+            var datatype = "2F";
+            if (qt.Contains("EP"))
+            { datatype = "1EP"; }
+            else if (qt.Contains("A"))
+            { datatype = "4A"; }
+            else if (qt.Contains("F") && qt.Contains("M"))
+            { datatype = "3FM";  }
+
+            var MQT = "20" + qt.Substring(2, 2) + " " + qt.Substring(0, 2);
+
+            ProductCostVM.UpdateYieldASP(pn, MQT, datatype, yd.ToString(), ap);
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                sucess = true,
+                pn = pn
+            };
+            return ret;
+        }
+
 
     }
 }

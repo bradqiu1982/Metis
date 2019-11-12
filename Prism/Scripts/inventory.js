@@ -547,7 +547,7 @@
                     if (!output.sucess)
                     { alert(output.msg); }
                     else
-                    { window.location.reload(true);}
+                    { window.location.href = '/Inventory/ProductCost?pn=' + output.pn; }
                 });
 
 
@@ -582,7 +582,16 @@
                                 tabstr += '<td style="padding:6px 3px!important">' + tval + '</td>';
                             }
                             else {
-                                tabstr += '<td style="padding:6px 3px!important">' + tval + '</td>';
+                                if (ix == 2)
+                                {
+                                    tabstr += '<td class="mdyddata" pn="' + onecost.pn + '" qt="' + onecost.table[0][iy] + '" yd="' + onecost.table[2][iy] + '" ap="' + onecost.table[23][iy] + '" style="padding:6px 3px!important">' + tval + '</td>';
+                                }
+                                else if (ix == 23) {
+                                    tabstr += '<td class="mdyddata" pn="' + onecost.pn + '" qt="' + onecost.table[0][iy] + '" yd="' + onecost.table[2][iy] + '" ap="' + onecost.table[23][iy] + '" style="padding:6px 3px!important">' + tval + '</td>';
+                                }
+                                else {
+                                    tabstr += '<td style="padding:6px 3px!important">' + tval + '</td>';
+                                }
                             }
                             
                         });
@@ -847,6 +856,47 @@
             }
             QueryCostData(pd,pm);
         })
+
+        $('body').on('click', '.mdyddata', function () {
+            var pn = $(this).attr('pn');
+            var qt = $(this).attr('qt').trim();
+            var yd = $(this).attr('yd').replace("%", "");
+            var ap = $(this).attr('ap');
+            $('#fpn').val(pn);
+            $('#fqt').val(qt);
+            $('#fyield').val(yd);
+            $('#fasp').val(ap);
+            $('#mddlg').modal('show');
+        })
+
+        $('body').on('click', '#btn-mdyd', function () {
+            var pn = $('#fpn').val();
+            var qt = $('#fqt').val();
+            var yd = $('#fyield').val();
+            var ap = $('#fasp').val();
+            if (yd == '' || ap == '')
+            {
+                alert('Warning: Yield/ASP could not be empty!')
+                return false;
+            }
+
+            $('#mddlg').modal('hide');
+
+            $.post('/Inventory/ModifyYieldASPData', {
+                pn: pn,
+                qt: qt,
+                yd: yd,
+                ap: ap
+            },
+            function (output) {
+                if (!output.sucess)
+                { alert(output.msg); }
+                else
+                { window.location.href = '/Inventory/ProductCost?pn=' + output.pn; }
+            });
+
+        })
+
 
     }
 

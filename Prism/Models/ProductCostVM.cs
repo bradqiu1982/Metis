@@ -348,6 +348,18 @@ namespace Prism.Models
             DBUtility.ExeLocalSqlNoRes(sql, dict);
         }
 
+        public static void UpdateYieldASP(string PN,string Quarter,string DataType,string Yield,string ASP)
+        {
+            var sql = "update ProductCostVM set Yield=@Yield,ASP=@ASP where  PN=@PN and Quarter=@Quarter and DataType=@DataType";
+            var dict = new Dictionary<string, string>();
+            dict.Add("@PN", PN);
+            dict.Add("@Quarter", Quarter);
+            dict.Add("@DataType", DataType);
+            dict.Add("@Yield", Yield);
+            dict.Add("@ASP", ASP);
+            DBUtility.ExeLocalSqlNoRes(sql, dict);
+        }
+
         public static void CreateEPCost(string qart,string eppn,double prochpu,double epyield
             ,double eplab,double epbom,double eplabfos,double epoverheadfos,double epqty,double epasp,ProductCostVM crtfcost)
         {
