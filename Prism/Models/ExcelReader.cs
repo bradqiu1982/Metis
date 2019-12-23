@@ -216,6 +216,9 @@ bool updateLinks)
             {
                 if (cell.DataType == null) // number & dates
                 {
+                    if (cell.StyleIndex == null)
+                    { return cell.CellValue.Text; }
+
                     int styleIndex = (int)cell.StyleIndex.Value;
                     CellFormat cellFormat = (CellFormat)workbookPart.WorkbookStylesPart.Stylesheet.CellFormats.ElementAt(styleIndex);
                     uint formatId = cellFormat.NumberFormatId.Value;

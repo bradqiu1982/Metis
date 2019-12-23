@@ -71,6 +71,13 @@ namespace Prism.Controllers
 
                 try
                 {
+                    heartbeatlog("PNBUMap.LoadPNBUData", filename);
+                    PNBUMap.LoadPNBUData(this);
+                }
+                catch (Exception ex) { }
+                
+                try
+                {
                     heartbeatlog("PNProuctFamilyCache.LoadData", filename);
                     PNProuctFamilyCache.LoadData();
                 }
@@ -618,6 +625,23 @@ namespace Prism.Controllers
             return View("Index");
         }
 
+        public ActionResult RefreshFCost()
+        {
+            ProductCostVM.RefreshFCost(this);
+            return View("Index");
+        }
+
+        public ActionResult LoadPNBUData()
+        {
+            PNBUMap.LoadPNBUData(this);
+            return View("Index");
+        }
+
+        public ActionResult LoadForcastData()
+        {
+            ShipForcastData.LoadData(this);
+            return View("Index");
+        }
 
     }
 }
