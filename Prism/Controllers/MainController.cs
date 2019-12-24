@@ -643,5 +643,11 @@ namespace Prism.Controllers
             return View("Index");
         }
 
+        public ActionResult ForecastAcc()
+        {
+            ShipForcastData.GetSeriesAccuracy();
+            return View("Index");
+        }
+
     }
 }

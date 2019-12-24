@@ -1201,26 +1201,72 @@ namespace Prism.Models
                 var pnsndict = new Dictionary<string, string>();
 
                 var opddict = new Dictionary<string, string>();
+                var soidx = 8; //So Number
+                var lnidx = 9; //Line
+                var cpoidx = 5; //Cust Po Number
+                var mkidx = 28; //Make Buy Code
+                var fmidx = 31; //Marketing Family
+                var oqtidx = 13; //Order Qty
+                var sqtidx = 14; //Shipped Qty
+                var pnidx = 10; //Item
+                var cfidx = 33; //Configuration
+
+                var orddidx = 2;//Ordered Date
+                var custnidx = 3; //Customer Number
+                var cust1idx = 4; //Customer Name
+                var cust2idx = 6; //Location
+
+                var pndidx = 12; //Description
+                var opdidx = 17; //Original Promise Date
+                var spdidx = 19; //Actual Ship Date
+                var devidx = 25; //Shipping Instructions
+                var sptidx = 34; //shipto
+
+                var idx = 0;
+                foreach (var item in data[0])
+                {
+                    if (string.Compare(item, "So Number", true) == 0) { soidx = idx; }
+                    else if (string.Compare(item, "Line", true) == 0) { lnidx = idx; }
+                    else if (string.Compare(item, "Cust Po Number", true) == 0) { cpoidx = idx; }
+                    else if (string.Compare(item, "Make Buy Code", true) == 0) { mkidx = idx; }
+                    else if (string.Compare(item, "Marketing Family", true) == 0) { fmidx = idx; }
+                    else if (string.Compare(item, "Order Qty", true) == 0){ oqtidx = idx; }
+                    else if (string.Compare(item, "Shipped Qty", true) == 0){ sqtidx = idx; }
+                    else if (string.Compare(item, "Item", true) == 0){ pnidx = idx; }
+                    else if (string.Compare(item, "Configuration", true) == 0){ cfidx = idx; }
+                    else if (string.Compare(item, "Ordered Date", true) == 0){ orddidx = idx; }
+                    else if (string.Compare(item, "Customer Number", true) == 0){ custnidx = idx; }
+                    else if (string.Compare(item, "Customer Name", true) == 0){ cust1idx = idx; }
+                    else if (string.Compare(item, "Location", true) == 0){ cust2idx = idx; }
+                    else if (string.Compare(item, "Description", true) == 0){ pndidx = idx; }
+                    else if (string.Compare(item, "Original Promise Date", true) == 0){ opdidx = idx; }
+                    else if (string.Compare(item, "Actual Ship Date", true) == 0){ spdidx = idx; }
+                    else if (string.Compare(item, "Shipping Instructions", true) == 0){ devidx = idx; }
+                    else if (string.Compare(item, "Ship To", true) == 0){ sptidx = idx; }
+                    idx++;
+                }//end foreach
 
                 foreach (var line in data)
                 {
                     try
                     {
-                        var shipid = Convert2Str(line[8]) + "-" + Convert2Str(line[9]) + "-" + Convert2Str(line[14]);
+                        var shipid = Convert2Str(line[soidx]) + "-" + Convert2Str(line[lnidx]).Replace("0","") + "-" + Convert2Str(line[sqtidx]);
                         if (!shipiddict.ContainsKey(shipid))
                         {
-                            var cpo = Convert2Str(line[5]).ToUpper();
-                            var makebuy = Convert2Str(line[27]).ToUpper();
-                            var family = Convert2Str(line[30]);
-                            var orderqty = Convert.ToInt32(line[13]);
-                            var shipqty = Convert.ToInt32(line[14]);
-                            var pn = Convert2Str(line[10]);
+                            shipiddict.Add(shipid,true);
+
+                            var cpo = Convert2Str(line[cpoidx]).ToUpper();
+                            var makebuy = Convert2Str(line[mkidx]).ToUpper();
+                            var family = Convert2Str(line[fmidx]);
+                            var orderqty = Convert.ToInt32(line[oqtidx]);
+                            var shipqty = Convert.ToInt32(line[sqtidx]);
+                            var pn = Convert2Str(line[pnidx]);
 
                             if (!cpo.Contains("RMA") && !cpo.Contains("STOCK")
                                 && makebuy.Contains("MAKE")
                                 && shipqty > 0 && !string.IsNullOrEmpty(pn))
                             {
-                                var cfg = Convert2Str(line[32]);
+                                var cfg = Convert2Str(line[cfidx]);
 
                                 {
                                     if (parallelpndict.ContainsKey(pn))
@@ -1247,20 +1293,20 @@ namespace Prism.Models
                                     { continue; }
                                 }
 
-                                var ordereddate = Convert.ToDateTime(line[2]);
-                                var customernum = Convert2Str(line[3]);
-                                var customer1 = Convert2Str(line[4]);
-                                var customer2 = Convert2Str(line[6]);
-                                var pndesc = Convert2Str(line[12]);
+                                var ordereddate = Convert.ToDateTime(line[orddidx]);
+                                var customernum = Convert2Str(line[custnidx]);
+                                var customer1 = Convert2Str(line[cust1idx]);
+                                var customer2 = Convert2Str(line[cust2idx]);
+                                var pndesc = Convert2Str(line[pndidx]);
                                 if (pndesc.Contains("ASY,DIE,") && customer1.Contains("FINISAR"))
                                 { continue; }
 
-                                var opd = Convert.ToDateTime(line[17]);
-                                var shipdate = Convert.ToDateTime(line[19]);
+                                var opd = Convert.ToDateTime(line[opdidx]);
+                                var shipdate = Convert.ToDateTime(line[spdidx]);
 
 
-                                var delievenum = Convert2Str(line[24]);
-                                var shipto = Convert2Str(line[33]);
+                                var delievenum = Convert2Str(line[devidx]);
+                                var shipto = Convert2Str(line[sptidx]);
 
                                 if (!pnsndict.ContainsKey(pn))
                                 {

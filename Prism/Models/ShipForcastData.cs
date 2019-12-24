@@ -54,6 +54,7 @@ namespace Prism.Models
             if (!string.IsNullOrEmpty(desfile))
             {
                 var data = ExternalDataCollector.RetrieveDataFromExcelWithAuth(ctrl, desfile, "Raw data");
+
                 var pnidx = 1;
                 var srcorgidx = 17;
 
@@ -68,7 +69,7 @@ namespace Prism.Models
                 idx = 0;
                 foreach (var cname in data[0])
                 {
-                    if (cname.ToUpper().Contains("SOURCE ORG"))
+                    if (string.Compare(cname.ToUpper(),"SOURCE ORG") == 0)
                     { srcorgidx = idx; break; }
                     idx++;
                 }
@@ -109,6 +110,7 @@ namespace Prism.Models
 
                     var pn = line[pnidx];
                     var loc = line[srcorgidx];
+
                     if (loc.ToUpper().Contains("WXI"))
                     {
                         foreach (var ckv in colidxdict)
@@ -126,6 +128,34 @@ namespace Prism.Models
                     }
                 }
 
+                var pndatadict = new Dictionary<string, Dictionary<string, ShipForcastData>>();
+                foreach (var d in forcastlist)
+                {
+                    if (pndatadict.ContainsKey(d.PN))
+                    {
+                        var tmpdict = pndatadict[d.PN];
+                        if (tmpdict.ContainsKey(d.DataTime))
+                        {
+                            tmpdict[d.DataTime].FCount += d.FCount; 
+                        }
+                        else
+                        { tmpdict.Add(d.DataTime, d); }
+                    }
+                    else
+                    {
+                        var tmpdict = new Dictionary<string, ShipForcastData>();
+                        tmpdict.Add(d.DataTime, d);
+                        pndatadict.Add(d.PN, tmpdict);
+                    }
+                }
+
+                foreach (var pkv in pndatadict)
+                {
+                    foreach (var dkv in pkv.Value)
+                    {
+                        dkv.Value.StoreData();
+                    }
+                }
             }//end if
         }
 
@@ -149,6 +179,118 @@ namespace Prism.Models
             return false; 
         }
 
+        public void StoreData()
+        {
+            var sql = "insert into ShipForcastData(PN,DataTime,FCount,DataUpdateStamp) values(@PN,@DataTime,@FCount,@DataUpdateStamp)";
+            var dict = new Dictionary<string, string>();
+            dict.Add("@PN", PN);
+            dict.Add("@DataTime", DataTime);
+            dict.Add("@FCount", FCount.ToString());
+            dict.Add("@DataUpdateStamp", DataUpdateStamp);
+            DBUtility.ExeLocalSqlNoRes(sql, dict);
+        }
+
+        public static Dictionary<string, double> GetShipData(string series,string startdate,string enddate)
+        {
+            var ret = new Dictionary<string, double>();
+            var sql = @"select ShipDate,ShipQty from FsrShipData where pn in
+                        (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) 
+                    and ShipDate > @startdate and ShipDate < @enddate ";
+            var dict = new Dictionary<string, string>();
+            dict.Add("@series", series);
+            dict.Add("@startdate", startdate);
+            dict.Add("@enddate", enddate);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
+            foreach (var line in dbret)
+            {
+                var m = UT.O2T(line[0]).ToString("yyyy-MM");
+                var qty = UT.O2D(line[1]);
+                if (ret.ContainsKey(m))
+                { ret[m] += qty; }
+                else
+                { ret.Add(m, qty); }
+            }
+            return ret;
+        }
+
+        public static Dictionary<string, double> GetForecastData(string series, string startdate, string enddate)
+        {
+            var ret = new Dictionary<string, double>();
+            var sql = @"select PN,DataTime,FCount from ShipForcastData where PN in 
+                    (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) 
+                    and DataTime >  @startdate and DataTime < @enddate order by PN,dataupdatestamp desc";
+
+            var dict = new Dictionary<string, string>();
+            dict.Add("@series", series);
+            dict.Add("@startdate", startdate);
+            dict.Add("@enddate", enddate);
+
+            var flist = new List<ShipForcastData>();
+            var kdict = new Dictionary<string, bool>();
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
+            foreach (var line in dbret)
+            {
+                var pn = UT.O2S(line[0]);
+                var datatime = UT.O2T(line[1]).ToString("yyyy-MM");
+                var key = pn + datatime;
+                if (!kdict.ContainsKey(key))
+                {
+                    kdict.Add(key, true);
+                    var tempvm = new ShipForcastData();
+                    tempvm.PN = pn;
+                    tempvm.DataTime = datatime;
+                    tempvm.FCount = UT.O2I(line[2]);
+                    flist.Add(tempvm);
+                }
+            }
+
+            foreach (var f in flist)
+            {
+                if (ret.ContainsKey(f.DataTime))
+                {
+                    ret[f.DataTime] += UT.O2D(f.FCount);
+                }
+                else
+                {
+                    ret.Add(f.DataTime, UT.O2D(f.FCount));
+                }
+            }
+
+            return ret;
+        }
+
+        public static void GetSeriesAccuracy()
+        {
+            var shipdata = GetShipData("Tunable XFP Gen1", "2018-11-01 00:00:00", "2019-11-01 00:00:00");
+            var forecastdata = GetForecastData("Tunable XFP Gen1", "2018-11-01 00:00:00", "2019-11-01 00:00:00");
+
+            var flist = new List<ShipForcastData>();
+            foreach (var kv in forecastdata)
+            {
+                var shipqty = 1.0;
+                if (shipdata.ContainsKey(kv.Key))
+                { shipqty = shipdata[kv.Key]; }
+                var forecast = kv.Value;
+                var acc = Math.Abs((shipqty - forecast) / shipqty);
+                if (acc > 1.0)
+                { acc = 1.0; }
+
+                var tempvm = new ShipForcastData();
+                tempvm.Accuracy = acc;
+                tempvm.DataTime = kv.Key;
+                flist.Add(tempvm);
+            }
+
+            flist.Sort(delegate (ShipForcastData obj1, ShipForcastData obj2)
+            {
+                var d1 = UT.O2T(obj1.DataTime + "-01 00:00:00");
+                var d2 = UT.O2T(obj2.DataTime + "-01 00:00:00");
+                return d1.CompareTo(d2);
+            });
+
+        }
+
+
         public ShipForcastData()
         {
             DataPath = "";
@@ -156,6 +298,7 @@ namespace Prism.Models
             PN = "";
             DataTime = "";
             FCount = 0;
+            Accuracy = 1.0;
         }
 
         public string PN { set; get; }
@@ -163,5 +306,6 @@ namespace Prism.Models
         public int FCount { set; get; }
         public string DataPath { set; get; }
         public string DataUpdateStamp { set; get; }
+        public double Accuracy { set; get; }
     }
 }
