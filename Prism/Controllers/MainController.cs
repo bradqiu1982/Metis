@@ -113,12 +113,12 @@ namespace Prism.Controllers
                 }
                 catch (Exception ex) { }
 
-                try
-                {
-                    heartbeatlog("FsrShipData.RefreshShipData", filename);
-                    FsrShipData.RefreshShipData(this);
-                }
-                catch (Exception ex) { }
+                //try
+                //{
+                //    heartbeatlog("FsrShipData.RefreshShipData", filename);
+                //    FsrShipData.RefreshShipData(this);
+                //}
+                //catch (Exception ex) { }
 
                 try
                 {
@@ -461,7 +461,9 @@ namespace Prism.Controllers
 
         public ActionResult RefreshShipData()
         {
-            FsrShipData.RefreshShipData(this);
+            FsrShipData.RefreshShipData(this, @"\\wux-engsys01\PlanningForCast\Finisar - OTS for Wuxi_Joy.xls", "Sheet 1");
+            FsrShipData.RefreshShipData(this, @"\\wux-engsys01\PlanningForCast\Finisar - OTS for Wuxi_Joy.xls", "Sheet 1_1");
+            FsrShipData.RefreshShipData(this, @"\\wux-engsys01\PlanningForCast\Finisar - OTS for Wuxi_Joy.xls", "Sheet 1_2");
             return View("HeartBeat");
         }
 

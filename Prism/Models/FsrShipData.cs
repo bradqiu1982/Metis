@@ -61,6 +61,7 @@ namespace Prism.Models
             ShipTo = string.Empty;
             Cost = 0;
             Output = 0;
+            MakeBuy = string.Empty;
         }
 
         public FsrShipData(string id, int qty, string pn, string pndesc, string family, string cfg
@@ -84,6 +85,7 @@ namespace Prism.Models
             OrderQty = orderqty;
             OPD = opd;
             OTD = "NO";
+            MakeBuy = string.Empty;
         }
 
 
@@ -122,7 +124,7 @@ namespace Prism.Models
 
             var ret = new Dictionary<string, Dictionary<string, double>>();
             var custdict = CfgUtility.GetAllCustConfig(ctrl);
-            var sql = @"select ShipQty,Customer1,Customer2,ShipDate from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate  and PN in <pncond>  ";
+            var sql = @"select ShipQty,Customer1,Customer2,ShipDate from Appv_3 <> 'Buy' and FsrShipData where ShipDate >= @sdate and ShipDate <= @edate  and PN in <pncond>  ";
 
             if (string.Compare(rate, VCSELRATE.r14G, true) == 0)
             { sql = sql + " and ( VcselType = '" + VCSELRATE.r14G + "' or VcselType = '" + VCSELRATE.r10G + "')"; }
@@ -230,7 +232,7 @@ namespace Prism.Models
         {
             var ret = new Dictionary<string, Dictionary<string, double>>();
             var custdict = CfgUtility.GetAllCustConfig(ctrl);
-            var sql = @"select ShipQty,Customer1,Customer2,ShipDate from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and ProdDesc like '%LINECARD%' ";
+            var sql = @"select ShipQty,Customer1,Customer2,ShipDate from FsrShipData where  Appv_3 <> 'Buy' and ShipDate >= @sdate and ShipDate <= @edate and ProdDesc like '%LINECARD%' ";
 
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
@@ -298,7 +300,7 @@ namespace Prism.Models
 
             var ret = new Dictionary<string, Dictionary<string, double>>();
             var custdict = CfgUtility.GetAllCustConfig(ctrl);
-            var sql = @"select Appv_1,Customer1,Customer2,OrderedDate from FsrShipData where OrderedDate >= @sdate and OrderedDate <= @edate and PN in <pncond>  ";
+            var sql = @"select Appv_1,Customer1,Customer2,OrderedDate from FsrShipData where Appv_3 <> 'Buy' and OrderedDate >= @sdate and OrderedDate <= @edate and PN in <pncond>  ";
 
             if (string.Compare(rate, VCSELRATE.r14G, true) == 0)
             { sql = sql + " and ( VcselType = '" + VCSELRATE.r14G + "' or VcselType = '" + VCSELRATE.r10G + "')"; }
@@ -415,7 +417,7 @@ namespace Prism.Models
             var pncond = "('" + string.Join("','", pnlist) + "')";
 
             var ret = new List<FsrShipData>();
-            var sql = @"select ShipDate,Appv_5,PN,ProdDesc,Appv_1,MarketFamily,ShipID,Customer1,Customer2 from FsrShipData where Appv_5 >= @sdate and Appv_5 <= @edate and PN in <pncond>   
+            var sql = @"select ShipDate,Appv_5,PN,ProdDesc,Appv_1,MarketFamily,ShipID,Customer1,Customer2 from FsrShipData where Appv_3 <> 'Buy' and Appv_5 >= @sdate and Appv_5 <= @edate and PN in <pncond>   
                         and Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' ";
 
             var dict = new Dictionary<string, string>();
@@ -462,7 +464,7 @@ namespace Prism.Models
             var pncond = "('" + string.Join("','", pnlist) + "')";
 
             var ret = new List<FsrShipData>();
-            var sql = @"select ShipQty,Appv_2,Customer1,Customer2 from FsrShipData where  ShipDate >= @sdate and ShipDate <= @edate and PN in <pncond>  
+            var sql = @"select ShipQty,Appv_2,Customer1,Customer2 from FsrShipData where  Appv_3 <> 'Buy' and ShipDate >= @sdate and ShipDate <= @edate and PN in <pncond>  
                         and Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' and  Appv_2 <> ''";
 
             var dict = new Dictionary<string, string>();
@@ -495,7 +497,7 @@ namespace Prism.Models
             var ret = new List<FsrShipData>();
             var custdict = CfgUtility.GetAllCustConfig(ctrl);
             var sql = @"select ShipID,ShipQty,PN,ProdDesc,MarketFamily,Configuration,ShipDate,CustomerNum,Customer1,Customer2,OrderedDate,DelieveNum,VcselType,Appv_1,Appv_5 
-                         from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate order by ShipDate ASC";
+                         from FsrShipData where Appv_3 <> 'Buy' and ShipDate >= @sdate and ShipDate <= @edate order by ShipDate ASC";
 
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
@@ -587,7 +589,7 @@ namespace Prism.Models
 
             var ret = new  Dictionary<string, double>();
             var usdrate = CfgUtility.GetUSDRate(ctrl);
-            var sql = @"select ShipQty,ShipDate,PN from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and PN in <pncond> ";
+            var sql = @"select ShipQty,ShipDate,PN from FsrShipData where Appv_3 <> 'Buy' and  ShipDate >= @sdate and ShipDate <= @edate and PN in <pncond> ";
 
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
@@ -642,7 +644,7 @@ namespace Prism.Models
             var ret = new Dictionary<string, double>();
             var usdrate = CfgUtility.GetUSDRate(ctrl);
 
-            var sql = @"select ShipQty,ShipDate,PN from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and PN in <PNCOND>";
+            var sql = @"select ShipQty,ShipDate,PN from FsrShipData where Appv_3 <> 'Buy' and ShipDate >= @sdate and ShipDate <= @edate and PN in <PNCOND>";
             sql = sql.Replace("<PNCOND>", pncond);
 
             var dict = new Dictionary<string, string>();
@@ -734,7 +736,7 @@ namespace Prism.Models
             var pnpjmap = PNPlannerCodeMap.RetrieveAllMaps();
             var pnpdmap = PNProuctFamilyCache.PNPFDict();
 
-            var sql = @"select ShipQty,ShipDate,PN,MarketFamily from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and PN in <pncond> ";
+            var sql = @"select ShipQty,ShipDate,PN,MarketFamily from FsrShipData where Appv_3 <> 'Buy' and ShipDate >= @sdate and ShipDate <= @edate and PN in <pncond> ";
 
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", sdate);
@@ -826,7 +828,7 @@ namespace Prism.Models
             var pnpjmap = PNPlannerCodeMap.RetrieveAllMaps();
             var pnpdmap = PNProuctFamilyCache.PNPFDict();
 
-            var sql = @"select ShipQty,ShipDate,PN,MarketFamily from FsrShipData where ShipDate >= @sdate and ShipDate <= @edate and PN in <PNCOND>";
+            var sql = @"select ShipQty,ShipDate,PN,MarketFamily from FsrShipData where Appv_3 <> 'Buy' and ShipDate >= @sdate and ShipDate <= @edate and PN in <PNCOND>";
             sql = sql.Replace("<PNCOND>", pncond);
 
             var dict = new Dictionary<string, string>();
@@ -917,7 +919,7 @@ namespace Prism.Models
             var outputdict = new Dictionary<string, double>();
             var qtydict = new Dictionary<string, double>();
 
-            var sql = @"select ShipQty,ShipDate,PN from FsrShipData where ShipDate >= @sdate 
+            var sql = @"select ShipQty,ShipDate,PN from FsrShipData where Appv_3 <> 'Buy' and ShipDate >= @sdate 
                         and PN in <pncond> order by ShipDate";
 
             var dict = new Dictionary<string, string>();
@@ -1025,7 +1027,7 @@ namespace Prism.Models
             var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
             var pncond = "('" + string.Join("','", pnlist) + "')";
 
-            var sql = @"select ShipDate,Appv_5,PN,Appv_1 from FsrShipData where Appv_5 >= @sdate and Appv_5 <= @edate and PN in <pncond>  
+            var sql = @"select ShipDate,Appv_5,PN,Appv_1 from FsrShipData where Appv_3 <> 'Buy' and Appv_5 >= @sdate and Appv_5 <= @edate and PN in <pncond>  
                         and Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' ";
             var dict = new Dictionary<string, string>();
             dict.Add("@sdate", startdate);
@@ -1179,12 +1181,11 @@ namespace Prism.Models
 
         #region LOAD_SHIP_DATA
 
-        public static void RefreshShipData(Controller ctrl)
+        public static void RefreshShipData(Controller ctrl,string shipsrcfile,string shtname)
         {
             var syscfg = CfgUtility.GetSysConfig(ctrl);
-            var shipsrcfile = syscfg["FINISARSHIPDATA"];
+            //var shipsrcfile = syscfg["FINISARSHIPDATA"];
             var shipdesfile = ExternalDataCollector.DownloadShareFile(shipsrcfile, ctrl);
-
             var parallelpndict = PNProuctFamilyCache.GetPNDictByPF("Parallel");
             var linecardpndict = PNProuctFamilyCache.GetPNDictByPF("Linecard");
             var osapndict = PNProuctFamilyCache.GetPNDictByPF("OSA");
@@ -1196,7 +1197,8 @@ namespace Prism.Models
             if (!string.IsNullOrEmpty(shipdesfile))
             {
                 var shipiddict = FsrShipData.RetrieveAllShipID();
-                var data = ExternalDataCollector.RetrieveDataFromExcelWithAuth(ctrl, shipdesfile);
+                //var data = ExternalDataCollector.RetrieveDataFromExcelWithAuth(ctrl, shipdesfile);
+                var data = ExternalDataCollector.RetrieveDataFromExcelWithAuth(ctrl, shipdesfile,shtname);
                 var shipdatalist = new List<FsrShipData>();
                 var pnsndict = new Dictionary<string, string>();
 
@@ -1206,6 +1208,7 @@ namespace Prism.Models
                 var cpoidx = 5; //Cust Po Number
                 var mkidx = 28; //Make Buy Code
                 var fmidx = 31; //Marketing Family
+                var pgidx = 31; //Product Group
                 var oqtidx = 13; //Order Qty
                 var sqtidx = 14; //Shipped Qty
                 var pnidx = 10; //Item
@@ -1242,7 +1245,8 @@ namespace Prism.Models
                     else if (string.Compare(item, "Original Promise Date", true) == 0){ opdidx = idx; }
                     else if (string.Compare(item, "Actual Ship Date", true) == 0){ spdidx = idx; }
                     else if (string.Compare(item, "Shipping Instructions", true) == 0){ devidx = idx; }
-                    else if (string.Compare(item, "Ship To", true) == 0){ sptidx = idx; }
+                    else if (string.Compare(item, "Shipto Country", true) == 0){ sptidx = idx; }
+                    else if (string.Compare(item, "Product Group", true) == 0) { pgidx = idx; }
                     idx++;
                 }//end foreach
 
@@ -1258,12 +1262,14 @@ namespace Prism.Models
                             var cpo = Convert2Str(line[cpoidx]).ToUpper();
                             var makebuy = Convert2Str(line[mkidx]).ToUpper();
                             var family = Convert2Str(line[fmidx]);
-                            var orderqty = Convert.ToInt32(line[oqtidx]);
-                            var shipqty = Convert.ToInt32(line[sqtidx]);
+                            var orderqty = UT.O2I(line[oqtidx]);
+                            var shipqty = UT.O2I(line[sqtidx]);
                             var pn = Convert2Str(line[pnidx]);
+                            var pdgroup = Convert2Str(line[pgidx]).ToUpper();
 
                             if (!cpo.Contains("RMA") && !cpo.Contains("STOCK")
-                                && makebuy.Contains("MAKE")
+                                //&& makebuy.Contains("MAKE")
+                                && !string.IsNullOrEmpty(pdgroup) && !pdgroup.Contains("ACCESSO")
                                 && shipqty > 0 && !string.IsNullOrEmpty(pn))
                             {
                                 var cfg = Convert2Str(line[cfidx]);
@@ -1293,7 +1299,7 @@ namespace Prism.Models
                                     { continue; }
                                 }
 
-                                var ordereddate = Convert.ToDateTime(line[orddidx]);
+                                var ordereddate = UT.O2T(line[orddidx]);
                                 var customernum = Convert2Str(line[custnidx]);
                                 var customer1 = Convert2Str(line[cust1idx]);
                                 var customer2 = Convert2Str(line[cust2idx]);
@@ -1301,8 +1307,8 @@ namespace Prism.Models
                                 if (pndesc.Contains("ASY,DIE,") && customer1.Contains("FINISAR"))
                                 { continue; }
 
-                                var opd = Convert.ToDateTime(line[opdidx]);
-                                var shipdate = Convert.ToDateTime(line[spdidx]);
+                                var opd = UT.O2T(line[opdidx]);
+                                var shipdate = UT.O2T(line[spdidx]);
 
 
                                 var delievenum = Convert2Str(line[devidx]);
@@ -1314,7 +1320,7 @@ namespace Prism.Models
                                 }
 
                                 shipdatalist.Add(new FsrShipData(shipid, shipqty, pn, pndesc, family, cfg
-                                    , shipdate, customernum, customer1, customer2, ordereddate, delievenum, orderqty, opd, shipto));
+                                    , shipdate, customernum, customer1, customer2, ordereddate, delievenum, orderqty, opd, shipto,makebuy));
 
                             }//end if
                         }//end if
@@ -1408,8 +1414,8 @@ namespace Prism.Models
 
         private void StoreShipData()
         {
-            var sql = @"insert into FsrShipData(ShipID,ShipQty,PN,ProdDesc,MarketFamily,Configuration,VcselType,ShipDate,CustomerNum,Customer1,Customer2,OrderedDate,DelieveNum,SN,Wafer,Appv_1,Appv_5,Appv_2) values(
-                        @ShipID,@ShipQty,@PN,@ProdDesc,@MarketFamily,@Configuration,@VcselType,@ShipDate,@CustomerNum,@Customer1,@Customer2,@OrderedDate,@DelieveNum,@SN,@Wafer,@OrderQty,@OPD,@ShipTo)";
+            var sql = @"insert into FsrShipData(ShipID,ShipQty,PN,ProdDesc,MarketFamily,Configuration,VcselType,ShipDate,CustomerNum,Customer1,Customer2,OrderedDate,DelieveNum,SN,Wafer,Appv_1,Appv_5,Appv_2,Appv_3) values(
+                        @ShipID,@ShipQty,@PN,@ProdDesc,@MarketFamily,@Configuration,@VcselType,@ShipDate,@CustomerNum,@Customer1,@Customer2,@OrderedDate,@DelieveNum,@SN,@Wafer,@OrderQty,@OPD,@ShipTo,@Makebuy)";
             var dict = new Dictionary<string, string>();
             dict.Add("@ShipID", ShipID);
             dict.Add("@ShipQty", ShipQty.ToString());
@@ -1429,6 +1435,7 @@ namespace Prism.Models
             dict.Add("@OrderQty", OrderQty.ToString());
             dict.Add("@OPD", OPD.ToString("yyyy-MM-dd HH:mm:ss"));
             dict.Add("@ShipTo", ShipTo);
+            dict.Add("@Makebuy", MakeBuy);
             DBUtility.ExeLocalSqlNoRes(sql, dict);
         }
 
@@ -1456,7 +1463,7 @@ namespace Prism.Models
         }
 
         private FsrShipData(string id, int qty, string pn, string pndesc, string family, string cfg
-            , DateTime shipdate, string custnum, string cust1, string cust2, DateTime orddate, string delievenum, int orderqty, DateTime opd, string shipto)
+            , DateTime shipdate, string custnum, string cust1, string cust2, DateTime orddate, string delievenum, int orderqty, DateTime opd, string shipto, string makebuy)
         {
             ShipID = id;
             ShipQty = qty;
@@ -1477,6 +1484,7 @@ namespace Prism.Models
             OPD = opd;
             OTD = "NO";
             ShipTo = shipto;
+            MakeBuy = makebuy;
         }
 
         public static Dictionary<string, List<string>> PN2MPn(Dictionary<string, string> pnsndict)
@@ -1662,5 +1670,6 @@ namespace Prism.Models
         public string ShipTo { set; get; }
         public double Cost { set; get; }
         public double Output { set; get; }
+        public string MakeBuy { set; get; }
     }
 }

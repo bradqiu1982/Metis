@@ -195,7 +195,7 @@ namespace Prism.Models
             var ret = new Dictionary<string, double>();
             var sql = @"select ShipDate,ShipQty from FsrShipData where pn in
                         (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) 
-                    and ShipDate > @startdate and ShipDate < @enddate ";
+                    and ShipDate >= @startdate and ShipDate < @enddate ";
             var dict = new Dictionary<string, string>();
             dict.Add("@series", series);
             dict.Add("@startdate", startdate);
@@ -215,32 +215,40 @@ namespace Prism.Models
 
         public static Dictionary<string, double> GetForecastData(string series, string startdate, string enddate)
         {
+            var flist = new List<ShipForcastData>();
+            var kdict = new Dictionary<string, bool>();
             var ret = new Dictionary<string, double>();
-            var sql = @"select PN,DataTime,FCount from ShipForcastData where PN in 
+
+            var sqllist = new List<string>();
+            sqllist.Add(@"select PN,DataTime,FCount from ShipForcastData where PN in 
                     (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) 
-                    and DataTime >  @startdate and DataTime < @enddate order by PN,dataupdatestamp desc";
+                    and DataTime >=  @startdate and DataTime < @enddate and DataTime = dataupdatestamp order by PN,dataupdatestamp desc");
+            sqllist.Add(@"select PN,DataTime,FCount from ShipForcastData where PN in 
+                    (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) 
+                    and DataTime >=  @startdate and DataTime < @enddate order by PN,dataupdatestamp desc");
 
             var dict = new Dictionary<string, string>();
             dict.Add("@series", series);
             dict.Add("@startdate", startdate);
             dict.Add("@enddate", enddate);
 
-            var flist = new List<ShipForcastData>();
-            var kdict = new Dictionary<string, bool>();
-            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
-            foreach (var line in dbret)
+            foreach (var sql in sqllist)
             {
-                var pn = UT.O2S(line[0]);
-                var datatime = UT.O2T(line[1]).ToString("yyyy-MM");
-                var key = pn + datatime;
-                if (!kdict.ContainsKey(key))
+                var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
+                foreach (var line in dbret)
                 {
-                    kdict.Add(key, true);
-                    var tempvm = new ShipForcastData();
-                    tempvm.PN = pn;
-                    tempvm.DataTime = datatime;
-                    tempvm.FCount = UT.O2I(line[2]);
-                    flist.Add(tempvm);
+                    var pn = UT.O2S(line[0]);
+                    var datatime = UT.O2T(line[1]).ToString("yyyy-MM");
+                    var key = pn + datatime;
+                    if (!kdict.ContainsKey(key))
+                    {
+                        kdict.Add(key, true);
+                        var tempvm = new ShipForcastData();
+                        tempvm.PN = pn;
+                        tempvm.DataTime = datatime;
+                        tempvm.FCount = UT.O2I(line[2]);
+                        flist.Add(tempvm);
+                    }
                 }
             }
 
@@ -278,6 +286,8 @@ namespace Prism.Models
                 var tempvm = new ShipForcastData();
                 tempvm.Accuracy = acc;
                 tempvm.DataTime = kv.Key;
+                tempvm.FCount = (int)forecast;
+                tempvm.ShipCount = (int)shipqty;
                 flist.Add(tempvm);
             }
 
@@ -299,6 +309,7 @@ namespace Prism.Models
             DataTime = "";
             FCount = 0;
             Accuracy = 1.0;
+            ShipCount = 0;
         }
 
         public string PN { set; get; }
@@ -307,5 +318,6 @@ namespace Prism.Models
         public string DataPath { set; get; }
         public string DataUpdateStamp { set; get; }
         public double Accuracy { set; get; }
+        public int ShipCount { set; get; }
     }
 }

@@ -368,47 +368,52 @@ bool updateLinks)
                         var row = targetsheet.GetRow(ridx);
                         var cells = row.Cells;
                         var line = new List<string>();
+
+                        var cidx = cells[cells.Count - 1].ColumnIndex+1;
+                        for (var i = 0; i <= cidx; i++)
+                        { line.Add(""); }
+
                         foreach (var c in cells)
                         {
                             if (c == null)
                             {
-                                line.Add("");
+                                //line.Add("");
                             }
                             else
                             {
                                 switch (c.CellType)
                                 {
                                     case NPOI.SS.UserModel.CellType.String:
-                                        line.Add(c.StringCellValue.Replace("'", "").Replace("\"", "").Trim());
+                                        line[c.ColumnIndex] = c.StringCellValue.Replace("'", "").Replace("\"", "").Trim();
                                         break;
                                     case NPOI.SS.UserModel.CellType.Numeric:
                                         if (DateUtil.IsCellDateFormatted(c))
                                         {
-                                            line.Add(c.DateCellValue.ToString("yyyy-MM-dd HH:mm:ss").Replace("'", "").Replace("\"", "").Trim());
+                                            line[c.ColumnIndex] = c.DateCellValue.ToString("yyyy-MM-dd HH:mm:ss").Replace("'", "").Replace("\"", "").Trim();
                                         }
                                         else
                                         {
-                                            line.Add(c.NumericCellValue.ToString().Replace("'", "").Replace("\"", "").Trim());
+                                            line[c.ColumnIndex] = c.NumericCellValue.ToString().Replace("'", "").Replace("\"", "").Trim();
                                         }
                                         break;
                                     case NPOI.SS.UserModel.CellType.Boolean:
-                                        line.Add(c.StringCellValue.Replace("'", "").Replace("\"", "").Trim());
+                                        line[c.ColumnIndex] = c.StringCellValue.Replace("'", "").Replace("\"", "").Trim();
                                         break;
                                     case NPOI.SS.UserModel.CellType.Blank:
-                                        line.Add("");
+                                        //line.Add("");
                                         break;
                                     case NPOI.SS.UserModel.CellType.Formula:
-                                        line.Add(GetFormulaVal(formula, c).Replace("'", "").Replace("\"", "").Trim());
+                                        line[c.ColumnIndex] = GetFormulaVal(formula, c).Replace("'", "").Replace("\"", "").Trim();
                                         break;
                                     default:
-                                        line.Add("");
+                                        //line.Add("");
                                         break;
                                 }
 
                             }
 
-                            if (line.Count > columns)
-                            { break; }
+                            //if (line.Count > columns)
+                            //{ break; }
                         }
 
                         if (WholeLineEmpty(line)) { continue; }
