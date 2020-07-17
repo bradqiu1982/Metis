@@ -1,0 +1,80 @@
+﻿
+@{
+    ViewBag.Title = "ForecastMerge";
+    Layout = "~/Views/Shared/_LayoutAdditional.cshtml";
+}
+
+
+
+<link type="text/css" rel="stylesheet" href="~/Scripts/jquery-autocomplete/jquery.auto-complete.css" />
+<link type="text/css" rel="stylesheet" href="~/Content/SCRAP-RATE.css" />
+<link type="text/css" rel="stylesheet" href="~/Scripts/bootstrap-tagsinput/bootstrap-tagsinput.css" />
+<link type="text/css" rel="stylesheet" href="~/Content/Layout.css" />
+<link type="text/css" rel="stylesheet" href="~/Content/bootstrap-datepicker/bootstrap-datepicker.min.css" />
+
+<style type="text/css">
+    body {
+        position: relative;
+    }
+    td {
+        vertical-align:middle!important;
+    }
+
+    .DETAILINFO {
+        cursor: pointer;
+    }
+</style>
+
+<script type="text/javascript" src="~/Scripts/bootstrap-tagsinput/bootstrap-tagsinput.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap-tagsinput/bootstrap3-typeahead.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery-autocomplete/jquery.auto-complete.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+<script type="text/javascript" src="~/Scripts/shipforecast.js"></script>
+<script type="text/javascript">
+        $(function(){
+            FORECAST.MERGEINIT();
+        })
+</script>
+
+
+<div class="col-xs-12">
+    <div class="v-container">
+        <div class="v-filter">
+            <div class="row row-margin">
+                <label class="col-xs-2">Start Date</label>
+                <div class="col-xs-3">
+                    <div class="input-group date" data-date=""
+                         data-date-format="yyyy-mm">
+                        <input type="text" class="form-control"
+                               id="sdate" name="sdate" value="" readonly>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-th"></span>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-xs-1"></div>
+                <div class="col-xs-2">
+                    <input type="button" class="btn btn-success box-search" name="btn-search" id="btn-search" value="Search">
+                </div>
+                <div class="col-xs-4"></div>
+            </div>
+        </div>
+        <div class="v-content">
+            <table class="table table-hover  table-condensed table-striped cell-border" id="fctable" style="margin-top:1%">
+                <caption class="tb-caption">Forecast Accuracy</caption>
+                <thead id="fchead"></thead>
+                <tbody id="fccontent"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="table-modal hide" tabindex="-1" style="border-color:black;border-width:2px;">
+    <div class="row" style="overflow:auto">
+        <table class="table table-hover  table-condensed table-striped" id="sertable" style="margin-top:1%">
+            <caption class="tb-caption" id="seriesmodalLabel"></caption>
+            <thead id="serhead"></thead>
+            <tbody id="sercontent"></tbody>
+        </table>
+    </div>
+</div>

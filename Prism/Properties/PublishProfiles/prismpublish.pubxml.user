@@ -13,10 +13,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/22/2013 08:43:40</publishTime>
     </File>
     <File Include="bin/App_global.asax.compiled">
-      <publishTime>09/25/2019 15:50:03</publishTime>
+      <publishTime>05/15/2020 08:27:15</publishTime>
     </File>
     <File Include="bin/App_global.asax.dll">
-      <publishTime>09/25/2019 15:50:02</publishTime>
+      <publishTime>05/15/2020 08:27:15</publishTime>
     </File>
     <File Include="bin/CsvHelper.dll">
       <publishTime>01/28/2019 22:44:34</publishTime>
@@ -106,7 +106,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>11/27/2012 13:00:52</publishTime>
     </File>
     <File Include="bin/Prism.dll">
-      <publishTime>09/25/2019 15:49:15</publishTime>
+      <publishTime>05/15/2020 08:26:50</publishTime>
     </File>
     <File Include="bin/RestSharp.dll">
       <publishTime>10/15/2018 17:58:54</publishTime>
@@ -1576,7 +1576,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/12/2018 10:14:45</publishTime>
     </File>
     <File Include="Content/Layout.css">
-      <publishTime>02/26/2019 15:26:43</publishTime>
+      <publishTime>02/27/2020 10:08:09</publishTime>
     </File>
     <File Include="Content/SCRAP-RATE.css">
       <publishTime>02/26/2019 15:26:48</publishTime>
@@ -1615,7 +1615,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>09/11/2019 14:22:40</publishTime>
     </File>
     <File Include="PrecompiledApp.config">
-      <publishTime>09/25/2019 15:49:33</publishTime>
+      <publishTime>05/15/2020 08:26:58</publishTime>
     </File>
     <File Include="Scripts/ajaxfileupload.js">
       <publishTime>06/28/2018 10:27:19</publishTime>
@@ -1741,7 +1741,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>03/25/2019 14:50:45</publishTime>
     </File>
     <File Include="Scripts/inventory.js">
-      <publishTime>09/25/2019 14:51:37</publishTime>
+      <publishTime>11/12/2019 16:39:02</publishTime>
     </File>
     <File Include="Scripts/joquery.js">
       <publishTime>02/18/2019 10:32:04</publishTime>
@@ -1840,10 +1840,10 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>06/28/2018 10:27:21</publishTime>
     </File>
     <File Include="Scripts/prism-db-script.txt">
-      <publishTime>09/21/2019 16:48:44</publishTime>
+      <publishTime>05/14/2020 11:13:55</publishTime>
     </File>
     <File Include="Scripts/PrismCfg.txt">
-      <publishTime>09/21/2019 11:29:05</publishTime>
+      <publishTime>03/13/2020 10:07:00</publishTime>
     </File>
     <File Include="Scripts/respond.js">
       <publishTime>06/28/2018 09:14:31</publishTime>
@@ -1859,6 +1859,9 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     </File>
     <File Include="Scripts/ShipCustomer.cfg">
       <publishTime>12/14/2018 14:28:24</publishTime>
+    </File>
+    <File Include="Scripts/shipforecast.js">
+      <publishTime>05/15/2020 08:13:35</publishTime>
     </File>
     <File Include="Scripts/shipment.js">
       <publishTime>02/13/2019 16:54:08</publishTime>
@@ -1894,7 +1897,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>10/11/2018 15:46:27</publishTime>
     </File>
     <File Include="Scripts/USDRate.cfg">
-      <publishTime>01/02/2019 11:03:40</publishTime>
+      <publishTime>02/27/2020 12:00:17</publishTime>
     </File>
     <File Include="Scripts/VcselData.js">
       <publishTime>02/13/2019 16:34:26</publishTime>
@@ -1915,7 +1918,7 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>12/29/2018 13:32:17</publishTime>
     </File>
     <File Include="Scripts/_references.js">
-      <publishTime>02/22/2019 11:21:23</publishTime>
+      <publishTime>03/27/2020 09:35:06</publishTime>
     </File>
     <File Include="userfiles/ImageUpload.ashx">
       <publishTime>07/10/2018 16:28:54</publishTime>
@@ -1962,11 +1965,14 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/DataAnalyze/SerialHPU.cshtml">
       <publishTime>02/22/2019 17:31:07</publishTime>
     </File>
+    <File Include="Views/Inventory/AddProductCost.cshtml">
+      <publishTime>11/01/2019 15:57:19</publishTime>
+    </File>
     <File Include="Views/Inventory/DepartmentInventory.cshtml">
       <publishTime>02/22/2019 17:31:35</publishTime>
     </File>
     <File Include="Views/Inventory/ProductCost.cshtml">
-      <publishTime>09/25/2019 09:41:51</publishTime>
+      <publishTime>11/12/2019 15:53:33</publishTime>
     </File>
     <File Include="Views/Inventory/ProductInventory.cshtml">
       <publishTime>02/22/2019 17:31:56</publishTime>
@@ -2040,6 +2046,18 @@ by editing this MSBuild file. In order to learn more about this please visit htt
     <File Include="Views/Shared/_VideoRecordModal.cshtml">
       <publishTime>07/30/2018 15:31:47</publishTime>
     </File>
+    <File Include="Views/Shipment/Forecast.cshtml">
+      <publishTime>02/27/2020 10:08:42</publishTime>
+    </File>
+    <File Include="Views/Shipment/ForecastAccuracy.cshtml">
+      <publishTime>02/27/2020 10:08:42</publishTime>
+    </File>
+    <File Include="Views/Shipment/ForecastMerge.cshtml">
+      <publishTime>05/14/2020 16:58:04</publishTime>
+    </File>
+    <File Include="Views/Shipment/ForecastPLM.cshtml">
+      <publishTime>05/14/2020 11:42:10</publishTime>
+    </File>
     <File Include="Views/Shipment/LBSDistribution.cshtml">
       <publishTime>02/22/2019 17:36:23</publishTime>
     </File>
@@ -2077,13 +2095,13 @@ by editing this MSBuild file. In order to learn more about this please visit htt
       <publishTime>02/22/2019 17:40:21</publishTime>
     </File>
     <File Include="Views/Yield/YieldTrend.cshtml">
-      <publishTime>02/22/2019 17:40:43</publishTime>
+      <publishTime>01/03/2020 15:53:46</publishTime>
     </File>
     <File Include="Views/_ViewStart.cshtml">
       <publishTime>06/28/2018 09:14:13</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>09/11/2019 15:52:04</publishTime>
+      <publishTime>01/16/2020 08:30:24</publishTime>
     </File>
   </ItemGroup>
 </Project>

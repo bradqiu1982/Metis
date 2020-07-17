@@ -75,7 +75,14 @@ namespace Prism.Controllers
                     PNBUMap.LoadPNBUData(this);
                 }
                 catch (Exception ex) { }
-                
+
+                try
+                {
+                    heartbeatlog("OSASeriesData.LoadData", filename);
+                    OSASeriesData.LoadData(this);
+                }
+                catch (Exception ex) { }
+
                 try
                 {
                     heartbeatlog("PNProuctFamilyCache.LoadData", filename);
@@ -113,12 +120,12 @@ namespace Prism.Controllers
                 }
                 catch (Exception ex) { }
 
-                //try
-                //{
-                //    heartbeatlog("FsrShipData.RefreshShipData", filename);
-                //    FsrShipData.RefreshShipData(this);
-                //}
-                //catch (Exception ex) { }
+                try
+                {
+                    heartbeatlog("FsrShipData.RefreshShipData", filename);
+                    FsrShipData.RefreshShipData(this);
+                }
+                catch (Exception ex) { }
 
                 try
                 {
@@ -461,9 +468,7 @@ namespace Prism.Controllers
 
         public ActionResult RefreshShipData()
         {
-            FsrShipData.RefreshShipData(this, @"\\wux-engsys01\PlanningForCast\Finisar - OTS for Wuxi_Joy.xls", "Sheet 1");
-            FsrShipData.RefreshShipData(this, @"\\wux-engsys01\PlanningForCast\Finisar - OTS for Wuxi_Joy.xls", "Sheet 1_1");
-            FsrShipData.RefreshShipData(this, @"\\wux-engsys01\PlanningForCast\Finisar - OTS for Wuxi_Joy.xls", "Sheet 1_2");
+            FsrShipData.RefreshShipData(this);
             return View("HeartBeat");
         }
 
@@ -645,11 +650,38 @@ namespace Prism.Controllers
             return View("Index");
         }
 
-        public ActionResult ForecastAcc()
+        public ActionResult LoadOSASeriesData()
         {
-            ShipForcastData.GetSeriesAccuracy();
+            OSASeriesData.LoadData(this);
             return View("Index");
         }
+
+        public ActionResult LoadWSSForcast()
+        {
+            var syscfg = CfgUtility.GetSysConfig(this);
+            var forcastfolder = syscfg["FORCASTDATA"];
+            ShipForcastData.LoadWSSData(this,forcastfolder);
+            return View("Index");
+        }
+
+        public ActionResult LoadPLMData()
+        {
+            PLMMatrix.LoadData(this);
+            return View("Index");
+        }
+
+        //public ActionResult ForecastAccuracy()
+        //{
+        //    var starttime = "2018-11-01 00:00:00";
+        //    var endtime = "2019-11-01 00:00:00";
+        //    var activeseries = PNBUMap.GetActiveSeries(starttime);
+        //    foreach (var ser in activeseries)
+        //    {
+        //        ser.Accuracy = ShipForcastData.GetSeriesAccuracyVal(ser.Series, starttime, endtime);
+        //    }
+        //    return View("Index");
+        //}
+
 
     }
 }

@@ -404,6 +404,7 @@ namespace Prism.Controllers
                 }
 
                 var chart1xlist = new List<object>();
+
                 var epcostdatalist = new List<object>();
                 var fcostdatalist = new List<object>();
                 var fmcostdict = new Dictionary<string, double>();
@@ -422,6 +423,10 @@ namespace Prism.Controllers
                     if (cost.QuarterType.ToUpper().Contains("F") 
                         && !cost.QuarterType.ToUpper().Contains("MATE"))
                     {
+                        if (!chart1xlist.Contains(cost.Quarter)) {
+                            chart1xlist.Add(cost.Quarter);
+                        };
+
                         fdatapaire.Add(cost.Quarter);
                         fdatapaire.Add(Math.Round(UT.O2D(cost.UMCost), 2));
                         fcostdatalist.Add(fdatapaire);

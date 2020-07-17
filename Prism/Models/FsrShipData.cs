@@ -124,7 +124,7 @@ namespace Prism.Models
 
             var ret = new Dictionary<string, Dictionary<string, double>>();
             var custdict = CfgUtility.GetAllCustConfig(ctrl);
-            var sql = @"select ShipQty,Customer1,Customer2,ShipDate from Appv_3 <> 'Buy' and FsrShipData where ShipDate >= @sdate and ShipDate <= @edate  and PN in <pncond>  ";
+            var sql = @"select ShipQty,Customer1,Customer2,ShipDate from FsrShipData where Appv_3 <> 'Buy' and ShipDate >= @sdate and ShipDate <= @edate  and PN in <pncond>  ";
 
             if (string.Compare(rate, VCSELRATE.r14G, true) == 0)
             { sql = sql + " and ( VcselType = '" + VCSELRATE.r14G + "' or VcselType = '" + VCSELRATE.r10G + "')"; }
@@ -1181,10 +1181,10 @@ namespace Prism.Models
 
         #region LOAD_SHIP_DATA
 
-        public static void RefreshShipData(Controller ctrl,string shipsrcfile,string shtname)
+        public static void RefreshShipData(Controller ctrl)
         {
             var syscfg = CfgUtility.GetSysConfig(ctrl);
-            //var shipsrcfile = syscfg["FINISARSHIPDATA"];
+            var shipsrcfile = syscfg["FINISARSHIPDATA"];
             var shipdesfile = ExternalDataCollector.DownloadShareFile(shipsrcfile, ctrl);
             var parallelpndict = PNProuctFamilyCache.GetPNDictByPF("Parallel");
             var linecardpndict = PNProuctFamilyCache.GetPNDictByPF("Linecard");
@@ -1197,8 +1197,8 @@ namespace Prism.Models
             if (!string.IsNullOrEmpty(shipdesfile))
             {
                 var shipiddict = FsrShipData.RetrieveAllShipID();
-                //var data = ExternalDataCollector.RetrieveDataFromExcelWithAuth(ctrl, shipdesfile);
-                var data = ExternalDataCollector.RetrieveDataFromExcelWithAuth(ctrl, shipdesfile,shtname);
+                var data = ExternalDataCollector.RetrieveDataFromExcelWithAuth(ctrl, shipdesfile);
+               
                 var shipdatalist = new List<FsrShipData>();
                 var pnsndict = new Dictionary<string, string>();
 
@@ -1268,8 +1268,7 @@ namespace Prism.Models
                             var pdgroup = Convert2Str(line[pgidx]).ToUpper();
 
                             if (!cpo.Contains("RMA") && !cpo.Contains("STOCK")
-                                //&& makebuy.Contains("MAKE")
-                                && !string.IsNullOrEmpty(pdgroup) && !pdgroup.Contains("ACCESSO")
+                                &&( makebuy.Contains("MAKE") || (makebuy.Contains("BUY") && !string.IsNullOrEmpty(pdgroup) && !pdgroup.Contains("ACCESSO")))
                                 && shipqty > 0 && !string.IsNullOrEmpty(pn))
                             {
                                 var cfg = Convert2Str(line[cfidx]);

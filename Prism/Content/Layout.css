@@ -28,6 +28,20 @@
     z-index:1020;
 }
 
+.table-modal {
+    position: fixed;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0;
+    left: 0;
+    bottom:0;
+    right:0;
+    padding: 8% 5% !important;
+    background: white;
+    opacity: 1;
+    filter: alpha(opacity=90);
+    z-index:1019;
+}
 
 .YINPUT {
     /*background-color:aliceblue;*/

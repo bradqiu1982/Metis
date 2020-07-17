@@ -1730,5 +1730,231 @@ namespace Prism.Controllers
             return ret;
         }
 
+
+        public ActionResult Forecast()
+        {
+            return View();
+        }
+
+        public ActionResult ForecastPLM()
+        {
+            return View();
+        }
+
+        public ActionResult ForecastMerge()
+        {
+            return View();
+        }
+
+        public JsonResult ForecastAccuracyData()
+        {
+            var starttime = "2018-11-01 00:00:00";
+            var endtime = "2019-11-01 00:00:00";
+            var startdate = Request.Form["startdate"];
+
+            if (string.IsNullOrEmpty(startdate))
+            {
+                starttime = DateTime.Now.AddMonths(-12).ToString("yyyy-MM") + "-01 00:00:00";
+                endtime = DateTime.Now.ToString("yyyy-MM") + "-01 00:00:00";
+            }
+            else
+            {
+                var sdate = DateTime.Parse(Request.Form["startdate"]);
+                var sdate1 = DateTime.Parse(sdate.ToString("yyyy-MM") + "-01 00:00:00");
+                starttime = sdate1.ToString("yyyy-MM-dd HH:mm:ss");
+                endtime = sdate1.AddMonths(12).ToString("yyyy-MM-dd HH:mm:ss");
+            }
+
+            var plmdict = PNBUMap.GetSeriesPLMDict();
+
+            var wssdict = PNBUMap.GetWSSSeries();
+            var osaseriesdict = OSASeriesData.GetOSASeriesDict();
+            var activeseries = PNBUMap.GetActiveSeries(starttime,endtime);
+            foreach (var ser in activeseries)
+            {
+                var shipfclist = new List<ShipForcastData>();
+                ser.Accuracy = Math.Round(ShipForcastData.GetSeriesAccuracyVal(ser.Series, osaseriesdict,wssdict, starttime, endtime,shipfclist)*100.0,1);
+
+                var shipqtylist = new List<int>();
+                var fclist = new List<int>();
+                foreach (var sf in shipfclist)
+                {
+                    shipqtylist.Add(sf.ShipCount);
+                    fclist.Add((int)sf.FCount);
+                }
+
+                if (plmdict.ContainsKey(ser.Series.ToUpper()) && (shipqtylist.Average() >= 1000 || fclist.Average() >= 1000))
+                {
+                    ser.PLM = plmdict[ser.Series.ToUpper()];
+                }
+            }
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                accuracylist = activeseries
+            };
+            return ret;
+        }
+
+        public JsonResult ForecastMergeData()
+        {
+            var starttime = "2018-11-01 00:00:00";
+            var endtime = "2019-11-01 00:00:00";
+            var startdate = Request.Form["startdate"];
+
+            if (string.IsNullOrEmpty(startdate))
+            {
+                starttime = DateTime.Now.AddMonths(-12).ToString("yyyy-MM") + "-01 00:00:00";
+                endtime = DateTime.Now.ToString("yyyy-MM") + "-01 00:00:00";
+            }
+            else
+            {
+                var sdate = DateTime.Parse(Request.Form["startdate"]);
+                var sdate1 = DateTime.Parse(sdate.ToString("yyyy-MM") + "-01 00:00:00");
+                starttime = sdate1.ToString("yyyy-MM-dd HH:mm:ss");
+                endtime = sdate1.AddMonths(12).ToString("yyyy-MM-dd HH:mm:ss");
+            }
+
+            var spandict = new Dictionary<string, int>();
+            var spancheckdict = new Dictionary<string, bool>();
+
+            var wssdict = PNBUMap.GetWSSSeries();
+            var osaseriesdict = OSASeriesData.GetOSASeriesDict();
+            var activeseries = PNBUMap.GetActiveSeries(starttime, endtime);
+            foreach (var ser in activeseries)
+            {
+                var shiplist = new List<ShipForcastData>();
+                ser.Accuracy = Math.Round(ShipForcastData.GetSeriesAccuracyVal(ser.Series, osaseriesdict, wssdict, starttime, endtime,shiplist) * 100.0, 1);
+
+                var k = ser.BU.ToUpper();
+                if (spandict.ContainsKey(k))
+                { spandict[k] += 1; }
+                else
+                { spandict.Add(k, 1); }
+
+                if (!spancheckdict.ContainsKey(k))
+                { spancheckdict.Add(k,false); }
+
+                k = (ser.BU+":"+ser.ProjectGroup).ToUpper();
+                if (spandict.ContainsKey(k))
+                { spandict[k] += 1; }
+                else
+                { spandict.Add(k, 1); }
+
+                if (!spancheckdict.ContainsKey(k))
+                { spancheckdict.Add(k, false); }
+            }
+
+            var table = new List<List<string>>();
+            foreach (var ser in activeseries)
+            {
+                var templine = new List<string>();
+
+                var k = ser.BU.ToUpper();
+                if (spandict.ContainsKey(k) && !spancheckdict[k])
+                {
+                    templine.Add(ser.BU + ":rowspan=\"" + spandict[k] + "\"");
+                    spancheckdict[k] = true;
+                }
+                else
+                { templine.Add(ser.BU + ":hide"); }
+
+                k = (ser.BU + ":" + ser.ProjectGroup).ToUpper();
+                if (spandict.ContainsKey(k) && !spancheckdict[k])
+                {
+                    templine.Add(ser.ProjectGroup + ":rowspan=\"" + spandict[k] + "\"");
+                    spancheckdict[k] = true;
+                }
+                else
+                { templine.Add(ser.ProjectGroup + ":hide"); }
+
+                templine.Add(ser.Series);
+                templine.Add(ser.Accuracy.ToString()+"%");
+
+                table.Add(templine);
+            }
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                table = table
+            };
+            return ret;
+        }
+
+        public JsonResult SeriesAccuracyData()
+        {
+            var starttime = "2018-11-01 00:00:00";
+            var endtime = "2019-11-01 00:00:00";
+            var startdate = Request.Form["startdate"];
+
+            if (string.IsNullOrEmpty(startdate))
+            {
+                starttime = DateTime.Now.AddMonths(-12).ToString("yyyy-MM") + "-01 00:00:00";
+                endtime = DateTime.Now.ToString("yyyy-MM") + "-01 00:00:00";
+            }
+            else
+            {
+                var sdate = DateTime.Parse(Request.Form["startdate"]);
+                var sdate1 = DateTime.Parse(sdate.ToString("yyyy-MM") + "-01 00:00:00");
+                starttime = sdate1.ToString("yyyy-MM-dd HH:mm:ss");
+                endtime = sdate1.AddMonths(12).ToString("yyyy-MM-dd HH:mm:ss");
+            }
+
+            var wssdict = PNBUMap.GetWSSSeries();
+            var osaseriesdict = OSASeriesData.GetOSASeriesDict();
+            var series = Request.Form["series"];
+            var flist = ShipForcastData.GetSeriesAccuracy(series,osaseriesdict,wssdict, starttime, endtime);
+
+            var tabletitle = new List<object>();
+            tabletitle.Add("S&OP II Forecast");
+            var fcastlist = new List<object>();
+            fcastlist.Add("Forecast");
+            var delievelist = new List<object>();
+            delievelist.Add("Actual Delivery");
+
+            var avglist = new List<double>();
+            var avgslist = new List<object>();
+            avgslist.Add("Average Pecentage Error");
+
+            var meanlist = new List<object>();
+            meanlist.Add("Mean Absolute Pertage Error");
+            var facurracylist = new List<object>();
+            facurracylist.Add("Forecast Accuracy");
+            foreach (var f in flist)
+            {
+                tabletitle.Add(f.DataTime);
+                fcastlist.Add(f.FCountStr);
+                delievelist.Add(f.ShipCount);
+                avglist.Add(f.Accuracy);
+                avgslist.Add(Math.Round(100.0 * f.Accuracy, 1).ToString() + "%");
+                meanlist.Add("");
+                facurracylist.Add("");
+            }
+            meanlist[meanlist.Count - 1] = Math.Round(100.0 * avglist.Average(), 1).ToString() + "%";
+            facurracylist[facurracylist.Count -1] = Math.Round(100.0 * (1-avglist.Average()), 1).ToString() + "%";
+            //facurracylist[facurracylist.Count - 1] = Math.Round(100.0 * (avglist.Average()), 1).ToString() + "%";
+            var tablecontent = new List<object>();
+            tablecontent.Add(fcastlist);
+            tablecontent.Add(delievelist);
+            tablecontent.Add(avgslist);
+            tablecontent.Add(meanlist);
+            tablecontent.Add(facurracylist);
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                tabletitle = tabletitle,
+                tablecontent = tablecontent
+            };
+            return ret;
+        }
+
+
+
     }
 }

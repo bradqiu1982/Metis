@@ -25,7 +25,7 @@ namespace Prism.Models
 
                     if (!string.IsNullOrEmpty(line[0]))
                     {
-                        pnlist.Add(new PNBUMap(line[0],line[2],line[4],line[5],line[6]));
+                        pnlist.Add(new PNBUMap(line[0],line[2],line[4],line[5],line[6],line[10]));
                     }
                 }
 
@@ -37,7 +37,7 @@ namespace Prism.Models
         public static Dictionary<string, PNBUMap> GetPNMap()
         {
             var ret = new Dictionary<string, PNBUMap>();
-            var sql = "select PN,PlannerCode,ProjectGroup,Series,BU from BSSupport.dbo.PNBUMap";
+            var sql = "select PN,PlannerCode,ProjectGroup,Series,BU,AppVal1 from BSSupport.dbo.PNBUMap";
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
@@ -45,7 +45,7 @@ namespace Prism.Models
                 if (!ret.ContainsKey(pn))
                 {
                     var tempvm = new PNBUMap(pn,UT.O2S(line[1])
-                        , UT.O2S(line[2]), UT.O2S(line[3]), UT.O2S(line[4]));
+                        , UT.O2S(line[2]), UT.O2S(line[3]), UT.O2S(line[4]),UT.O2S(line[5]));
                     ret.Add(pn, tempvm);
                 }
             }
@@ -67,25 +67,164 @@ namespace Prism.Models
         {
             var sql = "";
             if (DataExist())
-            { sql = "update BSSupport.dbo.PNBUMap set PlannerCode=@PlannerCode,ProjectGroup=@ProjectGroup,Series=@Series,BU=@BU where PN = @PN"; }
+            { sql = "update BSSupport.dbo.PNBUMap set PlannerCode=@PlannerCode,ProjectGroup=@ProjectGroup,Series=@Series,BU=@BU,AppVal1=@Series2 where PN = @PN"; }
             else
-            { sql = "insert into BSSupport.dbo.PNBUMap(PN,PlannerCode,ProjectGroup,Series,BU) values(@PN,@PlannerCode,@ProjectGroup,@Series,@BU)";}
+            { sql = "insert into BSSupport.dbo.PNBUMap(PN,PlannerCode,ProjectGroup,Series,BU,AppVal1) values(@PN,@PlannerCode,@ProjectGroup,@Series,@BU,@Series2)"; }
             var dict = new Dictionary<string, string>();
             dict.Add("@PN", PN);
             dict.Add("@PlannerCode", PlannerCode);
             dict.Add("@ProjectGroup", ProjectGroup);
             dict.Add("@Series", Series);
             dict.Add("@BU", BU);
+            dict.Add("@Series2", Series2);
             DBUtility.ExeLocalSqlNoRes(sql, dict);
         }
 
-        public PNBUMap(string pn,string pc,string pg,string s,string bu)
+        public static List<PNBUMap> GetActiveSeries(string starttime,string endtime)
+        {
+            var budict = new Dictionary<string, bool>();
+            var dict = new Dictionary<string, string>();
+            dict.Add("@starttime", starttime);
+            dict.Add("@endtime", endtime);
+
+            var sql = @"select distinct bu.BU,bu.ProjectGroup,bu.Series from [BSSupport].[dbo].[PNBUMap] bu with(nolock) 
+                          left join [BSSupport].[dbo].[ShipForcastData] fc with(nolock) on fc.PN = bu.PN
+                          where fc.DataTime > @starttime and  fc.DataTime < @endtime and fc.DataUpdateStamp  > @starttime and fc.DataUpdateStamp  < @endtime and bu.Series <> ''
+                          and bu.BU in ('TRANSCEIVER','COHERENT','WAVELENGTH MANAGEMENT') order by BU,ProjectGroup,Series";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
+            foreach (var line in dbret)
+            {
+                var tempvm = new PNBUMap();
+                tempvm.BU = UT.O2S(line[0]);
+                tempvm.ProjectGroup = UT.O2S(line[1]);
+                tempvm.Series = UT.O2S(line[2]);
+                var key = tempvm.BU + tempvm.ProjectGroup + tempvm.Series;
+                if (!budict.ContainsKey(key))
+                { budict.Add(key, true); }
+            }
+
+            var ret = new List<PNBUMap>();
+            sql = @"select distinct bu.BU,bu.ProjectGroup,bu.Series from [BSSupport].[dbo].[PNBUMap] bu with(nolock) 
+                          left join [BSSupport].[dbo].[FsrShipData] sp with(nolock)  on bu.PN = sp.PN 
+                          where sp.ShipDate > @starttime and sp.ShipDate < @endtime  and bu.Series <> ''
+                            and bu.BU in ('TRANSCEIVER','COHERENT','WAVELENGTH MANAGEMENT') order by BU,ProjectGroup,Series";
+            
+            dbret = DBUtility.ExeLocalSqlWithRes(sql,null,dict);
+            foreach (var line in dbret)
+            {
+                var tempvm = new PNBUMap();
+                tempvm.BU = UT.O2S(line[0]);
+                tempvm.ProjectGroup = UT.O2S(line[1]);
+                tempvm.Series = UT.O2S(line[2]);
+                var key = tempvm.BU + tempvm.ProjectGroup + tempvm.Series;
+                if (budict.ContainsKey(key))
+                { ret.Add(tempvm); }
+            }
+
+            return ret;
+        }
+
+        public static Dictionary<string, string> GetSeriesPNMap()
+        {
+            var ret = new Dictionary<string, string>();
+            var sql = "select Series,PN from [BSSupport].[dbo].[PNBUMap] where Series <> '' order by Series,PN";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var series = UT.O2S(line[0]).Trim().ToUpper();
+                var pn = UT.O2S(line[1]);
+                if (!ret.ContainsKey(series))
+                {
+                    ret.Add(series, pn);
+                }
+            }
+
+            sql = "select AppVal1,PN from [BSSupport].[dbo].[PNBUMap] where AppVal1 <> '' order by AppVal1,PN";
+            dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var series = UT.O2S(line[0]).Trim().ToUpper();
+                var pn = UT.O2S(line[1]);
+                if (!ret.ContainsKey(series))
+                {
+                    ret.Add(series, pn);
+                }
+            }
+
+            return ret;
+        }
+
+        public static Dictionary<string, bool> GetWSSSeries()
+        {
+            var ret = new Dictionary<string, bool>();
+            var sql = "select distinct Series from [BSSupport].[dbo].[PNBUMap] where ProjectGroup = 'WSS' and Series <> ''";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var series = UT.O2S(line[0]).Trim().ToUpper();
+                if (!ret.ContainsKey(series))
+                {
+                    ret.Add(series, true);
+                }
+            }
+
+            sql = "select distinct AppVal1 from [BSSupport].[dbo].[PNBUMap] where ProjectGroup = 'WSS' and AppVal1 <> ''";
+            dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var series = UT.O2S(line[0]).Trim().ToUpper();
+                if (!ret.ContainsKey(series))
+                {
+                    ret.Add(series, true);
+                }
+            }
+
+            return ret;
+        }
+
+        public static Dictionary<string, string> GetSeriesPLMDict()
+        {
+            var ret = new Dictionary<string, string>();
+            var sql = @"select distinct b.Series,p.PLM FROM [BSSupport].[dbo].[PNBUMap] b
+                      left join [BSSupport].[dbo].[PLMMatrix] p on b.PN = p.PN
+                      where p.PLM <> '' and b.Series <> ''";
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql,null);
+            foreach (var line in dbret)
+            {
+                var s = UT.O2S(line[0]).ToUpper();
+                var p = UT.O2S(line[1]);
+                if (!ret.ContainsKey(s))
+                {
+                    ret.Add(s, p);
+                }
+            }
+
+            sql = @"select distinct b.AppVal1,p.PLM FROM [BSSupport].[dbo].[PNBUMap] b
+                  left join [BSSupport].[dbo].[PLMMatrix] p on b.PN = p.PN
+                  where p.PLM <> '' and b.AppVal1 <> ''";
+            dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
+            foreach (var line in dbret)
+            {
+                var s = UT.O2S(line[0]).ToUpper();
+                var p = UT.O2S(line[1]);
+                if (!ret.ContainsKey(s))
+                {
+                    ret.Add(s, p);
+                }
+            }
+
+            return ret;
+        }
+
+        public PNBUMap(string pn,string pc,string pg,string s,string bu,string s2)
         {
             PN = pn;
             PlannerCode = pc;
             ProjectGroup = pg;
             Series = s;
             BU = bu;
+            Accuracy = 0.0;
+            Series2 = s2;
         }
 
         public PNBUMap()
@@ -95,12 +234,19 @@ namespace Prism.Models
             ProjectGroup = "";
             Series = "";
             BU = "";
+            Accuracy = 0.0;
+            Series2 = "";
+            PLM = "";
         }
+
 
         public string PN { set; get; }
         public string PlannerCode { set; get; }
         public string ProjectGroup { set; get; }
         public string Series { set; get; }
         public string BU { set; get; }
+        public double Accuracy { set; get; }
+        public string Series2 { set; get; }
+        public string PLM { set; get; }
     }
 }
