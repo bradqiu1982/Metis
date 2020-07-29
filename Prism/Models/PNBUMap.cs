@@ -124,6 +124,30 @@ namespace Prism.Models
             return ret;
         }
 
+        public static List<PNBUMap> GetModuleRevenueActiveSeries(string starttime,string BUCond)
+        {
+            var dict = new Dictionary<string, string>();
+            dict.Add("@starttime", starttime);
+
+            var ret = new List<PNBUMap>();
+            var sql = @"select distinct bu.BU,bu.ProjectGroup,bu.Series from [BSSupport].[dbo].[PNBUMap] bu with(nolock) 
+                          inner join [BSSupport].[dbo].[FsrShipData] sp with(nolock)  on bu.PN = sp.PN 
+                          where sp.ShipDate >= @starttime  and bu.Series <> ''
+                            and bu.BU in ("+BUCond+") order by BU,ProjectGroup,Series";
+
+           var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
+            foreach (var line in dbret)
+            {
+                var tempvm = new PNBUMap();
+                tempvm.BU = UT.O2S(line[0]);
+                tempvm.ProjectGroup = UT.O2S(line[1]);
+                tempvm.Series = UT.O2S(line[2]);
+                ret.Add(tempvm);
+            }
+
+            return ret;
+        }
+
         public static Dictionary<string, string> GetSeriesPNMap()
         {
             var ret = new Dictionary<string, string>();
@@ -222,7 +246,7 @@ namespace Prism.Models
             PlannerCode = pc;
             ProjectGroup = pg;
             Series = s;
-            BU = bu;
+            BU = bu.Split(new string[] { "("},StringSplitOptions.RemoveEmptyEntries)[0].Trim();
             Accuracy = 0.0;
             Series2 = s2;
         }

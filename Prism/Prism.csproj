@@ -256,6 +256,7 @@
     <Compile Include="Models\MachinePreData.cs" />
     <Compile Include="Models\MachineRate.cs" />
     <Compile Include="Models\MachineUserMap.cs" />
+    <Compile Include="Models\ModuleRevenue.cs" />
     <Compile Include="Models\ModuleTestData.cs" />
     <Compile Include="Models\OSASeriesData.cs" />
     <Compile Include="Models\PLMMatrix.cs" />
@@ -926,6 +927,7 @@
     <Content Include="Views\Shipment\Forecast.cshtml" />
     <Content Include="Views\Shipment\ForecastPLM.cshtml" />
     <Content Include="Views\Shipment\ForecastMerge.cshtml" />
+    <Content Include="Views\Shipment\ShipMargin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1038,7 +1040,6 @@
     <Folder Include="ckeditor\skins\kama\images\" />
     <Folder Include="ckeditor\skins\moono-lisa\dev\" />
     <Folder Include="ckeditor\skins\moono\images\hidpi\" />
-    <Folder Include="obj\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

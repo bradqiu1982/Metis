@@ -358,6 +358,21 @@ CREATE TABLE [dbo].[FsrShipData](
 	[Appv_5] [datetime] NOT NULL
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
+
+CREATE TABLE [dbo].[ModuleRevenue]
+(
+	[ShipID]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[ShipQty]  FLOAT DEFAULT (0) NOT NULL,
+	[PN]    NVARCHAR (200)   DEFAULT ('') NOT NULL,
+	[SalePrice]   FLOAT DEFAULT (0)  NOT NULL,
+	[Cost]   FLOAT DEFAULT (0) NOT NULL,
+	[ShipDate] DATETIME       DEFAULT ('1982-05-06 10:00:00')  NOT NULL,
+	[Appv_1]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_2]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_3]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Appv_4]   DATETIME       DEFAULT ('1982-05-06 10:00:00') NOT NULL
+);
+
 GO
 
 ALTER TABLE [dbo].[FsrShipData] ADD  DEFAULT ('') FOR [ShipID]
@@ -637,3 +652,10 @@ CREATE TABLE [dbo].[PLMMatrix] (
     [AppVal2] NVARCHAR(200) DEFAULT('') NOT NULL,
     [AppVal3] NVARCHAR(200) DEFAULT('') NOT NULL
 	);
+
+CREATE TABLE [dbo].[WUXIMonthlyCost] (
+	[ID]   NVARCHAR (200) DEFAULT ('') NOT NULL,
+	[Cost]   FLOAT DEFAULT (0) NOT NULL,
+	[Months]   NVARCHAR (200) DEFAULT ('') NOT NULL
+);
+

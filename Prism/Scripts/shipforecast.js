@@ -320,12 +320,171 @@
 
     }
 
+    var marginfun = function () {
+
+        $('.date').datepicker({ autoclose: true, viewMode: "months", minViewMode: "months" });
+
+        var fctable = null;
+        var sertable = null;
+
+        function loadshipmargin() {
+            var startdate = $('#sdate').val();
+
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+
+            $.bootstrapLoading.start(options);
+            $.post('/Shipment/ShipMarginData', {
+                startdate: startdate
+            },
+                function (output) {
+
+                    $.bootstrapLoading.end();
+                    if (fctable) {
+                        fctable.destroy();
+                        fctable = null;
+                    }
+
+                    $("#fchead").empty();
+                    $("#fccontent").empty();
+
+                    var idx = 0;
+                    var titlelength = output.tabletitle.length;
+                    var appendstr = "";
+                    appendstr += '<tr style="font-size:10px">';
+                    for (idx = 0; idx < titlelength; idx++) {
+                        appendstr += "<th>" + output.tabletitle[idx] + "</th>";
+                    }
+                    appendstr += "</tr>";
+                    $("#fchead").append(appendstr);
+
+                    appendstr = "";
+                    idx = 0;
+                    var contentlength = output.tablecontent.length;
+                    for (idx = 0; idx < contentlength; idx++) {
+                        appendstr += '<tr style="font-size:10px">';
+                        var line = output.tablecontent[idx];
+                        var jdx = 0;
+                        var linelength = line.length;
+                        for (jdx = 0; jdx < linelength; jdx++) {
+                            appendstr += "<td>" + line[jdx] + "</td>";
+                        }
+                        appendstr += "</tr>";
+                    }
+                    $("#fccontent").append(appendstr);
+
+
+                    fctable = $('#fctable').DataTable({
+                        'iDisplayLength': -1,
+                        'aLengthMenu': [[20, 50, 100, -1],
+                        [20, 50, 100, "All"]],
+                        "columnDefs": [
+                            { "className": "dt-center", "targets": "_all" }
+                        ],
+                        "aaSorting": [],
+                        "order": [],
+                        dom: 'lBfrtip',
+                        buttons: ['copyHtml5', 'csv', 'excelHtml5']
+                    });
+                });
+        }
+
+
+        $('body').on('click', '#btn-search', function () {
+            loadshipmargin();
+        })
+
+        $(function () {
+            loadshipmargin();
+        });
+
+        $.fn.dataTable.ext.buttons.closetable = {
+            text: 'CLOSE TABLE',
+            action: function (e, dt, node, config) {
+                $('.table-modal').addClass('hide');
+            }
+        };
+
+        function ShowForecastModal(series) {
+            var startdate = $('#sdate').val();
+
+            $.post('/Shipment/SeriesAccuracyData', {
+                series: series,
+                startdate: startdate
+            }, function (output) {
+
+                if (sertable) {
+                    sertable.destroy();
+                    sertable = null;
+                }
+
+                $("#serhead").empty();
+                $("#sercontent").empty();
+
+                var idx = 0;
+                var titlelength = output.tabletitle.length;
+                var appendstr = "";
+                appendstr += "<tr>";
+                for (idx = 0; idx < titlelength; idx++) {
+                    appendstr += "<th>" + output.tabletitle[idx] + "</th>";
+                }
+                appendstr += "</tr>";
+                $("#serhead").append(appendstr);
+
+                appendstr = "";
+                idx = 0;
+                var contentlength = output.tablecontent.length;
+                for (idx = 0; idx < contentlength; idx++) {
+                    appendstr += '<tr style="font-size:10px">';
+                    var line = output.tablecontent[idx];
+                    var jdx = 0;
+                    var linelength = line.length;
+                    for (jdx = 0; jdx < linelength; jdx++) {
+                        appendstr += "<td>" + line[jdx] + "</td>";
+                    }
+                    appendstr += "</tr>";
+                }
+                $("#sercontent").append(appendstr);
+
+                $('#seriesmodalLabel').html(series + " Forecast Data");
+
+                sertable = $('#sertable').DataTable({
+                    'iDisplayLength': 50,
+                    'aLengthMenu': [[20, 50, 100, -1],
+                    [20, 50, 100, "All"]],
+                    "aaSorting": [],
+                    "order": [],
+                    dom: 'lBfrtip',
+                    buttons: ['copyHtml5', 'csv', 'excelHtml5', 'closetable']
+                });
+
+
+                $('.table-modal').removeClass('hide');
+
+                //$('#seriesmodal').modal('show');
+            });
+        }
+
+        $('body').on('click', '.DETAILINFO', function () {
+            ShowForecastModal($(this).attr('myid'));
+        })
+    }
+
+
         return {
         ACCURACYINIT: function () {
             forecastaccuracy();
         },
         MERGEINIT: function () {
             forecastmerge();
-        }
+        },
+        MARGININIT: function ()
+        { marginfun();}
     }
 }();

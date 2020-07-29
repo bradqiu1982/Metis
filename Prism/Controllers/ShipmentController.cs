@@ -1954,6 +1954,162 @@ namespace Prism.Controllers
             return ret;
         }
 
+        public ActionResult ShipMargin()
+        {
+            return View();
+        }
+
+        public JsonResult ShipMarginData()
+        {
+            var starttime = "2019-07-01 00:00:00";
+            var stdate = DateTime.Parse(starttime);
+
+            var startdate = Request.Form["startdate"];
+            if (!string.IsNullOrEmpty(startdate))
+            {
+                starttime = "2018-04-01 00:00:00";
+                stdate = DateTime.Parse(starttime);
+
+                var sdate = DateTime.Parse(Request.Form["startdate"]);
+                var sdate1 = DateTime.Parse(sdate.ToString("yyyy-MM") + "-01 00:00:00");
+                if (sdate1 < stdate)
+                { starttime = "2018-04-01 00:00:00"; }
+                else
+                {
+                    var q = QuarterCLA.RetrieveQuarterFromDate(sdate1);
+                    var qd = QuarterCLA.RetrieveDateFromQuarter(q)[0];
+                    starttime = qd.ToString("yyyy-MM-dd HH:mm:ss");
+                }
+            }
+
+            stdate = DateTime.Parse(starttime);
+            var qlist = new List<string>();
+            while (stdate < DateTime.Now)
+            {
+                qlist.Add(QuarterCLA.RetrieveQuarterFromDate(stdate));
+                stdate = stdate.AddMonths(3);
+            }
+
+            var syscfg = CfgUtility.GetSysConfig(this);
+
+            var ratedict = CfgUtility.GetUSDRate(this);
+            var USDRate = UT.O2D(ratedict["CURRENT"]);
+            //var costdict = ItemCostData.RetrieveStandardCost();
+            var activeseries = PNBUMap.GetModuleRevenueActiveSeries(starttime,syscfg["SHIPREVENUEBU"]);
+            var monthlycostdict = ItemCostData.GetMonthlyCost();
+
+            var producgroupdict = new Dictionary<string,List<ModuleRevenue>>();
+
+            var content = new List<List<string>>();
+            foreach (var ser in activeseries)
+            {
+                var lines = new List<string>();
+                var revenlist = ModuleRevenue.GetRevenueList(starttime, ser.Series, null, monthlycostdict, 6.99);
+                var qret = ModuleRevenue.ToQuartRevenue(revenlist);
+                if (qret.Count > 0)
+                {
+                    var key = ser.BU.ToUpper().Trim() + ":::" + ser.ProjectGroup.ToUpper().Trim();
+                    if (!producgroupdict.ContainsKey(key))
+                    {
+                        var templist = new List<ModuleRevenue>();
+                        foreach (var q in qlist)
+                        { templist.Add(new ModuleRevenue()); }
+                        producgroupdict.Add(key, templist);
+                    }
+
+                    lines.Add(ser.BU);
+                    lines.Add(ser.ProjectGroup);
+                    lines.Add(ser.Series);
+                    var idx = 0;
+                    foreach (var q in qlist)
+                    {
+                        if (qret.ContainsKey(q))
+                        {
+                            lines.Add(UT.O2I(qret[q].ShipQty).ToString("N0"));
+                            lines.Add("$" + UT.O2I(qret[q].Cost).ToString("N0"));
+                            lines.Add("$" + UT.O2I(qret[q].SalePrice).ToString("N0"));
+                            lines.Add(Math.Round(qret[q].Margin,2).ToString()+"%");
+
+                            producgroupdict[key][idx].Cost += qret[q].Cost;
+                            producgroupdict[key][idx].SalePrice += qret[q].SalePrice;
+                            producgroupdict[key][idx].ShipQty += qret[q].ShipQty;
+                        }
+                        else
+                        {
+                            lines.Add(" ");
+                            lines.Add(" ");
+                            lines.Add(" ");
+                            lines.Add(" ");
+                        }
+                        idx++;
+                    }
+
+                    content.Add(lines);
+                }
+            }//end foreach
+
+            foreach (var kv in producgroupdict)
+            {
+                var BUPG = kv.Key.Split(new string[] { ":::" }, StringSplitOptions.RemoveEmptyEntries);
+
+                var line = new List<string>();
+                line.Add("<strong>" + BUPG[0] + "</strong>");
+                line.Add("<strong>" + BUPG[1] + "</strong>");
+                line.Add(" ");
+
+                foreach (var reven in kv.Value)
+                {
+                    if (reven.SalePrice != 0)
+                    {
+                        line.Add("<strong>" + UT.O2I(reven.ShipQty).ToString("N0") + "</strong>");
+                        line.Add("<strong>" + "$" + UT.O2I(reven.Cost).ToString("N0") + "</strong>");
+                        line.Add("<strong>" + "$" + UT.O2I(reven.SalePrice).ToString("N0") + "</strong>");
+                        var margin = Math.Round((reven.SalePrice - reven.Cost) / reven.SalePrice * 100.0,2).ToString() + "%";
+                        line.Add("<strong>" + margin + "</strong>");
+                    }
+                    else
+                    {
+                        line.Add(" ");
+                        line.Add(" ");
+                        line.Add(" ");
+                        line.Add(" ");
+                    }
+                }
+
+                var idx = 0;
+                foreach (var li in content)
+                {
+                    if (string.Compare(li[1].Trim(), BUPG[1], true) == 0 && string.Compare(li[0].Trim(), BUPG[0], true) == 0)
+                    {
+                        content.Insert(idx, line);
+                        break;
+                    }
+                    idx++;
+                }
+            }//end foreach
+
+            var title = new List<string>();
+            title.Add("BU");
+            title.Add("Product Group");
+            title.Add("Project");
+            foreach (var q in qlist)
+            {
+                title.Add(q + " Volume");
+                title.Add(q + " Cost");
+                title.Add(q + " Revenue");
+                title.Add(q + " Margin");
+            }
+
+            var ret = new JsonResult();
+            ret.MaxJsonLength = Int32.MaxValue;
+            ret.Data = new
+            {
+                tabletitle = title,
+                tablecontent = content
+            };
+            return ret;
+        }
+
 
 
     }

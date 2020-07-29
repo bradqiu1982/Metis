@@ -33,10 +33,14 @@ INVENTORYTREND:::\\cn-file01.china.ads.finisar.com\Public\Active NPI\Product_Eng
 INVENTORYDETAIL:::\\cn-file01.china.ads.finisar.com\Public\Active NPI\Product_Engineering\Brad\Inventory Turns by Project and Series.csv
 INVENTORYDEPARTMENTORD:::Parallel;10G Tunable;Coherent Transceiver;Linecard;SFP+WIRE;OSA;WSS
 
-ITEMCOSTFILE:::\\wux-file01\Public\ERP_Report\WXI\Finance\Finisar - Item Cost Detail Report for WXI.csv
+ITEMCOSTFILE:::\\wux-engsys01\PlanningForCast\Finisar - Item Cost Detail Report for WXI.csv
 OUTPUTDEPARTMENTS:::COMPONENT;DATACOM LW TRX;LNCD;OSA;PARALLEL;SFP+ WIRE;TELECOM TRX;COHERENT;WSS;
 
+MONTHLYCOSTFILE:::\\wux-engsys01\PlanningForCast\wuxi_cost
+
 FINISARSHIPDATA:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - OTS for WUXI.csv
+MOUDULESHIPREVENUE:::\\wux-file01\Public\ERP_Report\WXI\Planning\Shipping_WXI US Orders Yearly.csv
+SHIPREVENUEBU:::'TRANSCEIVER','COHERENT','WAVELENGTH MANAGEMENT','ROADM'
 
 PNVSBU:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - PN Vs Planner Code for WXI site.CSV
 FORCASTDATA:::\\wux-engsys01\PlanningForCast

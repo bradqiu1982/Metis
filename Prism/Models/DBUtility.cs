@@ -126,6 +126,7 @@ namespace Prism.Models
             {
                 var command = conn.CreateCommand();
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 command.ExecuteNonQuery();
                 return true;
             }
@@ -158,6 +159,7 @@ namespace Prism.Models
             {
                 command = conn.CreateCommand();
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 command.CommandTimeout = 120;
                 if (parameters != null)
                 {
@@ -268,6 +270,7 @@ namespace Prism.Models
             {
                 command = conn.CreateCommand();
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 if (parameters != null)
                 {
                     foreach (var param in parameters)
@@ -439,6 +442,7 @@ namespace Prism.Models
             {
                 command = conn.CreateCommand();
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 if (parameters != null)
                 {
                     foreach (var param in parameters)
@@ -832,6 +836,7 @@ namespace Prism.Models
             {
                 var command = conn.CreateCommand();
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 command.ExecuteNonQuery();
                 CloseConnector(conn);
                 return true;
@@ -868,6 +873,7 @@ namespace Prism.Models
                 var command = conn.CreateCommand();
                 command.CommandTimeout = 180;
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 if (parameters != null)
                 {
                     foreach (var param in parameters)
@@ -951,6 +957,7 @@ namespace Prism.Models
                 var command = conn.CreateCommand();
                 command.CommandTimeout = 120;
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 if (parameters != null)
                 {
                     foreach (var param in parameters)
@@ -1031,6 +1038,7 @@ namespace Prism.Models
             {
                 var command = conn.CreateCommand();
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 command.ExecuteNonQuery();
                 CloseConnector(conn);
                 return true;
@@ -1070,6 +1078,7 @@ namespace Prism.Models
                 var command = conn.CreateCommand();
                 command.CommandTimeout = 60;
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 if (parameters != null)
                 {
                     foreach (var param in parameters)
@@ -1157,6 +1166,7 @@ namespace Prism.Models
                 var command = conn.CreateCommand();
                 command.CommandTimeout = 120;
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 if (parameters != null)
                 {
                     foreach (var param in parameters)
@@ -1244,6 +1254,7 @@ namespace Prism.Models
                 var command = conn.CreateCommand();
                 command.CommandTimeout = 60;
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 if (parameters != null)
                 {
                     foreach (var param in parameters)
@@ -1334,6 +1345,7 @@ namespace Prism.Models
                 var command = conn.CreateCommand();
                 command.CommandTimeout = 120;
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 if (parameters != null)
                 {
                     foreach (var param in parameters)
@@ -1420,6 +1432,7 @@ namespace Prism.Models
                 var command = conn.CreateCommand();
                 command.CommandTimeout = 120;
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 if (parameters != null)
                 {
                     foreach (var param in parameters)
@@ -1506,6 +1519,7 @@ namespace Prism.Models
                 var command = conn.CreateCommand();
                 command.CommandTimeout = 60;
                 command.CommandText = sql;
+                command.CommandText = "SET ARITHABORT ON;" + command.CommandText;
                 if (parameters != null)
                 {
                     foreach (var param in parameters)

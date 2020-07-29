@@ -69,12 +69,12 @@ namespace Prism.Controllers
                 }
                 catch (Exception ex) { }
 
-                try
-                {
-                    heartbeatlog("PNBUMap.LoadPNBUData", filename);
-                    PNBUMap.LoadPNBUData(this);
-                }
-                catch (Exception ex) { }
+                //try
+                //{
+                //    heartbeatlog("PNBUMap.LoadPNBUData", filename);
+                //    PNBUMap.LoadPNBUData(this);
+                //}
+                //catch (Exception ex) { }
 
                 try
                 {
@@ -113,12 +113,12 @@ namespace Prism.Controllers
                 }
                 catch (Exception ex) { }
 
-                try
-                {
-                    heartbeatlog("ItemCostData.LoadCostData", filename);
-                    ItemCostData.LoadCostData(this);
-                }
-                catch (Exception ex) { }
+                //try
+                //{
+                //    heartbeatlog("ItemCostData.LoadCostData", filename);
+                //    ItemCostData.LoadCostData(this);
+                //}
+                //catch (Exception ex) { }
 
                 try
                 {
@@ -444,6 +444,38 @@ namespace Prism.Controllers
         public ActionResult LoadCostData()
         {
             ItemCostData.LoadCostData(this);
+            return View("HeartBeat");
+        }
+
+        public ActionResult LoadModuleRevenueData()
+        {
+            ModuleRevenue.LoadData(this);
+            return View("HeartBeat");
+        }
+
+        public ActionResult LoadMonthlyCostData()
+        {
+            ItemCostData.LoadMonthlyCostData(this);
+            return View("HeartBeat");
+        }
+
+        public ActionResult LoadPostRevenueData()
+        {
+            ModuleRevenue.LoadPostPrice(this);
+            return View("HeartBeat");
+        }
+
+        public ActionResult LoadPostCostData()
+        {
+            ModuleRevenue.LoadPostCost(this);
+            return View("HeartBeat");
+        }
+
+        public ActionResult CheckRevenue()
+        {
+            //var costdict = ItemCostData.RetrieveStandardCost();
+            //var ret = ModuleRevenue.GetRevenueList("2019-07-01 00:00:00", "Tunable XFP Gen2", costdict,6.99);
+            //var qret = ModuleRevenue.ToQuartRevenue(ret);
             return View("HeartBeat");
         }
 

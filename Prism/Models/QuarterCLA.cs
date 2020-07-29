@@ -15,44 +15,44 @@ namespace Prism.Models
             var year = Convert.ToInt32(splitstr[0]);
             var q = splitstr[1];
 
-            if (year == 2020 && q.Contains("Q2"))
-            {
-                year = year - 1;
-                ret.Add(DateTime.Parse(year.ToString() + "-08-01 00:00:00"));
-                ret.Add(DateTime.Parse(year.ToString() + "-12-31 23:59:59"));
-            }
-            else if ((year < 2020) || (year == 2020 && q.Contains("Q1")))
-            {
-                if (string.Compare(q, "Q1", true) == 0)
-                {
-                    year = year - 1;
-                    ret.Add(DateTime.Parse(year.ToString() + "-05-01 00:00:00"));
-                    ret.Add(DateTime.Parse(year.ToString() + "-07-31 23:59:59"));
-                }
-                else if (string.Compare(q, "Q2", true) == 0)
-                {
-                    year = year - 1;
-                    ret.Add(DateTime.Parse(year.ToString() + "-08-01 00:00:00"));
-                    ret.Add(DateTime.Parse(year.ToString() + "-10-31 23:59:59"));
-                }
-                else if (string.Compare(q, "Q4", true) == 0)
-                {
-                    ret.Add(DateTime.Parse(year.ToString() + "-02-01 00:00:00"));
-                    ret.Add(DateTime.Parse(year.ToString() + "-04-30 23:59:59"));
-                }
-                else
-                {
-                    ret.Add(DateTime.Parse((year - 1).ToString() + "-11-01 00:00:00"));
-                    ret.Add(DateTime.Parse(year.ToString() + "-01-31 23:59:59"));
-                }
-            }
-            else
-            {
+            //if (year == 2020 && q.Contains("Q2"))
+            //{
+            //    year = year - 1;
+            //    ret.Add(DateTime.Parse(year.ToString() + "-08-01 00:00:00"));
+            //    ret.Add(DateTime.Parse(year.ToString() + "-12-31 23:59:59"));
+            //}
+            //else if ((year < 2020) || (year == 2020 && q.Contains("Q1")))
+            //{
+            //    if (string.Compare(q, "Q1", true) == 0)
+            //    {
+            //        year = year - 1;
+            //        ret.Add(DateTime.Parse(year.ToString() + "-05-01 00:00:00"));
+            //        ret.Add(DateTime.Parse(year.ToString() + "-07-31 23:59:59"));
+            //    }
+            //    else if (string.Compare(q, "Q2", true) == 0)
+            //    {
+            //        year = year - 1;
+            //        ret.Add(DateTime.Parse(year.ToString() + "-08-01 00:00:00"));
+            //        ret.Add(DateTime.Parse(year.ToString() + "-10-31 23:59:59"));
+            //    }
+            //    else if (string.Compare(q, "Q4", true) == 0)
+            //    {
+            //        ret.Add(DateTime.Parse(year.ToString() + "-02-01 00:00:00"));
+            //        ret.Add(DateTime.Parse(year.ToString() + "-04-30 23:59:59"));
+            //    }
+            //    else
+            //    {
+            //        ret.Add(DateTime.Parse((year - 1).ToString() + "-11-01 00:00:00"));
+            //        ret.Add(DateTime.Parse(year.ToString() + "-01-31 23:59:59"));
+            //    }
+            //}
+            //else
+            //{
                 if (string.Compare(q, "Q1", true) == 0)
                 {
                     year = year - 1;
                     ret.Add(DateTime.Parse(year.ToString() + "-07-01 00:00:00"));
-                    ret.Add(DateTime.Parse(year.ToString() + "-09-31 23:59:59"));
+                    ret.Add(DateTime.Parse(year.ToString() + "-09-30 23:59:59"));
                 }
                 else if (string.Compare(q, "Q2", true) == 0)
                 {
@@ -67,10 +67,10 @@ namespace Prism.Models
                 }
                 else
                 {
-                    ret.Add(DateTime.Parse((year - 1).ToString() + "-04-01 00:00:00"));
+                    ret.Add(DateTime.Parse(year.ToString() + "-04-01 00:00:00"));
                     ret.Add(DateTime.Parse(year.ToString() + "-06-30 23:59:59"));
                 }
-            }
+            //}
 
             return ret;
         }
@@ -113,8 +113,8 @@ namespace Prism.Models
 
         public static string RetrieveQuarterFromDate(DateTime date)
         {
-            if (date >= DateTime.Parse("2019-10-01 00:00:00"))
-            {
+            //if (date >= DateTime.Parse("2019-07-01 00:00:00"))
+            //{
                 var year = Convert.ToInt32(date.ToString("yyyy"));
                 var month = Convert.ToInt32(date.ToString("MM"));
                 if (month >= 7 && month <= 9)
@@ -133,9 +133,9 @@ namespace Prism.Models
                 {
                     return year.ToString() + " " + "Q4";
                 }
-            }
-            else
-            { return RetrieveQuarterFromDate_(date); }
+            //}
+            //else
+            //{ return RetrieveQuarterFromDate_(date); }
 
         }
 
