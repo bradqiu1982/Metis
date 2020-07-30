@@ -135,9 +135,8 @@ namespace Prism.Models
                 }
             //}
             //else
-            //{ return RetrieveQuarterFromDate_(date); }
-
-        }
+            //{ return RetrieveQuarterFromDate_(date);}
+}
 
         public static List<string> GetQuerterFrom19Q3()
         {

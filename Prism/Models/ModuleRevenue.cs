@@ -220,7 +220,7 @@ namespace Prism.Models
 
         public static Dictionary<string, double> GetSeriasPrice(string series)
         {
-           var sql = @"select distinct ShipDate,SalePrice,ShipQty from [BSSupport].[dbo].[ModuleRevenue] where pn in
+           var sql = @"select ShipDate,SalePrice,ShipQty,pn from [BSSupport].[dbo].[ModuleRevenue] where pn in
                          (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) 
                            and SalePrice > 0 order by ShipDate";
 
@@ -231,10 +231,13 @@ namespace Prism.Models
             if (dbret.Count == 0)
             { return new Dictionary<string, double>(); }
 
-            var pnpricesum = new Dictionary<string, double>();
-            var pnqtysum = new Dictionary<string, double>();
+            var qpricesum = new Dictionary<string, double>();
+            var qqtysum = new Dictionary<string, double>();
             var tp = 0.0;
             var tq = 0.0;
+
+            var pnpricesum = new Dictionary<string, double>();
+            var pnqtysum = new Dictionary<string, double>();
 
             foreach (var line in dbret)
             {
@@ -242,18 +245,31 @@ namespace Prism.Models
                 var q = QuarterCLA.RetrieveQuarterFromDate(dt);
                 var price = UT.O2D(line[1]);
                 var qty = UT.O2D(line[2]);
+                var pn = UT.O2S(line[3]);
 
-                if (pnpricesum.ContainsKey(q))
+                var pk = pn + "_" + q;
+                if (pnpricesum.ContainsKey(pk))
                 {
-                    pnpricesum[q] += price * qty;
-                    pnqtysum[q] += qty;
+                    pnpricesum[pk] += price * qty;
+                    pnqtysum[pk] += qty;
+                }
+                else
+                {
+                    pnpricesum.Add(pk, price * qty);
+                    pnqtysum.Add(pk, qty);
+                }
+
+                if (qpricesum.ContainsKey(q))
+                {
+                    qpricesum[q] += price * qty;
+                    qqtysum[q] += qty;
                     tp += price * qty;
                     tq += qty;
                 }
                 else
                 {
-                    pnpricesum.Add(q, price * qty);
-                    pnqtysum.Add(q, qty);
+                    qpricesum.Add(q, price * qty);
+                    qqtysum.Add(q, qty);
                     tp += price * qty;
                     tq += qty;
                 }
@@ -261,11 +277,19 @@ namespace Prism.Models
 
             var genprice = tp / tq;
             var qpricedict = new Dictionary<string, double>();
+            foreach (var kv in qpricesum)
+            {
+                qpricedict.Add(kv.Key, kv.Value / qqtysum[kv.Key]);
+            }
+
             foreach (var kv in pnpricesum)
             {
                 qpricedict.Add(kv.Key, kv.Value / pnqtysum[kv.Key]);
             }
+
             qpricedict.Add("GENERAL", genprice);
+
+
             return qpricedict;
         }
 
@@ -307,7 +331,13 @@ namespace Prism.Models
 
                 var price = qpricedict["GENERAL"];
                 var q = QuarterCLA.RetrieveQuarterFromDate(shipd);
-                if (qpricedict.ContainsKey(q))
+
+                var pqk = item.PN + "_" + q;
+                if (qpricedict.ContainsKey(pqk))
+                {
+                    price = qpricedict[pqk];
+                }
+                else if (qpricedict.ContainsKey(q))
                 { price = qpricedict[q]; }
 
                 var cost = 0.0;
