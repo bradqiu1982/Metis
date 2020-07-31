@@ -293,8 +293,8 @@ namespace Prism.Models
             return qpricedict;
         }
 
-        public static List<ModuleRevenue> GetRevenueList(string startdate, string series,Dictionary<string,double> costdict
-            ,Dictionary<string,double> monthlycostdict, double USDRate)
+        public static List<ModuleRevenue> GetRevenueList(string startdate,string projectgroup, string series
+            ,Dictionary<string,double> monthlycostdict, double USDRate,string datatype)
         {
             var qpricedict = GetSeriasPrice(series);
             if (qpricedict.Count == 0)
@@ -305,6 +305,27 @@ namespace Prism.Models
 
             var sql = @"select ShipQty,ShipDate,PN from [BSSupport].[dbo].[FsrShipData] where pn in
                         (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) and ShipDate >= @startdate";
+
+            if (datatype.Contains("BEST-MATCH"))
+            {
+                if (projectgroup.ToUpper().Contains("PARALLEL"))
+                {
+                    sql += " and ( Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' )";
+                }
+                else if (projectgroup.ToUpper().Contains("10G TUNABLE"))
+                {
+                    sql += " and Appv_4 <> 'RMA'";
+                }
+            }
+            else if (datatype.Contains("INTERNAL"))
+            { sql += " and ( Customer1 like '%FINISAR%' or Customer2 like  '%FINISAR%' )"; }
+            else if (datatype.Contains("EXTERNAL"))
+            { sql += " and ( Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' )"; }
+            else if (datatype.Contains("NO-RMA"))
+            { sql += " and Appv_4 <> 'RMA'"; }
+            else if (datatype.Contains("EXTERNALNORMA"))
+            { sql += " and ( Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' ) and Appv_4 <> 'RMA'"; }
+
             var dict = new Dictionary<string, string>();
             dict.Add("@series", series);
             dict.Add("@startdate", startdate);

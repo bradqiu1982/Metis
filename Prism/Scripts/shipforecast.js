@@ -329,6 +329,7 @@
 
         function loadshipmargin() {
             var startdate = $('#sdate').val();
+            var datatype = $('#DATATYPE').val();
 
             var options = {
                 loadingTips: "loading data......",
@@ -339,9 +340,11 @@
                 TipsColor: "#000",
             }
 
+            
             $.bootstrapLoading.start(options);
             $.post('/Shipment/ShipMarginData', {
-                startdate: startdate
+                startdate: startdate,
+                datatype: datatype
             },
                 function (output) {
 

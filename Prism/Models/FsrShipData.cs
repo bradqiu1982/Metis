@@ -62,6 +62,7 @@ namespace Prism.Models
             Cost = 0;
             Output = 0;
             MakeBuy = string.Empty;
+            CPO = string.Empty;
         }
 
         public FsrShipData(string id, int qty, string pn, string pndesc, string family, string cfg
@@ -86,6 +87,7 @@ namespace Prism.Models
             OPD = opd;
             OTD = "NO";
             MakeBuy = string.Empty;
+            CPO = string.Empty;
         }
 
 
@@ -1267,8 +1269,7 @@ namespace Prism.Models
                             var pn = Convert2Str(line[pnidx]);
                             var pdgroup = Convert2Str(line[pgidx]).ToUpper();
 
-                            if (!cpo.Contains("RMA") && !cpo.Contains("STOCK")
-                                &&( makebuy.Contains("MAKE") || (makebuy.Contains("BUY") && !string.IsNullOrEmpty(pdgroup) && !pdgroup.Contains("ACCESSO")))
+                            if (( makebuy.Contains("MAKE") || (makebuy.Contains("BUY") && !string.IsNullOrEmpty(pdgroup) && !pdgroup.Contains("ACCESSO")))
                                 && shipqty > 0 && !string.IsNullOrEmpty(pn))
                             {
                                 var cfg = Convert2Str(line[cfidx]);
@@ -1319,7 +1320,7 @@ namespace Prism.Models
                                 }
 
                                 shipdatalist.Add(new FsrShipData(shipid, shipqty, pn, pndesc, family, cfg
-                                    , shipdate, customernum, customer1, customer2, ordereddate, delievenum, orderqty, opd, shipto,makebuy));
+                                    , shipdate, customernum, customer1, customer2, ordereddate, delievenum, orderqty, opd, shipto,makebuy,cpo));
 
                             }//end if
                         }//end if
@@ -1413,8 +1414,8 @@ namespace Prism.Models
 
         private void StoreShipData()
         {
-            var sql = @"insert into FsrShipData(ShipID,ShipQty,PN,ProdDesc,MarketFamily,Configuration,VcselType,ShipDate,CustomerNum,Customer1,Customer2,OrderedDate,DelieveNum,SN,Wafer,Appv_1,Appv_5,Appv_2,Appv_3) values(
-                        @ShipID,@ShipQty,@PN,@ProdDesc,@MarketFamily,@Configuration,@VcselType,@ShipDate,@CustomerNum,@Customer1,@Customer2,@OrderedDate,@DelieveNum,@SN,@Wafer,@OrderQty,@OPD,@ShipTo,@Makebuy)";
+            var sql = @"insert into FsrShipData(ShipID,ShipQty,PN,ProdDesc,MarketFamily,Configuration,VcselType,ShipDate,CustomerNum,Customer1,Customer2,OrderedDate,DelieveNum,SN,Wafer,Appv_1,Appv_5,Appv_2,Appv_3,Appv_4) values(
+                        @ShipID,@ShipQty,@PN,@ProdDesc,@MarketFamily,@Configuration,@VcselType,@ShipDate,@CustomerNum,@Customer1,@Customer2,@OrderedDate,@DelieveNum,@SN,@Wafer,@OrderQty,@OPD,@ShipTo,@Makebuy,@RMA)";
             var dict = new Dictionary<string, string>();
             dict.Add("@ShipID", ShipID);
             dict.Add("@ShipQty", ShipQty.ToString());
@@ -1435,6 +1436,7 @@ namespace Prism.Models
             dict.Add("@OPD", OPD.ToString("yyyy-MM-dd HH:mm:ss"));
             dict.Add("@ShipTo", ShipTo);
             dict.Add("@Makebuy", MakeBuy);
+            dict.Add("@RMA", CPO.Contains("RMA")?"RMA":"");
             DBUtility.ExeLocalSqlNoRes(sql, dict);
         }
 
@@ -1462,7 +1464,7 @@ namespace Prism.Models
         }
 
         private FsrShipData(string id, int qty, string pn, string pndesc, string family, string cfg
-            , DateTime shipdate, string custnum, string cust1, string cust2, DateTime orddate, string delievenum, int orderqty, DateTime opd, string shipto, string makebuy)
+            , DateTime shipdate, string custnum, string cust1, string cust2, DateTime orddate, string delievenum, int orderqty, DateTime opd, string shipto, string makebuy,string cpo)
         {
             ShipID = id;
             ShipQty = qty;
@@ -1484,6 +1486,7 @@ namespace Prism.Models
             OTD = "NO";
             ShipTo = shipto;
             MakeBuy = makebuy;
+            CPO = cpo;
         }
 
         public static Dictionary<string, List<string>> PN2MPn(Dictionary<string, string> pnsndict)
@@ -1670,5 +1673,6 @@ namespace Prism.Models
         public double Cost { set; get; }
         public double Output { set; get; }
         public string MakeBuy { set; get; }
+        public string CPO { set; get; }
     }
 }

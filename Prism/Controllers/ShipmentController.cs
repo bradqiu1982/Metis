@@ -1964,6 +1964,7 @@ namespace Prism.Controllers
             var starttime = "2019-07-01 00:00:00";
             var stdate = DateTime.Parse(starttime);
 
+            var datatype = Request.Form["datatype"];
             var startdate = Request.Form["startdate"];
             if (!string.IsNullOrEmpty(startdate))
             {
@@ -1994,7 +1995,7 @@ namespace Prism.Controllers
 
             var ratedict = CfgUtility.GetUSDRate(this);
             var USDRate = UT.O2D(ratedict["CURRENT"]);
-            //var costdict = ItemCostData.RetrieveStandardCost();
+
             var activeseries = PNBUMap.GetModuleRevenueActiveSeries(starttime,syscfg["SHIPREVENUEBU"]);
             var monthlycostdict = ItemCostData.GetMonthlyCost();
 
@@ -2004,7 +2005,7 @@ namespace Prism.Controllers
             foreach (var ser in activeseries)
             {
                 var lines = new List<string>();
-                var revenlist = ModuleRevenue.GetRevenueList(starttime, ser.Series, null, monthlycostdict, 6.99);
+                var revenlist = ModuleRevenue.GetRevenueList(starttime,ser.ProjectGroup, ser.Series, monthlycostdict, 6.99,datatype);
                 var qret = ModuleRevenue.ToQuartRevenue(revenlist);
                 if (qret.Count > 0)
                 {
