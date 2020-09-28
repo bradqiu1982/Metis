@@ -164,7 +164,7 @@ namespace Prism.Models
                     }
 
                     var sql = @"update ItemCostData set FrozenCost = @cost where pn in 
-                                    (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) and [Quarter] = @Quarter";
+                                    (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series and LEN(PlannerCode) = 7) and [Quarter] = @Quarter";
 
                     var idx = 0;
                     foreach (var line in data)
@@ -221,7 +221,7 @@ namespace Prism.Models
         public static Dictionary<string, double> GetSeriasPrice(string series)
         {
            var sql = @"select ShipDate,SalePrice,ShipQty,pn from [BSSupport].[dbo].[ModuleRevenue] where pn in
-                         (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) 
+                         (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series and LEN(PlannerCode) = 7) 
                            and SalePrice > 0 order by ShipDate";
 
             var dict = new Dictionary<string, string>();
@@ -304,7 +304,7 @@ namespace Prism.Models
 
 
             var sql = @"select ShipQty,ShipDate,PN from [BSSupport].[dbo].[FsrShipData] where pn in
-                        (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) and ShipDate >= @startdate";
+                        (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series and LEN(PlannerCode) = 7) and ShipDate >= @startdate";
 
             if (datatype.Contains("BEST-MATCH"))
             {
@@ -312,19 +312,20 @@ namespace Prism.Models
                 {
                     sql += " and ( Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' )";
                 }
-                else if (projectgroup.ToUpper().Contains("10G TUNABLE"))
+                else if (projectgroup.ToUpper().Contains("10G TUNABLE")|| projectgroup.ToUpper().Contains("SFP+WIRE"))
                 {
                     sql += " and Appv_4 <> 'RMA'";
                 }
             }
             else if (datatype.Contains("INTERNAL"))
             { sql += " and ( Customer1 like '%FINISAR%' or Customer2 like  '%FINISAR%' )"; }
+            else if (datatype.Contains("EXTERNALNORMA"))
+            { sql += " and ( Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' ) and Appv_4 <> 'RMA'"; }
             else if (datatype.Contains("EXTERNAL"))
             { sql += " and ( Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' )"; }
             else if (datatype.Contains("NO-RMA"))
             { sql += " and Appv_4 <> 'RMA'"; }
-            else if (datatype.Contains("EXTERNALNORMA"))
-            { sql += " and ( Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' ) and Appv_4 <> 'RMA'"; }
+            
 
             var dict = new Dictionary<string, string>();
             dict.Add("@series", series);

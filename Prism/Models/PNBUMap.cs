@@ -37,7 +37,7 @@ namespace Prism.Models
         public static Dictionary<string, PNBUMap> GetPNMap()
         {
             var ret = new Dictionary<string, PNBUMap>();
-            var sql = "select PN,PlannerCode,ProjectGroup,Series,BU,AppVal1 from BSSupport.dbo.PNBUMap";
+            var sql = "select PN,PlannerCode,ProjectGroup,Series,BU,AppVal1 from BSSupport.dbo.PNBUMap where  LEN(PlannerCode) = 7";
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
@@ -54,7 +54,7 @@ namespace Prism.Models
 
         private bool DataExist()
         {
-            var sql = "select  * from BSSupport.dbo.PNBUMap where PN = @PN";
+            var sql = "select  * from BSSupport.dbo.PNBUMap where PN = @PN and LEN(PlannerCode) = 7";
             var dict = new Dictionary<string, string>();
             dict.Add("@PN", PN);
             var dbret = DBUtility.ExeLocalSqlWithRes(sql,null, dict);
@@ -90,7 +90,7 @@ namespace Prism.Models
             var sql = @"select distinct bu.BU,bu.ProjectGroup,bu.Series from [BSSupport].[dbo].[PNBUMap] bu with(nolock) 
                           left join [BSSupport].[dbo].[ShipForcastData] fc with(nolock) on fc.PN = bu.PN
                           where fc.DataTime > @starttime and  fc.DataTime < @endtime and fc.DataUpdateStamp  > @starttime and fc.DataUpdateStamp  < @endtime and bu.Series <> ''
-                          and bu.BU in ('TRANSCEIVER','COHERENT','WAVELENGTH MANAGEMENT') order by BU,ProjectGroup,Series";
+                          and bu.BU in ('TRANSCEIVER','COHERENT','WAVELENGTH MANAGEMENT') and LEN(bu.PlannerCode) = 7 order by BU,ProjectGroup,Series";
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
             {
@@ -107,7 +107,7 @@ namespace Prism.Models
             sql = @"select distinct bu.BU,bu.ProjectGroup,bu.Series from [BSSupport].[dbo].[PNBUMap] bu with(nolock) 
                           left join [BSSupport].[dbo].[FsrShipData] sp with(nolock)  on bu.PN = sp.PN 
                           where sp.ShipDate > @starttime and sp.ShipDate < @endtime  and bu.Series <> ''
-                            and bu.BU in ('TRANSCEIVER','COHERENT','WAVELENGTH MANAGEMENT') order by BU,ProjectGroup,Series";
+                            and bu.BU in ('TRANSCEIVER','COHERENT','WAVELENGTH MANAGEMENT') and LEN(bu.PlannerCode) = 7 order by BU,ProjectGroup,Series";
             
             dbret = DBUtility.ExeLocalSqlWithRes(sql,null,dict);
             foreach (var line in dbret)
@@ -133,7 +133,7 @@ namespace Prism.Models
             var sql = @"select distinct bu.BU,bu.ProjectGroup,bu.Series from [BSSupport].[dbo].[PNBUMap] bu with(nolock) 
                           inner join [BSSupport].[dbo].[FsrShipData] sp with(nolock)  on bu.PN = sp.PN 
                           where sp.ShipDate >= @starttime  and bu.Series <> ''
-                            and bu.BU in ("+BUCond+") order by BU,ProjectGroup,Series";
+                            and bu.BU in ("+BUCond+ ")  and LEN(bu.PlannerCode) = 7 order by BU,ProjectGroup,Series";
 
            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
             foreach (var line in dbret)
@@ -151,7 +151,7 @@ namespace Prism.Models
         public static Dictionary<string, string> GetSeriesPNMap()
         {
             var ret = new Dictionary<string, string>();
-            var sql = "select Series,PN from [BSSupport].[dbo].[PNBUMap] where Series <> '' order by Series,PN";
+            var sql = "select Series,PN from [BSSupport].[dbo].[PNBUMap] where Series <> '' and LEN(PlannerCode) = 7 order by Series,PN";
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
@@ -163,7 +163,7 @@ namespace Prism.Models
                 }
             }
 
-            sql = "select AppVal1,PN from [BSSupport].[dbo].[PNBUMap] where AppVal1 <> '' order by AppVal1,PN";
+            sql = "select AppVal1,PN from [BSSupport].[dbo].[PNBUMap] where AppVal1 <> '' and LEN(PlannerCode) = 7 order by AppVal1,PN";
             dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
@@ -181,7 +181,7 @@ namespace Prism.Models
         public static Dictionary<string, bool> GetWSSSeries()
         {
             var ret = new Dictionary<string, bool>();
-            var sql = "select distinct Series from [BSSupport].[dbo].[PNBUMap] where ProjectGroup = 'WSS' and Series <> ''";
+            var sql = "select distinct Series from [BSSupport].[dbo].[PNBUMap] where ProjectGroup = 'WSS' and Series <> '' and LEN(PlannerCode) = 7";
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
@@ -192,7 +192,7 @@ namespace Prism.Models
                 }
             }
 
-            sql = "select distinct AppVal1 from [BSSupport].[dbo].[PNBUMap] where ProjectGroup = 'WSS' and AppVal1 <> ''";
+            sql = "select distinct AppVal1 from [BSSupport].[dbo].[PNBUMap] where ProjectGroup = 'WSS' and AppVal1 <> '' and LEN(PlannerCode) = 7";
             dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
@@ -211,7 +211,7 @@ namespace Prism.Models
             var ret = new Dictionary<string, string>();
             var sql = @"select distinct b.Series,p.PLM FROM [BSSupport].[dbo].[PNBUMap] b
                       left join [BSSupport].[dbo].[PLMMatrix] p on b.PN = p.PN
-                      where p.PLM <> '' and b.Series <> ''";
+                      where p.PLM <> '' and b.Series <> '' and LEN(b.PlannerCode) = 7";
             var dbret = DBUtility.ExeLocalSqlWithRes(sql,null);
             foreach (var line in dbret)
             {
@@ -225,7 +225,7 @@ namespace Prism.Models
 
             sql = @"select distinct b.AppVal1,p.PLM FROM [BSSupport].[dbo].[PNBUMap] b
                   left join [BSSupport].[dbo].[PLMMatrix] p on b.PN = p.PN
-                  where p.PLM <> '' and b.AppVal1 <> ''";
+                  where p.PLM <> '' and b.AppVal1 <> '' and LEN(b.PlannerCode) = 7";
             dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {

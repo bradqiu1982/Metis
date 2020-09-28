@@ -1227,6 +1227,8 @@ namespace Prism.Models
                 var devidx = 25; //Shipping Instructions
                 var sptidx = 34; //shipto
 
+                var itemclaidx = 26;
+
                 var idx = 0;
                 foreach (var item in data[0])
                 {

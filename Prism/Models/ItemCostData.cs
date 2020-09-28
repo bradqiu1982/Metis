@@ -207,7 +207,7 @@ namespace Prism.Models
         {
             var ret = new Dictionary<string, double>();
             var sql = @"select distinct ID,FrozenCost,Quarter from ItemCostData where pn in 
-                      (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series)";
+                      (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series  and LEN(PlannerCode) = 7)";
 
             var dict = new Dictionary<string, string>();
             dict.Add("@series", series);

@@ -456,20 +456,20 @@ namespace Prism.Models
         {
             var ret = new Dictionary<string, double>();
             var sql = @"select ShipDate,ShipQty from FsrShipData where pn in
-                        (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) 
+                        (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series and LEN(PlannerCode) = 7) 
                     and ShipDate >= @startdate and ShipDate < @enddate and Customer1 not like '%finisar%' and Customer2 not like '%finisar%'";
 
             if (osaseriesdict.ContainsKey(series.ToUpper().Trim()))
             {
                 sql = @"select ShipDate,ShipQty from FsrShipData where pn in
-                        (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) 
+                        (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series and LEN(PlannerCode) = 7) 
                     and ShipDate >= @startdate and ShipDate < @enddate and (Customer1 like '%finisar%' or Customer2 like '%finisar%')";
             }
 
             if (wssdict.ContainsKey(series.ToUpper().Trim()))
             {
                 sql = @"select ShipDate,ShipQty from FsrShipData where pn in
-                        (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) 
+                        (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series and LEN(PlannerCode) = 7) 
                     and ShipDate >= @startdate and ShipDate < @enddate";
             }
 
@@ -498,7 +498,7 @@ namespace Prism.Models
 
             var sqllist = new List<string>();
             sqllist.Add(@"select PN,DataTime,FCount from ShipForcastData where PN in 
-                    (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) 
+                    (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series and LEN(PlannerCode) = 7) 
                     and DataTime >=  @startdate and DataTime < @enddate and DataTime = dataupdatestamp order by DataTime desc");
             //sqllist.Add(@"select PN,DataTime,FCount from ShipForcastData where PN in 
             //        (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series) 
