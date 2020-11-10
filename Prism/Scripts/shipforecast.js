@@ -326,6 +326,7 @@
 
         var fctable = null;
         var sertable = null;
+        var shipdetailtable = null;
 
         function loadshipmargin() {
             var startdate = $('#sdate').val();
@@ -347,8 +348,8 @@
                 datatype: datatype
             },
                 function (output) {
-
                     $.bootstrapLoading.end();
+
                     if (fctable) {
                         fctable.destroy();
                         fctable = null;
@@ -376,9 +377,15 @@
                         var jdx = 0;
                         var linelength = line.length;
                         for (jdx = 0; jdx < linelength; jdx++) {
-                            appendstr += "<td>" + line[jdx] + "</td>";
+                            if (line[2].trim() != '' && line[jdx].trim() != '' && jdx > 3
+                                && ((jdx - 3) % 4 == 1 || (jdx - 3) % 4 == 2)) {
+                                appendstr += '<td class="DETAILINFO" myid="' + line[1] + ':::'+ line[2] + ':::' + output.tabletitle[jdx] +  '">' + line[jdx] + '</td>';
+                            }
+                            else {
+                                appendstr += '<td>' + line[jdx] + '</td>';
+                            }
                         }
-                        appendstr += "</tr>";
+                        appendstr += '</tr>';
                     }
                     $("#fccontent").append(appendstr);
 
@@ -407,71 +414,94 @@
             loadshipmargin();
         });
 
-        $.fn.dataTable.ext.buttons.closetable = {
-            text: 'CLOSE TABLE',
-            action: function (e, dt, node, config) {
-                $('.table-modal').addClass('hide');
-            }
-        };
+
 
         function ShowForecastModal(series) {
-            var startdate = $('#sdate').val();
+            var datatype = $('#DATATYPE').val();
 
-            $.post('/Shipment/SeriesAccuracyData', {
+            var options = {
+                loadingTips: "loading data......",
+                backgroundColor: "#aaa",
+                borderColor: "#fff",
+                opacity: 0.8,
+                borderColor: "#fff",
+                TipsColor: "#000",
+            }
+            $.bootstrapLoading.start(options);
+
+
+            $.post('/Shipment/ShipMarginDetail', {
                 series: series,
-                startdate: startdate
-            }, function (output) {
+                datatype: datatype
+                },
+                function (output) {
+                    $.bootstrapLoading.end();
 
-                if (sertable) {
-                    sertable.destroy();
-                    sertable = null;
-                }
-
-                $("#serhead").empty();
-                $("#sercontent").empty();
-
-                var idx = 0;
-                var titlelength = output.tabletitle.length;
-                var appendstr = "";
-                appendstr += "<tr>";
-                for (idx = 0; idx < titlelength; idx++) {
-                    appendstr += "<th>" + output.tabletitle[idx] + "</th>";
-                }
-                appendstr += "</tr>";
-                $("#serhead").append(appendstr);
-
-                appendstr = "";
-                idx = 0;
-                var contentlength = output.tablecontent.length;
-                for (idx = 0; idx < contentlength; idx++) {
-                    appendstr += '<tr style="font-size:10px">';
-                    var line = output.tablecontent[idx];
-                    var jdx = 0;
-                    var linelength = line.length;
-                    for (jdx = 0; jdx < linelength; jdx++) {
-                        appendstr += "<td>" + line[jdx] + "</td>";
+                    if (shipdetailtable) {
+                        shipdetailtable.destroy();
+                        shipdetailtable = null;
                     }
-                    appendstr += "</tr>";
-                }
-                $("#sercontent").append(appendstr);
 
-                $('#seriesmodalLabel').html(series + " Forecast Data");
+                    $("#shipdetailhead").empty();
+                    $("#shipdetailbody").empty();
 
-                sertable = $('#sertable').DataTable({
-                    'iDisplayLength': 50,
-                    'aLengthMenu': [[20, 50, 100, -1],
-                    [20, 50, 100, "All"]],
-                    "aaSorting": [],
-                    "order": [],
-                    dom: 'lBfrtip',
-                    buttons: ['copyHtml5', 'csv', 'excelHtml5', 'closetable']
+                    if (output.fun.indexOf('COST') != -1) {
+                        $('#shipdetaillabel').html(series.split(':::').join('/'));
+
+                        var appendstr = '<tr>';
+                        appendstr += '<th>PN</th>';
+                        appendstr += '<th>SHIP QTY</th>';
+                        appendstr += '<th>COST</th>';
+                        appendstr += '<th>DATE</th>';
+                        appendstr += '</tr>';
+                        $("#shipdetailhead").append(appendstr);
+
+                        $.each(output.shipdetail, function (i, val) {
+                            appendstr = '<tr>';
+                            appendstr += '<td>'+val.PN+'</td>';
+                            appendstr += '<td>'+val.ShipQty+'</td>';
+                            appendstr += '<td>'+val.Cost+'</td>';
+                            appendstr += '<td>' + val.ShipDate + '</td>';
+                            appendstr += '</tr>';
+                            $("#shipdetailbody").append(appendstr);
+                        });
+                    }
+                    else if (output.fun.indexOf('REVENUE') != -1) {
+                        $('#shipdetaillabel').html(series.split(':::').join('/').replace('Revenue','Price'));
+                        var appendstr = '<tr>';
+                        appendstr += '<th>PN</th>';
+                        appendstr += '<th>SHIP QTY</th>';
+                        appendstr += '<th>PRICE</th>';
+                        appendstr += '<th>DATE</th>';
+                        appendstr += '</tr>';
+                        $("#shipdetailhead").append(appendstr);
+
+                        $.each(output.shipdetail, function (i, val) {
+                            appendstr = '<tr>';
+                            appendstr += '<td>' + val.PN + '</td>';
+                            appendstr += '<td>' + val.ShipQty + '</td>';
+                            appendstr += '<td>' + val.SalePrice + '</td>';
+                            appendstr += '<td>' + val.ShipDate + '</td>';
+                            appendstr += '</tr>';
+                            $("#shipdetailbody").append(appendstr);
+                        });
+                    }
+
+                    shipdetailtable = $('#shipdetailtable').DataTable({
+                        'iDisplayLength': 20,
+                        'aLengthMenu': [[20, 50, 100, -1],
+                        [20, 50, 100, "All"]],
+                        "columnDefs": [
+                            { "className": "dt-center", "targets": "_all" }
+                        ],
+                        "aaSorting": [],
+                        "order": [],
+                        dom: 'lBfrtip',
+                        buttons: ['copyHtml5', 'csv', 'excelHtml5']
+                    });
+
+                    $('#shipdetaildata').modal('show');
                 });
-
-
-                $('.table-modal').removeClass('hide');
-
-                //$('#seriesmodal').modal('show');
-            });
         }
 
         $('body').on('click', '.DETAILINFO', function () {

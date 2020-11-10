@@ -2,9 +2,9 @@
 
 SHAREFOLDERUSER:::brad.qiu
 SHAREFOLDERDOMIN:::china
-SHAREFOLDERPWD:::wangle@4567897
+SHAREFOLDERPWD:::wangle@4567898
 
-APPEMAILADRESS:::WXNPI.Trace@finisar.com
+APPEMAILADRESS:::WXNPI.Trace@II-VI.COM
 APPEMAILPWD:::abc@12345
 #EMAILSERVER:::wmail.finisar.com
 #EMAILSSL:::TRUE
@@ -16,7 +16,7 @@ PNPLANNERCODEMAP:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - Item At
 IESCRAPBUGETPATH:::\\wux-fs\Public\WUXI IE\Scrap\Share_Data\Scrap_budget_
 
 COSTCENTERSCRAPWARNING:::Parallel;Telecom TRX;
-COSTCENTERSCRAPWARNINGLIST:::shawn.zhang@finisar.com;windy.ju@finisar.com;Feng.Gao@finisar.com;Jon.Xiang@finisar.com;penny.jin@finisar.com;brad.qiu@finisar.com;chris.bao@finisar.com;garvin.zeng@finisar.com;meg.wang@finisar.com;leon.ren@finisar.com;zhengwei.kong@finisar.com;armon.kong@finisar.com;louis.wang@finisar.com;
+COSTCENTERSCRAPWARNINGLIST:::shawn.zhang@II-VI.COM;windy.ju@II-VI.COM;Feng.Gao@II-VI.COM;Jon.Xiang@II-VI.COM;penny.jin@II-VI.COM;brad.qiu@II-VI.COM;chris.bao@II-VI.COM;garvin.zeng@II-VI.COM;meg.wang@II-VI.COM;leon.ren@II-VI.COM;zhengwei.kong@II-VI.COM;armon.kong@II-VI.COM;louis.wang@II-VI.COM;
 
 HPUSRCFOLDER:::\\wux-fs\PUBLIC\WUXI IE\HPU
 HPUPRODUCTLINE:::Parallel Process HPU;Linecard Process HPU;OSA Process HPU;WSS Process HPU;WDM Process HPU;POU Process HPU;POS Process HPU;PISO Process HPU;LCR Process HPU;FLB Process HPU;FISO Process HPU;EDFA Process HPU;40G transponder Process HPU;Coherent CFP2 Process HPU;T-XFP Process HPU
@@ -33,7 +33,7 @@ INVENTORYTREND:::\\cn-file01.china.ads.finisar.com\Public\Active NPI\Product_Eng
 INVENTORYDETAIL:::\\cn-file01.china.ads.finisar.com\Public\Active NPI\Product_Engineering\Brad\Inventory Turns by Project and Series.csv
 INVENTORYDEPARTMENTORD:::Parallel;10G Tunable;Coherent Transceiver;Linecard;SFP+WIRE;OSA;WSS
 
-ITEMCOSTFILE:::\\wux-engsys01\PlanningForCast\Finisar - Item Cost Detail Report for WXI.csv
+ITEMCOSTFILE:::\\\wux-fs\PUBLIC\Planning\Standard Cost\Finisar - Item Cost Detail Report for WXI.csv
 OUTPUTDEPARTMENTS:::COMPONENT;DATACOM LW TRX;LNCD;OSA;PARALLEL;SFP+ WIRE;TELECOM TRX;COHERENT;WSS;
 
 MONTHLYCOSTFILE:::\\wux-engsys01\PlanningForCast\wuxi_cost
@@ -52,7 +52,7 @@ RMAROOTCAUSEMAP:::PUMP;VCSEL;WSS;ROSA;CAPACITOR;FLEX;RESISTENCE;SETTING;ASSEMBLY
 VCSELRMASHARE:::\\wux-fs\public\Quality\10.Quality case summary\Customer Quality Case Summary\13. RMA & Complaint New\VCSEL Issue Tracking Master List.xlsx
 
 HYDRATESTER:::SNY-DPDH1346;SNY-DPDH1357;SNY-DPDH1345;SNY-DPDH1355;SNY-DPDH1360;SNY-DPDH1354;SNY-DPDH1359;SNY-DPDH1349
-HYDRATOWHO:::Windy.Ju@finisar.com;jose.escauriasa@finisar.com;candy.wang@finisar.com;leon.ren@finisar.com;Chris.Bao@finisar.com
+HYDRATOWHO:::Windy.Ju@II-VI.COM;jose.escauriasa@II-VI.COM;candy.wang@II-VI.COM;leon.ren@II-VI.COM;Chris.Bao@II-VI.COM
 
 MACHINETIMEWHICHTEST:::ER_TEMPCOMP_TX;FINAL_TX;FINAL_RX
 
@@ -87,7 +87,7 @@ SCRAPTRENDPD:::100G QuadWire EDR;100G QuadWire EDR Low-power
 
 JOQUERYWORKFLOW:::ASSEMBLY;HOTBAR_SOLDERING_1_2;FLEX_EPOXY_1_2;HOTBAR_SOLDERING_3;FLEX_EPOXY_3;HOTBAR_SOLDERING_4;FLEX_EPOXY_4;INPROCESSINSPECTION;IPQC;MODULE_ASSEMBLY_1;MODULE_ASSEMBLY_2;MODULE_ASSEMBLY_3;MODULE_CURING;MODULE_ASSEMBLY_4;EMI_WELDING;MODLOAD;ASSEMBLY_COMPLETE;CHK_TEMP_CYCLE;WAVLEN_TUNE;EYEPOW_TUNE;WAVLEN_MEAS;EYEPOW_MEAS;RX_TUNE;RX_MEAS;PRE_TC_LOAD;TEMP_CYCLE_TC;POST_TC_WL;POST_TC_EYEPOW;POST_TC_RX;TC_DATA_CHECK;TEMP_CYCLE_HTOL;POST_HTOL_WL;POST_HTOL_EYEPOW;POST_HTOL_RX;HTOL_DATA_CHECK;PILOT_VERIFY;PACK;VMI;LABEL_PACK;VMI2;DATA_REVIEW;CHK_DR_QA;DR_QA;FINAL_QA;YIELD_CHECK;YIELD_REVIEW;EDATA_CHECK;GEN_EDATA;SEND_EDATA;EDATA_ERROR;STOCK;TROUBLESHOOT;REPAIR;TEMP_CYCLE
 
-EPNOTICELIST:::stone.fang@finisar.com;brad.qiu@finisar.com
+EPNOTICELIST:::stone.fang@II-VI.COM;brad.qiu@II-VI.COM
 PRODUCTCOSTPATH:::\\wux-engsys01.china.ads.finisar.com\CostData
 COSTIPOH:::1178834;1249179;1263343;1329722;1165634;1246268
 #LI.FANG_COST:::1249179

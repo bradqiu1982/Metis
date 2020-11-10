@@ -392,6 +392,114 @@ namespace Prism.Models
             return ret;
         }
 
+        public static List<ModuleRevenue> GetCostDetail(string quarter,string projectgroup, string series
+    , Dictionary<string, double> monthlycostdict, double USDRate, string datatype)
+        {
+            var dates = QuarterCLA.RetrieveDateFromQuarter(quarter);
+
+            var qcostdict = ItemCostData.RetrieveQuartCost(series);
+
+            var sql = @"select ShipQty,ShipDate,PN from [BSSupport].[dbo].[FsrShipData] where pn in
+                        (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series and LEN(PlannerCode) = 7) and ShipDate >= @startdate and ShipDate <= @enddate ";
+
+            if (datatype.Contains("BEST-MATCH"))
+            {
+                if (projectgroup.ToUpper().Contains("PARALLEL"))
+                {
+                    sql += " and ( Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' )";
+                }
+                else if (projectgroup.ToUpper().Contains("10G TUNABLE") || projectgroup.ToUpper().Contains("SFP+WIRE"))
+                {
+                    sql += " and Appv_4 <> 'RMA'";
+                }
+            }
+            else if (datatype.Contains("INTERNAL"))
+            { sql += " and ( Customer1 like '%FINISAR%' or Customer2 like  '%FINISAR%' )"; }
+            else if (datatype.Contains("EXTERNALNORMA"))
+            { sql += " and ( Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' ) and Appv_4 <> 'RMA'"; }
+            else if (datatype.Contains("EXTERNAL"))
+            { sql += " and ( Customer1  not like '%FINISAR%' and Customer2 not like  '%FINISAR%' )"; }
+            else if (datatype.Contains("NO-RMA"))
+            { sql += " and Appv_4 <> 'RMA'"; }
+
+            sql += " order by ShipDate";
+
+            var dict = new Dictionary<string, string>();
+            dict.Add("@series", series);
+            dict.Add("@startdate", dates[0].ToString("yyyy-MM-dd HH:mm:ss"));
+            dict.Add("@enddate", dates[1].ToString("yyyy-MM-dd HH:mm:ss"));
+
+            var shipdata = new List<ModuleRevenue>();
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
+            foreach (var line in dbret)
+            {
+                var tempvm = new ModuleRevenue();
+                tempvm.ShipQty = UT.O2D(line[0]);
+                tempvm.ShipDate = UT.T2S(line[1]);
+                tempvm.PN = UT.O2S(line[2]);
+                shipdata.Add(tempvm);
+            }
+
+            var ret = new List<ModuleRevenue>();
+
+            var dt_201903 = DateTime.Parse("2019-03-01 00:00:00").AddSeconds(-1);
+
+            foreach (var item in shipdata)
+            {
+                var shipd = UT.O2T(item.ShipDate);
+                var pmk = item.PN + "_" + shipd.ToString("yyyy-MM");
+
+                var q = quarter;
+                var cost = 0.0;
+                if (shipd > dt_201903 && monthlycostdict.ContainsKey(pmk))
+                {
+                    cost = monthlycostdict[pmk];
+                }
+                else if (qcostdict.ContainsKey(item.PN + "_" + q))
+                {
+                    cost = qcostdict[item.PN + "_" + q];
+                }
+                else if (shipd <= dt_201903 && qcostdict.ContainsKey(q))
+                {
+                    cost = qcostdict[q];
+                }
+                else
+                { continue; }
+
+                var ucs = cost / USDRate;
+                item.Cost = Math.Round(ucs,2);
+                ret.Add(item);
+            }
+
+            return ret;
+        }
+
+        public static List<ModuleRevenue> GetPriceDetail(string quarter, string series)
+        {
+            var dates = QuarterCLA.RetrieveDateFromQuarter(quarter);
+            var sql = @"select PN,ShipQty,SalePrice,ShipDate from [BSSupport].[dbo].[ModuleRevenue] where pn in
+                         (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series and LEN(PlannerCode) = 7) 
+                           and SalePrice > 0  and ShipDate >= @startdate and ShipDate <= @enddate order by ShipDate";
+
+            var dict = new Dictionary<string, string>();
+            dict.Add("@series", series);
+            dict.Add("@startdate", dates[0].ToString("yyyy-MM-dd HH:mm:ss"));
+            dict.Add("@enddate", dates[1].ToString("yyyy-MM-dd HH:mm:ss"));
+
+            var shipdata = new List<ModuleRevenue>();
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql, null, dict);
+            foreach (var line in dbret)
+            {
+                var tempvm = new ModuleRevenue();
+                tempvm.PN = UT.O2S(line[0]);
+                tempvm.ShipQty = UT.O2D(line[1]);
+                tempvm.SalePrice = Math.Round(UT.O2D(line[2]),2);
+                tempvm.ShipDate = UT.T2S(line[3]);
+                shipdata.Add(tempvm);
+            }
+            return shipdata;
+        }
+
         public static Dictionary<string,ModuleRevenue> ToQuartRevenue(List<ModuleRevenue> revenuedatas)
         {
             var dict = new Dictionary<string, ModuleRevenue>();

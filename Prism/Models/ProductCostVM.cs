@@ -427,7 +427,7 @@ namespace Prism.Models
                 {
                     tolist.AddRange(syscfg["EPNOTICELIST"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList());
                 }
-                tolist.Add(pm.Replace(" ", ".") + "@finisar.com");
+                tolist.Add(pm.Replace(" ", ".") + "@II-VI.COM");
 
                 var routevalue = new RouteValueDictionary();
                 routevalue.Add("pn", pn);

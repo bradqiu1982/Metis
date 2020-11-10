@@ -2111,6 +2111,45 @@ namespace Prism.Controllers
             return ret;
         }
 
+        public JsonResult ShipMarginDetail()
+        {
+            var datatype = Request.Form["datatype"];
+            var sqstr = Request.Form["series"];
+            var sq = sqstr.Split(new string[] { ":::" },StringSplitOptions.RemoveEmptyEntries);
+
+            var prog = sq[0].Trim().ToUpper();
+            var series = sq[1].Trim().ToUpper();
+            var qts = sq[2].ToUpper().Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
+            var qt = qts[0] + " " + qts[1];
+
+            var shipdetail = new List<ModuleRevenue>();
+            if (qts[2].Trim().ToUpper().Contains("COST"))
+            {
+                var monthlycostdict = ItemCostData.GetMonthlyCost();
+                shipdetail = ModuleRevenue.GetCostDetail(qt,prog, series, monthlycostdict, 6.99, datatype);
+                var ret = new JsonResult();
+                ret.MaxJsonLength = Int32.MaxValue;
+                ret.Data = new
+                {
+                    fun = "COST",
+                    shipdetail = shipdetail
+                };
+                return ret;
+            }
+            else
+            {
+                shipdetail = ModuleRevenue.GetPriceDetail(qt, series);
+                var ret = new JsonResult();
+                ret.MaxJsonLength = Int32.MaxValue;
+                ret.Data = new
+                {
+                    fun = "REVENUE",
+                    shipdetail = shipdetail
+                };
+                return ret;
+            }
+        }
+
 
 
     }
