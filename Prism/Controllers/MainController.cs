@@ -53,6 +53,200 @@ namespace Prism.Controllers
             { }
         }
 
+        private List<double> slop(List<double> alist, List<double> plist, double alow, double ahigh)
+        {
+            var ret = new List<double>();
+            try
+            {
+                var aalist = new List<double>();
+                var aplist = new List<double>();
+                var idx = 0;
+                foreach (var a in alist)
+                {
+                    if (a > alow && a < ahigh)
+                    {
+                        aalist.Add(a);
+                        aplist.Add(plist[idx]);
+                    }
+                    idx++;
+                }
+
+                if (aalist.Count > 5)
+                {
+                    var res = MathNet.Numerics.Fit.Line(aalist.ToArray(), aplist.ToArray());
+                    var a = res.Item1;
+                    var b = res.Item2;
+
+                    var y1list = new List<double>();
+                    foreach (var x in aalist)
+                    { y1list.Add(b*x+a); }
+                    var r2 = MathNet.Numerics.GoodnessOfFit.RSquared(y1list, aplist);
+
+                    ret.Add(b);ret.Add(r2);
+                    return ret;
+                }
+            }
+            catch (Exception ex) { }
+
+            ret.Clear();
+            return ret;
+        }
+
+        private double slopf2(string wholefilename, string f,List<double> alist, List<double> plist, double alow, double ahigh)
+        {
+            try
+            {
+                var aalist = new List<double>();
+                var aplist = new List<double>();
+                var idx = 0;
+                foreach (var a in alist)
+                {
+                    if (a > alow && a < ahigh)
+                    {
+                        aalist.Add(a);
+                        aplist.Add(plist[idx]);
+                    }
+                    idx++;
+                }
+
+                var sloplist = new List<string>();
+
+                for(var jdx = 0;jdx < aalist.Count - 22;jdx++)
+                {
+                    var xlist = new List<double>();
+                    var ylist = new List<double>();
+                    for (var hdx = 0; hdx < 20; hdx++)
+                    {
+                        xlist.Add(aalist[jdx+hdx]);
+                    }
+                    for (var hdx = 0; hdx < 20; hdx++)
+                    {
+                        ylist.Add(aplist[jdx+hdx]);
+                    }
+
+                    var res = MathNet.Numerics.Fit.Line(xlist.ToArray(), ylist.ToArray());
+                    sloplist.Add(res.Item2.ToString());
+                }
+
+                var slops = string.Join(",", sloplist);
+
+                var content = "";
+                if (System.IO.File.Exists(wholefilename))
+                {
+                    content = System.IO.File.ReadAllText(wholefilename);
+                }
+                content = content + Path.GetFileNameWithoutExtension(f).Substring(0, 17) + "," +slops + ",\r\n";
+                System.IO.File.WriteAllText(wholefilename, content);
+
+            }
+            catch (Exception ex) { }
+            return 0;
+        }
+
+        //public ActionResult GetSlope()
+        //{
+        //    var wholefilename = Server.MapPath("~/userfiles") + "\\" + "slop.txt";
+
+        //    var fs = ExternalDataCollector.DirectoryEnumerateFiles(this, @"\\wux-engsys01\PlanningForCast\slop\Zurich\Pre");
+        //    foreach (var f in fs)
+        //    {
+        //        if (!f.ToUpper().Contains(".TXT"))
+        //        { continue; }
+
+        //        var data = System.IO.File.ReadAllLines(f);
+        //        var alist = new List<double>();
+        //        var plist = new List<double>();
+
+        //        var idx = 0;
+
+        //        foreach (var line in data)
+        //        {
+        //            var s = line.Split(new string[] { "\t" }, StringSplitOptions.RemoveEmptyEntries);
+        //            if ((int)s[0][0] > 47 && (int)s[0][0] < 58)
+        //            {
+        //                alist.Add(UT.O2D(s[1]));
+        //                plist.Add(UT.O2D(s[2]));
+        //                var t = UT.O2I(s[0]);
+        //                if (t == 50)
+        //                {
+        //                    var slop1 = slop(alist, plist, 2, 6);
+        //                    var slop2 = slop(alist, plist, 2, 6.5);
+        //                    var slop3 = slop(alist, plist, 2, 8);
+        //                    var slop4 = slop(alist, plist, 0, 10);
+
+        //                    var content = "";
+        //                    if (System.IO.File.Exists(wholefilename))
+        //                    {
+        //                        content = System.IO.File.ReadAllText(wholefilename);
+        //                    }
+        //                    content = content + Path.GetFileNameWithoutExtension(f).Substring(0, 7) + "_" + (idx++).ToString() + "," + slop1.ToString() + "," + slop2.ToString() + "," + slop3.ToString() + "," + slop4.ToString() + "\r\n";
+        //                    System.IO.File.WriteAllText(wholefilename, content);
+
+        //                    alist.Clear();
+        //                    plist.Clear();
+        //                }
+        //            }
+
+        //        }//end foreach
+        //    }//end foreach
+
+        //    return View("HeartBeat");
+        //}
+
+        public ActionResult GetSlope()
+        {
+            var wholefilename = Server.MapPath("~/userfiles") + "\\" + "slop.txt";
+
+            var fs = ExternalDataCollector.DirectoryEnumerateFiles(this, @"\\wux-engsys01\PlanningForCast\slop\rp00");
+            foreach (var f in fs)
+            {
+                if (!f.ToUpper().Contains(".CSV"))
+                { continue; }
+
+                var data = ExcelReader.RetrieveDataFromExcel_CSV(f, null, 8);
+                var alist = new List<double>();
+                var plist = new List<double>();
+
+                var idx = 0;
+                foreach (var line in data)
+                {
+                    if (idx == 0)
+                    { idx++; continue; }
+                    alist.Add(UT.O2D(line[3]));
+                    plist.Add(UT.O2D(line[6]));
+                }//end foreach
+
+                //var slop1 = slop(alist, plist, 3.99, 10.0);
+                //var slop2 = slopf2( wholefilename,f,alist, plist, 2, 12);
+
+                for (idx = 1; idx < 51; idx++)
+                {
+                    var low = 0 + idx * 0.1;
+                    var high = 12 - idx * 0.1;
+
+                    var val = slop(alist, plist, low, high);
+                    if (val.Count > 0)
+                    {
+                        if (val[1] >= 0.999||idx == 50)
+                        {
+                            var content = "";
+                            if (System.IO.File.Exists(wholefilename))
+                            {
+                                content = System.IO.File.ReadAllText(wholefilename);
+                            }
+                            content = content + Path.GetFileNameWithoutExtension(f).Substring(0, 17) + "," + UT.O2S(low) + "," + UT.O2S(high) + "," + UT.O2S(val[1]) + "," + UT.O2S(val[0]) + ",\r\n";
+                            System.IO.File.WriteAllText(wholefilename, content);
+
+                            break;
+                        }
+                    }
+                }
+
+            }//end foreach
+
+            return View("HeartBeat");
+        }
+
 
         public ActionResult HeartBeat()
         {
