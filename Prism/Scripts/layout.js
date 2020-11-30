@@ -36,6 +36,7 @@
                 $('#submenu').append('<span class="sub-menum sub-menum-def-color" myurl="/Shipment/ShipOutputTrend">Ship Output Trend</span>');
                 $('#submenu').append('<span class="sub-menum sub-menum-def-color" myurl="/Shipment/RMAWorkLoad">RMA WorkLoad</span>');
                 $('#submenu').append('<span class="sub-menum sub-menum-def-color" myurl="/Shipment/ShipMargin">SHIP Margin</span>');
+                $('#submenu').append('<span class="sub-menum sub-menum-def-color" myurl="/Shipment/Forecast">SHIP Forecast</span>');
             }
             else if (myid.indexOf('SCRAP') != -1) {
                 $('#submenu').append('<span class="sub-menum-title sub-menum-def-color">SCRAP&nbsp;&nbsp;&nbsp;&nbsp;|</span>');

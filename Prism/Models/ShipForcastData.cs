@@ -17,14 +17,14 @@ namespace Prism.Models
             foreach (var f in allfiles)
             {
                 var p = System.IO.Path.GetFileNameWithoutExtension(f).ToUpper();
-                if (p.Contains("MANUFACTURING CAPACITY") && p.Contains("GLOBAL") && !p.Contains("TEMPLATE") && !p.Contains("$"))
+                if (p.Contains("FINAL CONSTRAINED FORECAST") && p.Contains("S&OP") && !p.Contains("TEMPLATE") && !p.Contains("$"))
                 {
                     var tfp = new ShipForcastData();
                     tfp.DataPath = f;
-                    var y = p.Replace(".","").Split(new string [] { "GLOBAL" }, StringSplitOptions.RemoveEmptyEntries);
-                    var dstr = y[1].Trim().Split(new string[] { "_" }, StringSplitOptions.RemoveEmptyEntries)[0];
+                    var y = p.Split(new string [] { " " }, StringSplitOptions.RemoveEmptyEntries);
+                    var dstr = y[y.Length-1].Trim().Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
 
-                    tfp.DataUpdateStamp = "20" + dstr.Substring(dstr.Length - 2, 2)+"-"+dstr.Substring(0,2)+"-01 10:00:00";
+                    tfp.DataUpdateStamp = dstr[0]+"-"+dstr[1]+"-01 10:00:00";
                     flist.Add(tfp);
                 }
             }
@@ -156,7 +156,7 @@ namespace Prism.Models
             var desfile = ExternalDataCollector.DownloadShareFile(f.DataPath, ctrl);
             if (!string.IsNullOrEmpty(desfile))
             {
-                var data = ExternalDataCollector.RetrieveDataFromExcelWithAuth(ctrl, desfile, "Raw data");
+                var data = ExternalDataCollector.RetrieveDataFromExcelWithAuth(ctrl, desfile, "Raw Data");
 
                 var pnidx = 1;
                 var srcorgidx = 17;
@@ -269,7 +269,7 @@ namespace Prism.Models
             var desfile = ExternalDataCollector.DownloadShareFile(f.DataPath, ctrl);
             if (!string.IsNullOrEmpty(desfile))
             {
-                var data = ExternalDataCollector.RetrieveDataFromExcelWithAuth(ctrl, desfile, "Raw data");
+                var data = ExternalDataCollector.RetrieveDataFromExcelWithAuth(ctrl, desfile, "Raw Data");
 
                 var pnidx = 1;
                 var srcorgidx = 17;
