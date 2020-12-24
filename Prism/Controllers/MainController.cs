@@ -405,6 +405,13 @@ namespace Prism.Controllers
                 }
                 catch (Exception ex) { }
 
+                try
+                {
+                    heartbeatlog("ModuleRevenue.LoadData", filename);
+                    ModuleRevenue.LoadData(this);
+                }
+                catch (Exception ex) { }
+                
                 heartbeatlog("Heart Beat one day end", filename);
             }//end only run once
 

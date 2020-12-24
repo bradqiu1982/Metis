@@ -779,6 +779,7 @@
     <None Include="Properties\PublishProfiles\prismpublish.pubxml" />
     <Content Include="Scripts\boringsearch.js" />
     <Content Include="Scripts\bssupport_db.txt" />
+    <Content Include="Scripts\dataTables.fixedColumns.min.js" />
     <Content Include="Scripts\gantt\exporting.js" />
     <Content Include="Scripts\gantt\highcharts-gantt.js" />
     <Content Include="Scripts\highmaps\flags32.png" />
