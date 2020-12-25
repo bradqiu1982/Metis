@@ -52,6 +52,21 @@ namespace Prism.Models
             return ret;
         }
 
+        public static List<string> GetPNByProductGroup(string pg)
+        {
+            var ret = new List<string>();
+            var sql = "select distinct PN  from BSSupport.dbo.PNBUMap where ProjectGroup = @ProjectGroup and PN <> '' and LEN(PlannerCode) = 7";
+            var dict = new Dictionary<string, string>();
+            dict.Add("@ProjectGroup", pg);
+            var dbret = DBUtility.ExeLocalSqlWithRes(sql,null, dict);
+            foreach (var line in dbret)
+            {
+                var pn = UT.O2S(line[0]);
+                ret.Add(pn);
+            }
+            return ret;
+        }
+
         private bool DataExist()
         {
             var sql = "select  * from BSSupport.dbo.PNBUMap where PN = @PN and LEN(PlannerCode) = 7";

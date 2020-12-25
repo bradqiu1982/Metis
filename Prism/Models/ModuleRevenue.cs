@@ -294,13 +294,13 @@ namespace Prism.Models
         }
 
         public static List<ModuleRevenue> GetRevenueList(string startdate,string projectgroup, string series
-            ,Dictionary<string,double> monthlycostdict, double USDRate,string datatype)
+            ,Dictionary<string,double> monthlycostdict,string datatype, Controller ctrl)
         {
             var qpricedict = GetSeriasPrice(series);
             if (qpricedict.Count == 0)
             { return new List<ModuleRevenue>(); }
 
-            var qcostdict = ItemCostData.RetrieveQuartCost(series);
+            var qcostdict = ItemCostData.RetrieveQuartCost(series,ctrl);
 
 
             var sql = @"select ShipQty,ShipDate,PN from [BSSupport].[dbo].[FsrShipData] where pn in
@@ -382,7 +382,7 @@ namespace Prism.Models
                 else
                 { continue; }
 
-                var ucs = cost / USDRate;
+                var ucs = cost;
                 item.SalePrice = price;
                 item.Cost = ucs;
                 ret.Add(item);
@@ -393,11 +393,11 @@ namespace Prism.Models
         }
 
         public static List<ModuleRevenue> GetCostDetail(string quarter,string projectgroup, string series
-    , Dictionary<string, double> monthlycostdict, double USDRate, string datatype)
+    , Dictionary<string, double> monthlycostdict, string datatype,Controller ctrl)
         {
             var dates = QuarterCLA.RetrieveDateFromQuarter(quarter);
 
-            var qcostdict = ItemCostData.RetrieveQuartCost(series);
+            var qcostdict = ItemCostData.RetrieveQuartCost(series,ctrl);
 
             var sql = @"select ShipQty,ShipDate,PN from [BSSupport].[dbo].[FsrShipData] where pn in
                         (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series and LEN(PlannerCode) = 7) and ShipDate >= @startdate and ShipDate <= @enddate ";
@@ -466,7 +466,7 @@ namespace Prism.Models
                 else
                 { continue; }
 
-                var ucs = cost / USDRate;
+                var ucs = cost;
                 item.Cost = Math.Round(ucs,2);
                 ret.Add(item);
             }

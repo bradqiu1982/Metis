@@ -531,22 +531,22 @@ namespace Prism.Models
             var ret = new Dictionary<string, Dictionary<string, double>>();
             foreach (var dp in dplist)
             {
-                if (dp.Contains("COMPONENT")
-                    || dp.Contains("DATACOM LW TRX"))
-                {
-                    var dpdata = RetrieveOutputDataByMonthWithScrapPN(dp,startdate,enddate , costdict, ctrl);
-                    if (dpdata.Count > 0)
-                    {
-                        ret.Add(dp, dpdata);
-                    }
-                }
-                else if (dp.Contains("WSS")
-                    || dp.Contains("TELECOM TRX")
-                    || dp.Contains("PARALLEL")
-                    || dp.Contains("OSA")
-                    || dp.Contains("LNCD") 
-                    || dp.Contains("SFP+ WIRE"))
-                {
+                //if (dp.Contains("COMPONENT")
+                //    || dp.Contains("DATACOM LW TRX"))
+                //{
+                //    var dpdata = RetrieveOutputDataByMonthWithScrapPN(dp,startdate,enddate , costdict, ctrl);
+                //    if (dpdata.Count > 0)
+                //    {
+                //        ret.Add(dp, dpdata);
+                //    }
+                //}
+                //else if (dp.Contains("WSS")
+                //    || dp.Contains("TELECOM TRX")
+                //    || dp.Contains("PARALLEL")
+                //    || dp.Contains("OSA")
+                //    || dp.Contains("LNCD") 
+                //    || dp.Contains("SFP+ WIRE"))
+                //{
                     //var sdate = DateTime.Parse(startdate);
                     //if (sdate < DateTime.Parse("2018-05-01 00:00:00"))
                     //{//more accuracy before 2019 Q1
@@ -565,15 +565,15 @@ namespace Prism.Models
                     //        ret.Add(dp, dpdata);
                     //    }
                     //}
-                }
-                else
-                {
-                    var dpdata = RetrieveOutputDataByMonth(dp, startdate, enddate, costdict, ctrl);
-                    if (dpdata.Count > 0)
-                    {
-                        ret.Add(dp, dpdata);
-                    }
-                }
+                //}
+                //else
+                //{
+                //    var dpdata = RetrieveOutputDataByMonth(dp, startdate, enddate, costdict, ctrl);
+                //    if (dpdata.Count > 0)
+                //    {
+                //        ret.Add(dp, dpdata);
+                //    }
+                //}
 
             }
             return ret;
@@ -581,7 +581,7 @@ namespace Prism.Models
 
         private static  Dictionary<string, double> RetrieveOutputDataByMonth(string producttype, string sdate, string edate,Dictionary<string,double> costdict, Controller ctrl)
         {
-            var pnlist = PNProuctFamilyCache.GetPNListByPF(producttype);
+            var pnlist = PNBUMap.GetPNByProductGroup(producttype); //PNProuctFamilyCache.GetPNListByPF(producttype);
             if (pnlist.Count == 0)
             {
                 return new Dictionary<string, double>();

@@ -1621,10 +1621,10 @@ namespace Prism.Controllers
 
 
             var chartlist = new List<object>();
-            var shipdata = ScrapData_Base.RetrieveAllOutputData();
-            chartlist.Add(ShipOutputChartData(shipdata,"scrapout_id", "Department Output"));
+            //var shipdata = ScrapData_Base.RetrieveAllOutputData();
+            //chartlist.Add(ShipOutputChartData(shipdata,"scrapout_id", "Department Output"));
 
-            shipdata = FsrShipData.RetrieveOutputData(this,ssdate,sedate);
+            var shipdata = FsrShipData.RetrieveOutputData(this,ssdate,sedate);
             chartlist.Add(ShipOutputChartData(shipdata,"shipout_id", "Department Ship Output"));
 
             var ret = new JsonResult();
@@ -1993,11 +1993,8 @@ namespace Prism.Controllers
 
             var syscfg = CfgUtility.GetSysConfig(this);
 
-            var ratedict = CfgUtility.GetUSDRate(this);
-            var USDRate = UT.O2D(ratedict["CURRENT"]);
-
             var activeseries = PNBUMap.GetModuleRevenueActiveSeries(starttime,syscfg["SHIPREVENUEBU"]);
-            var monthlycostdict = ItemCostData.GetMonthlyCost();
+            var monthlycostdict = ItemCostData.GetMonthlyCost(this);
 
             var producgroupdict = new Dictionary<string,List<ModuleRevenue>>();
 
@@ -2005,7 +2002,7 @@ namespace Prism.Controllers
             foreach (var ser in activeseries)
             {
                 var lines = new List<string>();
-                var revenlist = ModuleRevenue.GetRevenueList(starttime,ser.ProjectGroup, ser.Series, monthlycostdict, 6.99,datatype);
+                var revenlist = ModuleRevenue.GetRevenueList(starttime,ser.ProjectGroup, ser.Series, monthlycostdict, datatype,this);
                 var qret = ModuleRevenue.ToQuartRevenue(revenlist);
                 if (qret.Count > 0)
                 {
@@ -2125,8 +2122,8 @@ namespace Prism.Controllers
             var shipdetail = new List<ModuleRevenue>();
             if (qts[2].Trim().ToUpper().Contains("COST"))
             {
-                var monthlycostdict = ItemCostData.GetMonthlyCost();
-                shipdetail = ModuleRevenue.GetCostDetail(qt,prog, series, monthlycostdict, 6.99, datatype);
+                var monthlycostdict = ItemCostData.GetMonthlyCost(this);
+                shipdetail = ModuleRevenue.GetCostDetail(qt,prog, series, monthlycostdict, datatype,this);
                 var ret = new JsonResult();
                 ret.MaxJsonLength = Int32.MaxValue;
                 ret.Data = new

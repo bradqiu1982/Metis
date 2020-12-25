@@ -145,18 +145,28 @@ namespace Prism.Models
             return ret;
         }
 
-        public static Dictionary<string, double> GetMonthlyCost()
+        public static Dictionary<string, double> GetMonthlyCost(Controller ctrl)
         {
+            var ratedict = CfgUtility.GetUSDRate(ctrl);
+
             var ret = new Dictionary<string, double>();
 
-            var sql = "select ID,Cost from WUXIMonthlyCost";
+            var sql = "select ID,Cost,Months from WUXIMonthlyCost";
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             foreach (var line in dbret)
             {
                 var id = UT.O2S(line[0]);
                 var cost = UT.O2D(line[1]);
+                var m = UT.O2S(line[2]);
+
+                var rate = ratedict["CURRENT"];
+                if (ratedict.ContainsKey(m))
+                {
+                    rate = ratedict[m];
+                }
+
                 if (!ret.ContainsKey(id))
-                { ret.Add(id, cost); }
+                { ret.Add(id, cost/rate); }
             }
 
             return ret;
@@ -203,8 +213,10 @@ namespace Prism.Models
             return ret;
         }
 
-        public static Dictionary<string, double> RetrieveQuartCost(string series)
+        public static Dictionary<string, double> RetrieveQuartCost(string series, Controller ctrl)
         {
+            var ratedict = CfgUtility.GetUSDRate(ctrl);
+
             var ret = new Dictionary<string, double>();
             var sql = @"select distinct ID,FrozenCost,Quarter from ItemCostData where pn in 
                       (SELECT PN FROM [BSSupport].[dbo].[PNBUMap] where series = @series  and LEN(PlannerCode) = 7)";
@@ -219,13 +231,18 @@ namespace Prism.Models
                 var cost = Convert.ToDouble(line[1]);
                 var q = Convert.ToString(line[2]);
 
+                var m = QuarterCLA.RetrieveDateFromQuarter(q)[0].ToString("yyyy-MM");
+                var rate = ratedict["CURRENT"];
+                if (ratedict.ContainsKey(m))
+                { rate = ratedict[m]; }
+
                 if (!ret.ContainsKey(pn))
                 {
-                    ret.Add(pn, cost);
+                    ret.Add(pn, cost/rate);
                 }
 
                 if (!ret.ContainsKey(q))
-                { ret.Add(q, cost); }
+                { ret.Add(q, cost/rate); }
             }
             return ret;
         }

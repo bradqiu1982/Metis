@@ -34,7 +34,7 @@ INVENTORYDETAIL:::\\cn-file01.china.ads.finisar.com\Public\Active NPI\Product_En
 INVENTORYDEPARTMENTORD:::Parallel;10G Tunable;Coherent Transceiver;Linecard;SFP+WIRE;OSA;WSS
 
 ITEMCOSTFILE:::\\\wux-fs\PUBLIC\Planning\Standard Cost\Finisar - Item Cost Detail Report for WXI.csv
-OUTPUTDEPARTMENTS:::COMPONENT;DATACOM LW TRX;LNCD;OSA;PARALLEL;SFP+ WIRE;TELECOM TRX;COHERENT;WSS;
+OUTPUTDEPARTMENTS:::Component;Datacom LW TRx;Linecard;OSA;Parallel;SFP+WIRE;Coherent Transceiver;WSS;10G Tunable
 
 MONTHLYCOSTFILE:::\\wux-engsys01\PlanningForCast\wuxi_cost
 
