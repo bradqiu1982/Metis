@@ -411,7 +411,15 @@ namespace Prism.Controllers
                     ModuleRevenue.LoadData(this);
                 }
                 catch (Exception ex) { }
+
+                try
+                {
+                    heartbeatlog("ItemCostData.LoadMonthlyCostData", filename);
+                    ItemCostData.LoadMonthlyCostData(this);
+                }
+                catch (Exception ex) { }
                 
+
                 heartbeatlog("Heart Beat one day end", filename);
             }//end only run once
 
@@ -642,23 +650,7 @@ namespace Prism.Controllers
             return View("HeartBeat");
         }
 
-        public ActionResult LoadCostData()
-        {
-            ItemCostData.LoadCostData(this);
-            return View("HeartBeat");
-        }
 
-        public ActionResult LoadModuleRevenueData()
-        {
-            ModuleRevenue.LoadData(this);
-            return View("HeartBeat");
-        }
-
-        public ActionResult LoadMonthlyCostData()
-        {
-            ItemCostData.LoadMonthlyCostData(this);
-            return View("HeartBeat");
-        }
 
         public ActionResult LoadPostRevenueData()
         {
@@ -871,6 +863,38 @@ namespace Prism.Controllers
             return View("Index");
         }
 
+
+
+        //public ActionResult ForecastAccuracy()
+        //{
+        //    var starttime = "2018-11-01 00:00:00";
+        //    var endtime = "2019-11-01 00:00:00";
+        //    var activeseries = PNBUMap.GetActiveSeries(starttime);
+        //    foreach (var ser in activeseries)
+        //    {
+        //        ser.Accuracy = ShipForcastData.GetSeriesAccuracyVal(ser.Series, starttime, endtime);
+        //    }
+        //    return View("Index");
+        //}
+
+        public ActionResult LoadCostData()
+        {
+            ItemCostData.LoadCostData(this);
+            return View("HeartBeat");
+        }
+
+        public ActionResult LoadModuleRevenueData()
+        {
+            ModuleRevenue.LoadData(this);
+            return View("HeartBeat");
+        }
+
+        public ActionResult LoadMonthlyCostData()
+        {
+            ItemCostData.LoadMonthlyCostData(this);
+            return View("HeartBeat");
+        }
+
         public ActionResult LoadPNBUData()
         {
             PNBUMap.LoadPNBUData(this);
@@ -893,7 +917,7 @@ namespace Prism.Controllers
         {
             var syscfg = CfgUtility.GetSysConfig(this);
             var forcastfolder = syscfg["FORCASTDATA"];
-            ShipForcastData.LoadWSSData(this,forcastfolder);
+            ShipForcastData.LoadWSSData(this, forcastfolder);
             return View("Index");
         }
 
@@ -902,19 +926,6 @@ namespace Prism.Controllers
             PLMMatrix.LoadData(this);
             return View("Index");
         }
-
-        //public ActionResult ForecastAccuracy()
-        //{
-        //    var starttime = "2018-11-01 00:00:00";
-        //    var endtime = "2019-11-01 00:00:00";
-        //    var activeseries = PNBUMap.GetActiveSeries(starttime);
-        //    foreach (var ser in activeseries)
-        //    {
-        //        ser.Accuracy = ShipForcastData.GetSeriesAccuracyVal(ser.Series, starttime, endtime);
-        //    }
-        //    return View("Index");
-        //}
-
 
     }
 }

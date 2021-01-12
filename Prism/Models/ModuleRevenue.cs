@@ -16,7 +16,7 @@ namespace Prism.Models
             var shipdesfile = ExternalDataCollector.DownloadShareFile(shipsrcfile, ctrl);
             if (!string.IsNullOrEmpty(shipdesfile))
             {
-                var costdict = ItemCostData.RetrieveStandardCost();
+                var costdict = ItemCostData.GetMonthlyCost(ctrl); //ItemCostData.RetrieveStandardCost();
 
                 var lastday = ModuleRevenue.RetrieveLastDate();
                 var now = DateTime.Now;
@@ -62,13 +62,16 @@ namespace Prism.Models
                         tempvm.PN = UT.O2S(line[pnidx]);
                         tempvm.ShipDate = UT.T2S(line[spdidx]);
                         var shipdate = UT.O2T(line[spdidx]);
+                        var m = shipdate.ToString("yyyy-MM");
+                        var key = tempvm.PN + "_" + m;
 
                             if (shipdate > lastday && shipdate < now &&
                             !cpo.Contains("RMA") && tempvm.ShipQty > 0 && !string.IsNullOrEmpty(tempvm.PN))
                             {
                                 tempvm.SalePrice = UT.O2D(line[prcidx]);
-                                if (costdict.ContainsKey(tempvm.PN))
-                                { tempvm.Cost = costdict[tempvm.PN]; }
+
+                                if (costdict.ContainsKey(key))
+                                { tempvm.Cost = costdict[key]; }
                                 shipdatalist.Add(tempvm);
                             }
                     }
@@ -539,7 +542,9 @@ namespace Prism.Models
 
         private static DateTime RetrieveLastDate()
         {
-            var sql = "select max(ShipDate) from ModuleRevenue";
+            var sql = "select max(ShipDate) from ModuleRevenue where ShipDate > <shipdt>";
+            sql = sql.Replace("<shipdt>", DateTime.Now.AddMonths(-6).ToString("yyyy-MM-dd HH:mm:ss"));
+
             var dbret = DBUtility.ExeLocalSqlWithRes(sql, null);
             if (DBNull.Value == dbret[0][0])
             { return DateTime.Parse("2019-07-01 00:00:00"); }

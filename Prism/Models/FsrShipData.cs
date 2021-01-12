@@ -526,7 +526,7 @@ namespace Prism.Models
         public static Dictionary<string, Dictionary<string, double>> RetrieveOutputData(Controller ctrl,string startdate,string enddate)
         {
             var syscfg = CfgUtility.GetSysConfig(ctrl);
-            var costdict = ItemCostData.RetrieveStandardCost();
+            var costdict = ItemCostData.GetMonthlyCost(ctrl);//ItemCostData.RetrieveStandardCost();
             var dplist = syscfg["OUTPUTDEPARTMENTS"].Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             var ret = new Dictionary<string, Dictionary<string, double>>();
             foreach (var dp in dplist)
@@ -609,23 +609,23 @@ namespace Prism.Models
                 var q = QuarterCLA.RetrieveQuarterFromDate(shipdate);
 
                 var m = shipdate.ToString("yyyy-MM");
-                var urate = 7.0;
-                if (usdrate.ContainsKey(m))
-                {
-                    urate = usdrate[m];
-                }
-                else
-                { urate = usdrate["CURRENT"]; }
-
-                if (costdict.ContainsKey(pn))
+                //var urate = 7.0;
+                //if (usdrate.ContainsKey(m))
+                //{
+                //    urate = usdrate[m];
+                //}
+                //else
+                //{ urate = usdrate["CURRENT"]; }
+                var key = pn + "_" + m;
+                if (costdict.ContainsKey(key))
                 {
                     if (ret.ContainsKey(q))
                     {
-                        ret[q] += qty * costdict[pn]/urate;
+                        ret[q] += qty * costdict[key];
                     }
                     else
                     {
-                        ret.Add(q, qty * costdict[pn] /urate);
+                        ret.Add(q, qty * costdict[key]);
                     }
                 }
             }
@@ -691,7 +691,7 @@ namespace Prism.Models
         public static List<FsrShipData> RetrieveOutputDetailData(Controller ctrl,string dp, string startdate, string enddate)
         {
             var syscfg = CfgUtility.GetSysConfig(ctrl);
-            var costdict = ItemCostData.RetrieveStandardCost();
+            var costdict = ItemCostData.GetMonthlyCost(ctrl);//ItemCostData.RetrieveStandardCost();
             var ret = new List<FsrShipData>();
 
                 if (dp.Contains("COMPONENT")
@@ -773,17 +773,17 @@ namespace Prism.Models
 
 
                 var m = shipdate.ToString("yyyy-MM");
-                var urate = 7.0;
-                if (usdrate.ContainsKey(m))
+                //var urate = 7.0;
+                //if (usdrate.ContainsKey(m))
+                //{
+                //    urate = usdrate[m];
+                //}
+                //else
+                //{ urate = usdrate["CURRENT"]; }
+                var key = pn + "_" + m;
+                if (costdict.ContainsKey(key))
                 {
-                    urate = usdrate[m];
-                }
-                else
-                { urate = usdrate["CURRENT"]; }
-
-                if (costdict.ContainsKey(pn))
-                {
-                    var output = qty * costdict[pn] / urate;
+                    var output = qty * costdict[key];
                     if (retdata.ContainsKey(pj))
                     {
                         retdata[pj].ShipQty += qty;
@@ -795,7 +795,7 @@ namespace Prism.Models
                         vm.MarketFamily = pj;
                         vm.ShipQty = qty;
                         vm.PN = pn;
-                        vm.Cost = costdict[pn]/urate;
+                        vm.Cost = costdict[key];
                         vm.Output = output;
                         retdata.Add(pj, vm);
                     }
@@ -864,17 +864,17 @@ namespace Prism.Models
                 }
 
                 var m = shipdate.ToString("yyyy-MM");
-                var urate = 7.0;
-                if (usdrate.ContainsKey(m))
+                //var urate = 7.0;
+                //if (usdrate.ContainsKey(m))
+                //{
+                //    urate = usdrate[m];
+                //}
+                //else
+                //{ urate = usdrate["CURRENT"]; }
+                var key = pn + "_" + m;
+                if (costdict.ContainsKey(key))
                 {
-                    urate = usdrate[m];
-                }
-                else
-                { urate = usdrate["CURRENT"]; }
-
-                if (costdict.ContainsKey(pn))
-                {
-                    var output = qty * costdict[pn] / urate;
+                    var output = qty * costdict[key];
                     if (retdata.ContainsKey(pj))
                     {
                         retdata[pj].ShipQty += qty;
@@ -886,7 +886,7 @@ namespace Prism.Models
                         vm.MarketFamily = pj;
                         vm.ShipQty = qty;
                         vm.PN = pn;
-                        vm.Cost = costdict[pn] / urate;
+                        vm.Cost = costdict[key];
                         vm.Output = output;
                         retdata.Add(pj, vm);
                     }
@@ -911,7 +911,7 @@ namespace Prism.Models
             var ret = new List<Dictionary<string, double>>();
 
             var searchcfg = CfgUtility.LoadSearchConfig(ctrl);
-            var costdict = ItemCostData.RetrieveStandardCost();
+            var costdict = ItemCostData.GetMonthlyCost(ctrl); //ItemCostData.RetrieveStandardCost();
             var usdrate = CfgUtility.GetUSDRate(ctrl);
 
             var startdate = searchcfg["SHIP_STARTDATE"];
@@ -938,24 +938,24 @@ namespace Prism.Models
                 var q = QuarterCLA.RetrieveQuarterFromDate(shipdate);
 
                 var m = shipdate.ToString("yyyy-MM");
-                var urate = 7.0;
-                if (usdrate.ContainsKey(m))
-                {
-                    urate = usdrate[m];
-                }
-                else
-                { urate = usdrate["CURRENT"]; }
-
-                if (costdict.ContainsKey(pn))
+                //var urate = 7.0;
+                //if (usdrate.ContainsKey(m))
+                //{
+                //    urate = usdrate[m];
+                //}
+                //else
+                //{ urate = usdrate["CURRENT"]; }
+                var key = pn + "_" + m;
+                if (costdict.ContainsKey(key))
                 {
                     if (outputdict.ContainsKey(q))
                     {
-                        outputdict[q] += qty * costdict[pn] / urate;
+                        outputdict[q] += qty * costdict[key];
                         qtydict[q] += qty;
                     }
                     else
                     {
-                        outputdict.Add(q, qty * costdict[pn] / urate);
+                        outputdict.Add(q, qty * costdict[key]);
                         qtydict.Add(q, qty);
                     }
                 }
@@ -1017,7 +1017,7 @@ namespace Prism.Models
             var ret = new List<Dictionary<string, double>>();
 
             var searchcfg = CfgUtility.LoadSearchConfig(ctrl);
-            var costdict = ItemCostData.RetrieveStandardCost();
+            var costdict = ItemCostData.GetMonthlyCost(ctrl);//ItemCostData.RetrieveStandardCost();
             var usdrate = CfgUtility.GetUSDRate(ctrl);
 
             var otdqtydict = new Dictionary<string, double>();
@@ -1075,36 +1075,36 @@ namespace Prism.Models
 
 
                 var m = OPD.ToString("yyyy-MM");
-                var urate = 7.0;
-                if (usdrate.ContainsKey(m))
-                {
-                    urate = usdrate[m];
-                }
-                else
-                { urate = usdrate["CURRENT"]; }
+                //var urate = 7.0;
+                //if (usdrate.ContainsKey(m))
+                //{
+                //    urate = usdrate[m];
+                //}
+                //else
+                //{ urate = usdrate["CURRENT"]; }
+                var key = PN + "_" + m;
 
-
-                if (costdict.ContainsKey(PN))
+                if (costdict.ContainsKey(key))
                 {
 
                     if (ShipDate <= OPD)
                     {
                         if (totaloutputdict.ContainsKey(q))
-                        { totaloutputdict[q] += OrderQty * costdict[PN] / urate; }
+                        { totaloutputdict[q] += OrderQty * costdict[key]; }
                         else
-                        { totaloutputdict.Add(q, OrderQty * costdict[PN] / urate); }
+                        { totaloutputdict.Add(q, OrderQty * costdict[key]); }
 
                         if (otdoutputdict.ContainsKey(q))
-                        { otdoutputdict[q] += OrderQty * costdict[PN] / urate; }
+                        { otdoutputdict[q] += OrderQty * costdict[key]; }
                         else
-                        { otdoutputdict.Add(q, OrderQty * costdict[PN] / urate); }
+                        { otdoutputdict.Add(q, OrderQty * costdict[key]); }
                     }
                     else
                     {
                         if (totaloutputdict.ContainsKey(q))
-                        { totaloutputdict[q] += OrderQty * costdict[PN] / urate; }
+                        { totaloutputdict[q] += OrderQty * costdict[key]; }
                         else
-                        { totaloutputdict.Add(q, OrderQty * costdict[PN] / urate); }
+                        { totaloutputdict.Add(q, OrderQty * costdict[key]); }
 
                         if (!otdoutputdict.ContainsKey(q))
                         { otdoutputdict.Add(q, 0); }

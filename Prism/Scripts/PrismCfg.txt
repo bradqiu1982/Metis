@@ -36,7 +36,8 @@ INVENTORYDEPARTMENTORD:::Parallel;10G Tunable;Coherent Transceiver;Linecard;SFP+
 ITEMCOSTFILE:::\\\wux-fs\PUBLIC\Planning\Standard Cost\Finisar - Item Cost Detail Report for WXI.csv
 OUTPUTDEPARTMENTS:::Component;Datacom LW TRx;Linecard;OSA;Parallel;SFP+WIRE;Coherent Transceiver;WSS;10G Tunable
 
-MONTHLYCOSTFILE:::\\wux-engsys01\PlanningForCast\wuxi_cost
+MONTHLYCOSTFILE:::\\wux-fs\PUBLIC\Planning\Standard Cost
+###MONTHLYCOSTFILE:::\\wux-engsys01\PlanningForCast\wuxi_cost
 
 FINISARSHIPDATA:::\\wux-file01\Public\ERP_Report\WXI\Planning\Finisar - OTS for WUXI.csv
 MOUDULESHIPREVENUE:::\\wux-file01\Public\ERP_Report\WXI\Planning\Shipping_WXI US Orders Yearly.csv
