@@ -86,11 +86,11 @@
                 $.each(outputdata.waferdatalist, function (i, val) {
                     var rmalink = '<td> </td>';
                     if (val.IssueKey != '') {
-                        rmalink = '<td><a href="http://wuxinpi.china.ads.finisar.com/Issue/UpdateIssue?issuekey=' + val.IssueKey + '" target="_blank" >Report</a></td>'
+                        rmalink = '<td><a href="http://wuxinpi.chn.ii-vi.net/Issue/UpdateIssue?issuekey=' + val.IssueKey + '" target="_blank" >Report</a></td>'
                     }
                     var waferlink = '<td> </td>';
                     if (val.Wafer != '') {
-                        waferlink = '<td><a href="http://wuxinpi.china.ads.finisar.com/DataAnalyze/WaferDistribution?defaultwafer=' + val.Wafer + '" target="_blank" >' + val.Wafer + '</a></td>'
+                        waferlink = '<td><a href="http://wuxinpi.chn.ii-vi.net/DataAnalyze/WaferDistribution?defaultwafer=' + val.Wafer + '" target="_blank" >' + val.Wafer + '</a></td>'
                     }
                     appendstr = '<tr>' +
                         '<td>' + (i + 1) + '</td>' +
@@ -413,7 +413,7 @@
                                     $.each(outputdata.waferdatalist, function (i, val) {
                                         var rmalink = '<td> </td>';
                                         if (val.IssueKey != '') {
-                                            rmalink = '<td><a href="http://wuxinpi.china.ads.finisar.com/Issue/UpdateIssue?issuekey=' + val.IssueKey + '" target="_blank" >Report</a></td>'
+                                            rmalink = '<td><a href="http://wuxinpi.chn.ii-vi.net/Issue/UpdateIssue?issuekey=' + val.IssueKey + '" target="_blank" >Report</a></td>'
                                         }
 
                                         var appendstr = '<tr>' +

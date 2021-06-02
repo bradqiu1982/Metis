@@ -401,12 +401,13 @@
                         "order": [],
                         dom: 'lBfrtip',
                         buttons: ['copyHtml5', 'csv', 'excelHtml5']
-                        //,scrollY: "580px",
-                        //scrollX: true,
-                        //scrollCollapse: true,
-                        //paging: false
+                        ,scrollY: "580px",
+                        scrollX: true,
+                        scrollCollapse: true,
+                        paging: false,
                         //fixedColumns: {
-                        //    leftColumns: 3
+                        //    leftColumns: 3,
+                        //    heightMatch: 'auto'
                         //}
                     });
                 });

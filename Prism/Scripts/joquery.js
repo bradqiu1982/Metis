@@ -91,7 +91,7 @@
                         linkstr = '/Main/JOProgress?jo=' + encodeURIComponent(val.JO);
                     }
                     else {
-                        linkstr = 'http://wuxinpi.china.ads.finisar.com/CustomerData/JOMesProgress?jo=' + encodeURIComponent(val.JO);
+                        linkstr = 'http://wuxinpi.chn.ii-vi.net/CustomerData/JOMesProgress?jo=' + encodeURIComponent(val.JO);
                     }
 
                      appendstr = '<tr>' +

@@ -60,7 +60,7 @@
                 $('#submenu').append('<span class="sub-menum-title sub-menum-def-color">INVENTORY&nbsp;&nbsp;&nbsp;&nbsp;|</span>');
                 $('#submenu').append('<span class="sub-menum sub-menum-def-color" myurl="/Inventory/DepartmentInventory">Department Inventory Turns</span>');
                 $('#submenu').append('<span class="sub-menum sub-menum-def-color" myurl="/Inventory/ProductInventory">Product Inventory Turns</span>');
-                $('#submenu').append('<span class="sub-menum sub-menum-def-color" myurl="http://wuxinpi.china.ads.finisar.com:8082/BRTrace/ERPComponent">Inventory Query</span>');
+                $('#submenu').append('<span class="sub-menum sub-menum-def-color" myurl="http://wuxinpi.chn.ii-vi.net:8082/BRTrace/ERPComponent">Inventory Query</span>');
                 $('#submenu').append('<span class="sub-menum sub-menum-def-color" myurl="/Inventory/ProductCost">Product Cost</span>');
             }
             else if (myid.indexOf('VCSEL') != -1) {

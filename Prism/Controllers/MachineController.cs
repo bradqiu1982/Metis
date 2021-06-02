@@ -80,7 +80,7 @@ namespace Prism.Controllers
                     }
                     else
                     {
-                        linelist.Add("<a href='http://wuxinpi.china.ads.finisar.com/Project/ProjectDetail?ProjectKey=" + pdm[0].ProjectKey + "' target='_blank'>" + pdm[0].ProductFamily + "</a>");
+                        linelist.Add("<a href='http://wuxinpi.chn.ii-vi.net/Project/ProjectDetail?ProjectKey=" + pdm[0].ProjectKey + "' target='_blank'>" + pdm[0].ProductFamily + "</a>");
                     }
                 }
 

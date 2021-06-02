@@ -272,7 +272,7 @@ namespace Prism.Models
 
         public static string RetrieveCurrentMachineName()
         {
-            var netcomputername = "wuxinpi.china.ads.finisar.com";
+            var netcomputername = "wuxinpi.chn.ii-vi.net";
             //try { netcomputername = System.Net.Dns.GetHostName(); }
             //catch (Exception ex) { }
             return netcomputername;
